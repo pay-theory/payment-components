@@ -1,0 +1,11 @@
+{
+  "name": "@paytheory/payment-components",
+  "version": "0.0.1",
+  "description": "Pay Theory SDK",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aron Price",
+  "license": "ISC"
+}
