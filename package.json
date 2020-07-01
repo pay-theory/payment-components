@@ -33,9 +33,7 @@
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-standard": "^4.0.1",
     "prettier": "^2.0.5",
-    "regenerator-runtime": "^0.13.5"
-  },
-  "dependencies": {
+    "regenerator-runtime": "^0.13.5",
     "core-js": "^3.6.5",
     "eslint": "^7.3.1"
   }
