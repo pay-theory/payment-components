@@ -1,0 +1,11 @@
+{
+  "presets": [[
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "usage",
+        "modules": "amd",
+        "corejs": "3.6.5"
+      }
+    ],"minify"],
+  plugins:["@babel/plugin-transform-modules-commonjs"]
+}
