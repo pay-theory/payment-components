@@ -18,7 +18,7 @@ const defineFields = (form, styles) => {
             }
         })
         const idd = `field-wrapper-${field.name.replace(/\./, '-')}`
-        console.log('idd', idd)
+
         if (document.getElementById(idd)) {
             document.getElementById(idd).appendChild(f)
         }
@@ -89,7 +89,7 @@ class CreditCardFrame extends HTMLElement {
                     window.postMessage(
                         {
                             type: 'tokenized',
-                            tokenized: tokenized
+                            tokenized
                         },
                         window.location.origin
                     )
@@ -214,7 +214,7 @@ class CreditCardFrame extends HTMLElement {
                         : typeof code === 'undefined' ||
                           typeof date === 'undefined' ||
                           typeof num === 'undefined' // otherwise if any values are undefined
-                        ? undefined // valid is undefined
+                        ? undef // valid is undefined
                         : typeof date === 'undefined' // otherwise if date is defined
                         ? typeof code === 'undefined' // otherwise if code is defined
                         : !num // otherwise valid is nums validation

@@ -103,7 +103,7 @@ const createCreditCard = async (
                     document.getElementsByTagName('head')[0].appendChild(script)
                 }
             } else {
-                console.error(element, 'is not available in dom')
+                throw new Error(`${element} is not available in dom`)
             }
         },
 
@@ -224,10 +224,7 @@ const createAccountName = async (
                         window.location.origin
                     )
                 } else {
-                    console.error(
-                        'element already exists',
-                        'paytheory-account-name'
-                    )
+                    throw new Error(`${element} already exists`)
                 }
             } else {
                 console.error(element, 'is not available in dom')
@@ -236,7 +233,9 @@ const createAccountName = async (
 
         readyObserver: (readyCallback) => {
             window.addEventListener('message', (event) => {
-                if (![window.location.origin].includes(event.origin)) return
+                if (![window.location.origin].includes(event.origin)) {
+                    return
+                }
                 const message =
                     typeof event.data === 'string'
                         ? JSON.parse(event.data)
@@ -249,7 +248,9 @@ const createAccountName = async (
         },
         transactedObserver: (transactedCallback) => {
             window.addEventListener('message', async (event) => {
-                if (![window.location.origin].includes(event.origin)) return
+                if (![window.location.origin].includes(event.origin)) {
+                    return
+                }
                 const message =
                     typeof event.data === 'string'
                         ? JSON.parse(event.data)
