@@ -51,7 +51,6 @@ class AccountNameFrame extends HTMLElement {
     }
 
     set styles(_styling) {
-        console.log(JSON.stringify(formed))
         if (_styling && formed) {
             defineFields(formed, _styling)
             this.styling = _styling
