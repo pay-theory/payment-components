@@ -227,7 +227,7 @@ const createAccountName = async (
                     throw new Error(`${element} already exists`)
                 }
             } else {
-                console.error(element, 'is not available in dom')
+                throw new Error(`${element} is not available in dom`)
             }
         },
 
@@ -286,7 +286,9 @@ const createAccountName = async (
         },
         errorObserver: (errorCallback) => {
             window.addEventListener('message', (event) => {
-                if (![window.location.origin].includes(event.origin)) return
+                if (![window.location.origin].includes(event.origin)) {
+                    return
+                }
                 const message =
                     typeof event.data === 'string'
                         ? JSON.parse(event.data)
@@ -298,7 +300,9 @@ const createAccountName = async (
         },
         validObserver: (validCallback) => {
             window.addEventListener('message', (event) => {
-                if (![window.location.origin].includes(event.origin)) return
+                if (![window.location.origin].includes(event.origin)) {
+                    return
+                }
                 const message =
                     typeof event.data === 'string'
                         ? JSON.parse(event.data)
