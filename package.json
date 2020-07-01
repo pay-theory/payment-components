@@ -1,6 +1,6 @@
 {
   "name": "@paytheory/payment-components",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Pay Theory SDK",
   "main": "index.js",
   "scripts": {
