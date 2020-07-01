@@ -1,68 +1,68 @@
 .paytheory-card-badge {
-    background-repeat: no-repeat;
-    background-size: 100%;
-    background-position: 50%;
-    height: 30px;
-    width: 48px;
-    align-self: center;
+	background-repeat: no-repeat;
+	background-size: 100%;
+	background-position: 50%;
+	height: 30px;
+	width: 48px;
+	align-self: center;
 }
 
 .paytheory-card-visa {
-    background-image: url(https://storage.googleapis.com/pt-assets/visa-badge-icon.svg);
+	background-image: url(https://storage.googleapis.com/pt-assets/visa-badge-icon.svg);
 }
 
 .paytheory-card-mastercard {
-    background-image: url(https://storage.googleapis.com/pt-assets/mastercard-badge-icon.svg);
+	background-image: url(https://storage.googleapis.com/pt-assets/mastercard-badge-icon.svg);
 }
 
 .paytheory-card-amex {
-    background-image: url(https://storage.googleapis.com/pt-assets/amex-badge-icon.svg);
+	background-image: url(https://storage.googleapis.com/pt-assets/amex-badge-icon.svg);
 }
 
 .paytheory-card-discover {
-    background-image: url(https://storage.googleapis.com/pt-assets/discover-badge-icon.svg);
+	background-image: url(https://storage.googleapis.com/pt-assets/discover-badge-icon.svg);
 }
 
 #field-wrapper-number {
-    max-width: 55%;
+	max-width: 55%;
 }
 
 #field-wrapper-expiration_date {
-    max-width: 15%;
+	max-width: 15%;
 }
 
 #field-wrapper-security_code {
-    max-width: 15%;
+	max-width: 15%;
 }
 
 #field-wrapper-postal_code {
-    max-width: 15%;
+	max-width: 15%;
 }
 
 .field-wrapper {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
 }
 
 .field-wrapper iframe {
-    width: 100%;
-    display: inline-block;
-    min-height: 48px;
-    max-height: 2em;
-    border: none;
+	width: 100%;
+	display: inline-block;
+	min-height: 48px;
+	max-height: 2em;
+	border: none;
 }
 
 .pay-theory-card-field {
-    display: flex;
-    flex-direction: row;
+	display: flex;
+	flex-direction: row;
 }
 
 .pay-theory-card-field div {
-    display: flex;
+	display: flex;
 }
 
 .framed {
-    display: flex;
-    flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }

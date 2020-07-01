@@ -1,11 +1,9 @@
-import "../../tags.css";
-import * as formed from "../../form-generator"
-const fields = [
-    { name: "ach-account-name", label: "Name on account" }
-];
+import '../../tags.css'
+import * as formed from '../../form-generator'
+const fields = [{ name: 'ach-account-name', label: 'Name on account' }]
 
 const defineFields = (form, styles) => {
-    fields.forEach(field => {
+    fields.forEach((field) => {
         const f = form.accountName({
             placeholder: field.label,
             styles: {
@@ -13,142 +11,154 @@ const defineFields = (form, styles) => {
                 success: styles.success ? styles.success : styles.default,
                 error: styles.error ? styles.error : styles.default
             }
-        });
-        const idd = `field-wrapper-${field.name.replace(/\./,'-')}`
-        
-        if (document.getElementById(idd)) document.getElementById(idd).appendChild(f);        
-    });
-};
+        })
+        const idd = `field-wrapper-${field.name.replace(/\./, '-')}`
 
+        if (document.getElementById(idd))
+            document.getElementById(idd).appendChild(f)
+    })
+}
 
-
-const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : undefined);
-const defaultStyles = { default: {}, success: {}, error: {} };
+const defaultStyles = { default: {}, success: {}, error: {} }
 
 /* global HTMLElement */
 class AccountNameFrame extends HTMLElement {
-
     eventful(event) {
-        if (![window.location.origin].includes(event.origin))
-            return;
+        if (![window.location.origin].includes(event.origin)) return
         const message =
-            typeof event.data === "object" ? event.data : { type: "unknown" };
-        this[message.type] = event.data[message.type];
+            typeof event.data === 'object' ? event.data : { type: 'unknown' }
+        this[message.type] = event.data[message.type]
     }
 
     get loaded() {
-        return this.isLoaded;
+        return this.isLoaded
     }
+
     set loaded(_isLoaded) {
-        this.isLoaded = _isLoaded;
+        this.isLoaded = _isLoaded
     }
 
     get ready() {
-        return this.isReady;
+        return this.isReady
     }
+
     set ready(_isReady) {
-        this.isReady = _isReady;
+        this.isReady = _isReady
     }
 
     get styles() {
-        return this.styling;
+        return this.styling
     }
+
     set styles(_styling) {
         console.log(JSON.stringify(formed))
         if (_styling && formed) {
-            defineFields(formed, _styling);
+            defineFields(formed, _styling)
             this.styling = _styling
-        }
-        else if (formed) {
-            defineFields(formed, defaultStyles);
+        } else if (formed) {
+            defineFields(formed, defaultStyles)
             this.styling = defaultStyles
         }
     }
 
     get transact() {
-        return this.transacting;
+        return this.transacting
     }
+
     set transact(_transacting) {
         if (this.transacting !== _transacting) {
             this.transacting = _transacting
             formed.submit('APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
                 if (err) {
-                    this.error = err;
-                }
-                else {
-                    const tokenized = { bin: this.bin, ...res };
-                    window.postMessage({
-                            type: "tokenized",
+                    this.error = err
+                } else {
+                    const tokenized = { bin: this.bin, ...res }
+                    window.postMessage(
+                        {
+                            type: 'tokenized',
                             tokenized: tokenized
                         },
                         window.location.origin
-                    );
+                    )
                 }
-            });
+            })
         }
     }
 
     get error() {
-        return this.errored;
+        return this.errored
     }
+
     set error(_errored) {
         if (this.errored !== _errored) {
-            this.errored = _errored;
-            window.postMessage({
-                    type: "error",
+            this.errored = _errored
+            window.postMessage(
+                {
+                    type: 'error',
                     error: _errored
                 },
                 window.location.origin
-            );
+            )
         }
     }
 
     get valid() {
-        return this.validated;
+        return this.validated
     }
+
     set valid(isValid) {
         if (isValid !== this.validated) {
-            this.validated = isValid;
-            window.postMessage({
-                    type: "valid",
+            this.validated = isValid
+            window.postMessage(
+                {
+                    type: 'valid',
                     valid: isValid
                 },
                 window.location.origin
-            );
+            )
         }
     }
 
     connectedCallback() {
-        this.eventful = this.eventful.bind(this);
+        this.eventful = this.eventful.bind(this)
         if (!this.loaded) {
-            this.loaded = true;
-            
-            window.postMessage({
-                    type: "ready",
+            this.loaded = true
+
+            window.postMessage(
+                {
+                    type: 'ready',
                     ready: true
                 },
                 window.location.origin
-            );
-            this.ready = true;
+            )
+            this.ready = true
         }
-        window.addEventListener("message", this.eventful);
+        /*
+         *  eslint-disable-next-line scanjs-rules/call_addEventListener_message
+         *  eslint-disable-next-line scanjs-rules/call_addEventListener_message
+         */
+        window.addEventListener('message', this.eventful)
         this.innerHTML = `<span class="framed">
-			<div class="pay-theory-ach-account-name-field">
-		      <div id="field-wrapper-ach-account-name" class="field-wrapper"></div>
-		    </div>
-		</span>`;
+            <div class="pay-theory-ach-account-name-field">
+              <div id="field-wrapper-ach-account-name" class="field-wrapper"></div>
+            </div>
+        </span>`
     }
+
     disconnectedCallback() {
-        document.removeEventListener("message", this.eventful);
+        document.removeEventListener('message', this.eventful)
     }
 
     attributeChangedCallback(attrName, oldValue, newValue) {
         if (newValue !== oldValue) {
-            this[attrName] = this.hasAttribute(attrName);
+            this[attrName.toString()] = this.hasAttribute(attrName)
         }
     }
 }
 
-if (!window.customElements.get("paytheory-ach-account-name-tag-frame")) {
-    window.customElements.define("paytheory-ach-account-name-tag-frame", AccountNameFrame);
+if (!window.customElements.get('paytheory-ach-account-name-tag-frame')) {
+    window.customElements.define(
+        'paytheory-ach-account-name-tag-frame',
+        AccountNameFrame
+    )
 }
