@@ -1,13 +1,10 @@
 {
   "plugins" : [
-    // Standard Rules
     "scanjs-rules",
     "no-unsanitized",
     "prototype-pollution-security-rules",
-    // NodeJS Rules
     "security",
     "no-wildcard-postmessage",
-    // React Rules
     "react"
   ],
   "parser": "babel-eslint",
