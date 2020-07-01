@@ -7,7 +7,9 @@
     "build": "babel src -d dist",
     "lint": "npm run format && eslint .",
     "format": "prettier --parser babel 'src/**/*.js' --write",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "author": "Aron Price",
   "license": "ISC",
@@ -37,6 +39,8 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-    "eslint": "^7.3.1"
-  }
+    "eslint": "^7.3.1",
+    "snyk": "^1.359.0"
+  },
+  "snyk": true
 }
