@@ -211,11 +211,11 @@ class CreditCardFrame extends HTMLElement {
                           date === undefined ||
                           num === undefined // otherwise if any values are undefined
                         ? undefined // valid is undefined
-                        : date !== undefined // otherwise if date is defined
-                        ? !date // valid is dates validation
-                        : code !== undefined // otherwise if code is defined
-                        ? !date // valid is codes validation
+                        : date === undefined // otherwise if date is defined
+                        ? code === undefined // otherwise if code is defined
                         : !num // otherwise valid is nums validation
+                        ? !date // valid is codes validation
+                        : !date // valid is dates validation
                 }
             })
             window.postMessage(

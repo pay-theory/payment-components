@@ -49,7 +49,7 @@ const initialize = async (
         `${transactionEndpoint}/${clientKey}/identity`,
         apiKey,
         {
-            styles: styles,
+            styles,
             buyer: buyerOptions
         }
     )
@@ -95,7 +95,7 @@ const createCreditCard = async (
                         window.postMessage(
                             {
                                 type: 'styles',
-                                styles: styles
+                                styles
                             },
                             window.location.origin
                         )
@@ -143,7 +143,7 @@ const createCreditCard = async (
                         apiKey,
                         {
                             source: instrument.id,
-                            amount: amount,
+                            amount,
                             currency: 'USD'
                         }
                     )

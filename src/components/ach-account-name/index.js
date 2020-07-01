@@ -14,8 +14,9 @@ const defineFields = (form, styles) => {
         })
         const idd = `field-wrapper-${field.name.replace(/\./, '-')}`
 
-        if (document.getElementById(idd))
+        if (document.getElementById(idd)) {
             document.getElementById(idd).appendChild(f)
+        }
     })
 }
 
