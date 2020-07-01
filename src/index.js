@@ -109,7 +109,9 @@ const createCreditCard = async (
 
         readyObserver: (readyCallback) => {
             window.addEventListener('message', (event) => {
-                if (![window.location.origin].includes(event.origin)) return
+                if (![window.location.origin].includes(event.origin)) {
+                    return
+                }
                 const message =
                     typeof event.data === 'string'
                         ? JSON.parse(event.data)
@@ -122,7 +124,9 @@ const createCreditCard = async (
         },
         transactedObserver: (transactedCallback) => {
             window.addEventListener('message', async (event) => {
-                if (![window.location.origin].includes(event.origin)) return
+                if (![window.location.origin].includes(event.origin)) {
+                    return
+                }
                 const message =
                     typeof event.data === 'string'
                         ? JSON.parse(event.data)
@@ -158,7 +162,9 @@ const createCreditCard = async (
         },
         errorObserver: (errorCallback) => {
             window.addEventListener('message', (event) => {
-                if (![window.location.origin].includes(event.origin)) return
+                if (![window.location.origin].includes(event.origin)) {
+                    return
+                }
                 const message =
                     typeof event.data === 'string'
                         ? JSON.parse(event.data)
@@ -170,7 +176,9 @@ const createCreditCard = async (
         },
         validObserver: (validCallback) => {
             window.addEventListener('message', (event) => {
-                if (![window.location.origin].includes(event.origin)) return
+                if (![window.location.origin].includes(event.origin)) {
+                    return
+                }
                 const message =
                     typeof event.data === 'string'
                         ? JSON.parse(event.data)
@@ -211,12 +219,12 @@ const createAccountName = async (
                     window.postMessage(
                         {
                             type: 'styles',
-                            styles: styles
+                            styles
                         },
                         window.location.origin
                     )
                 } else {
-                    console.warn(
+                    console.error(
                         'element already exists',
                         'paytheory-account-name'
                     )
@@ -303,7 +311,9 @@ const createAccountName = async (
 }
 
 const initTransaction = () => {
-    if (createdAccountName | !initialized) return false
+    if (createdAccountName | !initialized) {
+        return false
+    }
 
     window.postMessage(
         {
@@ -315,9 +325,9 @@ const initTransaction = () => {
 }
 
 export default {
-    createCreditCard: createCreditCard,
-    initTransaction: initTransaction,
-    initialize: initialize
+    createCreditCard,
+    initTransaction,
+    initialize
 }
 ;(async () => {
     const an = await createAccountName()

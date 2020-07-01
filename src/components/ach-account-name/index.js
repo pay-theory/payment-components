@@ -25,7 +25,9 @@ const defaultStyles = { default: {}, success: {}, error: {} }
 /* global HTMLElement */
 class AccountNameFrame extends HTMLElement {
     eventful(event) {
-        if (![window.location.origin].includes(event.origin)) return
+        if (![window.location.origin].includes(event.origin)) {
+            return
+        }
         const message =
             typeof event.data === 'object' ? event.data : { type: 'unknown' }
         this[message.type] = event.data[message.type]
@@ -76,7 +78,7 @@ class AccountNameFrame extends HTMLElement {
                     window.postMessage(
                         {
                             type: 'tokenized',
-                            tokenized: tokenized
+                            tokenized
                         },
                         window.location.origin
                     )

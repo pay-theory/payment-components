@@ -25,7 +25,9 @@ const defaultStyles = { default: {}, success: {}, error: {} }
 /* global HTMLElement */
 class AccountNameFrame extends HTMLElement {
     eventful(event) {
-        if (![window.location.origin].includes(event.origin)) return
+        if (![window.location.origin].includes(event.origin)) {
+            return
+        }
         const message =
             typeof event.data === 'object' ? event.data : { type: 'unknown' }
         this[message.type] = event.data[message.type]
@@ -52,7 +54,6 @@ class AccountNameFrame extends HTMLElement {
     }
 
     set styles(_styling) {
-        console.log(JSON.stringify(formed))
         if (_styling && formed) {
             defineFields(formed, _styling)
             this.styling = _styling
@@ -134,6 +135,10 @@ class AccountNameFrame extends HTMLElement {
             )
             this.ready = true
         }
+        /*
+         *  eslint-disable-next-line scanjs-rules/call_addEventListener_message
+         *  eslint-disable-next-line scanjs-rules/call_addEventListener_message
+         */
         window.addEventListener('message', this.eventful)
         this.innerHTML = `<span class="framed">
             <div class="pay-theory-credit-card-account-name-field">

@@ -19,22 +19,26 @@ const defineFields = (form, styles) => {
         })
         const idd = `field-wrapper-${field.name.replace(/\./, '-')}`
         console.log('idd', idd)
-        if (document.getElementById(idd))
+        if (document.getElementById(idd)) {
             document.getElementById(idd).appendChild(f)
+        }
     })
 }
 
 let formed
 
-const invalidate = (_t) =>
-    _t.isDirty ? _t.errorMessages.length > 0 : undefined
+let undef
+
+const invalidate = (_t) => (_t.isDirty ? _t.errorMessages.length > 0 : undef)
 
 const defaultStyles = { default: {}, success: {}, error: {} }
 
 /* global HTMLElement */
 class CreditCardFrame extends HTMLElement {
     eventful(event) {
-        if (![window.location.origin].includes(event.origin)) return
+        if (![window.location.origin].includes(event.origin)) {
+            return
+        }
         const message =
             typeof event.data === 'object' ? event.data : { type: 'unknown' }
         this[message.type] = event.data[message.type]
@@ -207,12 +211,12 @@ class CreditCardFrame extends HTMLElement {
                     this.error = invalid
                     this.valid = this.error // if there is an error
                         ? false // valid is false
-                        : code === undefined ||
-                          date === undefined ||
-                          num === undefined // otherwise if any values are undefined
+                        : typeof code === 'undefined' ||
+                          typeof date === 'undefined' ||
+                          typeof num === 'undefined' // otherwise if any values are undefined
                         ? undefined // valid is undefined
-                        : date === undefined // otherwise if date is defined
-                        ? code === undefined // otherwise if code is defined
+                        : typeof date === 'undefined' // otherwise if date is defined
+                        ? typeof code === 'undefined' // otherwise if code is defined
                         : !num // otherwise valid is nums validation
                         ? !date // valid is codes validation
                         : !date // valid is dates validation
