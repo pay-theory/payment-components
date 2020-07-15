@@ -1,6 +1,6 @@
 {
   "name": "@paytheory/payment-components",
-  "version": "0.0.2",
+  "version": "0.0.3-0",
   "description": "Pay Theory SDK",
   "main": "index.js",
   "scripts": {
@@ -10,9 +10,9 @@
     "publish-dev-npm": "npm run build && npm version prepatch && git push && npm publish --tag alpha",
     "publish-stage-npm": "npm run build && npm version prepatch && git push && npm publish --tag beta",
     "publish-prod-npm": "npm run build && npm version prepatch && git push && npm publish",
-    "publish-dev-cdn":"aws s3 cp dist s3://payment-components-dev --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
-    "publish-stage-cdn":"aws s3 cp dist s3://payment-components-stage --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
-    "publish-prod-cdn":"aws s3 cp dist s3://payment-components-prod --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
+    "publish-dev-cdn": "aws s3 cp dist s3://payment-components-dev --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
+    "publish-stage-cdn": "aws s3 cp dist s3://payment-components-stage --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
+    "publish-prod-cdn": "aws s3 cp dist s3://payment-components-prod --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Aron Price",
