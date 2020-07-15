@@ -182,7 +182,9 @@ const initCreditCardTransaction = async (
     )
 }
 
-export default {
+window.paytheory = {
     createCreditCard,
     initCreditCardTransaction
 }
+
+export default window.paytheory
