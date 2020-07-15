@@ -1,4 +1,4 @@
-import '../../tags.css'
+
 
 const fields = [{ name: 'address.postal_code', label: 'Zip' }]
 

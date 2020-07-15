@@ -1,4 +1,4 @@
-import '../../tags.css'
+
 
 const fields = [{ name: 'expiration_date', label: 'MM/YY' }]
 

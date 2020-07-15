@@ -1,4 +1,4 @@
-import '../../tags.css'
+
 
 const fields = [{ name: 'number', label: 'Number' }]
 

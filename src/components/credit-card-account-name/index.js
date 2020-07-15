@@ -1,4 +1,4 @@
-import '../../tags.css'
+
 import * as formed from '../../form-generator'
 const fields = [{ name: 'name', label: 'Name on card' }]
 

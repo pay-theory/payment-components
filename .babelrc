@@ -3,7 +3,7 @@
       "@babel/preset-env",
       {
         "useBuiltIns": "usage",
-        "modules": "amd",
+        "modules": "systemjs",
         "corejs": "3.6.5"
       }
     ],"minify"],
