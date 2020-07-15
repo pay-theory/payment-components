@@ -1,16 +1,16 @@
 {
   "name": "@paytheory/payment-components",
-  "version": "0.0.4-0",
+  "version": "0.0.5-0",
   "description": "Pay Theory SDK",
   "main": "dist/index.js",
-  "author": "aron23",
-  "license": "MIT",
+  "author": "Aron Price",
+  "license": "ISC",
   "repository": "pay-theory/payment-components",
   "publishConfig": {
-      "access": "public"
-  },  
+    "access": "public"
+  },
   "files": [
-      "dist"
+    "dist"
   ],
   "scripts": {
     "build": "babel src -d dist",
@@ -24,8 +24,6 @@
     "publish-prod-cdn": "aws s3 cp dist s3://payment-components-prod --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Aron Price",
-  "license": "ISC",
   "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.10.5",
