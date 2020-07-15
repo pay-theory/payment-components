@@ -1,10 +1,12 @@
 import '../../tags.css'
-import * as formed from '../../form-generator'
-const fields = [{ name: 'name', label: 'Name on card' }]
+
+const fields = [
+    { name: 'number', label: 'Number' },
+]
 
 const defineFields = (form, styles) => {
     fields.forEach((field) => {
-        const f = form.accountName({
+        const f = form.field(field.name, {
             placeholder: field.label,
             styles: {
                 default: styles.default,
@@ -20,10 +22,16 @@ const defineFields = (form, styles) => {
     })
 }
 
+let formed
+
+let undef
+
+const invalidate = (_t) => (_t.isDirty ? _t.errorMessages.length > 0 : undef)
+
 const defaultStyles = { default: {}, success: {}, error: {} }
 
 /* global HTMLElement */
-class AccountNameFrame extends HTMLElement {
+class CreditCardNumberFrame extends HTMLElement {
     eventful(event) {
         if (![window.location.origin].includes(event.origin)) {
             return
@@ -54,10 +62,10 @@ class AccountNameFrame extends HTMLElement {
     }
 
     set styles(_styling) {
-        if (_styling && formed) {
+        if (_styling) {
             defineFields(formed, _styling)
             this.styling = _styling
-        } else if (formed) {
+        } else {
             defineFields(formed, defaultStyles)
             this.styling = defaultStyles
         }
@@ -70,7 +78,7 @@ class AccountNameFrame extends HTMLElement {
     set transact(_transacting) {
         if (this.transacting !== _transacting) {
             this.transacting = _transacting
-            formed.submit('APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
+            formed.submit('sandbox', 'APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
                 if (err) {
                     this.error = err
                 } else {
@@ -85,6 +93,22 @@ class AccountNameFrame extends HTMLElement {
                 }
             })
         }
+    }
+
+    get cardBrand() {
+        return this.cardBranded
+    }
+
+    set cardBrand(_cardBranded) {
+        this.cardBranded = _cardBranded
+    }
+
+    get bin() {
+        return this.hasBin
+    }
+
+    set bin(_hasBin) {
+        this._hasBin = _hasBin
     }
 
     get error() {
@@ -102,6 +126,30 @@ class AccountNameFrame extends HTMLElement {
                 window.location.origin
             )
         }
+    }
+
+    get validCreditCardNumber() {
+        return this.validCCN
+    }
+
+    set validCreditCardNumber(isValid) {
+        this.validCCN = isValid
+    }
+
+    get validCreditCardCode() {
+        return this.validCCC
+    }
+
+    set validCreditCardCode(isValid) {
+        this.validCCC = isValid
+    }
+
+    get validCreditCardExp() {
+        return this.validCCE
+    }
+
+    set validCreditCardExp(isValid) {
+        this.validCCE = isValid
     }
 
     get valid() {
@@ -123,9 +171,54 @@ class AccountNameFrame extends HTMLElement {
 
     connectedCallback() {
         this.eventful = this.eventful.bind(this)
+        this.badge = ''
+        this.bin = {}
         if (!this.loaded) {
             this.loaded = true
+            formed = window.PaymentForm.card((state, binInformation) => {
+                if (binInformation) {
+                    this.cardBrand = binInformation.cardBrand
+                    this.bin = binInformation
+                    if (binInformation.cardBrand !== this.badge) {
+                        this.badge = binInformation.cardBrand
+                        const badger = document.createElement('div')
+                        badger.setAttribute(
+                            'class',
+                            `paytheory-card-badge paytheory-card-${binInformation.cardBrand}`
+                        )
+                        const badged = document.getElementById('badge-wrapper')
+                        badged.innerHTML = ''
+                        badged.appendChild(badger)
+                    }
+                }
 
+                if (state) {
+                    const num = invalidate(state.number)
+                    const date = invalidate(state.expiration_date)
+                    const code = invalidate(state.security_code)
+
+                    const invalid = num
+                        ? state.number.errorMessages[0]
+                        : code
+                        ? state.security_code.errorMessages[0]
+                        : date
+                        ? state.expiration_date.errorMessages[0]
+                        : false
+
+                    this.error = invalid
+                    this.valid = this.error // if there is an error
+                        ? false // valid is false
+                        : typeof code === 'undefined' ||
+                          typeof date === 'undefined' ||
+                          typeof num === 'undefined' // otherwise if any values are undefined
+                        ? undef // valid is undefined
+                        : typeof date === 'undefined' // otherwise if date is defined
+                        ? typeof code === 'undefined' // otherwise if code is defined
+                        : !num // otherwise valid is nums validation
+                        ? !date // valid is codes validation
+                        : !date // valid is dates validation
+                }
+            })
             window.postMessage(
                 {
                     type: 'ready',
@@ -135,13 +228,11 @@ class AccountNameFrame extends HTMLElement {
             )
             this.ready = true
         }
-        /*
-         *  eslint-disable-next-line scanjs-rules/call_addEventListener_message
-         */
         window.addEventListener('message', this.eventful)
         this.innerHTML = `<span class="framed">
-            <div class="pay-theory-credit-card-account-name-field">
-              <div id="field-wrapper-name" class="field-wrapper"></div>
+            <div class="pay-theory-card-number-field">
+              <div id="field-wrapper-number" class="field-wrapper"></div>
+              <div id="badge-wrapper" />
             </div>
         </span>`
     }
@@ -157,11 +248,9 @@ class AccountNameFrame extends HTMLElement {
     }
 }
 
-if (
-    !window.customElements.get('paytheory-credit-card-account-name-tag-frame')
-) {
+if (!window.customElements.get('paytheory-credit-card-number-tag-frame')) {
     window.customElements.define(
-        'paytheory-credit-card-account-name-tag-frame',
-        AccountNameFrame
+        'paytheory-credit-card-number-tag-frame',
+        CreditCardNumberFrame
     )
 }

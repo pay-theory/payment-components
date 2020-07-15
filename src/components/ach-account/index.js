@@ -1,6 +1,6 @@
 import '../../tags.css'
 import * as formed from '../../form-generator'
-const fields = [{ name: 'name', label: 'Name on card' }]
+const fields = [{ name: 'ach-account-name', label: 'Name on account' }]
 
 const defineFields = (form, styles) => {
     fields.forEach((field) => {
@@ -137,11 +137,12 @@ class AccountNameFrame extends HTMLElement {
         }
         /*
          *  eslint-disable-next-line scanjs-rules/call_addEventListener_message
+         *  eslint-disable-next-line scanjs-rules/call_addEventListener_message
          */
         window.addEventListener('message', this.eventful)
         this.innerHTML = `<span class="framed">
-            <div class="pay-theory-credit-card-account-name-field">
-              <div id="field-wrapper-name" class="field-wrapper"></div>
+            <div class="pay-theory-ach-account-name-field">
+              <div id="field-wrapper-ach-account-name" class="field-wrapper"></div>
             </div>
         </span>`
     }
@@ -157,11 +158,9 @@ class AccountNameFrame extends HTMLElement {
     }
 }
 
-if (
-    !window.customElements.get('paytheory-credit-card-account-name-tag-frame')
-) {
+if (!window.customElements.get('paytheory-ach-account-name-tag-frame')) {
     window.customElements.define(
-        'paytheory-credit-card-account-name-tag-frame',
+        'paytheory-ach-account-name-tag-frame',
         AccountNameFrame
     )
 }

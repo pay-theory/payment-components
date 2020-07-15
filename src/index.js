@@ -1,5 +1,4 @@
 import './components/credit-card'
-import './components/account-name'
 import 'regenerator-runtime'
 async function postData(url = '', apiKey, data = {}) {
     const options = {
@@ -31,6 +30,9 @@ let identity = false
 
 let initializedAmount = 0
 
+let client = false
+let api = false
+
 const initialize = async (
     apiKey,
     clientKey,
@@ -44,10 +46,12 @@ const initialize = async (
 ) => {
     initialized = true
     initializedAmount = amount
+    client = clientKey
+    api = apiKey
 
     identity = await postData(
-        `${transactionEndpoint}/${clientKey}/identity`,
-        apiKey,
+        `${transactionEndpoint}/${client}/identity`,
+        api,
         {
             styles,
             buyer: buyerOptions
@@ -63,20 +67,13 @@ const createCreditCard = async (
         default: {},
         success: {},
         error: {}
-    },
-    buyerOptions = {}
+    }
 ) => {
     if (createdCC || !identity) {
         return false
     } else {
         createdCC = true
     }
-
-    identity = await postData(
-        `${transactionEndpoint}/${clientKey}/identity`,
-        apiKey,
-        buyerOptions
-    )
 
     return {
         mount: (element = 'paytheory-credit-card') => {
@@ -191,131 +188,15 @@ const createCreditCard = async (
     }
 }
 
-const createAccountName = async (
-    apiKey,
-    clientKey,
-    styles = {
-        default: {},
-        success: {},
-        error: {}
+const initTransaction = async(buyerOptions = false) => {
+    if (buyerOptions) {
+        identity = await postData(
+            `${transactionEndpoint}/${client}/identity`,
+            api,
+            buyerOptions
+        )
     }
-) => {
-    if (createdAccountName | !initialized) {
-        return false
-    } else {
-        createdAccountName = true
-    }
-
-    return {
-        mount: (element = 'paytheory-account-name') => {
-            const container = document.getElementById(element)
-            if (container) {
-                if (!document.getElementById('paytheory-account-name-field')) {
-                    const tagFrame = document.createElement(
-                        'paytheory-account-name-tag-frame'
-                    )
-                    tagFrame.setAttribute('ready', true)
-                    container.appendChild(tagFrame)
-                    window.postMessage(
-                        {
-                            type: 'styles',
-                            styles
-                        },
-                        window.location.origin
-                    )
-                } else {
-                    throw new Error(`${element} already exists`)
-                }
-            } else {
-                throw new Error(`${element} is not available in dom`)
-            }
-        },
-
-        readyObserver: (readyCallback) => {
-            window.addEventListener('message', (event) => {
-                if (![window.location.origin].includes(event.origin)) {
-                    return
-                }
-                const message =
-                    typeof event.data === 'string'
-                        ? JSON.parse(event.data)
-                        : event.data
-
-                if (message.type === 'ready') {
-                    readyCallback(message.ready)
-                }
-            })
-        },
-        transactedObserver: (transactedCallback) => {
-            window.addEventListener('message', async (event) => {
-                if (![window.location.origin].includes(event.origin)) {
-                    return
-                }
-                const message =
-                    typeof event.data === 'string'
-                        ? JSON.parse(event.data)
-                        : event.data
-                if (message.type === 'tokenized') {
-                    const instrument = await postData(
-                        `${transactionEndpoint}/${clientKey}/instrument`,
-                        apiKey,
-                        {
-                            token: message.tokenized.data.id,
-                            type: 'TOKEN',
-                            identity: identity.id
-                        }
-                    )
-
-                    const authorization = await postData(
-                        `${transactionEndpoint}/${clientKey}/authorize`,
-                        apiKey,
-                        {
-                            source: instrument.id,
-                            amount: initializedAmount,
-                            currency: 'USD'
-                        }
-                    )
-
-                    transactedCallback({
-                        last_four: instrument.last_four,
-                        brand: instrument.brand,
-                        ...authorization
-                    })
-                }
-            })
-        },
-        errorObserver: (errorCallback) => {
-            window.addEventListener('message', (event) => {
-                if (![window.location.origin].includes(event.origin)) {
-                    return
-                }
-                const message =
-                    typeof event.data === 'string'
-                        ? JSON.parse(event.data)
-                        : event.data
-                if (message.type === 'error') {
-                    errorCallback(message.error)
-                }
-            })
-        },
-        validObserver: (validCallback) => {
-            window.addEventListener('message', (event) => {
-                if (![window.location.origin].includes(event.origin)) {
-                    return
-                }
-                const message =
-                    typeof event.data === 'string'
-                        ? JSON.parse(event.data)
-                        : event.data
-                if (message.type === 'valid') {
-                    validCallback(message.valid)
-                }
-            })
-        }
-    }
-}
-
-const initTransaction = () => {
+    
     if (createdAccountName | !initialized) {
         return false
     }
@@ -334,7 +215,3 @@ export default {
     initTransaction,
     initialize
 }
-;(async () => {
-    const an = await createAccountName()
-    an.mount()
-})()
