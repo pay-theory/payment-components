@@ -1,8 +1,6 @@
 import '../../tags.css'
 
-const fields = [
-    { name: 'security_code', label: 'CVC' },
-]
+const fields = [{ name: 'security_code', label: 'CVC' }]
 
 const defineFields = (form, styles) => {
     fields.forEach((field) => {

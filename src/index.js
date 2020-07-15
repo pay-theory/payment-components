@@ -20,7 +20,6 @@ async function postData(url = '', apiKey, data = {}) {
 
 let createdCC = false
 let initialized = false
-let createdAccountName = false
 
 const transactionEndpoint = process.env.TRANSACTION_ENDPOINT
     ? process.env.TRANSACTION_ENDPOINT
@@ -28,15 +27,12 @@ const transactionEndpoint = process.env.TRANSACTION_ENDPOINT
 
 let identity = false
 
-let initializedAmount = 0
-
 let client = false
 let api = false
 
 const initialize = async (
     apiKey,
     clientKey,
-    amount,
     styles = {
         default: {},
         success: {},
@@ -45,7 +41,6 @@ const initialize = async (
     buyerOptions = {}
 ) => {
     initialized = true
-    initializedAmount = amount
     client = clientKey
     api = apiKey
 
@@ -188,7 +183,7 @@ const createCreditCard = async (
     }
 }
 
-const initTransaction = async(buyerOptions = false) => {
+const initTransaction = async (buyerOptions = false) => {
     if (buyerOptions) {
         identity = await postData(
             `${transactionEndpoint}/${client}/identity`,
@@ -196,8 +191,8 @@ const initTransaction = async(buyerOptions = false) => {
             buyerOptions
         )
     }
-    
-    if (createdAccountName | !initialized) {
+
+    if (!initialized) {
         return false
     }
 

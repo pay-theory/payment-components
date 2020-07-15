@@ -1,8 +1,6 @@
 import '../../tags.css'
 
-const fields = [
-    { name: 'expiration_date', label: 'MM/YY' },
-]
+const fields = [{ name: 'expiration_date', label: 'MM/YY' }]
 
 const defineFields = (form, styles) => {
     fields.forEach((field) => {
@@ -250,6 +248,6 @@ class CreditCardExpirationFrame extends HTMLElement {
 if (!window.customElements.get('paytheory-credit-card-expiration-tag-frame')) {
     window.customElements.define(
         'paytheory-credit-card-expiration-tag-frame',
-            CreditCardExpirationFrame
+        CreditCardExpirationFrame
     )
 }
