@@ -19,40 +19,12 @@ async function postData(url = '', apiKey, data = {}) {
 }
 
 let createdCC = false
-let initialized = false
 
 const transactionEndpoint = process.env.TRANSACTION_ENDPOINT
     ? process.env.TRANSACTION_ENDPOINT
     : 'https://aron.tags.api.paytheorystudy.com'
 
 let identity = false
-
-let client = false
-let api = false
-
-const initialize = async (
-    apiKey,
-    clientKey,
-    styles = {
-        default: {},
-        success: {},
-        error: {}
-    },
-    buyerOptions = {}
-) => {
-    initialized = true
-    client = clientKey
-    api = apiKey
-
-    identity = await postData(
-        `${transactionEndpoint}/${client}/identity`,
-        api,
-        {
-            styles,
-            buyer: buyerOptions
-        }
-    )
-}
 
 const createCreditCard = async (
     apiKey,
@@ -64,7 +36,7 @@ const createCreditCard = async (
         error: {}
     }
 ) => {
-    if (createdCC || !identity) {
+    if (createdCC) {
         return false
     } else {
         createdCC = true
@@ -183,17 +155,22 @@ const createCreditCard = async (
     }
 }
 
-const initTransaction = async (buyerOptions = false) => {
+const initCreditCardTransaction = async (
+        apiKey,
+        clientKey,
+        tags = false,
+        buyerOptions = false
+    ) => {
     if (buyerOptions) {
         identity = await postData(
-            `${transactionEndpoint}/${client}/identity`,
-            api,
+            `${transactionEndpoint}/${clientKey}/identity`,
+            apiKey,
             buyerOptions
         )
     }
 
-    if (!initialized) {
-        return false
+    if (!createdCC) {
+        throw(new Error('credit card not initialized'))
     }
 
     window.postMessage(
@@ -207,6 +184,5 @@ const initTransaction = async (buyerOptions = false) => {
 
 export default {
     createCreditCard,
-    initTransaction,
-    initialize
+    initCreditCardTransaction
 }
