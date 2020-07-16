@@ -94,7 +94,6 @@ const createCreditCard = async (
         transactedObserver: (transactedCallback) => {
             window.addEventListener('message', async (event) => {
                 if (![window.location.origin].includes(event.origin)) {
-                    console.log('bad origin')
                     return
                 }
                 const message =
