@@ -1,8 +1,8 @@
 
 
 const fields = [
-    { name: 'number', label: 'Number' },
-    { name: 'expiration_date', label: 'MM/YY' },
+    { name: 'number', label: 'Card Number' },
+    { name: 'expiration_date', label: 'Exp' },
     { name: 'security_code', label: 'CVC' },
     { name: 'address.postal_code', label: 'Zip' }
 ]

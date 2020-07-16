@@ -39,7 +39,7 @@ const createCreditCard = async (
         success: {},
         error: {}
     },
-    tags=[]
+    tags={}
 ) => {
     if (createdCC) {
         return false
@@ -94,6 +94,7 @@ const createCreditCard = async (
         transactedObserver: (transactedCallback) => {
             window.addEventListener('message', async (event) => {
                 if (![window.location.origin].includes(event.origin)) {
+                    console.log('bad origin')
                     return
                 }
                 const message =
@@ -101,6 +102,7 @@ const createCreditCard = async (
                         ? JSON.parse(event.data)
                         : event.data
                 if (message.type === 'tokenized') {
+                    console.log('tokenized')
                     const instrument = await postData(
                         `${transactionEndpoint}/${clientKey}/instrument`,
                         apiKey,
