@@ -2,9 +2,6 @@ import './components/credit-card'
 import 'regenerator-runtime'
 import './style.css'
 
-const styles = document.createElement("link")
-
-document.head.appendChild()
 
 
 async function postData(url = '', apiKey, data = {}) {
@@ -29,7 +26,7 @@ let createdCC = false
 
 const transactionEndpoint = process.env.TRANSACTION_ENDPOINT
     ? process.env.TRANSACTION_ENDPOINT
-    : 'https://aron.tags.api.paytheorystudy.com'
+    : 'https://dev.tags.api.paytheorystudy.com'
 
 let identity = false
 
