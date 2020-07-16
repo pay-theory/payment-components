@@ -34,7 +34,8 @@ const createCreditCard = async (
         default: {},
         success: {},
         error: {}
-    }
+    },
+    tags=[]
 ) => {
     if (createdCC) {
         return false
@@ -112,7 +113,8 @@ const createCreditCard = async (
                         {
                             source: instrument.id,
                             amount,
-                            currency: 'USD'
+                            currency: 'USD',
+                            tags: tags
                         }
                     )
 
@@ -158,14 +160,13 @@ const createCreditCard = async (
 const initCreditCardTransaction = async (
         apiKey,
         clientKey,
-        tags = false,
         buyerOptions = false
     ) => {
     if (buyerOptions) {
         identity = await postData(
             `${transactionEndpoint}/${clientKey}/identity`,
             apiKey,
-            buyerOptions
+            buyerOptions ? buyerOptions : {}
         )
     }
 
