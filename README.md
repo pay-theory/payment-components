@@ -90,6 +90,8 @@ Upon completion of authorization and capture the following details are returned
 
 ```json
 {
+        "last_four": "4242", 
+        "brand": "VISA",
         "payment-detail-reference": "authorization id",
         "payment-source-id": "payment instrument id",
         "payment-application-id": "application environment id",
