@@ -1,6 +1,12 @@
 import './components/credit-card'
 import 'regenerator-runtime'
-import './index.css'
+import './style.css'
+
+const styles = document.createElement("link")
+
+document.head.appendChild()
+
+
 async function postData(url = '', apiKey, data = {}) {
     const options = {
         method: 'POST',
