@@ -20,7 +20,7 @@
     "publish-stage-npm": "env BUILD_ENV=stage npm run build && npm version prepatch && git push && npm publish --tag beta",
     "publish-prod-npm": "env BUILD_ENV=prod npm run build && npm run release-npm && npm run public-npm",
     "release-npm": "npm version prepatch && git push && npm publish --tag release",
-    "public-npm": "npm run build && npm version prepatch && git add . && git commit -m 'public release' && git push && npm publish",
+    "public-npm": "npm version prepatch && git add . && git commit -m 'public release' && git push && npm publish",
     "publish-dev-cdn": "aws s3 cp dist s3://payment-components-dev --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
     "publish-stage-cdn": "aws s3 cp dist s3://payment-components-stage --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
     "publish-prod-cdn": "aws s3 cp dist s3://payment-components-prod --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
