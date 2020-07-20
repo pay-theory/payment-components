@@ -24,9 +24,11 @@ async function postData(url = '', apiKey, data = {}) {
 
 let createdCC = false
 
-const transactionEndpoint = process.env.TRANSACTION_ENDPOINT
-    ? process.env.TRANSACTION_ENDPOINT
-    : 'https://dev.tags.api.paytheorystudy.com'
+const transactionEndpoint = process.env.BUILD_ENV === 'stage' 
+    ? 'https://demo.tags.api.paytheorystudy.com' 
+    : process.env.BUILD_ENV === 'prod'
+    ? 'https://tags.api.paytheory.com' 
+    : `https://${process.env.BUILD_ENV}.tags.api.paytheorystudy.com`
 
 let identity = false
 
