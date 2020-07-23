@@ -1,5 +1,5 @@
-const path = require('path');
-
+const path = require('path')
+const webpack = require('webpack')
 module.exports = {
   entry: './src/index.js',
   output: {
@@ -8,11 +8,21 @@ module.exports = {
   },
   devtool: "source-map",
   module: {
-      rules: [
-      {
-        test: /\.css$/i,
-        use: ['style-loader','css-loader'],
+    rules: [{
+      test: /\.css$/i,
+      use: ['style-loader', 'css-loader'],
+    }, ],
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      PRODUCTION: JSON.stringify(true),
+      VERSION: JSON.stringify('5fa3b9'),
+      BROWSER_SUPPORTS_HTML5: true,
+      TWO: '1+1',
+      'typeof window': JSON.stringify('object'),
+      'process.env': {
+        BUILD_ENV: JSON.stringify(process.env.BUILD_ENV)
       },
-    ],
-  }
+    })
+  ],
 }

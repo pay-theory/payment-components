@@ -87,7 +87,7 @@ const createCreditCard = async(
             }
         },
 
-        initTransaction: async(buyerOptions = false) => {
+        initTransaction: async(buyerOptions = {}) => {
 
             if (buyerOptions) {
                 identity = await postData(
