@@ -22,7 +22,6 @@ async function postData(url = '', apiKey, data = {}) {
     return await response.json()
 }
 
-let createdCC = false
 
 const transactionEndpoint = process.env.BUILD_ENV === 'stage' ?
     'https://demo.tags.api.paytheorystudy.com' :
@@ -34,9 +33,10 @@ let identity = false
 
 const addFrame = (container, element, styles) => {
     const tagFrame = document.createElement(
-        `${element}-tag-frame`
+        'paytheory-credit-card-tag-frame'
     )
     tagFrame.setAttribute('ready', true)
+    tagFrame.setAttribute('id', `${element}-tag-frame`)
     container.appendChild(tagFrame)
     window.postMessage({
             type: 'styles',
@@ -57,28 +57,29 @@ const createCreditCard = async(
     },
     tags = {}
 ) => {
-    if (createdCC) {
-        return false
-    }
-    else {
-        createdCC = true
-    }
+
 
     return {
         mount: (element = 'paytheory-credit-card') => {
+            if (typeof element !== 'string') throw new Error('invalid element')
             const container = document.getElementById(element)
             if (container) {
-                if (!document.getElementById('tag-frame')) {
-                    const script = document.createElement('script')
-                    // eslint-disable-next-line scanjs-rules/assign_to_src
-                    script.src = 'https://forms.finixpymnts.com/finix.js'
-                    script.addEventListener('load', function () {
+                if (!document.getElementById(`${element}-tag-frame`)) {
+                    if (window.PaymentForm) {
                         addFrame(container, element, styles)
-                    })
-                    document.getElementsByTagName('head')[0].appendChild(script)
+                    }
+                    else {
+                        const script = document.createElement('script')
+                        // eslint-disable-next-line scanjs-rules/assign_to_src
+                        script.src = 'https://forms.finixpymnts.com/finix.js'
+                        script.addEventListener('load', function () {
+                            addFrame(container, element, styles)
+                        })
+                        document.getElementsByTagName('head')[0].appendChild(script)
+                    }
                 }
                 else {
-                    addFrame(container, element, styles)
+                    throw new Error(`${element} is already mounted`)
                 }
             }
             else {
@@ -86,6 +87,24 @@ const createCreditCard = async(
             }
         },
 
+        initTransaction: async(buyerOptions = false) => {
+
+            if (buyerOptions) {
+                identity = await postData(
+                    `${transactionEndpoint}/${clientKey}/identity`,
+                    apiKey,
+                    typeof buyerOptions === 'object' ? buyerOptions : {}
+                )
+            }
+
+
+            window.postMessage({
+                    type: `transact`,
+                    transact: true
+                },
+                window.location.origin
+            )
+        },
         readyObserver: (readyCallback) => {
             window.addEventListener('message', (event) => {
                 if (![window.location.origin].includes(event.origin)) {
@@ -170,34 +189,10 @@ const createCreditCard = async(
     }
 }
 
-const initCreditCardTransaction = async(
-    apiKey,
-    clientKey,
-    buyerOptions = false
-) => {
-    if (buyerOptions) {
-        identity = await postData(
-            `${transactionEndpoint}/${clientKey}/identity`,
-            apiKey,
-            buyerOptions ? buyerOptions : {}
-        )
-    }
 
-    if (!createdCC) {
-        throw (new Error('credit card not initialized'))
-    }
-
-    window.postMessage({
-            type: 'transact',
-            transact: true
-        },
-        window.location.origin
-    )
-}
 
 window.paytheory = {
-    createCreditCard,
-    initCreditCardTransaction
+    createCreditCard
 }
 
 export default window.paytheory

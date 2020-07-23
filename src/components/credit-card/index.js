@@ -1,5 +1,3 @@
-
-
 const fields = [
     { name: 'number', label: 'Card Number' },
     { name: 'expiration_date', label: 'Exp' },
@@ -7,8 +5,9 @@ const fields = [
     { name: 'address.postal_code', label: 'Zip' }
 ]
 
-const defineFields = (form, styles) => {
+const defineFields = (form, styles, element) => {
     fields.forEach((field) => {
+        const named = (typeof element === 'undefined') ? field.name : `${element}-${field.name}`
         const f = form.field(field.name, {
             placeholder: field.label,
             styles: {
@@ -17,15 +16,14 @@ const defineFields = (form, styles) => {
                 error: styles.error ? styles.error : styles.default
             }
         })
-        const idd = `field-wrapper-${field.name.replace(/\./, '-')}`
+        const idd = `field-wrapper-${named.replace(/\./, '-')}`
 
         if (document.getElementById(idd)) {
+
             document.getElementById(idd).appendChild(f)
         }
     })
 }
-
-let formed
 
 let undef
 
@@ -42,6 +40,20 @@ class CreditCardFrame extends HTMLElement {
         const message =
             typeof event.data === 'object' ? event.data : { type: 'unknown' }
         this[message.type] = event.data[message.type]
+    }
+
+
+    get id() {
+        return this.getAttribute('id')
+    }
+
+    set id(_elementId) {
+        if (_elementId) {
+            this.setAttribute('id', _elementId)
+        }
+        else {
+            this.removeAttribute('id')
+        }
     }
 
     get loaded() {
@@ -65,11 +77,16 @@ class CreditCardFrame extends HTMLElement {
     }
 
     set styles(_styling) {
-        if (_styling) {
-            defineFields(formed, _styling)
+        if (_styling && !this.defined) {
+            this.defined = true
+            console.log('defining with style', this.id)
+            defineFields(this.formed, _styling, this.id)
             this.styling = _styling
-        } else {
-            defineFields(formed, defaultStyles)
+        }
+        else if (!this.defined) {
+            this.defined = true
+            console.log('defining without style')
+            defineFields(this.formed, defaultStyles, this.id)
             this.styling = defaultStyles
         }
     }
@@ -81,13 +98,13 @@ class CreditCardFrame extends HTMLElement {
     set transact(_transacting) {
         if (this.transacting !== _transacting) {
             this.transacting = _transacting
-            formed.submit('sandbox', 'APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
+            this.formed.submit('sandbox', 'APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
                 if (err) {
                     this.error = err
-                } else {
+                }
+                else {
                     const tokenized = { bin: this.bin, ...res }
-                    window.postMessage(
-                        {
+                    window.postMessage({
                             type: 'tokenized',
                             tokenized
                         },
@@ -121,8 +138,7 @@ class CreditCardFrame extends HTMLElement {
     set error(_errored) {
         if (this.errored !== _errored) {
             this.errored = _errored
-            window.postMessage(
-                {
+            window.postMessage({
                     type: 'error',
                     error: _errored
                 },
@@ -162,8 +178,7 @@ class CreditCardFrame extends HTMLElement {
     set valid(isValid) {
         if (isValid !== this.validated) {
             this.validated = isValid
-            window.postMessage(
-                {
+            window.postMessage({
                     type: 'valid',
                     valid: isValid
                 },
@@ -177,8 +192,9 @@ class CreditCardFrame extends HTMLElement {
         this.badge = ''
         this.bin = {}
         if (!this.loaded) {
+            console.log('loading', this.id)
             this.loaded = true
-            formed = window.PaymentForm.card((state, binInformation) => {
+            this.formed = window.PaymentForm.card((state, binInformation) => {
                 if (binInformation) {
                     this.cardBrand = binInformation.cardBrand
                     this.bin = binInformation
@@ -200,30 +216,37 @@ class CreditCardFrame extends HTMLElement {
                     const date = invalidate(state.expiration_date)
                     const code = invalidate(state.security_code)
 
-                    const invalid = num
-                        ? state.number.errorMessages[0]
-                        : code
-                        ? state.security_code.errorMessages[0]
-                        : date
-                        ? state.expiration_date.errorMessages[0]
-                        : false
+                    const invalid = num ?
+                        state.number.errorMessages[0] :
+                        code ?
+                        state.security_code.errorMessages[0] :
+                        date ?
+                        state.expiration_date.errorMessages[0] :
+                        false
 
                     this.error = invalid
                     this.valid = this.error // if there is an error
-                        ? false // valid is false
-                        : typeof code === 'undefined' ||
-                          typeof date === 'undefined' ||
-                          typeof num === 'undefined' // otherwise if any values are undefined
-                        ? undef // valid is undefined
-                        : typeof date === 'undefined' // otherwise if date is defined
-                        ? typeof code === 'undefined' // otherwise if code is defined
-                        : !num // otherwise valid is nums validation
-                        ? !date // valid is codes validation
-                        : !date // valid is dates validation
+                        ?
+                        false // valid is false
+                        :
+                        typeof code === 'undefined' ||
+                        typeof date === 'undefined' ||
+                        typeof num === 'undefined' // otherwise if any values are undefined
+                        ?
+                        undef // valid is undefined
+                        :
+                        typeof date === 'undefined' // otherwise if date is defined
+                        ?
+                        typeof code === 'undefined' // otherwise if code is defined
+                        :
+                        !num // otherwise valid is nums validation
+                        ?
+                        !date // valid is codes validation
+                        :
+                        !date // valid is dates validation
                 }
             })
-            window.postMessage(
-                {
+            window.postMessage({
                     type: 'ready',
                     ready: true
                 },
@@ -234,10 +257,10 @@ class CreditCardFrame extends HTMLElement {
         window.addEventListener('message', this.eventful)
         this.innerHTML = `<span class="framed">
             <div class="pay-theory-card-field">
-              <div id="field-wrapper-number" class="field-wrapper"></div>
-              <div id="field-wrapper-expiration_date" class="field-wrapper"></div>
-              <div id="field-wrapper-security_code" class="field-wrapper"></div>
-              <div id="field-wrapper-address-postal_code" class="field-wrapper"></div>
+              <div id="field-wrapper-${this.id}-number" class="field-wrapper"></div>
+              <div id="field-wrapper-${this.id}-expiration_date" class="field-wrapper"></div>
+              <div id="field-wrapper-${this.id}-security_code" class="field-wrapper"></div>
+              <div id="field-wrapper-${this.id}-address-postal_code" class="field-wrapper"></div>
               <div id="badge-wrapper" />
             </div>
         </span>`
