@@ -387,7 +387,8 @@ const createCreditCardFields = async(
 
 
 window.paytheory = {
-    createCreditCard
+    createCreditCard,
+    createCreditCardFields
 }
 
 export default window.paytheory
