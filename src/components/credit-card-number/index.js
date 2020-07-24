@@ -1,5 +1,3 @@
-
-
 const fields = [{ name: 'number', label: 'Number' }]
 
 const defineFields = (form, styles) => {
@@ -63,7 +61,8 @@ class CreditCardNumberFrame extends HTMLElement {
         if (_styling) {
             defineFields(formed, _styling)
             this.styling = _styling
-        } else {
+        }
+        else {
             defineFields(formed, defaultStyles)
             this.styling = defaultStyles
         }
@@ -79,10 +78,10 @@ class CreditCardNumberFrame extends HTMLElement {
             formed.submit('sandbox', 'APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
                 if (err) {
                     this.error = err
-                } else {
+                }
+                else {
                     const tokenized = { bin: this.bin, ...res }
-                    window.postMessage(
-                        {
+                    window.postMessage({
                             type: 'tokenized',
                             tokenized
                         },
@@ -116,8 +115,7 @@ class CreditCardNumberFrame extends HTMLElement {
     set error(_errored) {
         if (this.errored !== _errored) {
             this.errored = _errored
-            window.postMessage(
-                {
+            window.postMessage({
                     type: 'error',
                     error: _errored
                 },
@@ -134,22 +132,6 @@ class CreditCardNumberFrame extends HTMLElement {
         this.validCCN = isValid
     }
 
-    get validCreditCardCode() {
-        return this.validCCC
-    }
-
-    set validCreditCardCode(isValid) {
-        this.validCCC = isValid
-    }
-
-    get validCreditCardExp() {
-        return this.validCCE
-    }
-
-    set validCreditCardExp(isValid) {
-        this.validCCE = isValid
-    }
-
     get valid() {
         return this.validated
     }
@@ -157,9 +139,8 @@ class CreditCardNumberFrame extends HTMLElement {
     set valid(isValid) {
         if (isValid !== this.validated) {
             this.validated = isValid
-            window.postMessage(
-                {
-                    type: 'valid',
+            window.postMessage({
+                    type: 'number-valid',
                     valid: isValid
                 },
                 window.location.origin
@@ -192,34 +173,21 @@ class CreditCardNumberFrame extends HTMLElement {
 
                 if (state) {
                     const num = invalidate(state.number)
-                    const date = invalidate(state.expiration_date)
-                    const code = invalidate(state.security_code)
 
-                    const invalid = num
-                        ? state.number.errorMessages[0]
-                        : code
-                        ? state.security_code.errorMessages[0]
-                        : date
-                        ? state.expiration_date.errorMessages[0]
-                        : false
+                    const invalid = num ?
+                        state.number.errorMessages[0] :
+                        false
 
                     this.error = invalid
                     this.valid = this.error // if there is an error
-                        ? false // valid is false
-                        : typeof code === 'undefined' ||
-                          typeof date === 'undefined' ||
-                          typeof num === 'undefined' // otherwise if any values are undefined
-                        ? undef // valid is undefined
-                        : typeof date === 'undefined' // otherwise if date is defined
-                        ? typeof code === 'undefined' // otherwise if code is defined
-                        : !num // otherwise valid is nums validation
-                        ? !date // valid is codes validation
-                        : !date // valid is dates validation
+                        ?
+                        false // valid is false
+                        :
+                        typeof num === 'undefined'
                 }
             })
-            window.postMessage(
-                {
-                    type: 'ready',
+            window.postMessage({
+                    type: 'number-ready',
                     ready: true
                 },
                 window.location.origin

@@ -1,5 +1,3 @@
-
-
 const fields = [{ name: 'security_code', label: 'CVC' }]
 
 const defineFields = (form, styles) => {
@@ -63,50 +61,11 @@ class CreditCardSecurityFrame extends HTMLElement {
         if (_styling) {
             defineFields(formed, _styling)
             this.styling = _styling
-        } else {
+        }
+        else {
             defineFields(formed, defaultStyles)
             this.styling = defaultStyles
         }
-    }
-
-    get transact() {
-        return this.transacting
-    }
-
-    set transact(_transacting) {
-        if (this.transacting !== _transacting) {
-            this.transacting = _transacting
-            formed.submit('sandbox', 'APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
-                if (err) {
-                    this.error = err
-                } else {
-                    const tokenized = { bin: this.bin, ...res }
-                    window.postMessage(
-                        {
-                            type: 'tokenized',
-                            tokenized
-                        },
-                        window.location.origin
-                    )
-                }
-            })
-        }
-    }
-
-    get cardBrand() {
-        return this.cardBranded
-    }
-
-    set cardBrand(_cardBranded) {
-        this.cardBranded = _cardBranded
-    }
-
-    get bin() {
-        return this.hasBin
-    }
-
-    set bin(_hasBin) {
-        this._hasBin = _hasBin
     }
 
     get error() {
@@ -116,22 +75,13 @@ class CreditCardSecurityFrame extends HTMLElement {
     set error(_errored) {
         if (this.errored !== _errored) {
             this.errored = _errored
-            window.postMessage(
-                {
+            window.postMessage({
                     type: 'error',
                     error: _errored
                 },
                 window.location.origin
             )
         }
-    }
-
-    get validCreditCardNumber() {
-        return this.validCCN
-    }
-
-    set validCreditCardNumber(isValid) {
-        this.validCCN = isValid
     }
 
     get validCreditCardCode() {
@@ -142,14 +92,6 @@ class CreditCardSecurityFrame extends HTMLElement {
         this.validCCC = isValid
     }
 
-    get validCreditCardExp() {
-        return this.validCCE
-    }
-
-    set validCreditCardExp(isValid) {
-        this.validCCE = isValid
-    }
-
     get valid() {
         return this.validated
     }
@@ -157,9 +99,8 @@ class CreditCardSecurityFrame extends HTMLElement {
     set valid(isValid) {
         if (isValid !== this.validated) {
             this.validated = isValid
-            window.postMessage(
-                {
-                    type: 'valid',
+            window.postMessage({
+                    type: 'cvv-valid',
                     valid: isValid
                 },
                 window.location.origin
@@ -174,52 +115,23 @@ class CreditCardSecurityFrame extends HTMLElement {
         if (!this.loaded) {
             this.loaded = true
             formed = window.PaymentForm.card((state, binInformation) => {
-                if (binInformation) {
-                    this.cardBrand = binInformation.cardBrand
-                    this.bin = binInformation
-                    if (binInformation.cardBrand !== this.badge) {
-                        this.badge = binInformation.cardBrand
-                        const badger = document.createElement('div')
-                        badger.setAttribute(
-                            'class',
-                            `paytheory-card-badge paytheory-card-${binInformation.cardBrand}`
-                        )
-                        const badged = document.getElementById('badge-wrapper')
-                        badged.innerHTML = ''
-                        badged.appendChild(badger)
-                    }
-                }
-
                 if (state) {
-                    const num = invalidate(state.number)
-                    const date = invalidate(state.expiration_date)
                     const code = invalidate(state.security_code)
 
-                    const invalid = num
-                        ? state.number.errorMessages[0]
-                        : code
-                        ? state.security_code.errorMessages[0]
-                        : date
-                        ? state.expiration_date.errorMessages[0]
-                        : false
+                    const invalid = code ?
+                        state.security_code.errorMessages[0] :
+                        false
 
                     this.error = invalid
                     this.valid = this.error // if there is an error
-                        ? false // valid is false
-                        : typeof code === 'undefined' ||
-                          typeof date === 'undefined' ||
-                          typeof num === 'undefined' // otherwise if any values are undefined
-                        ? undef // valid is undefined
-                        : typeof date === 'undefined' // otherwise if date is defined
-                        ? typeof code === 'undefined' // otherwise if code is defined
-                        : !num // otherwise valid is nums validation
-                        ? !date // valid is codes validation
-                        : !date // valid is dates validation
+                        ?
+                        false // valid is false
+                        :
+                        typeof code === 'undefined'
                 }
             })
-            window.postMessage(
-                {
-                    type: 'ready',
+            window.postMessage({
+                    type: 'cvv-ready',
                     ready: true
                 },
                 window.location.origin

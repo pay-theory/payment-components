@@ -1,4 +1,3 @@
-
 import * as formed from '../../form-generator'
 const fields = [{ name: 'name', label: 'Name on card' }]
 
@@ -57,35 +56,36 @@ class AccountNameFrame extends HTMLElement {
         if (_styling && formed) {
             defineFields(formed, _styling)
             this.styling = _styling
-        } else if (formed) {
+        }
+        else if (formed) {
             defineFields(formed, defaultStyles)
             this.styling = defaultStyles
         }
     }
 
-    get transact() {
-        return this.transacting
-    }
+    // get transact() {
+    //     return this.transacting
+    // }
 
-    set transact(_transacting) {
-        if (this.transacting !== _transacting) {
-            this.transacting = _transacting
-            formed.submit('APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
-                if (err) {
-                    this.error = err
-                } else {
-                    const tokenized = { bin: this.bin, ...res }
-                    window.postMessage(
-                        {
-                            type: 'tokenized',
-                            tokenized
-                        },
-                        window.location.origin
-                    )
-                }
-            })
-        }
-    }
+    // set transact(_transacting) {
+    //     if (this.transacting !== _transacting) {
+    //         this.transacting = _transacting
+    //         formed.submit('APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
+    //             if (err) {
+    //                 this.error = err
+    //             } else {
+    //                 const tokenized = { bin: this.bin, ...res }
+    //                 window.postMessage(
+    //                     {
+    //                         type: 'tokenized',
+    //                         tokenized
+    //                     },
+    //                     window.location.origin
+    //                 )
+    //             }
+    //         })
+    //     }
+    // }
 
     get error() {
         return this.errored
@@ -94,8 +94,7 @@ class AccountNameFrame extends HTMLElement {
     set error(_errored) {
         if (this.errored !== _errored) {
             this.errored = _errored
-            window.postMessage(
-                {
+            window.postMessage({
                     type: 'error',
                     error: _errored
                 },
@@ -111,8 +110,7 @@ class AccountNameFrame extends HTMLElement {
     set valid(isValid) {
         if (isValid !== this.validated) {
             this.validated = isValid
-            window.postMessage(
-                {
+            window.postMessage({
                     type: 'valid',
                     valid: isValid
                 },
@@ -126,8 +124,7 @@ class AccountNameFrame extends HTMLElement {
         if (!this.loaded) {
             this.loaded = true
 
-            window.postMessage(
-                {
+            window.postMessage({
                     type: 'ready',
                     ready: true
                 },
@@ -157,9 +154,7 @@ class AccountNameFrame extends HTMLElement {
     }
 }
 
-if (
-    !window.customElements.get('paytheory-credit-card-account-name-tag-frame')
-) {
+if (!window.customElements.get('paytheory-credit-card-account-name-tag-frame')) {
     window.customElements.define(
         'paytheory-credit-card-account-name-tag-frame',
         AccountNameFrame
