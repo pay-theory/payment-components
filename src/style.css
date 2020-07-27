@@ -23,19 +23,19 @@
 	background-image: url(https://storage.googleapis.com/pt-assets/discover-badge-icon.svg);
 }
 
-#field-wrapper-number {
+.combined #field-wrapper-number {
 	max-width: 55%;
 }
 
-#field-wrapper-expiration_date {
+.combined #field-wrapper-expiration_date {
 	max-width: 15%;
 }
 
-#field-wrapper-security_code {
+.combined #field-wrapper-security_code {
 	max-width: 15%;
 }
 
-#field-wrapper-address-postal_code {
+.combined #field-wrapper-address-postal_code {
 	max-width: 15%;
 }
 

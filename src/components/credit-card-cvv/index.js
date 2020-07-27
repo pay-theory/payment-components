@@ -18,12 +18,6 @@ const defineFields = (form, styles) => {
     })
 }
 
-let formed
-
-let undef
-
-const invalidate = (_t) => (_t.isDirty ? _t.errorMessages.length > 0 : undef)
-
 const defaultStyles = { default: {}, success: {}, error: {} }
 
 /* global HTMLElement */
@@ -35,6 +29,14 @@ class CreditCardSecurityFrame extends HTMLElement {
         const message =
             typeof event.data === 'object' ? event.data : { type: 'unknown' }
         this[message.type] = event.data[message.type]
+    }
+
+    get form() {
+        return this.formed
+    }
+
+    set form(_formed) {
+        this.formed = _formed
     }
 
     get loaded() {
@@ -59,11 +61,9 @@ class CreditCardSecurityFrame extends HTMLElement {
 
     set styles(_styling) {
         if (_styling) {
-            defineFields(formed, _styling)
             this.styling = _styling
         }
         else {
-            defineFields(formed, defaultStyles)
             this.styling = defaultStyles
         }
     }
@@ -110,26 +110,10 @@ class CreditCardSecurityFrame extends HTMLElement {
 
     connectedCallback() {
         this.eventful = this.eventful.bind(this)
-        this.badge = ''
-        this.bin = {}
+
         if (!this.loaded) {
             this.loaded = true
-            formed = window.PaymentForm.card((state, binInformation) => {
-                if (state) {
-                    const code = invalidate(state.security_code)
 
-                    const invalid = code ?
-                        state.security_code.errorMessages[0] :
-                        false
-
-                    this.error = invalid
-                    this.valid = this.error // if there is an error
-                        ?
-                        false // valid is false
-                        :
-                        typeof code === 'undefined'
-                }
-            })
             window.postMessage({
                     type: 'cvv-ready',
                     ready: true
@@ -140,10 +124,13 @@ class CreditCardSecurityFrame extends HTMLElement {
         }
         window.addEventListener('message', this.eventful)
         this.innerHTML = `<span class="framed">
-            <div class="pay-theory-card-cvv-field">
+            <div class="pay-theory-card-field">
               <div id="field-wrapper-security_code" class="field-wrapper"></div>
             </div>
         </span>`
+
+
+        defineFields(this.form, this.styling)
     }
 
     disconnectedCallback() {

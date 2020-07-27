@@ -1,9 +1,8 @@
-import * as formed from '../../form-generator'
 const fields = [{ name: 'name', label: 'Name on card' }]
 
 const defineFields = (form, styles) => {
     fields.forEach((field) => {
-        const f = form.accountName({
+        const f = form.field(field.name, {
             placeholder: field.label,
             styles: {
                 default: styles.default,
@@ -22,7 +21,7 @@ const defineFields = (form, styles) => {
 const defaultStyles = { default: {}, success: {}, error: {} }
 
 /* global HTMLElement */
-class AccountNameFrame extends HTMLElement {
+class CreditCardNameFrame extends HTMLElement {
     eventful(event) {
         if (![window.location.origin].includes(event.origin)) {
             return
@@ -30,6 +29,14 @@ class AccountNameFrame extends HTMLElement {
         const message =
             typeof event.data === 'object' ? event.data : { type: 'unknown' }
         this[message.type] = event.data[message.type]
+    }
+
+    get form() {
+        return this.formed
+    }
+
+    set form(_formed) {
+        this.formed = _formed
     }
 
     get loaded() {
@@ -53,39 +60,13 @@ class AccountNameFrame extends HTMLElement {
     }
 
     set styles(_styling) {
-        if (_styling && formed) {
-            defineFields(formed, _styling)
+        if (_styling) {
             this.styling = _styling
         }
-        else if (formed) {
-            defineFields(formed, defaultStyles)
+        else {
             this.styling = defaultStyles
         }
     }
-
-    // get transact() {
-    //     return this.transacting
-    // }
-
-    // set transact(_transacting) {
-    //     if (this.transacting !== _transacting) {
-    //         this.transacting = _transacting
-    //         formed.submit('APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
-    //             if (err) {
-    //                 this.error = err
-    //             } else {
-    //                 const tokenized = { bin: this.bin, ...res }
-    //                 window.postMessage(
-    //                     {
-    //                         type: 'tokenized',
-    //                         tokenized
-    //                     },
-    //                     window.location.origin
-    //                 )
-    //             }
-    //         })
-    //     }
-    // }
 
     get error() {
         return this.errored
@@ -111,7 +92,7 @@ class AccountNameFrame extends HTMLElement {
         if (isValid !== this.validated) {
             this.validated = isValid
             window.postMessage({
-                    type: 'valid',
+                    type: 'name-valid',
                     valid: isValid
                 },
                 window.location.origin
@@ -121,26 +102,27 @@ class AccountNameFrame extends HTMLElement {
 
     connectedCallback() {
         this.eventful = this.eventful.bind(this)
+
         if (!this.loaded) {
             this.loaded = true
 
             window.postMessage({
-                    type: 'ready',
+                    type: 'name-ready',
                     ready: true
                 },
                 window.location.origin
             )
             this.ready = true
         }
-        /*
-         *  eslint-disable-next-line scanjs-rules/call_addEventListener_message
-         */
         window.addEventListener('message', this.eventful)
         this.innerHTML = `<span class="framed">
-            <div class="pay-theory-credit-card-account-name-field">
+            <div class="pay-theory-card-field">
               <div id="field-wrapper-name" class="field-wrapper"></div>
             </div>
         </span>`
+
+
+        defineFields(this.form, this.styling)
     }
 
     disconnectedCallback() {
@@ -157,6 +139,6 @@ class AccountNameFrame extends HTMLElement {
 if (!window.customElements.get('paytheory-credit-card-account-name-tag-frame')) {
     window.customElements.define(
         'paytheory-credit-card-account-name-tag-frame',
-        AccountNameFrame
+        CreditCardNameFrame
     )
 }

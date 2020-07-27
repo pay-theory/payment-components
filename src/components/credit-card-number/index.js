@@ -37,6 +37,14 @@ class CreditCardNumberFrame extends HTMLElement {
         this[message.type] = event.data[message.type]
     }
 
+    get form() {
+        return this.formed
+    }
+
+    set form(_formed) {
+        this.formed = _formed
+    }
+
     get loaded() {
         return this.isLoaded
     }
@@ -59,11 +67,9 @@ class CreditCardNumberFrame extends HTMLElement {
 
     set styles(_styling) {
         if (_styling) {
-            defineFields(formed, _styling)
             this.styling = _styling
         }
         else {
-            defineFields(formed, defaultStyles)
             this.styling = defaultStyles
         }
     }
@@ -75,7 +81,7 @@ class CreditCardNumberFrame extends HTMLElement {
     set transact(_transacting) {
         if (this.transacting !== _transacting) {
             this.transacting = _transacting
-            formed.submit('sandbox', 'APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
+            this.form.submit('sandbox', 'APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
                 if (err) {
                     this.error = err
                 }
@@ -154,38 +160,7 @@ class CreditCardNumberFrame extends HTMLElement {
         this.bin = {}
         if (!this.loaded) {
             this.loaded = true
-            formed = window.PaymentForm.card((state, binInformation) => {
-                if (binInformation) {
-                    this.cardBrand = binInformation.cardBrand
-                    this.bin = binInformation
-                    if (binInformation.cardBrand !== this.badge) {
-                        this.badge = binInformation.cardBrand
-                        const badger = document.createElement('div')
-                        badger.setAttribute(
-                            'class',
-                            `paytheory-card-badge paytheory-card-${binInformation.cardBrand}`
-                        )
-                        const badged = document.getElementById('badge-wrapper')
-                        badged.innerHTML = ''
-                        badged.appendChild(badger)
-                    }
-                }
 
-                if (state) {
-                    const num = invalidate(state.number)
-
-                    const invalid = num ?
-                        state.number.errorMessages[0] :
-                        false
-
-                    this.error = invalid
-                    this.valid = this.error // if there is an error
-                        ?
-                        false // valid is false
-                        :
-                        typeof num === 'undefined'
-                }
-            })
             window.postMessage({
                     type: 'number-ready',
                     ready: true
@@ -196,11 +171,13 @@ class CreditCardNumberFrame extends HTMLElement {
         }
         window.addEventListener('message', this.eventful)
         this.innerHTML = `<span class="framed">
-            <div class="pay-theory-card-number-field">
+            <div class="pay-theory-card-field">
               <div id="field-wrapper-number" class="field-wrapper"></div>
               <div id="badge-wrapper" />
             </div>
         </span>`
+
+        defineFields(this.formed, this.styling)
     }
 
     disconnectedCallback() {

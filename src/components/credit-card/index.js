@@ -56,6 +56,14 @@ class CreditCardFrame extends HTMLElement {
         }
     }
 
+    get form() {
+        return this.formed
+    }
+
+    set form(_formed) {
+        this.formed = _formed
+    }
+
     get loaded() {
         return this.isLoaded
     }
@@ -77,16 +85,10 @@ class CreditCardFrame extends HTMLElement {
     }
 
     set styles(_styling) {
-        if (_styling && !this.defined) {
-            this.defined = true
-            console.log('defining with style', this.id)
-            defineFields(this.formed, _styling, this.id)
+        if (_styling) {
             this.styling = _styling
         }
-        else if (!this.defined) {
-            this.defined = true
-            console.log('defining without style')
-            defineFields(this.formed, defaultStyles, this.id)
+        else {
             this.styling = defaultStyles
         }
     }
@@ -98,7 +100,7 @@ class CreditCardFrame extends HTMLElement {
     set transact(_transacting) {
         if (this.transacting !== _transacting) {
             this.transacting = _transacting
-            this.formed.submit('sandbox', 'APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
+            this.form.submit('sandbox', 'APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
                 if (err) {
                     this.error = err
                 }
@@ -256,14 +258,16 @@ class CreditCardFrame extends HTMLElement {
         }
         window.addEventListener('message', this.eventful)
         this.innerHTML = `<span class="framed">
-            <div class="pay-theory-card-field">
-              <div id="field-wrapper-${this.id}-number" class="field-wrapper"></div>
-              <div id="field-wrapper-${this.id}-expiration_date" class="field-wrapper"></div>
-              <div id="field-wrapper-${this.id}-security_code" class="field-wrapper"></div>
-              <div id="field-wrapper-${this.id}-address-postal_code" class="field-wrapper"></div>
+            <div class="pay-theory-card-field combined">
+              <div id="field-wrapper-number" class="field-wrapper"></div>
+              <div id="field-wrapper-expiration_date" class="field-wrapper"></div>
+              <div id="field-wrapper-security_code" class="field-wrapper"></div>
+              <div id="field-wrapper-address-postal_code" class="field-wrapper"></div>
               <div id="badge-wrapper" />
             </div>
         </span>`
+
+        defineFields(this.form, this.styling)
     }
 
     disconnectedCallback() {

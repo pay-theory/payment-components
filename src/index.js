@@ -42,17 +42,101 @@ const transactionEndpoint = process.env.BUILD_ENV === 'stage' ?
 
 let identity = false
 
-const addFrame = (container, element, styles, frameType = 'paytheory-credit-card-tag-frame') => {
+const initializeForm = () => {
+    return window.PaymentForm.card((state, binInformation) => {
+        if (binInformation) {
+            const badge = binInformation.cardBrand
+            const badger = document.createElement('div')
+            badger.setAttribute(
+                'class',
+                `paytheory-card-badge paytheory-card-${badge}`
+            )
+            const badged = document.getElementById('badge-wrapper')
+            if (badged !== null) {
+                badged.innerHTML = ''
+                badged.appendChild(badger)
+            }
+        }
+        if (state) {
+            const num = invalidate(state.number)
+            const code = invalidate(state.security_code)
+
+            const invalid = num ?
+                state.number.errorMessages[0] :
+                code ?
+                state.security_code.errorMessages[0] :
+                false
+
+            this.error = invalid
+            this.valid = this.error // if there is an error
+                ?
+                false // valid is false
+                :
+                typeof code === 'undefined' ||
+                typeof num === 'undefined' // otherwise if any values are undefined
+                ?
+                undefined // valid is undefined
+                :
+                typeof code === 'undefined' // otherwise if code is defined
+                ?
+                !num // otherwise valid is nums validation
+                :
+                !code // valid is codes validation
+        }
+    })
+}
+
+const addFrame = (form, container, element, styles, frameType = 'paytheory-credit-card-tag-frame') => {
     const tagFrame = document.createElement(frameType)
+    tagFrame.styles = styles
+    tagFrame.form = form
     tagFrame.setAttribute('ready', true)
     tagFrame.setAttribute('id', `${element}-tag-frame`)
     container.appendChild(tagFrame)
-    window.postMessage({
-            type: 'styles',
-            styles
-        },
-        window.location.origin
-    )
+}
+
+const processElements = (form, elements, styles) => {
+    elements.forEach(element => {
+        if (typeof element !== 'string') throw new Error('invalid element')
+        const container = document.getElementById(element)
+        if (container) {
+            const contained = document.getElementById(`${element}-tag-frame`)
+            if (contained === null) {
+
+                addFrame(form, container, element, styles, `${element}-tag-frame`)
+
+                console.log('frame added', `${element}-tag-frame`)
+            }
+            else {
+                console.log(`${element} is already mounted`, contained)
+                throw new Error(`${element} is already mounted`)
+            }
+        }
+        else {
+            throw new Error(`${element} is not available in dom`)
+        }
+    })
+}
+
+const processElement = (form, element, styles) => {
+    if (typeof element !== 'string') throw new Error('invalid element')
+    const container = document.getElementById(element)
+    if (container) {
+        const contained = document.getElementById(`${element}-tag-frame`)
+        if (contained === null) {
+
+            addFrame(form, container, element, styles, `${element}-tag-frame`)
+
+            console.log('frame added', `${element}-tag-frame`)
+        }
+        else {
+            console.log(`${element} is already mounted`, contained)
+            throw new Error(`${element} is already mounted`)
+        }
+    }
+    else {
+        throw new Error(`${element} is not available in dom`)
+    }
 }
 
 const createCreditCard = async(
@@ -67,32 +151,71 @@ const createCreditCard = async(
     tags = {}
 ) => {
 
-
+    let formed = false
     return {
         mount: (element = 'paytheory-credit-card') => {
-            if (typeof element !== 'string') throw new Error('invalid element')
-            const container = document.getElementById(element)
-            if (container) {
-                if (!document.getElementById(`${element}-tag-frame`)) {
-                    if (window.PaymentForm) {
-                        addFrame(container, element, styles)
-                    }
-                    else {
-                        const script = document.createElement('script')
-                        // eslint-disable-next-line scanjs-rules/assign_to_src
-                        script.src = 'https://forms.finixpymnts.com/finix.js'
-                        script.addEventListener('load', function () {
-                            addFrame(container, element, styles)
-                        })
-                        document.getElementsByTagName('head')[0].appendChild(script)
-                    }
-                }
-                else {
-                    throw new Error(`${element} is already mounted`)
-                }
+
+            if (formed) {
+                processElement(formed, element, styles)
             }
             else {
-                throw new Error(`${element} is not available in dom`)
+                const script = document.createElement('script')
+                // eslint-disable-next-line scanjs-rules/assign_to_src
+                script.src = 'https://forms.finixpymnts.com/finix.js'
+                script.addEventListener('load', function () {
+                    formed = window.PaymentForm.card((state, binInformation) => {
+                        if (binInformation) {
+                            const badge = binInformation.cardBrand
+                            const badger = document.createElement('div')
+                            badger.setAttribute(
+                                'class',
+                                `paytheory-card-badge paytheory-card-${badge}`
+                            )
+                            const badged = document.getElementById('badge-wrapper')
+                            if (badged !== null) {
+                                badged.innerHTML = ''
+                                badged.appendChild(badger)
+                            }
+                        }
+
+                        if (state) {
+                            const num = invalidate(state.number)
+                            const date = invalidate(state.expiration_date)
+                            const code = invalidate(state.security_code)
+
+                            const invalid = num ?
+                                state.number.errorMessages[0] :
+                                code ?
+                                state.security_code.errorMessages[0] :
+                                date ?
+                                state.expiration_date.errorMessages[0] :
+                                false
+
+                            this.error = invalid
+                            this.valid = this.error // if there is an error
+                                ?
+                                false // valid is false
+                                :
+                                typeof code === 'undefined' ||
+                                typeof date === 'undefined' ||
+                                typeof num === 'undefined' // otherwise if any values are undefined
+                                ?
+                                undefined // valid is undefined
+                                :
+                                typeof date === 'undefined' // otherwise if date is defined
+                                ?
+                                typeof code === 'undefined' // otherwise if code is defined
+                                :
+                                !num // otherwise valid is nums validation
+                                ?
+                                !date // valid is codes validation
+                                :
+                                !date // valid is dates validation
+                        }
+                    })
+                    processElement(formed, element, styles)
+                })
+                document.getElementsByTagName('head')[0].appendChild(script)
             }
         },
 
@@ -198,6 +321,8 @@ const createCreditCard = async(
     }
 }
 
+const invalidate = (_t) => (_t.isDirty ? _t.errorMessages.length > 0 : undefined)
+
 const createCreditCardFields = async(
     apiKey,
     clientKey,
@@ -211,42 +336,79 @@ const createCreditCardFields = async(
 ) => {
 
     let readyNumber = false,
+        readyName = false,
         readyCVV = false,
+        readyExpiration = false,
+        readyZip = false,
+        validName = false,
         validNumber = false,
-        validCVV = false
+        validCVV = false,
+        validExpiration = false,
+        validZip = false,
+        formed = false
 
     return {
         mount: (elements = [
+            fields.CREDIT_CARD_NAME,
             fields.CREDIT_CARD_NUMBER,
-            fields.CREDIT_CARD_CVV
+            fields.CREDIT_CARD_CVV,
+            fields.CREDIT_CARD_EXPIRATION,
+            fields.CREDIT_CARD_ZIP
         ]) => {
-            elements.forEach(element => {
-                if (typeof element !== 'string') throw new Error('invalid element')
-                const container = document.getElementById(element)
-                if (container) {
-                    if (!document.getElementById(`${element}-tag-frame`)) {
-                        if (window.PaymentForm) {
-                            addFrame(container, element, styles, `${element}-tag-frame`)
+            if (formed) {
+                processElements(formed, elements, styles)
+            }
+            else {
+                const script = document.createElement('script')
+                // eslint-disable-next-line scanjs-rules/assign_to_src
+                script.src = 'https://forms.finixpymnts.com/finix.js'
+                script.addEventListener('load', function () {
+                    formed = window.PaymentForm.card((state, binInformation) => {
+                        if (binInformation) {
+                            const badge = binInformation.cardBrand
+                            const badger = document.createElement('div')
+                            badger.setAttribute(
+                                'class',
+                                `paytheory-card-badge paytheory-card-${badge}`
+                            )
+                            const badged = document.getElementById('badge-wrapper')
+                            if (badged !== null) {
+                                badged.innerHTML = ''
+                                badged.appendChild(badger)
+                            }
                         }
-                        else {
-                            const script = document.createElement('script')
-                            // eslint-disable-next-line scanjs-rules/assign_to_src
-                            script.src = 'https://forms.finixpymnts.com/finix.js'
-                            script.addEventListener('load', function () {
-                                addFrame(container, element, styles, `${element}-tag-frame`)
-                            })
-                            document.getElementsByTagName('head')[0].appendChild(script)
-                        }
-                    }
-                    else {
-                        throw new Error(`${element} is already mounted`)
-                    }
-                }
-                else {
-                    throw new Error(`${element} is not available in dom`)
-                }
-            })
 
+                        if (state) {
+                            const num = invalidate(state.number)
+                            const code = invalidate(state.security_code)
+
+                            const invalid = num ?
+                                state.number.errorMessages[0] :
+                                code ?
+                                state.security_code.errorMessages[0] :
+                                false
+
+                            this.error = invalid
+                            this.valid = this.error // if there is an error
+                                ?
+                                false // valid is false
+                                :
+                                typeof code === 'undefined' ||
+                                typeof num === 'undefined' // otherwise if any values are undefined
+                                ?
+                                undefined // valid is undefined
+                                :
+                                typeof code === 'undefined' // otherwise if code is defined
+                                ?
+                                !num // otherwise valid is nums validation
+                                :
+                                !code // valid is codes validation
+                        }
+                    })
+                    processElements(formed, elements, styles)
+                })
+                document.getElementsByTagName('head')[0].appendChild(script)
+            }
         },
 
         initTransaction: async(buyerOptions = {}) => {
@@ -277,23 +439,49 @@ const createCreditCardFields = async(
                     JSON.parse(event.data) :
                     event.data
 
+                let calling = false
                 switch (message.type) {
+                case 'name-ready':
+                    {
+                        readyName = message.ready
+                        calling = true
+                        break
+                    }
                 case 'cvv-ready':
                     {
                         readyCVV = message.ready
-                        readyCallback(readyCVV && readyNumber)
+                        calling = true
                         break
                     }
                 case 'number-ready':
                     {
                         readyNumber = message.ready
-                        readyCallback(readyCVV && readyNumber)
+                        calling = true
+                        break
+                    }
+                case 'expiration-ready':
+                    {
+                        readyExpiration = message.ready
+                        calling = true
+                        break
+                    }
+                case 'zip-ready':
+                    {
+                        readyZip = message.ready
+                        calling = true
                         break
                     }
                 default:
                     {
                         break
                     }
+                }
+                if (calling) {
+                    readyCallback(readyCVV &&
+                        readyNumber &&
+                        readyExpiration &&
+                        readyName &&
+                        readyZip)
                 }
             })
         },
@@ -361,23 +549,51 @@ const createCreditCardFields = async(
                 if (message.type === 'valid') {
                     validCallback(message.valid)
                 }
+
+                let calling = false
+
                 switch (message.type) {
+                case 'name-valid':
+                    {
+                        validName = message.valid
+                        calling = true
+                        break
+                    }
                 case 'cvv-valid':
                     {
                         validCVV = message.valid
-                        validCallback(validCVV && validNumber)
+                        calling = true
                         break
                     }
                 case 'number-valid':
                     {
                         validNumber = message.valid
-                        validCallback(validCVV && validNumber)
+                        calling = true
+                        break
+                    }
+                case 'expiration-valid':
+                    {
+                        validExpiration = message.valid
+                        calling = true
+                        break
+                    }
+                case 'zip-valid':
+                    {
+                        validZip = message.valid
+                        calling = true
                         break
                     }
                 default:
                     {
                         break
                     }
+                }
+                if (calling) {
+                    validCallback(validCVV &&
+                        validNumber &&
+                        validExpiration &&
+                        validName &&
+                        validZip)
                 }
             })
         }
