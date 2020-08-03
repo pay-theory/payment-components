@@ -12,25 +12,37 @@
   "files": [
     "dist"
   ],
+  "eslintConfig": {
+    "extends": [
+      "eslint-config-prettier"
+    ]
+  },
   "scripts": {
-    "build": "webpack",
-    "lint": "eslint src/.",
-    "format": "prettier --parser babel 'src/**/*.js' --write",
-    "publish-dev-npm": "env BUILD_ENV=dev npm run build && npm version prepatch && git push && npm publish --tag alpha",
-    "publish-stage-npm": "env BUILD_ENV=dev npm run build && npm version prepatch && git push && npm publish --tag beta",
+    "build-dev": "env BUILD_ENV=dev APP_ID=APbu7tPrKJWHSMDh7M65ahft webpack",
+    "build-stage": "env BUILD_ENV=stage APP_ID=APbu7tPrKJWHSMDh7M65ahft webpack",
+    "build-prod": "env BUILD_ENV=prod APP_ID=APcT6PQC1XiuCpPMUUXEZZ2y webpack",
+    "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
+    "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore",
+    "lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
+    "format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore",
+    "publish-dev-npm": "npm run build-dev && npm version prepatch && git push && npm publish --tag alpha",
+    "publish-stage-npm": "npm run build-stage && npm version prepatch && git push && npm publish --tag beta",
     "publish-prod-npm": "env BUILD_ENV=prod npm run build && npm run release-npm && npm run public-npm",
     "release-npm": "npm version prepatch && git push && npm publish --tag release",
     "public-npm": "npm version prepatch && git push && npm publish",
-    "publish-dev-cdn": "env BUILD_ENV=dev npm run build && aws s3 cp dist s3://payment-components-dev --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
-    "publish-stage-cdn": "env BUILD_ENV=dev npm run build && aws s3 cp dist s3://payment-components-stage --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
-    "publish-prod-cdn": "env BUILD_ENV=prod npm run build && aws s3 cp dist s3://payment-components-prod --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
+    "publish-dev-cdn": "npm run build-dev && aws s3 cp dist s3://payment-components-dev --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
+    "publish-stage-cdn": "npm run build-stage && aws s3 cp dist s3://payment-components-stage --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
+    "publish-prod-cdn": "npm run build-prod && aws s3 cp dist s3://payment-components-prod --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "prettier": "@open-wc/prettier-config",
   "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.10.5",
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
     "@babel/preset-env": "^7.10.4",
+    "@open-wc/eslint-config": "^2.0.6",
+    "@open-wc/prettier-config": "^1.1.0",
     "babel-minify": "^0.5.1",
     "babel-preset-minify": "^0.5.1",
     "core-js": "^3.6.5",

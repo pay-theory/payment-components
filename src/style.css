@@ -53,12 +53,12 @@
 	border: none;
 }
 
-.pay-theory-card-field {
+.pay-theory-field {
 	display: flex;
 	flex-direction: row;
 }
 
-.pay-theory-card-field div {
+.pay-theory-field div {
 	display: flex;
 }
 
