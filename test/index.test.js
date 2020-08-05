@@ -44,7 +44,7 @@ describe('createCreditCardFields', () => {
                 cc = creditCard;
                 cc.mount();
             })
-        const el = await fixture(html ` <div>
+        const el = await fixture(html `<div>
         <div id="paytheory-credit-card-cvv" />
         <div id="paytheory-credit-card-expiration" />
         <div id="paytheory-credit-card-number" />
