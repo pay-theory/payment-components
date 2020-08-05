@@ -33,7 +33,10 @@
     "publish-dev-cdn": "npm run build-dev && aws s3 cp dist s3://payment-components-dev --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
     "publish-stage-cdn": "npm run build-stage && aws s3 cp dist s3://payment-components-stage --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
     "publish-prod-cdn": "npm run build-prod && aws s3 cp dist s3://payment-components-prod --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "karma start --coverage",
+    "test:watch": "karma start --auto-watch=true --single-run=false",
+    "test:update-snapshots": "karma start --update-snapshots",
+    "test:prune-snapshots": "karma start --prune-snapshots"
   },
   "prettier": "@open-wc/prettier-config",
   "devDependencies": {
@@ -43,10 +46,12 @@
     "@babel/preset-env": "^7.10.4",
     "@open-wc/eslint-config": "^2.0.6",
     "@open-wc/prettier-config": "^1.1.0",
+    "@open-wc/testing-karma": "^4.0.1",
     "babel-minify": "^0.5.1",
     "babel-preset-minify": "^0.5.1",
     "core-js": "^3.6.5",
     "css-loader": "^3.6.0",
+    "deepmerge": "^4.2.2",
     "eslint": "^7.4.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-config-standard": "^14.1.1",
@@ -62,10 +67,17 @@
     "eslint-plugin-scanjs-rules": "^0.2.1",
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-standard": "^4.0.1",
+    "karma": "^5.1.1",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^4.0.2",
     "prettier": "^2.0.5",
     "regenerator-runtime": "^0.13.5",
     "style-loader": "^1.2.1",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "@open-wc/testing": "^2.5.19",
+    "sinon": "^9.0.2"
   }
 }

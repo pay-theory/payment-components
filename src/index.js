@@ -8,7 +8,7 @@ import 'regenerator-runtime';
 import './style.css';
 
 const fields = {
-  CREDIT_CARD_NAME: 'paytheory-credit-card-name',
+  CREDIT_CARD_NAME: 'paytheory-credit-card-account-name',
   CREDIT_CARD_CVV: 'paytheory-credit-card-cvv',
   CREDIT_CARD_EXPIRATION: 'paytheory-credit-card-expiration',
   CREDIT_CARD_NUMBER: 'paytheory-credit-card-number',

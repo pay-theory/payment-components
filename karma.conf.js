@@ -6,21 +6,20 @@ module.exports = config => {
   config.set(
     merge(createDefaultConfig(config), {
       files: [
+        './karma-variables.js',
         // runs all files ending with .test in the test folder,
         // can be overwritten by passing a --grep flag. examples:
         //
         // npm run test -- --grep test/foo/bar.test.js
         // npm run test -- --grep test/bar/*
-        {
-          pattern: config.grep ? config.grep : 'test/**/*.test.js',
-          type: 'module',
-        },
+        { pattern: config.grep ? config.grep : 'test/**/*.test.js', type: 'module' },
       ],
 
+      // see the karma-esm docs for all options
       esm: {
+        // if you are using 'bare module imports' you will need this option
         nodeResolve: true,
       },
-      // you can overwrite/extend the config further
     }),
   );
   return config;
