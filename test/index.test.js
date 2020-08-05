@@ -32,3 +32,26 @@ describe('createCreditCard', () => {
         expect(ccTag).to.be.ok;
     });
 });
+
+describe('createCreditCardFields', () => {
+    it('renders finix iframes', async() => {
+        const api = "pt-sandbox-75928e5d68108ca3fc418bde45dc5253";
+        const client = "IDvwtJwLdkja7CMk5oR6QNDk";
+        let cc;
+        const paytheory = window.paytheory;
+        await paytheory.createCreditCardFields(api, client, 2500)
+            .then(creditCard => {
+                cc = creditCard;
+                cc.mount();
+            })
+        const el = await fixture(html ` <div>
+        <div id="paytheory-credit-card-cvv" />
+        <div id="paytheory-credit-card-expiration" />
+        <div id="paytheory-credit-card-number" />
+        <div id="paytheory-credit-card-zip" />
+        </div>`);
+        const ccTag = await document.getElementById('paytheory-credit-card-cvv-tag-frame');
+        console.log(el)
+        expect(ccTag).to.be.ok;
+    });
+});
