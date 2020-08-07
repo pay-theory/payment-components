@@ -156,6 +156,6 @@ class AccountNameFrame extends HTMLElement {
   }
 }
 
-if (!window.customElements.get('paytheory-ach-account-name-tag-frame')) {
-  window.customElements.define('paytheory-ach-account-name-tag-frame', AccountNameFrame);
+if (!window.customElements.get('pay-theory-ach-account-name-tag-frame')) {
+  window.customElements.define('pay-theory-ach-account-name-tag-frame', AccountNameFrame);
 }

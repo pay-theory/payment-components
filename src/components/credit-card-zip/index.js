@@ -1,9 +1,9 @@
-import PayTheoryFinixFrame from '../pay-theory-finix'
+import PayTheory from '../pay-theory-finix'
 const NAME = 'zip'
 const FIELDS = [{ name: 'address.postal_code', label: 'Zip' }];
 
 /* global HTMLElement */
-class CreditCardBillingZipFrame extends PayTheoryFinixFrame {
+class CreditCardBillingZipFrame extends PayTheory {
 
   constructor() {
     super()
@@ -13,6 +13,6 @@ class CreditCardBillingZipFrame extends PayTheoryFinixFrame {
 
 }
 
-if (!window.customElements.get('paytheory-credit-card-zip-tag-frame')) {
-  window.customElements.define('paytheory-credit-card-zip-tag-frame', CreditCardBillingZipFrame);
+if (!window.customElements.get('pay-theory-credit-card-zip-tag-frame')) {
+  window.customElements.define('pay-theory-credit-card-zip-tag-frame', CreditCardBillingZipFrame);
 }

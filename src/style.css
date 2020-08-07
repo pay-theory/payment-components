@@ -1,4 +1,4 @@
-.paytheory-card-badge {
+.pay-theory-card-badge {
 	background-repeat: no-repeat;
 	background-size: 100%;
 	background-position: 50%;
@@ -7,19 +7,19 @@
 	align-self: center;
 }
 
-.paytheory-card-visa {
+.pay-theory-card-visa {
 	background-image: url(https://storage.googleapis.com/pt-assets/visa-badge-icon.svg);
 }
 
-.paytheory-card-mastercard {
+.pay-theory-card-mastercard {
 	background-image: url(https://storage.googleapis.com/pt-assets/mastercard-badge-icon.svg);
 }
 
-.paytheory-card-amex {
+.pay-theory-card-amex {
 	background-image: url(https://storage.googleapis.com/pt-assets/amex-badge-icon.svg);
 }
 
-.paytheory-card-discover {
+.pay-theory-card-discover {
 	background-image: url(https://storage.googleapis.com/pt-assets/discover-badge-icon.svg);
 }
 

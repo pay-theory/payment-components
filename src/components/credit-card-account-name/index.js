@@ -13,6 +13,6 @@ class CreditCardNameFrame extends PayTheoryFinixFrame {
 
 }
 
-if (!window.customElements.get('paytheory-credit-card-account-name-tag-frame')) {
-  window.customElements.define('paytheory-credit-card-account-name-tag-frame', CreditCardNameFrame);
+if (!window.customElements.get('pay-theory-credit-card-account-name-tag-frame')) {
+  window.customElements.define('pay-theory-credit-card-account-name-tag-frame', CreditCardNameFrame);
 }

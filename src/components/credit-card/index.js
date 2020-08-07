@@ -34,7 +34,7 @@ class CreditCardFrame extends PayTheoryFinixFrame {
             const badger = document.createElement('div');
             badger.setAttribute(
               'class',
-              `paytheory-card-badge paytheory-card-${binInformation.cardBrand}`,
+              `pay-theory-card-badge pay-theory-card-${binInformation.cardBrand}`,
             );
             const badged = document.getElementById('badge-wrapper');
             badged.innerHTML = '';
@@ -160,6 +160,6 @@ class CreditCardFrame extends PayTheoryFinixFrame {
 }
 
 
-if (!window.customElements.get('paytheory-credit-card-tag-frame')) {
-  window.customElements.define('paytheory-credit-card-tag-frame', CreditCardFrame);
+if (!window.customElements.get('pay-theory-credit-card-tag-frame')) {
+  window.customElements.define('pay-theory-credit-card-tag-frame', CreditCardFrame);
 }

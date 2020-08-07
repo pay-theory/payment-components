@@ -1,9 +1,9 @@
-import PayTheoryFinixFrame from '../pay-theory-finix'
+import PayTheory from '../pay-theory-finix'
 const NAME = 'cvv'
 const FIELDS = [{ name: 'security_code', label: 'CVC' }];
 
 /* global HTMLElement */
-class CreditCardSecurityFrame extends PayTheoryFinixFrame {
+class CreditCardSecurityFrame extends PayTheory {
 
   constructor() {
     super()
@@ -13,6 +13,6 @@ class CreditCardSecurityFrame extends PayTheoryFinixFrame {
 
 }
 
-if (!window.customElements.get('paytheory-credit-card-cvv-tag-frame')) {
-  window.customElements.define('paytheory-credit-card-cvv-tag-frame', CreditCardSecurityFrame);
+if (!window.customElements.get('pay-theory-credit-card-cvv-tag-frame')) {
+  window.customElements.define('pay-theory-credit-card-cvv-tag-frame', CreditCardSecurityFrame);
 }

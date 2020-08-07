@@ -1,9 +1,9 @@
-import PayTheoryFinixFrame from '../pay-theory-finix'
+import PayTheory from '../pay-theory-finix'
 const NAME = 'number'
 const FIELDS = [{ name: 'number', label: 'Card Number' }];
 
 /* global HTMLElement */
-class CreditCardNumberFrame extends PayTheoryFinixFrame {
+class CreditCardNumberFrame extends PayTheory {
 
   constructor() {
     super()
@@ -36,6 +36,6 @@ class CreditCardNumberFrame extends PayTheoryFinixFrame {
   }
 }
 
-if (!window.customElements.get('paytheory-credit-card-number-tag-frame')) {
-  window.customElements.define('paytheory-credit-card-number-tag-frame', CreditCardNumberFrame);
+if (!window.customElements.get('pay-theory-credit-card-number-tag-frame')) {
+  window.customElements.define('pay-theory-credit-card-number-tag-frame', CreditCardNumberFrame);
 }

@@ -14,7 +14,7 @@ const defaultOptions = {
 };
 
 const accountName = (
-  secureProvider = 'https://dev.secure-fields.paytheorystudy.com',
+  secureProvider = 'https://dev.secure-fields.pay-theorystudy.com',
   options = defaultOptions,
 ) => {
   const config = window.btoa(JSON.stringify(options));

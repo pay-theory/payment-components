@@ -7,6 +7,7 @@ module.exports = config => {
     merge(createDefaultConfig(config), {
       files: [
         './karma-variables.js',
+        './dist/index.js',
         // runs all files ending with .test in the test folder,
         // can be overwritten by passing a --grep flag. examples:
         //

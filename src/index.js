@@ -8,12 +8,14 @@ import 'regenerator-runtime';
 import './style.css';
 
 const fields = {
-  CREDIT_CARD_NAME: 'paytheory-credit-card-account-name',
-  CREDIT_CARD_CVV: 'paytheory-credit-card-cvv',
-  CREDIT_CARD_EXPIRATION: 'paytheory-credit-card-expiration',
-  CREDIT_CARD_NUMBER: 'paytheory-credit-card-number',
-  CREDIT_CARD_ZIP: 'paytheory-credit-card-zip',
+  CREDIT_CARD_NAME: 'pay-theory-credit-card-account-name',
+  CREDIT_CARD_CVV: 'pay-theory-credit-card-cvv',
+  CREDIT_CARD_EXPIRATION: 'pay-theory-credit-card-expiration',
+  CREDIT_CARD_NUMBER: 'pay-theory-credit-card-number',
+  CREDIT_CARD_ZIP: 'pay-theory-credit-card-zip',
 }
+
+const fieldTypes = ['cvv', 'name', 'expiration', 'number', 'zip'];
 
 async function postData(url = '', apiKey, data = {}) {
   const options = {
@@ -33,7 +35,7 @@ async function postData(url = '', apiKey, data = {}) {
   return await response.json();
 }
 
-const transactionEndpoint = `https://${process.env.BUILD_ENV}.tags.api.paytheorystudy.com`;
+const transactionEndpoint = `https://${process.env.BUILD_ENV}.tags.api.pay-theorystudy.com`;
 
 let identity = false;
 
@@ -44,7 +46,7 @@ let identity = false;
 //             const badger = document.createElement('div')
 //             badger.setAttribute(
 //                 'class',
-//                 `paytheory-card-badge paytheory-card-${badge}`
+//                 `pay-theory-card-badge pay-theory-card-${badge}`
 //             )
 //             const badged = document.getElementById('badge-wrapper')
 //             if (badged !== null) {
@@ -79,7 +81,7 @@ const addFrame = (
   container,
   element,
   styles,
-  frameType = 'paytheory-credit-card-tag-frame',
+  frameType = 'pay-theory-credit-card-tag-frame',
 ) => {
   const tagFrame = document.createElement(frameType);
   tagFrame.styles = styles;
@@ -91,22 +93,23 @@ const addFrame = (
 
 const processElements = (form, elements, styles) => {
   let processed = []
-  elements.forEach(element => {
-    if (typeof element !== 'string') throw new Error('invalid element')
-    const container = document.getElementById(element)
+  fieldTypes.forEach(type => {
+    console.log(elements[type])
+    if (typeof elements[type] !== 'string') throw new Error('invalid element')
+    const container = document.getElementById(elements[type])
     if (container) {
-      const contained = document.getElementById(`${element}-tag-frame`)
+      const contained = document.getElementById(`${elements[type]}-tag-frame`)
       if (contained === null) {
-        addFrame(form, container, element, styles, `${element}-tag-frame`)
-        processed.push(element)
+        addFrame(form, container, elements[type], styles, `pay-theory-credit-card-${type}-tag-frame`)
+        processed.push(type)
+        console.log(`${elements[type]} is now mounted`);
       }
       else {
-        console.log(`${element} is already mounted`, contained);
-        throw new Error(`${element} is already mounted`);
+        throw new Error(`${elements[type]} is already mounted`);
       }
     }
     else {
-      console.log(`${element} is not available in dom`);
+      console.log(`${elements[type]} is not available in dom`);
     }
   })
   return processed
@@ -118,12 +121,10 @@ const processElement = (form, element, styles) => {
   if (container) {
     const contained = document.getElementById(`${element}-tag-frame`);
     if (contained === null) {
-      addFrame(form, container, element, styles, `${element}-tag-frame`);
-
-      console.log('frame added', `${element}-tag-frame`);
+      addFrame(form, container, element, styles);
+      console.log(`${element} is now mounted`);
     }
     else {
-      console.log(`${element} is already mounted`, contained);
       throw new Error(`${element} is already mounted`);
     }
   }
@@ -145,9 +146,10 @@ const createCreditCard = async(
 ) => {
   let formed = false;
   return {
-    mount: (element = 'paytheory-credit-card') => {
+    mount: async(element = 'pay-theory-credit-card') => {
       if (formed) {
         processElement(formed, element, styles);
+        return
       }
       else {
         const script = document.createElement('script');
@@ -158,7 +160,7 @@ const createCreditCard = async(
             if (binInformation) {
               const badge = binInformation.cardBrand;
               const badger = document.createElement('div');
-              badger.setAttribute('class', `paytheory-card-badge paytheory-card-${badge}`);
+              badger.setAttribute('class', `pay-theory-card-badge pay-theory-card-${badge}`);
               const badged = document.getElementById('badge-wrapper');
               if (badged !== null) {
                 badged.innerHTML = '';
@@ -202,6 +204,7 @@ const createCreditCard = async(
             }
           });
           processElement(formed, element, styles);
+          return
         });
         document.getElementsByTagName('head')[0].appendChild(script);
       }
@@ -324,13 +327,13 @@ const createCreditCardFields = async(
   let processed = []
   return {
     mount: (
-      elements = [
-        fields.CREDIT_CARD_NAME,
-        fields.CREDIT_CARD_NUMBER,
-        fields.CREDIT_CARD_CVV,
-        fields.CREDIT_CARD_EXPIRATION,
-        fields.CREDIT_CARD_ZIP,
-      ],
+      elements = {
+        name: fields.CREDIT_CARD_NAME,
+        number: fields.CREDIT_CARD_NUMBER,
+        cvv: fields.CREDIT_CARD_CVV,
+        expiration: fields.CREDIT_CARD_EXPIRATION,
+        zip: fields.CREDIT_CARD_ZIP,
+      },
     ) => {
       if (formed) {
         processed = processElements(formed, elements, styles);
@@ -344,7 +347,7 @@ const createCreditCardFields = async(
             if (binInformation) {
               const badge = binInformation.cardBrand;
               const badger = document.createElement('div');
-              badger.setAttribute('class', `paytheory-card-badge paytheory-card-${badge}`);
+              badger.setAttribute('class', `pay-theory-card-badge pay-theory-card-${badge}`);
               const badged = document.getElementById('badge-wrapper');
               if (badged !== null) {
                 badged.innerHTML = '';
@@ -413,7 +416,7 @@ const createCreditCardFields = async(
 
         const readyType = message.type.split('-')[0]
 
-        if (!processed.includes(`paytheory-credit-card-${readyType}`)) return
+        if (!processed.includes(`pay-theory-credit-card-${readyType}`)) return
 
         switch (readyType) {
         case 'name':
@@ -517,7 +520,7 @@ const createCreditCardFields = async(
 
         const validType = message.type.split('-')[0]
 
-        if (!processed.includes(`paytheory-credit-card-${validType}`)) return
+        if (!processed.includes(`pay-theory-credit-card-${validType}`)) return
 
         let calling = false;
 

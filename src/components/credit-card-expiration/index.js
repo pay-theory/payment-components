@@ -13,9 +13,9 @@ class CreditCardExpirationFrame extends PayTheoryFinixFrame {
 
 }
 
-if (!window.customElements.get('paytheory-credit-card-expiration-tag-frame')) {
+if (!window.customElements.get('pay-theory-credit-card-expiration-tag-frame')) {
   window.customElements.define(
-    'paytheory-credit-card-expiration-tag-frame',
+    'pay-theory-credit-card-expiration-tag-frame',
     CreditCardExpirationFrame,
   )
 }
