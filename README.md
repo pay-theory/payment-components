@@ -14,14 +14,14 @@ npm install --save @paytheory/payment-components
 
 ```javascript
 // SDK will be available as paytheory
-import * as paytheory from '@paytheory/payment-components'
+import * as paytheory from '@paytheory/payment-components@beta'
 ```
 
 or
 
 ```html
 <!-- SDK will be available as window.paytheory -->
-<script src="https://demo.sdk.paytheorystudy.com"></script>
+<script src="https://stage.sdk.paytheorystudy.com"></script>
 ```
 
 ## Usage
