@@ -32,7 +32,6 @@ class CreditCardFrame extends PayTheoryFinixFrame {
     this.badge = '';
     this.bin = {};
     if (!this.loaded) {
-      console.log('loading', this.id);
       this.loaded = true;
       this.formed = window.PaymentForm.card((state, binInformation) => {
         if (binInformation) {
