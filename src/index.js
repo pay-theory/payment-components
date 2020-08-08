@@ -338,11 +338,11 @@ const createCreditCardFields = async(
   let readyCVV = true;
   let readyExpiration = true;
   let readyZip = true;
-  let validName = false;
+  let validName = true;
   let validNumber = false;
   let validCVV = false;
   let validExpiration = false;
-  let validZip = false;
+  let validZip = true;
   let formed = false;
   let isValid = false;
   let isReady = false;
@@ -589,9 +589,7 @@ const createCreditCardFields = async(
           }
         }
 
-        const validating = (validCVV && validNumber && validExpiration && validZip)
-
-        console.log('sdk validating', validating, validCVV, validNumber, validExpiration, validZip)
+        const validating = (validCVV && validNumber && validExpiration && validZip && validName)
 
         if (isValid != validating) {
           isValid = validating
