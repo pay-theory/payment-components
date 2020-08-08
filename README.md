@@ -26,8 +26,9 @@ or
 
 ## Usage
 
-### Single Element
-[codesandbox example](https://duckduckgo.com)
+### Combined Element
+
+[codesandbox combined example](https://codesandbox.io/s/payment-example-combined-1i61g?file=/public/index.html)
 
 First create the container for the credit card input
 
@@ -36,6 +37,8 @@ First create the container for the credit card input
 ```
 
 ### Multiple Element
+
+[codesandbox multiple example](https://codesandbox.io/s/payment-examples-split-pvtfi?file=/public/index.html)
 
 First create the container for the inputs you want to include
 
