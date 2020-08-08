@@ -15,7 +15,7 @@ const fields = {
   CREDIT_CARD_ZIP: 'pay-theory-credit-card-zip',
 }
 
-const fieldTypes = ['cvv', 'name', 'expiration', 'number', 'zip'];
+const fieldTypes = ['cvv', 'account-name', 'expiration', 'number', 'zip'];
 
 async function postData(url = '', apiKey, data = {}) {
   const options = {
@@ -35,7 +35,23 @@ async function postData(url = '', apiKey, data = {}) {
   return await response.json();
 }
 
-const transactionEndpoint = `https://${process.env.BUILD_ENV}.tags.api.pay-theorystudy.com`;
+const transactionEndpoint = (() => {
+
+  switch (process.env.BUILD_ENV) {
+  case 'prod':
+    {
+      return `https://tags.api.paytheory.com`
+    }
+  case 'stage':
+    {
+      return `https://demo.tags.api.paytheorystudy.com`
+    }
+  default:
+    {
+      return `https://dev.tags.api.paytheorystudy.com`
+    }
+  }
+})()
 
 let identity = false;
 
@@ -89,19 +105,19 @@ const addFrame = (
   tagFrame.setAttribute('ready', true);
   tagFrame.setAttribute('id', `${element}-tag-frame`);
   container.appendChild(tagFrame);
+  return tagFrame
 };
 
 const processElements = (form, elements, styles) => {
   let processed = []
   fieldTypes.forEach(type => {
-    console.log(elements[type])
     if (typeof elements[type] !== 'string') throw new Error('invalid element')
     const container = document.getElementById(elements[type])
     if (container) {
       const contained = document.getElementById(`${elements[type]}-tag-frame`)
       if (contained === null) {
-        addFrame(form, container, elements[type], styles, `pay-theory-credit-card-${type}-tag-frame`)
-        processed.push(type)
+        const frame = addFrame(form, container, elements[type], styles, `pay-theory-credit-card-${type}-tag-frame`)
+        processed.push({ type: type, frame: frame })
         console.log(`${elements[type]} is now mounted`);
       }
       else {
@@ -161,7 +177,7 @@ const createCreditCard = async(
               const badge = binInformation.cardBrand;
               const badger = document.createElement('div');
               badger.setAttribute('class', `pay-theory-card-badge pay-theory-card-${badge}`);
-              const badged = document.getElementById('badge-wrapper');
+              const badged = document.getElementById('pay-theory-badge-wrapper');
               if (badged !== null) {
                 badged.innerHTML = '';
                 badged.appendChild(badger);
@@ -245,7 +261,6 @@ const createCreditCard = async(
         }
         const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
         if (message.type === 'tokenized') {
-          console.log('tokenized');
           const instrument = await postData(
             `${transactionEndpoint}/${clientKey}/instrument`,
             apiKey, {
@@ -300,6 +315,13 @@ const createCreditCard = async(
 
 const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : undefined);
 
+const stateMap = {
+  'account-name': 'name',
+  'cvv': 'security_code',
+  'expiration': 'expiration_date',
+  'zip': 'address.postal_code'
+}
+
 const createCreditCardFields = async(
   apiKey,
   clientKey,
@@ -316,19 +338,19 @@ const createCreditCardFields = async(
   let readyCVV = true;
   let readyExpiration = true;
   let readyZip = true;
-  let validName = true;
+  let validName = false;
   let validNumber = false;
-  let validCVV = true;
-  let validExpiration = true;
-  let validZip = true;
+  let validCVV = false;
+  let validExpiration = false;
+  let validZip = false;
   let formed = false;
   let isValid = false;
   let isReady = false;
-  let processed = []
+  let processedElements = []
   return {
-    mount: (
+    mount: async(
       elements = {
-        name: fields.CREDIT_CARD_NAME,
+        'account-name': fields.CREDIT_CARD_NAME,
         number: fields.CREDIT_CARD_NUMBER,
         cvv: fields.CREDIT_CARD_CVV,
         expiration: fields.CREDIT_CARD_EXPIRATION,
@@ -336,7 +358,8 @@ const createCreditCardFields = async(
       },
     ) => {
       if (formed) {
-        processed = processElements(formed, elements, styles);
+        processedElements = processElements(formed, elements, styles);
+        return
       }
       else {
         const script = document.createElement('script');
@@ -348,7 +371,7 @@ const createCreditCardFields = async(
               const badge = binInformation.cardBrand;
               const badger = document.createElement('div');
               badger.setAttribute('class', `pay-theory-card-badge pay-theory-card-${badge}`);
-              const badged = document.getElementById('badge-wrapper');
+              const badged = document.getElementById('pay-theory-badge-wrapper');
               if (badged !== null) {
                 badged.innerHTML = '';
                 badged.appendChild(badger);
@@ -356,32 +379,38 @@ const createCreditCardFields = async(
             }
 
             if (state) {
-              const num = invalidate(state.number);
-              const code = invalidate(state.security_code);
+              let errors = []
 
-              const invalid = num ?
-                state.number.errorMessages[0] :
-                code ?
-                state.security_code.errorMessages[0] :
-                false;
 
-              this.error = invalid;
-              this.valid = this.error // if there is an error
-                ?
-                false // valid is false
-                :
-                typeof code === 'undefined' || typeof num === 'undefined' // otherwise if any values are undefined
-                ?
-                undefined // valid is undefined
-                :
-                typeof code === 'undefined' // otherwise if code is defined
-                ?
-                !num // otherwise valid is nums validation
-                :
-                !code; // valid is codes validation
+
+              processedElements.forEach(element => {
+                let stateType = ''
+
+                if (stateMap[element.type]) {
+                  stateType = stateMap[element.type]
+                }
+                else {
+                  stateType = element.type
+                }
+
+                const stated = state[stateType]
+                const invalidElement = invalidate(stated)
+                if (element.frame.field === element.type) {
+                  element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
+
+                  if (invalidElement) {
+                    errors.push(stated.errorMessages[0])
+                    element.frame.error = stated.errorMessages[0]
+                  }
+                  else {
+                    element.frame.error = false
+                  }
+                }
+              })
             }
           });
-          processed = processElements(formed, elements, styles);
+          processedElements = processElements(formed, elements, styles);
+          return
         });
         document.getElementsByTagName('head')[0].appendChild(script);
       }
@@ -416,7 +445,7 @@ const createCreditCardFields = async(
 
         const readyType = message.type.split('-')[0]
 
-        if (!processed.includes(`pay-theory-credit-card-${readyType}`)) return
+        if (!processedElements.map(element => element.type).includes(`${readyType}`)) return
 
         switch (readyType) {
         case 'name':
@@ -470,7 +499,6 @@ const createCreditCardFields = async(
         }
         const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
         if (message.type === 'tokenized') {
-          console.log('tokenized');
           const instrument = await postData(
             `${transactionEndpoint}/${clientKey}/instrument`,
             apiKey, {
@@ -520,7 +548,7 @@ const createCreditCardFields = async(
 
         const validType = message.type.split('-')[0]
 
-        if (!processed.includes(`pay-theory-credit-card-${validType}`)) return
+        if (!processedElements.map(element => element.type).includes(`${validType}`)) return
 
         let calling = false;
 
@@ -561,7 +589,10 @@ const createCreditCardFields = async(
           }
         }
 
-        const validating = (validCVV && validNumber && validExpiration && validName && validZip)
+        const validating = (validCVV && validNumber && validExpiration && validZip)
+
+        console.log('sdk validating', validating, validCVV, validNumber, validExpiration, validZip)
+
         if (isValid != validating) {
           isValid = validating
           if (calling) {

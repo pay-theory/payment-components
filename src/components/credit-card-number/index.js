@@ -11,6 +11,13 @@ class CreditCardNumberFrame extends PayTheory {
     this.field = NAME
   }
 
+  defineFields(form, styles) {
+    super.defineFields(form, styles)
+    const badgeElement = document.createElement('span')
+    badgeElement.setAttribute('id', 'pay-theory-badge-wrapper')
+    this.appendElement(badgeElement)
+  }
+
   get transact() {
     return this.transacting
   }

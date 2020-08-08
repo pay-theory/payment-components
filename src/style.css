@@ -5,6 +5,13 @@
 	height: 30px;
 	width: 48px;
 	align-self: center;
+	margin: 0 .5em;
+}
+
+#pay-theory-badge-wrapper {
+	display: flex;
+	align-content: center;
+	justify-content: center;
 }
 
 .pay-theory-card-visa {
@@ -23,20 +30,26 @@
 	background-image: url(https://storage.googleapis.com/pt-assets/discover-badge-icon.svg);
 }
 
-.combined #field-wrapper-number {
-	max-width: 55%;
+.combined {
+	justify-content: flex-start;
+	align-items: center;
 }
 
-.combined #field-wrapper-expiration_date {
-	max-width: 15%;
+#field-wrapper-number {
+	min-width: 213px;
+	flex-grow: 1;
 }
 
-.combined #field-wrapper-security_code {
-	max-width: 15%;
+#field-wrapper-expiration_date {
+	min-width: 75px;
 }
 
-.combined #field-wrapper-address-postal_code {
-	max-width: 15%;
+#field-wrapper-security_code {
+	min-width: 75px;
+}
+
+#field-wrapper-address-postal_code {
+	min-width: 75px;
 }
 
 .field-wrapper {
@@ -60,6 +73,7 @@
 
 .pay-theory-field div {
 	display: flex;
+	flex-grow: 1;
 }
 
 .framed {

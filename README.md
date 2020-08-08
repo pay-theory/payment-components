@@ -1,6 +1,6 @@
 # @paytheory/payment-components
 
-> Pay Theory Web SDK
+# Pay Theory Web SDK
 
 [![NPM](https://img.shields.io/npm/v/@paytheory/payment-components.svg)](https://www.npmjs.com/package/@paytheory/payment-components) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
@@ -9,6 +9,8 @@
 ```bash
 npm install --save @paytheory/payment-components
 ```
+
+## Import
 
 ```javascript
 // SDK will be available as paytheory
@@ -19,10 +21,13 @@ or
 
 ```html
 <!-- SDK will be available as window.paytheory -->
-<script src="https://dev.sdk.paytheorystudy.com"></script>
+<script src="https://demo.sdk.paytheorystudy.com"></script>
 ```
 
 ## Usage
+
+### Single Element
+[codesandbox example](https://duckduckgo.com)
 
 First create the container for the credit card input
 
@@ -30,43 +35,101 @@ First create the container for the credit card input
 <div id="paytheory-credit-card" />
 ```
 
-Then create the credit card field and establish callbacks
+### Multiple Element
 
-```javascript
-const paytheorySDK = window.paytheory ? window.paytheory : paytheory
+First create the container for the inputs you want to include
 
-paytheorySDK.createCreditCard(API_KEY, CLIENT_ID, AMOUNT)
-    .then(creditCardEntry => {
-        
-        // mount the hosted fields into the container
-        creditCardEntry.mount()
-        
-        // handle callbacks
-        creditCardEntry.readyObserver((ready) => {
-            // ready is a boolean indictor
-            // fires once when SDK is loaded and ready
-        })
-        creditCardEntry.transactedObserver((transactionResult) => {
-            // results of the transaction
-            // fires once when transaction is completed
-        })
-        creditCardEntry.validObserver((validation) => {
-            // valid is a boolean indictor
-            // fires every time the valid state of the hosted field changes
-        })
-        creditCardEntry.errorObserver((error) => {
-            // error is false or a message
-            // fires every time the error state/message changes
-        })            
-    })
+```html
+<form>
+...
+<div id="pay-theory-credit-card-account-name" />
+<div id="pay-theory-credit-card-number" />
+<div id="pay-theory-credit-card-cvv" />
+<div id="pay-theory-credit-card-expiration" />
+<div id="pay-theory-credit-card-zip" />
+...
+</form>
 ```
 
-When ready submit the transaction 
+## Handle state with callbacks
+
+Mount to create the credit card field(s) and establish callbacks
 
 ```javascript
+/* 
+*  if you imported from CDN the library is available at
+*  window.paytheory, otherwise  if you imported as a module 
+*  the library is as named
+*/
+let paytheorySDK = window.paytheory ? window.paytheory : paytheory
+
+// API KEY and CLIENT ID are required
+const API_KEY = 'your-api-key'
+const CLIENT_ID = 'your-client-id'
+
+// optionally define custom styles for the input elements
+const STYLES = {
+    default: {
+        color: 'black',
+        fontSize: '14px'
+    },
+    success: {
+        color: '#5cb85c',
+        fontSize: '14px'
+    },
+    error: {
+        color: '#d9534f',
+        fontSize: '14px'
+    }
+}
+
 // optionally provide custom tags to help track purchases
 const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
 
+// create a place to store the credit card
+let myCreditCard
+
+// initialize the SDK (can also be called with await)
+paytheorySDK
+        .createCreditCard(
+            API_KEY, 
+            CLIENT_ID, 
+            AMOUNT, 
+            STYLES, 
+            TAGS)
+        .then(creditCardEntry => {
+            
+            // store credit card entry so we can use it for a transaction
+            myCreditCard = creditCardEntry
+            
+            // mount the hosted fields into the container
+            myCreditCard.mount()
+            
+            // handle callbacks
+            myCreditCard.readyObserver(ready => {
+                // ready is a boolean indictor
+                // fires once when SDK is loaded and ready
+            })
+            myCreditCard.transactedObserver(transactionResult => {
+                // results of the transaction
+                // fires once when transaction is completed
+            })
+            myCreditCard.validObserver(valid => {
+                // valid is a boolean indictor
+                // fires every time the valid state of the hosted field changes
+            })
+            myCreditCard.errorObserver(error => {
+                // error is false or a message
+                // fires every time the error state/message changes
+            })             
+        })
+```
+
+## Initiate the transaction
+
+When ready submit the transaction using the saved credit card
+
+```javascript
 // optionally provide details about the buyer
 const BUYER_OPTIONS = {
     "first_name": "Some",
@@ -82,9 +145,11 @@ const BUYER_OPTIONS = {
         "postal_code": "12345"
     }
     
-// begin the transaction authorization    
-paytheorySDK.initCreditCardTransaction(API_KEY, CLIENT_ID, TAGS, BUYER_OPTIONS)
+// begin the transaction authorization using saved credit card entry
+myCreditCard.initTransaction(BUYER_OPTIONS)
 ```
+
+## Completion response
 
 Upon completion of authorization and capture the following details are returned
 
@@ -107,4 +172,5 @@ Upon completion of authorization and capture the following details are returned
 
 ## License
 
-MIT © [aron23](https://github.com/aron23)
+MIT © [pay theory](https://github.com/pay-theory)
+

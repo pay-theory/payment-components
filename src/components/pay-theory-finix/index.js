@@ -3,6 +3,8 @@ class PayTheoryFinixFrame extends HTMLElement {
 
   constructor() {
     super()
+    this.defineFields = this.defineFields.bind(this)
+    this.appendElement = this.appendElement.bind(this)
     this.setFields = this.setFields.bind(this)
     this.eventful = this.eventful.bind(this)
     this.defaultStyles = { default: {}, success: {}, error: {} }
@@ -33,10 +35,13 @@ class PayTheoryFinixFrame extends HTMLElement {
 
       wrapperElement.appendChild(f)
 
-      const container = document.getElementById(`pay-theory-${this.field}-field-container`)
-
-      container.appendChild(wrapperElement)
+      this.appendElement(wrapperElement)
     })
+  }
+
+  appendElement(element) {
+    const container = document.getElementById(`pay-theory-${this.field}-field-container`)
+    container.appendChild(element)
   }
 
   eventful(event) {
@@ -45,13 +50,10 @@ class PayTheoryFinixFrame extends HTMLElement {
     }
     const message = typeof event.data === 'object' ? event.data : { type: 'unknown' }
     if (message.type.startsWith(this.field) && message.type.endsWith('-ready')) {
-      this.ready = event.data[message.type]
+      this.ready = event.data.ready
     }
     else if (message.type.startsWith(this.field) && message.type.endsWith('-valid')) {
-      this.valid = event.data[message.type]
-    }
-    else {
-      this[message.type] = event.data[message.type]
+      this.valid = event.data.valid
     }
   }
 

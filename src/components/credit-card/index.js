@@ -16,6 +16,15 @@ class CreditCardFrame extends PayTheoryFinixFrame {
     this.field = NAME
   }
 
+  defineFields(form, styles) {
+    super.defineFields(form, styles)
+    const badgeElement = document.createElement('span')
+    badgeElement.setAttribute('id', 'pay-theory-badge-wrapper')
+    this.appendElement(badgeElement)
+    const container = document.getElementById(`pay-theory-${this.field}-field-container`)
+
+  }
+
   invalidate(_t) { return _t.isDirty ? _t.errorMessages.length > 0 : undefined }
 
   connectedCallback() {
@@ -36,9 +45,11 @@ class CreditCardFrame extends PayTheoryFinixFrame {
               'class',
               `pay-theory-card-badge pay-theory-card-${binInformation.cardBrand}`,
             );
-            const badged = document.getElementById('badge-wrapper');
-            badged.innerHTML = '';
-            badged.appendChild(badger);
+            const badged = document.getElementById('pay-theory-badge-wrapper');
+            if (badged) {
+              badged.innerHTML = '';
+              badged.appendChild(badger);
+            }
           }
         }
 
@@ -87,7 +98,7 @@ class CreditCardFrame extends PayTheoryFinixFrame {
     }
     window.addEventListener('message', this.eventful);
     this.innerHTML = `<span class="framed">
-            <div id="pay-theory-${this.field}-field-container" class="pay-theory-field">
+            <div id="pay-theory-${this.field}-field-container" class="pay-theory-field combined">
             </div>
         </span>`
 
