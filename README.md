@@ -59,12 +59,6 @@ First create the container for the inputs you want to include
 Mount to create the credit card field(s) and establish callbacks
 
 ```javascript
-/* 
-*  if you imported from CDN the library is available at
-*  window.paytheory, otherwise  if you imported as a module 
-*  the library is as named
-*/
-let paytheorySDK = window.paytheory ? window.paytheory : paytheory
 
 // API KEY and CLIENT ID are required
 const API_KEY = 'your-api-key'
@@ -93,7 +87,7 @@ const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
 let myCreditCard
 
 // initialize the SDK (can also be called with await)
-paytheorySDK
+window.paytheory
         .createCreditCard(
             API_KEY, 
             CLIENT_ID, 
