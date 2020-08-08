@@ -7,7 +7,7 @@
 ## Install
 
 ```bash
-npm install --save @paytheory/payment-components
+npm install --save @paytheory/payment-components@beta
 ```
 
 ## Import
