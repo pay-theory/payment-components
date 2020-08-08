@@ -13,7 +13,7 @@ npm install --save @paytheory/payment-components@beta
 ## Import
 
 ```javascript
-import * as paytheory from '@paytheory/payment-components@beta'
+import '@paytheory/payment-components@beta'
 ```
 
 or
@@ -22,7 +22,11 @@ or
 <script src="https://stage.sdk.paytheorystudy.com"></script>
 ```
 
-either way the SDK will be exposed as window.paytheory
+either way the SDK will be exposed as 
+
+```javascript
+window.paytheory
+```
 
 ## Usage
 
