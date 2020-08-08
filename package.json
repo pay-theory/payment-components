@@ -4,7 +4,7 @@
     "description": "Pay Theory SDK",
     "main": "dist/index.js",
     "author": "Aron Price",
-    "license": "ISC",
+    "license": "MIT",
     "repository": "pay-theory/payment-components",
     "publishConfig": {
         "access": "public"
