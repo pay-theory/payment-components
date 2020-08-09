@@ -37,7 +37,11 @@ window.paytheory
 First create the container for the credit card input
 
 ```html
+<form>
+...
 <div id="paytheory-credit-card" />
+...
+</form>
 ```
 
 ### Multiple Element
@@ -90,40 +94,47 @@ const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
 // create a place to store the credit card
 let myCreditCard
 
-// initialize the SDK (can also be called with await)
-window.paytheory
+(async() => {
+    /*
+    * initialize the SDK (can also be called as a promise)
+    *
+    * if providing tags but no styles, provide an empty object
+    * as a placeholder
+    */
+    myCreditCard = await window.paytheory
         .createCreditCard(
             API_KEY, 
             CLIENT_ID, 
             AMOUNT, 
             STYLES, 
             TAGS)
-        .then(creditCardEntry => {
             
-            // store credit card entry so we can use it for a transaction
-            myCreditCard = creditCardEntry
-            
-            // mount the hosted fields into the container
-            myCreditCard.mount()
-            
-            // handle callbacks
-            myCreditCard.readyObserver(ready => {
-                // ready is a boolean indictor
-                // fires once when SDK is loaded and ready
-            })
-            myCreditCard.transactedObserver(transactionResult => {
-                // results of the transaction
-                // fires once when transaction is completed
-            })
-            myCreditCard.validObserver(valid => {
-                // valid is a boolean indictor
-                // fires every time the valid state of the hosted field changes
-            })
-            myCreditCard.errorObserver(error => {
-                // error is false or a message
-                // fires every time the error state/message changes
-            })             
-        })
+    // mount the hosted fields into the container
+    myCreditCard.mount()
+    
+    // handle callbacks
+    myCreditCard.readyObserver(ready => {
+        // ready is a boolean indictor
+        // fires when SDK is loaded and ready
+    })
+    
+    myCreditCard.transactedObserver(transactionResult => {
+        // results of the transaction
+        // fires once when transaction is completed
+    })
+    
+    myCreditCard.validObserver(valid => {
+        // valid is a boolean indictor
+        // fires every time the valid state of the hosted field changes
+    })
+    
+    myCreditCard.errorObserver(error => {
+        // error is false or a message
+        // fires every time the error state/message changes
+    })             
+        
+})()
+
 ```
 
 ## Initiate the transaction
