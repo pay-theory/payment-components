@@ -74,9 +74,7 @@
         "regenerator-runtime": "^0.13.7",
         "style-loader": "^1.2.1",
         "webpack": "^4.44.1",
-        "webpack-cli": "^3.3.12"
-    },
-    "dependencies": {
+        "webpack-cli": "^3.3.12",
         "@open-wc/testing": "^2.5.21",
         "sinon": "^9.0.2"
     }
