@@ -127,7 +127,6 @@ class PayTheoryFinixFrame extends HTMLElement {
   }
 
   set ready(_isReady) {
-    this.isReady = _isReady
     if (_isReady !== this.isReady) {
       this.isReady = _isReady
       window.postMessage({

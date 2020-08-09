@@ -1,18 +1,14 @@
-import { processElements, invalidate, postData } from './util'
-
-const fields = {
-    CREDIT_CARD_NAME: 'paytheory-credit-card-name',
-    CREDIT_CARD_CVV: 'paytheory-credit-card-cvv',
-    CREDIT_CARD_EXPIRATION: 'paytheory-credit-card-expiration',
-    CREDIT_CARD_NUMBER: 'paytheory-credit-card-number',
-    CREDIT_CARD_ZIP: 'paytheory-credit-card-zip',
+import {
+    processElements,
+    invalidate,
+    postData,
+    fields,
+    stateMap,
+    transactionEndpoint
 }
+from './util'
 
-const transactionEndpoint = `https://${process.env.BUILD_ENV}.tags.api.paytheorystudy.com`;
-
-let identity = false;
-
-const createCreditCardFields = async(
+export default async(
     apiKey,
     clientKey,
     amount,
@@ -23,79 +19,88 @@ const createCreditCardFields = async(
     },
     tags = {},
 ) => {
-    let readyNumber = false;
-    let readyName = true;
-    let readyCVV = true;
-    let readyExpiration = true;
-    let readyZip = true;
-    let validName = true;
-    let validNumber = false;
-    let validCVV = true;
-    let validExpiration = true;
-    let validZip = true;
-    let formed = false;
-    let isValid = false;
-    let isReady = false;
-    let processed = []
+    let identity = false
+    let readyNumber = false
+    let readyName = true
+    let readyCVV = true
+    let readyExpiration = true
+    let readyZip = true
+    let validName = true
+    let validNumber = false
+    let validCVV = false
+    let validExpiration = false
+    let validZip = true
+    let formed = false
+    let isValid = false
+    let isReady = false
+    let processedElements = []
+    let transactingElement
     return {
-        mount: (
-            elements = [
-                fields.CREDIT_CARD_NAME,
-                fields.CREDIT_CARD_NUMBER,
-                fields.CREDIT_CARD_CVV,
-                fields.CREDIT_CARD_EXPIRATION,
-                fields.CREDIT_CARD_ZIP,
-            ],
+        mount: async(
+            elements = {
+                'account-name': fields.CREDIT_CARD_NAME,
+                number: fields.CREDIT_CARD_NUMBER,
+                cvv: fields.CREDIT_CARD_CVV,
+                expiration: fields.CREDIT_CARD_EXPIRATION,
+                zip: fields.CREDIT_CARD_ZIP,
+            },
         ) => {
             if (formed) {
-                processed = processElements(formed, elements, styles);
+                processedElements = processElements(formed, elements, styles)
+                transactingElement = processedElements.reduce((element, cv) => element.type === 'number' ? element.frame : cv)
+                return
             }
             else {
-                const script = document.createElement('script');
+                const script = document.createElement('script')
                 // eslint-disable-next-line scanjs-rules/assign_to_src
-                script.src = 'https://forms.finixpymnts.com/finix.js';
+                script.src = 'https://forms.finixpymnts.com/finix.js'
                 script.addEventListener('load', function () {
                     formed = window.PaymentForm.card((state, binInformation) => {
                         if (binInformation) {
-                            const badge = binInformation.cardBrand;
-                            const badger = document.createElement('div');
-                            badger.setAttribute('class', `paytheory-card-badge paytheory-card-${badge}`);
-                            const badged = document.getElementById('badge-wrapper');
+                            const badge = binInformation.cardBrand
+                            const badger = document.createElement('div')
+                            badger.setAttribute('class', `pay-theory-card-badge pay-theory-card-${badge}`)
+                            const badged = document.getElementById('pay-theory-badge-wrapper')
                             if (badged !== null) {
-                                badged.innerHTML = '';
-                                badged.appendChild(badger);
+                                badged.innerHTML = ''
+                                badged.appendChild(badger)
                             }
                         }
 
                         if (state) {
-                            const num = invalidate(state.number);
-                            const code = invalidate(state.security_code);
+                            let errors = []
 
-                            const invalid = num ?
-                                state.number.errorMessages[0] :
-                                code ?
-                                state.security_code.errorMessages[0] :
-                                false;
+                            processedElements.forEach(element => {
+                                let stateType = ''
 
-                            this.error = invalid;
-                            this.valid = this.error // if there is an error
-                                ?
-                                false // valid is false
-                                :
-                                typeof code === 'undefined' || typeof num === 'undefined' // otherwise if any values are undefined
-                                ?
-                                undefined // valid is undefined
-                                :
-                                typeof code === 'undefined' // otherwise if code is defined
-                                ?
-                                !num // otherwise valid is nums validation
-                                :
-                                !code; // valid is codes validation
+                                if (stateMap[element.type]) {
+                                    stateType = stateMap[element.type]
+                                }
+                                else {
+                                    stateType = element.type
+                                }
+
+                                const stated = state[stateType]
+                                const invalidElement = invalidate(stated)
+                                if (element.frame.field === element.type) {
+                                    element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
+
+                                    if (invalidElement) {
+                                        errors.push(stated.errorMessages[0])
+                                        element.frame.error = stated.errorMessages[0]
+                                    }
+                                    else {
+                                        element.frame.error = false
+                                    }
+                                }
+                            })
                         }
-                    });
-                    processed = processElements(formed, elements, styles);
-                });
-                document.getElementsByTagName('head')[0].appendChild(script);
+                    })
+                    processedElements = processElements(formed, elements, styles)
+                    transactingElement = processedElements.reduce((element, cv) => element.type === 'number' ? element.frame : cv)
+                    return
+                })
+                document.getElementsByTagName('head')[0].appendChild(script)
             }
         },
 
@@ -105,20 +110,15 @@ const createCreditCardFields = async(
                     `${transactionEndpoint}/${clientKey}/identity`,
                     apiKey,
                     typeof buyerOptions === 'object' ? buyerOptions : {},
-                );
+                )
             }
 
-            window.postMessage({
-                    type: `transact`,
-                    transact: true,
-                },
-                window.location.origin,
-            );
+            transactingElement.transact = true
         },
         readyObserver: readyCallback => {
             window.addEventListener('message', event => {
                 if (![window.location.origin].includes(event.origin)) {
-                    return;
+                    return
                 }
                 const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
 
@@ -128,59 +128,59 @@ const createCreditCardFields = async(
 
                 const readyType = message.type.split('-')[0]
 
-                if (!processed.includes(`paytheory-credit-card-${readyType}`)) return
+                if (!processedElements.map(element => element.type).includes(`${readyType}`)) return
 
                 switch (readyType) {
                 case 'name':
                     {
-                        readyName = message.ready;
-                        calling = true;
-                        break;
+                        readyName = message.ready
+                        calling = true
+                        break
                     }
                 case 'cvv':
                     {
-                        readyCVV = message.ready;
-                        calling = true;
-                        break;
+                        readyCVV = message.ready
+                        calling = true
+                        break
                     }
                 case 'number':
                     {
-                        readyNumber = message.ready;
-                        calling = true;
-                        break;
+                        readyNumber = message.ready
+                        calling = true
+                        break
                     }
                 case 'expiration':
                     {
-                        readyExpiration = message.ready;
-                        calling = true;
-                        break;
+                        readyExpiration = message.ready
+                        calling = true
+                        break
                     }
                 case 'zip':
                     {
-                        readyZip = message.ready;
-                        calling = true;
-                        break;
+                        readyZip = message.ready
+                        calling = true
+                        break
                     }
                 default:
                     {
-                        break;
+                        break
                     }
                 }
                 const readying = (readyCVV && readyNumber && readyExpiration && readyName && readyZip)
                 if (isReady != readying) {
                     isReady = readying
                     if (calling) {
-                        readyCallback(isReady);
+                        readyCallback(isReady)
                     }
                 }
-            });
+            })
         },
         transactedObserver: transactedCallback => {
             window.addEventListener('message', async event => {
                 if (![window.location.origin].includes(event.origin)) {
-                    return;
+                    return
                 }
-                const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
                 if (message.type === 'tokenized') {
                     const instrument = await postData(
                         `${transactionEndpoint}/${clientKey}/instrument`,
@@ -189,7 +189,7 @@ const createCreditCardFields = async(
                             type: 'TOKEN',
                             identity: identity.id,
                         },
-                    );
+                    )
 
                     const authorization = await postData(
                         `${transactionEndpoint}/${clientKey}/authorize`,
@@ -199,91 +199,89 @@ const createCreditCardFields = async(
                             currency: 'USD',
                             tags: tags,
                         },
-                    );
+                    )
 
                     transactedCallback({
                         last_four: instrument.last_four,
                         brand: instrument.brand,
                         ...authorization,
-                    });
+                    })
                 }
-            });
+            })
         },
         errorObserver: errorCallback => {
             window.addEventListener('message', event => {
                 if (![window.location.origin].includes(event.origin)) {
-                    return;
+                    return
                 }
-                const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
                 if (message.type === 'error') {
-                    errorCallback(message.error);
+                    errorCallback(message.error)
                 }
-            });
+            })
         },
         validObserver: validCallback => {
             window.addEventListener('message', event => {
                 if (![window.location.origin].includes(event.origin)) {
-                    return;
+                    return
                 }
-                const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
 
                 if (!message.type.endsWith('-valid')) return
 
                 const validType = message.type.split('-')[0]
 
-                if (!processed.includes(`paytheory-credit-card-${validType}`)) return
+                if (!processedElements.map(element => element.type).includes(`${validType}`)) return
 
-                let calling = false;
+                let calling = false
 
                 switch (validType) {
                 case 'name':
                     {
-                        validName = message.valid;
-                        calling = true;
-                        break;
+                        validName = message.valid
+                        calling = true
+                        break
                     }
                 case 'cvv':
                     {
-                        validCVV = message.valid;
-                        calling = true;
-                        break;
+                        validCVV = message.valid
+                        calling = true
+                        break
                     }
                 case 'number':
                     {
-                        validNumber = message.valid;
-                        calling = true;
-                        break;
+                        validNumber = message.valid
+                        calling = true
+                        break
                     }
                 case 'expiration':
                     {
-                        validExpiration = message.valid;
-                        calling = true;
-                        break;
+                        validExpiration = message.valid
+                        calling = true
+                        break
                     }
                 case 'zip':
                     {
-                        validZip = message.valid;
-                        calling = true;
-                        break;
+                        validZip = message.valid
+                        calling = true
+                        break
                     }
                 default:
                     {
-                        break;
+                        break
                     }
                 }
 
-                console.log('validating sdk', validType, validCVV, validNumber, validExpiration, validName, validZip)
-
-                const validating = (validCVV && validNumber && validExpiration && validName && validZip)
+                const validating = (validCVV && validNumber && validExpiration && validZip && validName)
 
                 if (isValid != validating) {
                     isValid = validating
                     if (calling) {
-                        validCallback(isValid);
+                        validCallback(isValid)
                     }
                 }
 
-            });
+            })
         },
-    };
+    }
 }
