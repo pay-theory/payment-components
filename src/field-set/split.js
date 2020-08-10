@@ -20,19 +20,24 @@ export default async(
     tags = {},
 ) => {
     let identity = false
+
     let readyNumber = false
     let readyName = true
     let readyCVV = true
     let readyExpiration = true
     let readyZip = true
+
     let validName = true
     let validNumber = false
     let validCVV = false
     let validExpiration = false
     let validZip = true
+
     let formed = false
+
     let isValid = false
     let isReady = false
+
     let processedElements = []
     let transactingElement
     return {

@@ -120,6 +120,7 @@ export default async(
 
             framed.transact = true
         },
+
         readyObserver: readyCallback => {
             window.addEventListener('message', event => {
                 if (![window.location.origin].includes(event.origin)) {
@@ -132,6 +133,7 @@ export default async(
                 }
             })
         },
+
         transactedObserver: transactedCallback => {
             window.addEventListener('message', async event => {
                 if (![window.location.origin].includes(event.origin)) {
@@ -166,6 +168,7 @@ export default async(
                 }
             })
         },
+
         errorObserver: errorCallback => {
             window.addEventListener('message', event => {
                 if (![window.location.origin].includes(event.origin)) {
@@ -177,6 +180,7 @@ export default async(
                 }
             })
         },
+
         validObserver: validCallback => {
             window.addEventListener('message', event => {
                 if (![window.location.origin].includes(event.origin)) {

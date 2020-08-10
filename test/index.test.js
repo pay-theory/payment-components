@@ -2,16 +2,17 @@
 import { html, fixture, expect, assert } from '@open-wc/testing';
 import { aTimeout } from '@open-wc/testing-helpers'
 import sinon from 'sinon';
-const api = "pt-sandbox-75928e5d68108ca3fc418bde45dc5253";
-const client = "IDvwtJwLdkja7CMk5oR6QNDk";
+const api = "pt-sandbox-demo-89f9afeeb9953508186f7cd1a721c269";
+const client = "IDmESP4jtv5BH15NTPdz8SGk";
 
 describe('createCreditCard', () => {
     let error;
 
     beforeEach(() => {
         error = undefined;
-        window.onerror = (f) => error = f;
+        window.onerror = (e) => error = e;
     });
+
     it('renders finix iframes', async() => {
 
         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
@@ -99,6 +100,31 @@ describe('createCreditCard', () => {
         await expect(error).to.be.ok;
     });
 
+    it('initTransaction sets transact to true', async() => {
+
+        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+
+        const creditCard = await window.paytheory.createCreditCard(api, client, 2500);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        await aTimeout(300);
+
+        await expect(error).to.not.be;
+
+        const ccTagFrame = await document.getElementById('pay-theory-credit-card-tag-frame');
+
+        await expect(ccTagFrame.transact).to.not.be;
+
+        await creditCard.initTransaction()
+
+        await expect(ccTagFrame.transact).to.be;
+    });
+
     it('readyObserver triggers on ready message from mount', async() => {
         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
 
@@ -149,24 +175,22 @@ describe('createCreditCard', () => {
 
         const creditCard = await window.paytheory.createCreditCard(api, client, 2500);
 
-        let valid;
+        const spy = sinon.spy();
 
-        const validate = () => valid = true;
+        await creditCard.validObserver(spy);
 
-        await creditCard.validObserver(validate);
-
-        expect(valid).to.not.be.ok;
+        assert(spy.notCalled)
 
         window.postMessage({
-                type: 'valid',
+                type: 'credit-card-valid',
                 valid: true,
             },
             window.location.origin,
         );
 
-        await aTimeout(100);
+        await aTimeout(1);
 
-        expect(valid).to.be.ok;
+        assert(spy.called)
     })
 });
 
@@ -223,7 +247,7 @@ describe('createCreditCardFields', () => {
         await expect(fwName).to.be.ok;
     });
 
-    it('renders finix iframes with customer element names', async() => {
+    it('renders finix iframes with custom element names', async() => {
 
         const fixed = await fixture(html `<div>
         <div id="pay-theory-credit-card-cvv-custom" />
@@ -240,7 +264,7 @@ describe('createCreditCardFields', () => {
         await expect(ccTag).to.be.ok;
 
         await creditCard.mount({
-            name: "pay-theory-credit-card-account-name-custom",
+            'account-name': "pay-theory-credit-card-account-name-custom",
             cvv: "pay-theory-credit-card-cvv-custom",
             expiration: "pay-theory-credit-card-expiration-custom",
             number: "pay-theory-credit-card-number-custom",
@@ -280,7 +304,7 @@ describe('createCreditCardFields', () => {
         await expect(fwName).to.be.ok;
     });
 
-    it('renders finix iframes with customer element names leaving one out', async() => {
+    it('renders finix iframes with custom element names leaving one out', async() => {
 
         const fixed = await fixture(html `<div>
         <div id="pay-theory-credit-card-cvv-custom" />

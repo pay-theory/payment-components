@@ -73,7 +73,7 @@ const processElement = (form, element, styles) => {
 const processElements = (form, elements, styles) => {
     let processed = []
     fieldTypes.forEach(type => {
-        if (typeof elements[type] !== 'string') throw new Error('invalid element')
+        if (elements[type] && typeof elements[type] !== 'string') throw new Error('invalid element')
         const container = document.getElementById(elements[type])
         if (container) {
             const contained = document.getElementById(`${elements[type]}-tag-frame`)
@@ -89,6 +89,7 @@ const processElements = (form, elements, styles) => {
         else {
             console.log(`${elements[type]} is not available in dom`)
         }
+
     })
     return processed
 }
