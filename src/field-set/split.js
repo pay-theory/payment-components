@@ -119,7 +119,7 @@ export default async(
             }
 
             console.log('sdk init transaction', transactingElement.id)
-            transactingElement.transact = true
+            transactingElement.frame.transact = true
         },
         readyObserver: readyCallback => {
             window.addEventListener('message', event => {
