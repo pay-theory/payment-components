@@ -102,25 +102,21 @@ const USE_SINGLE_FIELD = true
     *
     * if providing tags but no styles, provide an empty object
     * as a placeholder
-    *
-    * for single field call createCreditCard
-    * for multiple fields call createCreditCardFields
     */
     if (USE_SINGLE_FIELD) {
-        myCreditCard = await window.paytheory.createCreditCard(
-            API_KEY, 
-            CLIENT_ID, 
-            AMOUNT, 
-            STYLES, 
-            TAGS)
+        // for single field call createCreditCard
+        myCreditCardConstructor = window.paytheory.createCreditCard
     } else {
-        myCreditCard = await window.paytheory.createCreditCardFields(
-            API_KEY, 
-            CLIENT_ID, 
-            AMOUNT, 
-            STYLES, 
-            TAGS)
+        //for multiple fields call createCreditCardFields
+        myCreditCardConstructor = window.paytheory.createCreditCardFields
     }
+    
+    myCreditCard = await myCreditCardConstructor(
+        API_KEY, 
+        CLIENT_ID, 
+        AMOUNT, 
+        STYLES, 
+        TAGS)
             
     // mount the hosted fields into the container
     myCreditCard.mount()
