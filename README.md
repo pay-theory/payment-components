@@ -94,20 +94,33 @@ const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
 // create a place to store the credit card
 let myCreditCard
 
+const USE_SINGLE_FIELD = true
+
 (async() => {
     /*
     * initialize the SDK (can also be called as a promise)
     *
     * if providing tags but no styles, provide an empty object
     * as a placeholder
+    *
+    * for single field call createCreditCard
+    * for multiple fields call createCreditCardFields
     */
-    myCreditCard = await window.paytheory
-        .createCreditCard(
+    if (USE_SINGLE_FIELD) {
+        myCreditCard = await window.paytheory.createCreditCard(
             API_KEY, 
             CLIENT_ID, 
             AMOUNT, 
             STYLES, 
             TAGS)
+    } else {
+        myCreditCard = await window.paytheory.createCreditCardFields(
+            API_KEY, 
+            CLIENT_ID, 
+            AMOUNT, 
+            STYLES, 
+            TAGS)
+    }
             
     // mount the hosted fields into the container
     myCreditCard.mount()
