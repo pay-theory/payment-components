@@ -30,11 +30,20 @@ window.paytheory
 
 ## Usage
 
-### Combined Element
+There are two approaches for you to choose from for your implementation .
+
+### Credit Card Element
 
 [codesandbox combined example](https://codesandbox.io/s/payment-example-combined-1i61g?file=/public/index.html)
 
-First create the container for the credit card input
+The credit card element provides a single form entry combining:
+
+* credi card number
+* credi card CVV security code
+* credi card expiration date
+* credit card zip code
+
+Requires a container for the credit card input
 
 ```html
 <form>
@@ -44,11 +53,21 @@ First create the container for the credit card input
 </form>
 ```
 
-### Multiple Element
+### Credit Card Fields Elements
 
 [codesandbox multiple example](https://codesandbox.io/s/payment-examples-split-pvtfi?file=/public/index.html)
 
-First create the container for the inputs you want to include
+The credit card fields elements provide distinct entries for:
+
+* credit card account name
+* credit card number
+* credit card CVV security code
+* credit card expiration date
+* credit card zip code
+
+These entries can be placed wherever you prefer.
+
+Requires a container for each of the inputs:
 
 ```html
 <form>
@@ -108,7 +127,7 @@ const USE_SINGLE_FIELD = true
         // for single field call createCreditCard
         myCreditCardConstructor = window.paytheory.createCreditCard
     } else {
-        //for multiple fields call createCreditCardFields
+        // for multiple fields call createCreditCardFields
         myCreditCardConstructor = window.paytheory.createCreditCardFields
     }
     
@@ -173,7 +192,7 @@ myCreditCard.initTransaction(BUYER_OPTIONS)
 
 ## Completion response
 
-Upon completion of authorization and capture the following details are returned
+Upon completion of authorization and capture, the following details are returned:
 
 ```json
 {
