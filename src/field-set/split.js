@@ -118,6 +118,7 @@ export default async(
                 )
             }
 
+            console.log('sdk init transaction')
             transactingElement.transact = true
         },
         readyObserver: readyCallback => {

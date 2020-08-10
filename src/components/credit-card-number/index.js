@@ -23,6 +23,7 @@ class CreditCardNumberFrame extends PayTheory {
   }
 
   set transact(_transacting) {
+    console.log('component init transaction', _transacting, this.transacting)
     if (this.transacting !== _transacting) {
       this.transacting = _transacting
       this.form.submit('sandbox', this.application, (err, res) => {
