@@ -97,6 +97,8 @@ describe('createCreditCard', () => {
 
         await aTimeout(200)
 
+        console.log(error)
+
         await expect(error).to.be.ok;
     });
 
@@ -305,6 +307,7 @@ describe('createCreditCardFields', () => {
     });
 
     it('renders finix iframes with custom element names leaving one out', async() => {
+        window.onerror = (e) => console.log(e)
 
         const fixed = await fixture(html `<div>
         <div id="pay-theory-credit-card-cvv-custom" />
