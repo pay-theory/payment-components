@@ -83,7 +83,7 @@ Requires a container for each of the inputs:
 
 ## Handle state with callbacks
 
-Mount to create the credit card field(s) and establish callbacks
+Mount to create the credit card field(s) and establish callbacks:
 
 ```javascript
 
@@ -168,7 +168,7 @@ const USE_SINGLE_FIELD = true
 
 ## Initiate the transaction
 
-When ready submit the transaction using the saved credit card
+When ready submit the transaction using the saved credit card:
 
 ```javascript
 // optionally provide details about the buyer
