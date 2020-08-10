@@ -93,7 +93,6 @@ const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
 
 // create a place to store the credit card
 let myCreditCard
-
 const USE_SINGLE_FIELD = true
 
 (async() => {
@@ -103,6 +102,8 @@ const USE_SINGLE_FIELD = true
     * if providing tags but no styles, provide an empty object
     * as a placeholder
     */
+    let myCreditCardConstructor
+    
     if (USE_SINGLE_FIELD) {
         // for single field call createCreditCard
         myCreditCardConstructor = window.paytheory.createCreditCard
