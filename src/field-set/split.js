@@ -8,6 +8,8 @@ import {
 }
 from './util'
 
+const findTransactingElement = (element, cv) => element.type === 'number' ? element.frame : cv
+
 export default async(
     apiKey,
     clientKey,
@@ -52,7 +54,7 @@ export default async(
         ) => {
             if (formed) {
                 processedElements = processElements(formed, elements, styles)
-                transactingElement = processedElements.reduce((element, cv) => element.type === 'number' ? element.frame : cv)
+                transactingElement = processedElements.reduce(findTransactingElement)
                 return
             }
             else {
@@ -102,7 +104,7 @@ export default async(
                         }
                     })
                     processedElements = processElements(formed, elements, styles)
-                    transactingElement = processedElements.reduce((element, cv) => element.type === 'number' ? element.frame : cv)
+                    transactingElement = processedElements.reduce(findTransactingElement)
                     return
                 })
                 document.getElementsByTagName('head')[0].appendChild(script)
@@ -118,7 +120,6 @@ export default async(
                 )
             }
 
-            console.log('sdk init transaction', transactingElement.id)
             transactingElement.frame.transact = true
         },
         readyObserver: readyCallback => {
