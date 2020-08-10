@@ -118,7 +118,7 @@ export default async(
                 )
             }
 
-            console.log('sdk init transaction')
+            console.log('sdk init transaction', transactingElement.id)
             transactingElement.transact = true
         },
         readyObserver: readyCallback => {
