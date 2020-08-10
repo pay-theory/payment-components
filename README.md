@@ -39,7 +39,7 @@ First create the container for the credit card input
 ```html
 <form>
 ...
-<div id="paytheory-credit-card" />
+<div id="pay-theory-credit-card" />
 ...
 </form>
 ```
