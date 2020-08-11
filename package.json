@@ -18,7 +18,7 @@
         ]
     },
     "scripts": {
-        "build-dev": "env BUILD_ENV=dev APP_ID=APbu7tPrKJWHSMDh7M65ahft webpack",
+        "build-dev": "env BUILD_ENV=dev APP_ID=APrPDbJxbZuiRuwN3NjfajpH webpack",
         "build-stage": "env BUILD_ENV=stage APP_ID=APpSQimXFrjSU8bzNzhXLLFH webpack",
         "build-prod": "env BUILD_ENV=prod APP_ID=APcT6PQC1XiuCpPMUUXEZZ2y webpack",
         "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
