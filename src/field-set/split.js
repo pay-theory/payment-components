@@ -120,7 +120,12 @@ export default async(
                 )
             }
 
-            transactingElement.frame.transact = true
+            if (transactingElement.frame) {
+                transactingElement.frame.transact = true
+            }
+            else {
+                transactingElement.transact = true
+            }
         },
         readyObserver: readyCallback => {
             window.addEventListener('message', event => {
