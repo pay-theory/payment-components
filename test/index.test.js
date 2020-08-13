@@ -5,6 +5,35 @@ import sinon from 'sinon';
 const api = "pt-sandbox-demo-89f9afeeb9953508186f7cd1a721c269";
 const client = "IDmESP4jtv5BH15NTPdz8SGk";
 
+function jsonOk(body) {
+    var mockResponse = new window.Response(JSON.stringify(body), { //the fetch API returns a resolved window Response object
+        status: 200,
+        headers: {
+            'Content-type': 'application/json'
+        }
+    });
+
+    return Promise.resolve(mockResponse);
+}
+
+const MOCK_JSON = {
+    id: 'jsonId',
+    last_four: 1234,
+    brand: 'visa'
+};
+
+
+beforeEach(() => {
+    let stub = sinon.stub(window, 'fetch'); //add stub
+    stub.onCall(0).returns(jsonOk(MOCK_JSON));
+    stub.onCall(1).returns(jsonOk(MOCK_JSON));
+});
+
+afterEach(() => {
+    window.fetch.restore(); //remove stub
+});
+
+
 describe('createCreditCard', () => {
     let error;
 
@@ -97,8 +126,6 @@ describe('createCreditCard', () => {
 
         await aTimeout(200)
 
-        console.log(error)
-
         await expect(error).to.be.ok;
     });
 
@@ -147,6 +174,41 @@ describe('createCreditCard', () => {
         await aTimeout(200);
 
         await expect(ready).to.be.ok;
+    });
+
+    it('transactedObserver runs on tokenized message', async() => {
+
+        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+
+        const creditCard = await window.paytheory.createCreditCard(api, client, 2500);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await aTimeout(200);
+
+        const spy = sinon.spy()
+
+        await creditCard.transactedObserver(spy)
+
+        await assert(spy.notCalled)
+
+
+        window.postMessage({
+                type: 'tokenized',
+                tokenized: {
+                    data: {
+                        id: 'testId'
+                    }
+                },
+            },
+            window.location.origin,
+        );
+
+        await aTimeout(300);
+
+        await assert(spy.calledWith(MOCK_JSON))
     });
 
     it('errorObserver triggers on error message', async() => {
@@ -307,7 +369,6 @@ describe('createCreditCardFields', () => {
     });
 
     it('renders finix iframes with custom element names leaving one out', async() => {
-        window.onerror = (e) => console.log(e)
 
         const fixed = await fixture(html `<div>
         <div id="pay-theory-credit-card-cvv-custom" />
@@ -356,6 +417,35 @@ describe('createCreditCardFields', () => {
         await expect(fwZip).to.be.ok;
     });
 
+    it('initTransaction sets transct to true', async() => {
+        const fixed = await fixture(html `<div>
+        <div id="pay-theory-credit-card-cvv" />
+        <div id="pay-theory-credit-card-account-name" />
+        <div id="pay-theory-credit-card-expiration" />
+        <div id="pay-theory-credit-card-number" />
+        <div id="pay-theory-credit-card-zip" />
+        </div>`);
+
+        const creditCard = await window.paytheory.createCreditCardFields(api, client, 2500)
+
+        const ccTag = await document.getElementById('pay-theory-credit-card-number')
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        await aTimeout(200);
+
+        const ccTagFrame = await document.getElementById('pay-theory-credit-card-number-tag-frame')
+
+        await expect(ccTagFrame.transact).to.not.be;
+
+        await creditCard.initTransaction();
+
+        await expect(ccTagFrame.transact).to.be.ok;
+
+    })
+
     it('readyObserver triggers on ready message from mount', async() => {
         const fixed = await fixture(html `<div>
         <div id="pay-theory-credit-card-cvv" />
@@ -371,24 +461,56 @@ describe('createCreditCardFields', () => {
 
         await expect(ccTag).to.be.ok;
 
-        let ready;
+        const spy = sinon.spy()
 
-        const readied = () => ready = true;
+        await creditCard.readyObserver(spy)
 
-        await creditCard.readyObserver(readied)
-
-        await expect(ready).to.not.be.ok;
+        await assert(spy.notCalled)
 
         await creditCard.mount();
 
         await aTimeout(200)
 
-        await expect(ready).to.be.ok;
+        await assert(spy.called)
     })
 
-    // it('readyObserver triggers on ready message from mount leaving out name', async() => {
+    it('readyObserver triggers on ready message from mount leaving out name', async() => {
+        const fixed = await fixture(html `<div>
+            <div id="pay-theory-credit-card-cvv" />
+            <div id="pay-theory-credit-card-expiration" />
+            <div id="pay-theory-credit-card-number" />
+            <div id="pay-theory-credit-card-zip" />
+            </div>`);
+
+        const creditCard = await window.paytheory.createCreditCardFields(api, client, 2500)
+
+        const ccTag = await document.getElementById('pay-theory-credit-card-number')
+
+        await expect(ccTag).to.be.ok;
+
+        const spy = sinon.spy()
+
+        await creditCard.readyObserver(spy)
+
+        await assert(spy.notCalled)
+
+        await creditCard.mount({
+            cvv: "pay-theory-credit-card-cvv",
+            expiration: "pay-theory-credit-card-expiration",
+            number: "pay-theory-credit-card-number",
+            zip: "pay-theory-credit-card-zip"
+        });
+
+        await aTimeout(200);
+
+        await assert(spy.called)
+    })
+
+    // it('transactedObserver runs on tokenized message', async() => {
+
     //     const fixed = await fixture(html `<div>
     //     <div id="pay-theory-credit-card-cvv" />
+    //     <div id="pay-theory-credit-card-account-name" />
     //     <div id="pay-theory-credit-card-expiration" />
     //     <div id="pay-theory-credit-card-number" />
     //     <div id="pay-theory-credit-card-zip" />
@@ -396,29 +518,33 @@ describe('createCreditCardFields', () => {
 
     //     const creditCard = await window.paytheory.createCreditCardFields(api, client, 2500)
 
-    //     const ccTag = await document.getElementById('pay-theory-credit-card-number')
+    //     const ccTag = await document.getElementById('pay-theory-credit-card-cvv');
 
     //     await expect(ccTag).to.be.ok;
 
-    //     let ready;
+    //     await aTimeout(200);
 
-    //     const readied = () => ready = true;
+    //     const spy = sinon.spy()
 
-    //     await creditCard.readyObserver(readied)
+    //     await creditCard.transactedObserver(spy)
 
-    //     await expect(ready).to.not.be.ok;
+    //     await assert(spy.notCalled)
 
-    //     await creditCard.mount({
-    //         cvv: "pay-theory-credit-card-cvv-custom",
-    //         expiration: "pay-theory-credit-card-expiration-custom",
-    //         number: "pay-theory-credit-card-number-custom",
-    //         zip: "pay-theory-credit-card-zip-custom"
-    //     });
+    //     window.postMessage({
+    //             type: 'tokenized',
+    //             tokenized: {
+    //                 data: {
+    //                     id: 'testId'
+    //                 }
+    //             },
+    //         },
+    //         window.location.origin,
+    //     );
 
-    //     await aTimeout(200)
+    //     await aTimeout(300);
 
-    //     await expect(ready).to.be.ok;
-    // })
+    //     await assert(spy.calledWith(MOCK_JSON))
+    // });
 
     it('errorObserver triggers on error message', async() => {
 

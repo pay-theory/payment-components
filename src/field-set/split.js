@@ -23,6 +23,8 @@ export default async(
 ) => {
     let identity = false
 
+    let setReady = false
+
     let readyNumber = false
     let readyName = true
     let readyCVV = true
@@ -103,8 +105,8 @@ export default async(
                             })
                         }
                     })
-                    processedElements = processElements(formed, elements, styles)
-                    transactingElement = processedElements.reduce(findTransactingElement)
+                    processedElements = processElements(formed, elements, styles);
+                    transactingElement = processedElements.reduce(findTransactingElement);
                     return
                 })
                 document.getElementsByTagName('head')[0].appendChild(script)
@@ -120,8 +122,9 @@ export default async(
                 )
             }
 
-            transactingElement.frame.transact = true
+            transactingElement.transact = true
         },
+
         readyObserver: readyCallback => {
             window.addEventListener('message', event => {
                 if (![window.location.origin].includes(event.origin)) {
@@ -131,7 +134,50 @@ export default async(
 
                 let calling = false
 
+                let processed = false
+
                 if (!message.type.endsWith('-ready')) return
+
+                if (!setReady) {
+                    processedElements.forEach(element => {
+                        switch (element.type) {
+                        case 'name':
+                            {
+                                readyName = false
+                                setReady = true
+                                break
+                            }
+                        case 'cvv':
+                            {
+                                readyCVV = false
+                                setReady = true
+                                break
+                            }
+                        case 'number':
+                            {
+                                readyNumber = false
+                                setReady = true
+                                break
+                            }
+                        case 'expiration':
+                            {
+                                readyExpiration = false
+                                setReady = true
+                                break
+                            }
+                        case 'zip':
+                            {
+                                readyZip = false
+                                setReady = true
+                                break
+                            }
+                        default:
+                            {
+                                break
+                            }
+                        }
+                    })
+                }
 
                 const readyType = message.type.split('-')[0]
 
@@ -182,6 +228,7 @@ export default async(
                 }
             })
         },
+
         transactedObserver: transactedCallback => {
             window.addEventListener('message', async event => {
                 if (![window.location.origin].includes(event.origin)) {
@@ -216,6 +263,7 @@ export default async(
                 }
             })
         },
+
         errorObserver: errorCallback => {
             window.addEventListener('message', event => {
                 if (![window.location.origin].includes(event.origin)) {
@@ -227,6 +275,7 @@ export default async(
                 }
             })
         },
+
         validObserver: validCallback => {
             window.addEventListener('message', event => {
                 if (![window.location.origin].includes(event.origin)) {
