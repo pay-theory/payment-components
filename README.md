@@ -30,20 +30,20 @@ window.paytheory
 
 ## Usage
 
-There are two approaches for you to choose from for your implementation .
+There are two approaches for you to choose from for your implementation.
 
 ### Credit Card Element
 
-[codesandbox combined example](https://codesandbox.io/s/payment-example-combined-1i61g?file=/public/index.html)
+[codesandbox credit card element example](https://codesandbox.io/s/payment-example-combined-1i61g?file=/public/index.html)
 
 The credit card element provides a single form entry combining:
 
-* credi card number
-* credi card CVV security code
-* credi card expiration date
+* credit card number
+* credit card CVV security code
+* credit card expiration date
 * credit card zip code
 
-Requires a container for the credit card input
+Requires a container for the credit card input:
 
 ```html
 <form>
@@ -55,7 +55,7 @@ Requires a container for the credit card input
 
 ### Credit Card Fields Elements
 
-[codesandbox multiple example](https://codesandbox.io/s/payment-examples-split-pvtfi?file=/public/index.html)
+[codesandbox credit card fields example](https://codesandbox.io/s/payment-examples-split-pvtfi?file=/public/index.html)
 
 The credit card fields elements provide distinct entries for:
 
@@ -83,7 +83,7 @@ Requires a container for each of the inputs:
 
 ## Handle state with callbacks
 
-Mount to create the credit card field(s) and establish callbacks
+Mount to create the credit card field(s) and establish callbacks:
 
 ```javascript
 
@@ -168,7 +168,7 @@ const USE_SINGLE_FIELD = true
 
 ## Initiate the transaction
 
-When ready submit the transaction using the saved credit card
+When ready submit the transaction using the saved credit card:
 
 ```javascript
 // optionally provide details about the buyer

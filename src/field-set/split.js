@@ -122,7 +122,16 @@ export default async(
                 )
             }
 
+<<<<<<< HEAD
             transactingElement.transact = true
+=======
+            if (transactingElement.frame) {
+                transactingElement.frame.transact = true
+            }
+            else {
+                transactingElement.transact = true
+            }
+>>>>>>> a244ce9564212915de95d8b636168e362c1c8b47
         },
 
         readyObserver: readyCallback => {
