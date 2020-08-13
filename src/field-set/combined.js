@@ -10,6 +10,7 @@ export default async(
         error: {},
     },
     tags = {},
+    host = transactionEndpoint
 ) => {
     let formed = false
     let identity = false
@@ -112,7 +113,7 @@ export default async(
         initTransaction: async(buyerOptions = {}) => {
             if (buyerOptions) {
                 identity = await postData(
-                    `${transactionEndpoint}/${clientKey}/identity`,
+                    `${host}/${clientKey}/identity`,
                     apiKey,
                     typeof buyerOptions === 'object' ? buyerOptions : {},
                 )
@@ -142,7 +143,7 @@ export default async(
                 const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
                 if (message.type === 'tokenized') {
                     const instrument = await postData(
-                        `${transactionEndpoint}/${clientKey}/instrument`,
+                        `${host}/${clientKey}/instrument`,
                         apiKey, {
                             token: message.tokenized.data.id,
                             type: 'TOKEN',
@@ -151,7 +152,7 @@ export default async(
                     )
 
                     const authorization = await postData(
-                        `${transactionEndpoint}/${clientKey}/authorize`,
+                        `${host}/${clientKey}/authorize`,
                         apiKey, {
                             source: instrument.id,
                             amount,
