@@ -1,7 +1,7 @@
 import PayTheory from '../pay-theory-finix'
 const NAME = 'number'
 const FIELDS = [{ name: 'number', label: 'Card Number' }];
-
+const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
 /* global HTMLElement */
 class CreditCardNumberFrame extends PayTheory {
 
@@ -25,7 +25,8 @@ class CreditCardNumberFrame extends PayTheory {
   set transact(_transacting) {
     if (this.transacting !== _transacting) {
       this.transacting = _transacting
-      this.form.submit('sandbox', this.application, (err, res) => {
+
+      this.form.submit(FINIX_ENV, this.application, (err, res) => {
         if (err) {
           this.error = err
         }

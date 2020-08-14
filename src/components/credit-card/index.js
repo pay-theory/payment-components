@@ -7,6 +7,8 @@ const FIELDS = [
   { name: 'address.postal_code', label: 'Zip' }
 ]
 
+const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
+
 /* global HTMLElement */
 class CreditCardFrame extends PayTheoryFinixFrame {
 
@@ -30,7 +32,7 @@ class CreditCardFrame extends PayTheoryFinixFrame {
   set transact(_transacting) {
     if (this.transacting !== _transacting) {
       this.transacting = _transacting;
-      this.form.submit('sandbox', process.env.APP_ID, (err, res) => {
+      this.form.submit(FINIX_ENV, process.env.APP_ID, (err, res) => {
         if (err) {
           this.error = err;
         }
