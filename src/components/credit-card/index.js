@@ -16,7 +16,6 @@ class CreditCardFrame extends PayTheoryFinixFrame {
     super()
     this.setFields(FIELDS)
     this.field = NAME
-    console.log(this.application)
   }
 
   defineFields(form, styles) {
