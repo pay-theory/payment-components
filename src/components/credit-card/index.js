@@ -16,6 +16,7 @@ class CreditCardFrame extends PayTheoryFinixFrame {
     super()
     this.setFields(FIELDS)
     this.field = NAME
+    console.log(this.application)
   }
 
   defineFields(form, styles) {
@@ -32,7 +33,7 @@ class CreditCardFrame extends PayTheoryFinixFrame {
   set transact(_transacting) {
     if (this.transacting !== _transacting) {
       this.transacting = _transacting;
-      this.form.submit(FINIX_ENV, process.env.APP_ID, (err, res) => {
+      this.form.submit(FINIX_ENV, this.application, (err, res) => {
         if (err) {
           this.error = err;
         }
