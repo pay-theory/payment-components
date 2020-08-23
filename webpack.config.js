@@ -6,12 +6,34 @@ module.exports = {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
   },
-  devtool: 'source-map',
+  devtool: 'none',
   module: {
     rules: [{
+      test: /\.m?js$/,
+      exclude: /(node_modules|bower_components)/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: [
+            [
+              "@babel/preset-env",
+              {
+                "useBuiltIns": "usage",
+                "modules": "auto",
+                "corejs": "3.6.5",
+                "targets": {
+                  "ie": "11"
+                }
+              }
+            ]
+          ],
+          plugins: ["@babel/plugin-transform-modules-commonjs", "@babel/plugin-transform-classes"]
+        }
+      }
+    }, {
       test: /\.css$/i,
       use: ['style-loader', 'css-loader'],
-    }, ],
+    }],
   },
   plugins: [
     new webpack.DefinePlugin({
