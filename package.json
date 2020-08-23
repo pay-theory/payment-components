@@ -1,6 +1,6 @@
 {
     "name": "@paytheory/payment-components",
-    "version": "0.0.143-0",
+    "version": "0.0.144-0",
     "description": "Pay Theory SDK",
     "main": "dist/index.js",
     "author": "Aron Price",
