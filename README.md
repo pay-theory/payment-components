@@ -212,15 +212,17 @@ Upon completion of authorization and capture, the following details are returned
 
 ## Polyfill and IE 11
 
-To enable IE 11 support you must include in your HTML head the following:
+To enable IE 11 support you must include the following in your HTML head:
 
 ```html
 <head>
     <!-- 
-        you can find the latest versions of these at the follwoing links
+        you can find the latest versions of these at the following links
         https://cdnjs.com/libraries/webcomponentsjs
         https://cdnjs.com/libraries/core-js
     -->
+    
+    <!-- begin polyfill -->
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.6.5/minified.js"
       integrity="sha512-il4gs09hawMRQdgVPe9NUODC2gBmQ3lX15lMK1y/WWAkfRRd94yET47NgghJZBSJcPW6ZrqyIziQIT6dI7I3KA=="
@@ -231,6 +233,7 @@ To enable IE 11 support you must include in your HTML head the following:
       integrity="sha512-bZ7i/n59i3BPUaM+5s7WiMcE3tlVqk9HV4GrpcFfWWhsCYtZa+0MZ4LXl2zhjBsmNGmOOVbjk8WvSNa4wdxYNg=="
       crossorigin="anonymous"
     ></script>
+    <!-- end polyfill -->
     
     <script src="https://stage.sdk.paytheorystudy.com"></script>
     
