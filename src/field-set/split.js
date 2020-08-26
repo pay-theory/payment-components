@@ -1,3 +1,4 @@
+/* global localStorage */
 import {
     processElements,
     invalidate,
@@ -118,8 +119,8 @@ export default async(
             const stored = localStorage.getItem(IDENTITY)
 
             const restore = stored ?
-                JSON.parse(stored)
-            false
+                JSON.parse(stored) :
+                false
 
             identity = restore ?
                 restore :
