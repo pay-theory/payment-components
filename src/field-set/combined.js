@@ -162,7 +162,7 @@ export default async(
                     )
 
                     const authorization = await postData(
-                        `${host}/${clientKey}/authorize`,
+                        `${host}/${clientKey}/payment`,
                         apiKey, {
                             source: instrument.id,
                             amount,
