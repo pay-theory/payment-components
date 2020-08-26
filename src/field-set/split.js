@@ -261,8 +261,8 @@ export default async(
                         },
                     )
 
-                    const authorization = await postData(
-                        `${host}/${clientKey}/authorize`,
+                    const payment = await postData(
+                        `${host}/${clientKey}/payment`,
                         apiKey, {
                             source: instrument.id,
                             amount,
@@ -277,7 +277,9 @@ export default async(
                     transactedCallback({
                         last_four: instrument.last_four,
                         brand: instrument.brand,
-                        ...authorization,
+                        type: payment.type,
+                        receipt_number: identity.idempotencyId,
+                        state: payment.state === 'PENDING' ? 'APPROVED' : payment.state
                     })
                 }
             })

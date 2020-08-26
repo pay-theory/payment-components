@@ -177,7 +177,9 @@ export default async(
                     transactedCallback({
                         last_four: instrument.last_four,
                         brand: instrument.brand,
-                        ...payment,
+                        type: payment.type,
+                        receipt_number: identity.idempotencyId,
+                        state: payment.state === 'PENDING' ? 'APPROVED' : payment.state
                     })
                 }
             })
