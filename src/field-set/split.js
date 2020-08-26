@@ -7,7 +7,7 @@ import {
     transactionEndpoint
 }
 from './util'
-
+const IDENTITY = 'pt-identity'
 const findTransactingElement = (element, cv) => element.type === 'number' ? element.frame : cv
 
 export default async(
@@ -115,13 +115,21 @@ export default async(
         },
 
         initTransaction: async(buyerOptions = {}) => {
-            if (buyerOptions) {
-                identity = await postData(
+            const stored = localStorage.getItem(IDENTITY)
+
+            const restore = stored ?
+                JSON.parse(stored)
+            false
+
+            identity = restore ?
+                restore :
+                await postData(
                     `${host}/${clientKey}/identity`,
                     apiKey,
                     typeof buyerOptions === 'object' ? buyerOptions : {},
                 )
-            }
+
+            localStorage.setItem(IDENTITY, JSON.stringify(identity))
 
 
             if (transactingElement.frame) {
@@ -258,9 +266,12 @@ export default async(
                             source: instrument.id,
                             amount,
                             currency: 'USD',
-                            tags: tags,
+                            idempotency_id: identity.idempotencyId,
+                            tags: { 'pt-number': identity.idempotencyId, ...tags },
                         },
                     )
+
+                    localStorage.removeItem(IDENTITY)
 
                     transactedCallback({
                         last_four: instrument.last_four,

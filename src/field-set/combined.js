@@ -1,5 +1,6 @@
+/* global localStorage */
 import { processElement, invalidate, postData, transactionEndpoint, stateMap } from './util'
-
+const IDENTITY = 'pt-identity'
 export default async(
     apiKey,
     clientKey,
@@ -111,13 +112,22 @@ export default async(
         },
 
         initTransaction: async(buyerOptions = {}) => {
-            if (buyerOptions) {
-                identity = await postData(
+
+            const stored = localStorage.getItem(IDENTITY)
+
+            const restore = stored ?
+                JSON.parse(stored)
+            false
+
+            identity = restore ?
+                restore :
+                await postData(
                     `${host}/${clientKey}/identity`,
                     apiKey,
                     typeof buyerOptions === 'object' ? buyerOptions : {},
                 )
-            }
+
+            localStorage.setItem(IDENTITY, JSON.stringify(identity))
 
             framed.transact = true
         },
@@ -157,9 +167,12 @@ export default async(
                             source: instrument.id,
                             amount,
                             currency: 'USD',
-                            tags: tags,
+                            idempotency_id: identity.idempotencyId,
+                            tags: { 'pt-number': identity.idempotencyId, ...tags },
                         },
                     )
+
+                    localStorage.removeItem(IDENTITY)
 
                     transactedCallback({
                         last_four: instrument.last_four,
