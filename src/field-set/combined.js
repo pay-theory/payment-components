@@ -161,7 +161,7 @@ export default async(
                         },
                     )
 
-                    const authorization = await postData(
+                    const payment = await postData(
                         `${host}/${clientKey}/payment`,
                         apiKey, {
                             source: instrument.id,
@@ -177,7 +177,7 @@ export default async(
                     transactedCallback({
                         last_four: instrument.last_four,
                         brand: instrument.brand,
-                        ...authorization,
+                        ...payment,
                     })
                 }
             })
