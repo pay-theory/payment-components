@@ -31,7 +31,7 @@ export default async(
                             const badge = binInformation.cardBrand
                             const badger = document.createElement('div')
                             badger.setAttribute('class', `paytheory-card-badge paytheory-card-${badge}`)
-                            const badged = document.getElementById('badge-wrapper')
+                            const badged = document.getElementById('pay-theory-badge-wrapper')
                             if (badged !== null) {
                                 badged.innerHTML = ''
                                 badged.appendChild(badger)
