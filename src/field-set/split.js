@@ -82,17 +82,15 @@ export default async(
                             let errors = []
 
                             processedElements.forEach(element => {
-                                let stateType = ''
 
-                                if (stateMap[element.type]) {
-                                    stateType = stateMap[element.type]
-                                }
-                                else {
-                                    stateType = element.type
-                                }
+                                const stateType = stateMap[element.type] ?
+                                    stateMap[element.type] :
+                                    element.type
 
                                 const stated = state[stateType]
+
                                 const invalidElement = invalidate(stated)
+
                                 if (element.frame.field === element.type) {
                                     element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
 

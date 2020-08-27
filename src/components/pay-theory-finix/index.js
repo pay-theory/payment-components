@@ -72,12 +72,10 @@ class PayTheoryFinixFrame extends HTMLElement {
 
     window.addEventListener('message', this.eventful)
 
-    /*eslint-disable no-unsafe-innerhtml_no-unsafe-innerhtml*/
     this.innerHTML = `<span class="framed">
             <div id="pay-theory-${this.field}-field-container" class="pay-theory-field">
             </div>
         </span>`
-    /*eslint-enable no-unsafe-innerhtml_no-unsafe-innerhtml*/
 
     this.defineFields(this.formed, this.styling)
   }

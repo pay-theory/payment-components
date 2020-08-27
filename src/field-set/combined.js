@@ -1,5 +1,4 @@
 /* global localStorage */
-/* esline enable identifier_localStorage */
 import { processElement, invalidate, postData, transactionEndpoint, stateMap } from './util'
 const IDENTITY = 'pt-identity'
 export default async(
@@ -55,19 +54,14 @@ export default async(
                             let error = false
 
                             processedElements.forEach(element => {
-                                let stateType = ''
 
-                                if (stateMap[element.type]) {
-                                    stateType = stateMap[element.type]
-                                }
-                                else {
-                                    stateType = element.type
-                                }
+                                const stateType = stateMap[element.type] ?
+                                    stateMap[element.type] :
+                                    element.type
 
                                 const stated = state[stateType]
+
                                 const invalidElement = invalidate(stated)
-
-
 
                                 const frameValidationStep = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
 
