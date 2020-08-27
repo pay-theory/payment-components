@@ -33,6 +33,7 @@ class CreditCardFrame extends PayTheoryFinixFrame {
     if (this.transacting !== _transacting) {
       this.transacting = _transacting;
       this.form.submit(FINIX_ENV, this.application, (err, res) => {
+        console.log('submission result', err, res)
         if (err) {
           this.error = err;
         }
