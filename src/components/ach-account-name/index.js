@@ -131,18 +131,14 @@ class AccountNameFrame extends HTMLElement {
       );
       this.ready = true;
     }
-    /*
-     *  eslint-disable-next-line scanjs-rules/call_addEventListener_message
-     *  eslint-disable-next-line scanjs-rules/call_addEventListener_message
-     */
+
     window.addEventListener('message', this.eventful);
-    /*eslint-disable no-unsafe-innerhtml */
+
     this.innerHTML = `<span class="framed">
             <div class="pay-theory-ach-account-name-field">
               <div id="field-wrapper-ach-account-name" class="field-wrapper"></div>
             </div>
         </span>`;
-    /*eslint-enable no-unsafe-innerhtml */
   }
 
   disconnectedCallback() {

@@ -150,7 +150,7 @@ export default async(
 
                 let processed = false
 
-                if (!message.type.endsWith('-ready')) return
+                if (!message.type.endsWith('-ready')) { return }
 
                 if (!setReady) {
                     processedElements.forEach(element => {
@@ -195,7 +195,7 @@ export default async(
 
                 const readyType = message.type.split('-')[0]
 
-                if (!processedElements.map(element => element.type).includes(`${readyType}`)) return
+                if (!processedElements.map(element => element.type).includes(`${readyType}`)) { return }
 
                 switch (readyType) {
                 case 'name':
@@ -234,7 +234,7 @@ export default async(
                     }
                 }
                 const readying = (readyCVV && readyNumber && readyExpiration && readyName && readyZip)
-                if (isReady != readying) {
+                if (isReady !== readying) {
                     isReady = readying
                     if (calling) {
                         readyCallback(isReady)
@@ -304,11 +304,11 @@ export default async(
                 }
                 const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
 
-                if (!message.type.endsWith('-valid')) return
+                if (!message.type.endsWith('-valid')) { return }
 
                 const validType = message.type.split('-')[0]
 
-                if (!processedElements.map(element => element.type).includes(`${validType}`)) return
+                if (!processedElements.map(element => element.type).includes(`${validType}`)) { return }
 
                 let calling = false
 
@@ -351,7 +351,7 @@ export default async(
 
                 const validating = (validCVV && validNumber && validExpiration && validZip && validName)
 
-                if (isValid != validating) {
+                if (isValid !== validating) {
                     isValid = validating
                     if (calling) {
                         validCallback(isValid)

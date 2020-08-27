@@ -52,7 +52,7 @@ const addFrame = (
 
 
 const processElement = (form, element, styles) => {
-    if (typeof element !== 'string') throw new Error('invalid element')
+    if (typeof element !== 'string') { throw new Error('invalid element') }
     const container = document.getElementById(element)
     if (container) {
         const contained = document.getElementById(`${element}-tag-frame`)
@@ -72,7 +72,7 @@ const processElement = (form, element, styles) => {
 const processElements = (form, elements, styles) => {
     let processed = []
     fieldTypes.forEach(type => {
-        if (elements[type] && typeof elements[type] !== 'string') throw new Error('invalid element')
+        if (elements[type] && typeof elements[type] !== 'string') { throw new Error('invalid element') }
         const container = document.getElementById(elements[type])
         if (container) {
             const contained = document.getElementById(`${elements[type]}-tag-frame`)
@@ -93,7 +93,7 @@ const processElements = (form, elements, styles) => {
     return processed
 }
 
-const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : undefined)
+const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
 
 const transactionEndpoint = (() => {
 
