@@ -1,4 +1,5 @@
 /* global localStorage */
+/* esline enable identifier_localStorage */
 import { processElement, invalidate, postData, transactionEndpoint, stateMap } from './util'
 const IDENTITY = 'pt-identity'
 export default async(
@@ -70,22 +71,22 @@ export default async(
 
                                 const frameValidationStep = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
 
-                                switch (frameValidationStep) {
-                                case true:
-                                    {
-                                        validElements.push(stateType)
-                                        break
-                                    }
-                                case undefined:
-                                    {
-                                        undefinedElements.push(stateType)
-                                        break
-                                    }
-                                default:
-                                    {
-                                        errorElements.push(stateType)
-                                        error = stated.errorMessages[0]
-                                        break
+                                if (typeof frameValidationStep === 'undefined') {
+                                    undefinedElements.push(stateType)
+                                }
+                                else {
+                                    switch (frameValidationStep) {
+                                    case true:
+                                        {
+                                            validElements.push(stateType)
+                                            break
+                                        }
+                                    default:
+                                        {
+                                            errorElements.push(stateType)
+                                            error = stated.errorMessages[0]
+                                            break
+                                        }
                                     }
                                 }
                             })
@@ -100,7 +101,6 @@ export default async(
                                 framed.error = error
                             }
                             else {
-                                framed.valid = undefined
                                 framed.error = false
                             }
                         }
