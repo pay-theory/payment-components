@@ -1,8 +1,6 @@
-# @paytheory/payment-components
-
 # Pay Theory Web SDK
 
-[![NPM](https://img.shields.io/npm/v/@paytheory/payment-components.svg)](https://www.npmjs.com/package/@paytheory/payment-components) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![NPM](https://img.shields.io/npm/v/@paytheory/payment-components.svg)](https://www.npmjs.com/package/@paytheory/payment-components) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![Known Vulnerabilities](https://snyk.io/test/github/{username}/{repo}/badge.svg)](https://snyk.io/test/github/{username}/{repo})
 
 ## Install
 
@@ -38,10 +36,10 @@ There are two approaches for you to choose from for your implementation.
 
 The credit card element provides a single form entry combining:
 
-* credit card number
-* credit card CVV security code
-* credit card expiration date
-* credit card zip code
+  * credit card number
+  * credit card CVV security code
+  * credit card expiration date
+  * credit card zip code
 
 Requires a container for the credit card input:
 
@@ -243,4 +241,3 @@ To enable IE 11 support you must include the following in your HTML head:
 ## License
 
 MIT © [pay theory](https://github.com/pay-theory)
-

@@ -58,7 +58,6 @@ const processElement = (form, element, styles) => {
         const contained = document.getElementById(`${element}-tag-frame`)
         if (contained === null) {
             const framed = addFrame(form, container, element, styles)
-            console.log(`${element} is now mounted`)
             return framed
         }
         else {
@@ -80,14 +79,14 @@ const processElements = (form, elements, styles) => {
             if (contained === null) {
                 const frame = addFrame(form, container, elements[type], styles, `pay-theory-credit-card-${type}-tag-frame`)
                 processed.push({ type: type, frame: frame })
-                console.log(`${elements[type]} is now mounted`)
             }
             else {
                 throw new Error(`${elements[type]} is already mounted`)
             }
         }
         else {
-            console.log(`${elements[type]} is not available in dom`)
+            /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
+            console.warn(`${elements[type]} is not available in dom`)
         }
 
     })
