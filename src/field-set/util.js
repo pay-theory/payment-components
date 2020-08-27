@@ -49,8 +49,6 @@ const addFrame = (
     return tagFrame
 }
 
-
-
 const processElement = (form, element, styles) => {
     if (typeof element !== 'string') { throw new Error('invalid element') }
     const container = document.getElementById(element)
@@ -113,6 +111,18 @@ const transactionEndpoint = (() => {
     }
 })()
 
+const handleError = errorCallback => {
+    window.addEventListener('message', event => {
+        if (![window.location.origin].includes(event.origin)) {
+            return
+        }
+        const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+        if (message.type === 'error') {
+            errorCallback(message.error)
+        }
+    })
+}
+
 export {
     postData,
     addFrame,
@@ -122,5 +132,6 @@ export {
     transactionEndpoint,
     fields,
     fieldTypes,
-    stateMap
+    stateMap,
+    handleError
 }

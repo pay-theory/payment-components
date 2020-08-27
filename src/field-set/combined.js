@@ -1,5 +1,13 @@
 /* global localStorage */
-import { processElement, invalidate, postData, transactionEndpoint, stateMap } from './util'
+import {
+    processElement,
+    invalidate,
+    postData,
+    transactionEndpoint,
+    stateMap,
+    handleError
+}
+from './util'
 const IDENTITY = 'pt-identity'
 export default async(
     apiKey,
@@ -181,26 +189,15 @@ export default async(
             })
         },
 
-        errorObserver: errorCallback => {
-            window.addEventListener('message', event => {
-                if (![window.location.origin].includes(event.origin)) {
-                    return
-                }
-                const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
-                if (message.type === 'error') {
-                    errorCallback(message.error)
-                }
-            })
-        },
+        errorObserver: handleError,
 
         validObserver: validCallback => {
             window.addEventListener('message', event => {
-                if (![window.location.origin].includes(event.origin)) {
-                    return
-                }
-                const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
-                if (message.type === 'credit-card-valid') {
-                    validCallback(message.valid)
+                if ([window.location.origin].includes(event.origin)) {
+                    const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+                    if (message.type === 'credit-card-valid') {
+                        validCallback(message.valid)
+                    }
                 }
             })
         },
