@@ -257,6 +257,7 @@ export default async(
                         apiKey, {
                             token: message.tokenized.data.id,
                             type: 'TOKEN',
+                            identityToken: identity['tags-token'],
                             identity: identity.id,
                         },
                     )
@@ -268,6 +269,7 @@ export default async(
                             amount,
                             currency: 'USD',
                             idempotency_id: identity.idempotencyId,
+                            identityToken: identity['tags-token'],
                             tags: { 'pt-number': identity.idempotencyId, ...tags },
                         },
                     )

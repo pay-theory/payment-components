@@ -55,7 +55,8 @@ class AccountNameFrame extends HTMLElement {
     if (_styling && formed) {
       defineFields(formed, _styling);
       this.styling = _styling;
-    } else if (formed) {
+    }
+    else if (formed) {
       defineFields(formed, defaultStyles);
       this.styling = defaultStyles;
     }
@@ -71,10 +72,10 @@ class AccountNameFrame extends HTMLElement {
       formed.submit('APbu7tPrKJWHSMDh7M65ahft', (err, res) => {
         if (err) {
           this.error = err;
-        } else {
+        }
+        else {
           const tokenized = { bin: this.bin, ...res };
-          window.postMessage(
-            {
+          window.postMessage({
               type: 'tokenized',
               tokenized,
             },
@@ -92,8 +93,7 @@ class AccountNameFrame extends HTMLElement {
   set error(_errored) {
     if (this.errored !== _errored) {
       this.errored = _errored;
-      window.postMessage(
-        {
+      window.postMessage({
           type: 'error',
           error: _errored,
         },
@@ -109,8 +109,7 @@ class AccountNameFrame extends HTMLElement {
   set valid(isValid) {
     if (isValid !== this.validated) {
       this.validated = isValid;
-      window.postMessage(
-        {
+      window.postMessage({
           type: 'valid',
           valid: isValid,
         },
@@ -124,8 +123,7 @@ class AccountNameFrame extends HTMLElement {
     if (!this.loaded) {
       this.loaded = true;
 
-      window.postMessage(
-        {
+      window.postMessage({
           type: 'ready',
           ready: true,
         },
@@ -138,11 +136,13 @@ class AccountNameFrame extends HTMLElement {
      *  eslint-disable-next-line scanjs-rules/call_addEventListener_message
      */
     window.addEventListener('message', this.eventful);
+    /*eslint-disable no-unsafe-innerhtml */
     this.innerHTML = `<span class="framed">
             <div class="pay-theory-ach-account-name-field">
               <div id="field-wrapper-ach-account-name" class="field-wrapper"></div>
             </div>
         </span>`;
+    /*eslint-enable no-unsafe-innerhtml */
   }
 
   disconnectedCallback() {

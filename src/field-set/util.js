@@ -78,7 +78,7 @@ const processElements = (form, elements, styles) => {
             const contained = document.getElementById(`${elements[type]}-tag-frame`)
             if (contained === null) {
                 const frame = addFrame(form, container, elements[type], styles, `pay-theory-credit-card-${type}-tag-frame`)
-                processed.push({ type: type, frame: frame })
+                processed.push({ type, frame })
             }
             else {
                 throw new Error(`${elements[type]} is already mounted`)
