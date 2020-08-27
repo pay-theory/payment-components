@@ -36,10 +36,10 @@ There are two approaches for you to choose from for your implementation.
 
 The credit card element provides a single form entry combining:
 
-  * credit card number
-  * credit card CVV security code
-  * credit card expiration date
-  * credit card zip code
+-   credit card number
+-   credit card CVV security code
+-   credit card expiration date
+-   credit card zip code
 
 Requires a container for the credit card input:
 
@@ -57,11 +57,11 @@ Requires a container for the credit card input:
 
 The credit card fields elements provide distinct entries for:
 
-* credit card account name
-* credit card number
-* credit card CVV security code
-* credit card expiration date
-* credit card zip code
+-   credit card account name
+-   credit card number
+-   credit card CVV security code
+-   credit card expiration date
+-   credit card zip code
 
 These entries can be placed wherever you prefer.
 
