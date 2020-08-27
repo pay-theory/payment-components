@@ -1,4 +1,6 @@
-const fields = {
+export const IDENTITY = 'pt-identity'
+
+export const fields = {
     CREDIT_CARD_NAME: 'pay-theory-credit-card-account-name',
     CREDIT_CARD_CVV: 'pay-theory-credit-card-cvv',
     CREDIT_CARD_EXPIRATION: 'pay-theory-credit-card-expiration',
@@ -6,16 +8,18 @@ const fields = {
     CREDIT_CARD_ZIP: 'pay-theory-credit-card-zip',
 }
 
-const fieldTypes = ['cvv', 'account-name', 'expiration', 'number', 'zip']
+export const fieldTypes = ['cvv', 'account-name', 'expiration', 'number', 'zip']
 
-const stateMap = {
+export const stateMap = {
     'account-name': 'name',
     'cvv': 'security_code',
     'expiration': 'expiration_date',
     'zip': 'address.postal_code'
 }
 
-const postData = async(url, apiKey, data = {}) => {
+export const findTransactingElement = (element, cv) => element.type === 'number' ? element.frame : cv
+
+export const postData = async(url, apiKey, data = {}) => {
     const options = {
         method: 'POST',
         mode: 'cors',
@@ -33,7 +37,7 @@ const postData = async(url, apiKey, data = {}) => {
     return await response.json()
 }
 
-const addFrame = (
+export const addFrame = (
     form,
     container,
     element,
@@ -49,7 +53,7 @@ const addFrame = (
     return tagFrame
 }
 
-const processElement = (form, element, styles) => {
+export const processElement = (form, element, styles) => {
     if (typeof element !== 'string') { throw new Error('invalid element') }
     const container = document.getElementById(element)
     if (container) {
@@ -67,7 +71,7 @@ const processElement = (form, element, styles) => {
     }
 }
 
-const processElements = (form, elements, styles) => {
+export const processElements = (form, elements, styles) => {
     let processed = []
     fieldTypes.forEach(type => {
         if (elements[type] && typeof elements[type] !== 'string') { throw new Error('invalid element') }
@@ -91,9 +95,9 @@ const processElements = (form, elements, styles) => {
     return processed
 }
 
-const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
+export const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
 
-const transactionEndpoint = (() => {
+export const transactionEndpoint = (() => {
 
     switch (process.env.BUILD_ENV) {
     case 'prod':
@@ -111,7 +115,7 @@ const transactionEndpoint = (() => {
     }
 })()
 
-const handleError = errorCallback => {
+export const handleError = errorCallback => {
     window.addEventListener('message', event => {
         if (![window.location.origin].includes(event.origin)) {
             return
@@ -121,17 +125,4 @@ const handleError = errorCallback => {
             errorCallback(message.error)
         }
     })
-}
-
-export {
-    postData,
-    addFrame,
-    processElement,
-    processElements,
-    invalidate,
-    transactionEndpoint,
-    fields,
-    fieldTypes,
-    stateMap,
-    handleError
 }

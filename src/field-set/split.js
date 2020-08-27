@@ -1,16 +1,16 @@
 /* global localStorage */
 import {
-    processElements,
+    fields,
+    findTransactingElement,
+    handleError,
+    IDENTITY,
     invalidate,
     postData,
-    fields,
+    processElements,
     stateMap,
-    transactionEndpoint,
-    handleError
+    transactionEndpoint
 }
 from './util'
-const IDENTITY = 'pt-identity'
-const findTransactingElement = (element, cv) => element.type === 'number' ? element.frame : cv
 
 export default async(
     apiKey,

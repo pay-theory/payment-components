@@ -1,14 +1,15 @@
 /* global localStorage */
 import {
-    processElement,
+    handleError,
+    IDENTITY,
     invalidate,
     postData,
-    transactionEndpoint,
+    processElement,
     stateMap,
-    handleError
+    transactionEndpoint
 }
 from './util'
-const IDENTITY = 'pt-identity'
+
 export default async(
     apiKey,
     clientKey,
