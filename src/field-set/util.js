@@ -129,3 +129,92 @@ const generateWindowListener = (validTarget, handleMessage) => {
 export const handleMessage = (validTarget, handleMessage) => {
     window.addEventListener('message', generateWindowListener(validTarget, handleMessage))
 }
+
+export const generateTransacted = (cb, host, clientKey, apiKey, amount) => {
+    return async message => {
+        const identity = JSON.parse(localStorage.getItem(IDENTITY))
+
+        const instrument = await postData(
+            `${host}/${clientKey}/instrument`,
+            apiKey, {
+                token: message.tokenized.data.id,
+                type: 'TOKEN',
+                identity: identity.id,
+                identityToken: identity['tags-token']
+            },
+        )
+
+        const payment = await postData(
+            `${host}/${clientKey}/payment`,
+            apiKey, {
+                source: instrument.id,
+                amount,
+                currency: 'USD',
+                idempotency_id: identity.idempotencyId,
+                identityToken: identity['tags-token'],
+                tags: { 'pt-number': identity.idempotencyId },
+            },
+        )
+
+        localStorage.removeItem(IDENTITY)
+
+        cb({
+            last_four: instrument.last_four,
+            brand: instrument.brand,
+            type: payment.state === 'error' ? payment.message : payment.type,
+            receipt_number: identity.idempotencyId,
+            state: payment.state === 'PENDING' ? 'APPROVED' : payment.state
+        })
+    }
+}
+
+/* global localStorage */
+export const generateInitialization = (handleInialized, host, clientKey, apiKey) => {
+    return async(buyerOptions = {}) => {
+        const stored = localStorage.getItem(IDENTITY)
+
+        const restore = stored ?
+            JSON.parse(stored) :
+            false
+
+        const identity = restore ?
+            restore :
+            await postData(
+                `${host}/${clientKey}/identity`,
+                apiKey,
+                typeof buyerOptions === 'object' ? buyerOptions : {},
+            )
+
+        localStorage.setItem(IDENTITY, JSON.stringify(identity))
+
+        handleInialized()
+    }
+}
+
+
+
+export const appendFinix = (formed, handleState, handleFormed) => {
+    const script = document.createElement('script')
+    // eslint-disable-next-line scanjs-rules/assign_to_src
+    script.src = 'https://forms.finixpymnts.com/finix.js'
+    script.addEventListener('load', () => {
+        formed = window.PaymentForm.card((state, binInformation) => {
+            if (binInformation) {
+                const badge = binInformation.cardBrand
+                const badger = document.createElement('div')
+                badger.setAttribute('class', `paytheory-card-badge paytheory-card-${badge}`)
+                const badged = document.getElementById('pay-theory-badge-wrapper')
+                if (badged !== null) {
+                    badged.innerHTML = ''
+                    badged.appendChild(badger)
+                }
+            }
+
+            if (state) {
+                handleState(state)
+            }
+        })
+        handleFormed(formed)
+    })
+    document.getElementsByTagName('head')[0].appendChild(script)
+}

@@ -1,7 +1,10 @@
 /* global localStorage */
 import {
+    appendFinix,
     fields,
     findTransactingElement,
+    generateInitialization,
+    generateTransacted,
     handleMessage,
     IDENTITY,
     invalidate,
@@ -47,6 +50,16 @@ export default async(
 
     let processedElements = []
     let transactingElement
+
+    const handleInialized = () => {
+        if (transactingElement.frame) {
+            transactingElement.frame.transact = true
+        }
+        else {
+            transactingElement.transact = true
+        }
+    }
+
     return {
         mount: async(
             elements = {
@@ -63,90 +76,47 @@ export default async(
                 return
             }
             else {
-                const script = document.createElement('script')
-                // eslint-disable-next-line scanjs-rules/assign_to_src
-                script.src = 'https://forms.finixpymnts.com/finix.js'
-                script.addEventListener('load', function () {
-                    formed = window.PaymentForm.card((state, binInformation) => {
-                        if (binInformation) {
-                            const badge = binInformation.cardBrand
-                            const badger = document.createElement('div')
-                            badger.setAttribute('class', `pay-theory-card-badge pay-theory-card-${badge}`)
-                            const badged = document.getElementById('pay-theory-badge-wrapper')
-                            if (badged !== null) {
-                                badged.innerHTML = ''
-                                badged.appendChild(badger)
+                const handleState = state => {
+                    let errors = []
+
+                    processedElements.forEach(element => {
+
+                        const stateType = stateMap[element.type] ?
+                            stateMap[element.type] :
+                            element.type
+
+                        const stated = state[stateType]
+
+                        const invalidElement = invalidate(stated)
+
+                        if (element.frame.field === element.type) {
+                            element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
+
+                            if (invalidElement) {
+                                errors.push(stated.errorMessages[0])
+                                element.frame.error = stated.errorMessages[0]
+                            }
+                            else {
+                                element.frame.error = false
                             }
                         }
-
-                        if (state) {
-                            let errors = []
-
-                            processedElements.forEach(element => {
-
-                                const stateType = stateMap[element.type] ?
-                                    stateMap[element.type] :
-                                    element.type
-
-                                const stated = state[stateType]
-
-                                const invalidElement = invalidate(stated)
-
-                                if (element.frame.field === element.type) {
-                                    element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
-
-                                    if (invalidElement) {
-                                        errors.push(stated.errorMessages[0])
-                                        element.frame.error = stated.errorMessages[0]
-                                    }
-                                    else {
-                                        element.frame.error = false
-                                    }
-                                }
-                            })
-                        }
                     })
-                    processedElements = processElements(formed, elements, styles);
-                    transactingElement = processedElements.reduce(findTransactingElement);
-                    return
-                })
-                document.getElementsByTagName('head')[0].appendChild(script)
-            }
-        },
-
-        initTransaction: async(buyerOptions = {}) => {
-            const stored = localStorage.getItem(IDENTITY)
-
-            const restore = stored ?
-                JSON.parse(stored) :
-                false
-
-            identity = restore ?
-                restore :
-                await postData(
-                    `${host}/${clientKey}/identity`,
-                    apiKey,
-                    typeof buyerOptions === 'object' ? buyerOptions : {},
-                )
-
-            localStorage.setItem(IDENTITY, JSON.stringify(identity))
-
-
-            if (transactingElement.frame) {
-                transactingElement.frame.transact = true
-            }
-            else {
-                transactingElement.transact = true
-            }
-        },
-
-        readyObserver: readyCallback => {
-            window.addEventListener('message', event => {
-                if (![window.location.origin].includes(event.origin)) {
-                    return
                 }
-                const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
 
+                const handleFormed = finalForm => {
+                    processedElements = processElements(finalForm, elements, styles);
+                    transactingElement = processedElements.reduce(findTransactingElement);
+                }
+
+                appendFinix(formed, handleState, handleFormed)
+            }
+        },
+
+        initTransaction: generateInitialization(handleInialized, host, clientKey, apiKey),
+
+        readyObserver: cb => handleMessage(
+            message => message.type.endsWith('-ready'),
+            message => {
                 let calling = false
 
                 let processed = false
@@ -238,53 +208,14 @@ export default async(
                 if (isReady !== readying) {
                     isReady = readying
                     if (calling) {
-                        readyCallback(isReady)
+                        cb(isReady)
                     }
                 }
-            })
-        },
+            }),
 
-        transactedObserver: transactedCallback => {
-            window.addEventListener('message', async event => {
-                if (![window.location.origin].includes(event.origin)) {
-                    return
-                }
-                const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
-                if (message.type === 'tokenized') {
-                    const instrument = await postData(
-                        `${host}/${clientKey}/instrument`,
-                        apiKey, {
-                            token: message.tokenized.data.id,
-                            type: 'TOKEN',
-                            identityToken: identity['tags-token'],
-                            identity: identity.id,
-                        },
-                    )
-
-                    const payment = await postData(
-                        `${host}/${clientKey}/payment`,
-                        apiKey, {
-                            source: instrument.id,
-                            amount,
-                            currency: 'USD',
-                            idempotency_id: identity.idempotencyId,
-                            identityToken: identity['tags-token'],
-                            tags: { 'pt-number': identity.idempotencyId, ...tags },
-                        },
-                    )
-
-                    localStorage.removeItem(IDENTITY)
-
-                    transactedCallback({
-                        last_four: instrument.last_four,
-                        brand: instrument.brand,
-                        type: payment.state === 'error' ? payment.message : payment.type,
-                        receipt_number: identity.idempotencyId,
-                        state: payment.state === 'PENDING' ? 'APPROVED' : payment.state
-                    })
-                }
-            })
-        },
+        transactedObserver: cb => handleMessage(
+            message => message.type === 'tokenized',
+            generateTransacted(cb, host, clientKey, apiKey, amount)),
 
         errorObserver: cb => handleMessage(message => message.type === 'error', message => cb(message.error)),
 
