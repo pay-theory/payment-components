@@ -2,7 +2,7 @@
 import {
     fields,
     findTransactingElement,
-    handleError,
+    handleMessage,
     IDENTITY,
     invalidate,
     postData,
@@ -286,21 +286,15 @@ export default async(
             })
         },
 
-        errorObserver: handleError,
+        errorObserver: cb => handleMessage(message => message.type === 'error', message => cb(message.error)),
 
-        validObserver: validCallback => {
-            window.addEventListener('message', event => {
-                if (![window.location.origin].includes(event.origin)) {
-                    return
-                }
-                const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
-
-                if (!message.type.endsWith('-valid')) { return }
-
+        validObserver: cb => handleMessage(
+            message => {
                 const validType = message.type.split('-')[0]
-
-                if (!processedElements.map(element => element.type).includes(`${validType}`)) { return }
-
+                return message.type.endsWith('-valid') && processedElements.map(element => element.type).includes(`${validType}`)
+            },
+            message => {
+                const validType = message.type.split('-')[0]
                 let calling = false
 
                 switch (validType) {
@@ -345,11 +339,9 @@ export default async(
                 if (isValid !== validating) {
                     isValid = validating
                     if (calling) {
-                        validCallback(isValid)
+                        cb(isValid)
                     }
                 }
-
-            })
-        },
+            }),
     }
 }

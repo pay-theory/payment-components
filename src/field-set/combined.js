@@ -1,6 +1,6 @@
 /* global localStorage */
 import {
-    handleError,
+    handleMessage,
     IDENTITY,
     invalidate,
     postData,
@@ -190,17 +190,8 @@ export default async(
             })
         },
 
-        errorObserver: handleError,
+        errorObserver: cb => handleMessage(message => message.type === 'error', message => cb(message.error)),
 
-        validObserver: validCallback => {
-            window.addEventListener('message', event => {
-                if ([window.location.origin].includes(event.origin)) {
-                    const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
-                    if (message.type === 'credit-card-valid') {
-                        validCallback(message.valid)
-                    }
-                }
-            })
-        },
+        validObserver: cb => handleMessage(message => message.type === 'credit-card-valid', message => cb(message.valid)),
     }
 }

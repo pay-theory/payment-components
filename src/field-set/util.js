@@ -115,14 +115,17 @@ export const transactionEndpoint = (() => {
     }
 })()
 
-export const handleError = errorCallback => {
-    window.addEventListener('message', event => {
-        if (![window.location.origin].includes(event.origin)) {
-            return
+const generateWindowListener = (validTarget, handleMessage) => {
+    return event => {
+        if ([window.location.origin].includes(event.origin)) {
+            const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+            if (validTarget(message)) {
+                handleMessage(message)
+            }
         }
-        const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
-        if (message.type === 'error') {
-            errorCallback(message.error)
-        }
-    })
+    }
+}
+
+export const handleMessage = (validTarget, handleMessage) => {
+    window.addEventListener('message', generateWindowListener(validTarget, handleMessage))
 }
