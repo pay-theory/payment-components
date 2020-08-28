@@ -97,7 +97,7 @@ export default async(
         initTransaction: common.generateInitialization(handleInialized, host, clientKey, apiKey),
 
         readyObserver: cb => common.handleMessage(
-            message => message.type.endsWith('-ready'),
+            common.readyTypeMessage,
             message => {
                 let calling = false
 
@@ -195,11 +195,9 @@ export default async(
                 }
             }),
 
-        transactedObserver: cb => common.handleMessage(
-            message => message.type === 'tokenized',
-            common.generateTransacted(cb, host, clientKey, apiKey, amount)),
+        transactedObserver: common.transactedObserver(host, clientKey, apiKey, amount),
 
-        errorObserver: cb => common.handleMessage(message => message.type === 'error', message => cb(message.error)),
+        errorObserver: common.errorObserver,
 
         validObserver: cb => common.handleMessage(
             message => {

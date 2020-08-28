@@ -92,14 +92,12 @@ export default async(
 
         initTransaction: common.generateInitialization(handleInialized, host, clientKey, apiKey),
 
-        readyObserver: cb => common.handleMessage(message => message.type === 'credit-card-ready', message => cb(message.ready)),
+        readyObserver: cb => common.handleMessage(common.combinedCCReadyTypeMessage, message => cb(message.ready)),
 
-        transactedObserver: cb => common.handleMessage(
-            message => message.type === 'tokenized',
-            common.generateTransacted(cb, host, clientKey, apiKey, amount)),
+        transactedObserver: common.transactedObserver(host, clientKey, apiKey, amount),
 
-        errorObserver: cb => common.handleMessage(message => message.type === 'error', message => cb(message.error)),
+        errorObserver: common.errorObserver,
 
-        validObserver: cb => common.handleMessage(message => message.type === 'credit-card-valid', message => cb(message.valid)),
+        validObserver: cb => common.handleMessage(common.combinedCCTypeMessage, message => cb(message.valid)),
     }
 }
