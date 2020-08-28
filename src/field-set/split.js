@@ -43,7 +43,7 @@ export default async(
     }
 
     const establishElements = (forming, elements) => {
-        processedElements = common.processElements(formed, elements, styles)
+        processedElements = common.processElements(forming, elements, styles)
         transactingElement = common.processedElements.reduce(common.findTransactingElement)
     }
 
@@ -51,7 +51,7 @@ export default async(
         let errors = []
         elements.forEach(element => {
 
-            const [, stated, invalidElement] = common.stateMapping(element.type)
+            const [, stated, invalidElement] = common.stateMapping(element.type, state)
 
             if (element.frame.field === element.type) {
                 element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement

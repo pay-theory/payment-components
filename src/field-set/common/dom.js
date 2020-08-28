@@ -87,12 +87,12 @@ export const appendFinix = (formed, handleState, handleFormed) => {
     document.getElementsByTagName('head')[0].appendChild(script)
 }
 
-export const stateMapping = elementType => {
+export const stateMapping = (elementType, state) => {
     const stateType = data.stateMap[elementType] ?
         data.stateMap[elementType] :
         elementType
 
-    const stated = data.state[stateType]
+    const stated = state[stateType]
 
     const invalidElement = network.invalidate(stated)
 
