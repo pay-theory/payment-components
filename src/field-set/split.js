@@ -248,16 +248,16 @@ export default async(
         })
 
     return {
-        mount: mount,
+        mount,
 
-        initTransaction: initTransaction,
+        initTransaction,
 
-        readyObserver: readyObserver,
+        readyObserver,
 
         transactedObserver: common.transactedObserver(host, clientKey, apiKey, amount),
 
         errorObserver: common.errorObserver,
 
-        validObserver: validObserver,
+        validObserver,
     }
 }
