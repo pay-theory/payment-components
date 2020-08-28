@@ -1,4 +1,5 @@
 import * as data from './data'
+import * as network from './network'
 
 export const findTransactingElement = (element, cv) => element.type === 'number' ? element.frame : cv
 
@@ -84,4 +85,16 @@ export const appendFinix = (formed, handleState, handleFormed) => {
         handleFormed(formed)
     })
     document.getElementsByTagName('head')[0].appendChild(script)
+}
+
+export const stateMapping = elementType => {
+    const stateType = data.stateMap[elementType] ?
+        data.stateMap[elementType] :
+        elementType
+
+    const stated = data.state[stateType]
+
+    const invalidElement = network.invalidate(stated)
+
+    return [stateType, stated, invalidElement]
 }

@@ -67,13 +67,7 @@ export default async(
 
                     processedElements.forEach(element => {
 
-                        const stateType = common.stateMap[element.type] ?
-                            common.stateMap[element.type] :
-                            element.type
-
-                        const stated = state[stateType]
-
-                        const invalidElement = common.invalidate(stated)
+                        const [, stated, invalidElement] = common.stateMapping(element.type)
 
                         if (element.frame.field === element.type) {
                             element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
