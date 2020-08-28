@@ -15,10 +15,13 @@ export default async(
     const handleInialized = () => {
         framed.transact = true
     }
+    const establishElement = (forming, element) = {
+        framed = common.processElement(formed, element, styles)
+    }
     return {
         mount: async(element = 'pay-theory-credit-card') => {
             if (formed) {
-                framed = common.processElement(formed, element, styles)
+                establishElement(formed, element)
             }
             else {
                 const handleState = state => {
@@ -83,7 +86,7 @@ export default async(
                 }
 
                 const handleFormed = finalForm => {
-                    framed = common.processElement(finalForm, element, styles)
+                    establishElement(finalForm, element)
                 }
 
                 common.appendFinix(formed, handleState, handleFormed)

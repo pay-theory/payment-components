@@ -42,6 +42,11 @@ export default async(
         }
     }
 
+    const establishElements = (forming, elements) => {
+        processedElements = common.processElements(formed, elements, styles)
+        transactingElement = common.processedElements.reduce(common.findTransactingElement)
+    }
+
     return {
         mount: async(
             elements = {
@@ -53,8 +58,7 @@ export default async(
             },
         ) => {
             if (formed) {
-                processedElements = common.processElements(formed, elements, styles)
-                transactingElement = common.processedElements.reduce(common.findTransactingElement)
+                establishElements(formed, elements)
                 return
             }
             else {
@@ -86,8 +90,7 @@ export default async(
                 }
 
                 const handleFormed = finalForm => {
-                    processedElements = common.processElements(finalForm, elements, styles);
-                    transactingElement = processedElements.reduce(common.findTransactingElement);
+                    establishElements(finalForm, elements)
                 }
 
                 common.appendFinix(formed, handleState, handleFormed)
