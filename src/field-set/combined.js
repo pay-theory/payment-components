@@ -19,70 +19,71 @@ export default async(
         framed = common.processElement(formed, element, styles)
     }
 
+    const stateHandler = element => state => {
+        const processedElements = [
+            { type: 'zip', frame: framed },
+            { type: 'expiration', frame: framed },
+            { type: 'cvv', frame: framed },
+            { type: 'number', frame: framed }
+        ]
+
+        let errors = []
+
+        const validElements = []
+        const undefinedElements = []
+        const errorElements = []
+        let error = false
+
+        processedElements.forEach(element => {
+
+            const [stateType, stated, invalidElement] = common.stateMapping(element.type)
+
+            const frameValidationStep = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
+
+            if (typeof frameValidationStep === 'undefined') {
+                undefinedElements.push(stateType)
+            }
+            else {
+                switch (frameValidationStep) {
+                case true:
+                    {
+                        validElements.push(stateType)
+                        break
+                    }
+                default:
+                    {
+                        errorElements.push(stateType)
+                        error = stated.errorMessages[0]
+                        break
+                    }
+                }
+            }
+        })
+
+
+        if (validElements.length === processedElements.length) {
+            framed.valid = true
+            framed.error = false
+        }
+        else if (error) {
+            framed.valid = false
+            framed.error = error
+        }
+        else {
+            framed.error = false
+        }
+    }
+
     const mount = async(element = 'pay-theory-credit-card') => {
+        const handleState = stateHandler(element)
+
+        const handleFormed = finalForm => {
+            establishElement(finalForm, element)
+        }
         if (formed) {
             establishElement(formed, element)
         }
         else {
-            const handleState = state => {
-                const processedElements = [
-                    { type: 'zip', frame: framed },
-                    { type: 'expiration', frame: framed },
-                    { type: 'cvv', frame: framed },
-                    { type: 'number', frame: framed }
-                ]
-
-                let errors = []
-
-                const validElements = []
-                const undefinedElements = []
-                const errorElements = []
-                let error = false
-
-                processedElements.forEach(element => {
-
-                    const [stateType, stated, invalidElement] = common.stateMapping(element.type)
-
-                    const frameValidationStep = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
-
-                    if (typeof frameValidationStep === 'undefined') {
-                        undefinedElements.push(stateType)
-                    }
-                    else {
-                        switch (frameValidationStep) {
-                        case true:
-                            {
-                                validElements.push(stateType)
-                                break
-                            }
-                        default:
-                            {
-                                errorElements.push(stateType)
-                                error = stated.errorMessages[0]
-                                break
-                            }
-                        }
-                    }
-                })
-
-
-                if (validElements.length === processedElements.length) {
-                    framed.valid = true
-                    framed.error = false
-                }
-                else if (error) {
-                    framed.valid = false
-                    framed.error = error
-                }
-                else {
-                    framed.error = false
-                }
-            }
-
-            const handleFormed = finalForm => {
-                establishElement(finalForm, element)
-            }
-
             common.appendFinix(formed, handleState, handleFormed)
         }
     }

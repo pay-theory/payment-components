@@ -12,9 +12,9 @@ const generateReturn = (mount, initTransaction, readyObserver, validObserver, sd
 
         readyObserver,
 
-        transactedObserver: common.transactedObserver(sdk.host, sdk.clientKey, sdk.apiKey, sdk.amount),
+        transactedObserver: observe.transactedObserver(sdk.host, sdk.clientKey, sdk.apiKey, sdk.amount),
 
-        errorObserver: common.errorObserver,
+        errorObserver: observe.errorObserver,
 
         validObserver,
     }

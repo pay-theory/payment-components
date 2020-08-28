@@ -47,6 +47,26 @@ export default async(
         transactingElement = common.processedElements.reduce(common.findTransactingElement)
     }
 
+    const stateHandler = elements => state => {
+        let errors = []
+        elements.forEach(element => {
+
+            const [, stated, invalidElement] = common.stateMapping(element.type)
+
+            if (element.frame.field === element.type) {
+                element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
+
+                if (invalidElement) {
+                    errors.push(stated.errorMessages[0])
+                    element.frame.error = stated.errorMessages[0]
+                }
+                else {
+                    element.frame.error = false
+                }
+            }
+        })
+    }
+
     const mount = async(
         elements = {
             'account-name': common.fields.CREDIT_CARD_NAME,
@@ -56,36 +76,15 @@ export default async(
             zip: common.fields.CREDIT_CARD_ZIP,
         },
     ) => {
+        const handleState = stateHandler(processedElements)
+
+        const handleFormed = finalForm => {
+            establishElements(finalForm, elements)
+        }
         if (formed) {
             establishElements(formed, elements)
-            return
         }
         else {
-            const handleState = state => {
-                let errors = []
-
-                processedElements.forEach(element => {
-
-                    const [, stated, invalidElement] = common.stateMapping(element.type)
-
-                    if (element.frame.field === element.type) {
-                        element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
-
-                        if (invalidElement) {
-                            errors.push(stated.errorMessages[0])
-                            element.frame.error = stated.errorMessages[0]
-                        }
-                        else {
-                            element.frame.error = false
-                        }
-                    }
-                })
-            }
-
-            const handleFormed = finalForm => {
-                establishElements(finalForm, elements)
-            }
-
             common.appendFinix(formed, handleState, handleFormed)
         }
     }
