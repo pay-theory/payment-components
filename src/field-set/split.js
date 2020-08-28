@@ -247,17 +247,5 @@ export default async(
             }
         })
 
-    return {
-        mount,
-
-        initTransaction,
-
-        readyObserver,
-
-        transactedObserver: common.transactedObserver(host, clientKey, apiKey, amount),
-
-        errorObserver: common.errorObserver,
-
-        validObserver,
-    }
+    return common.generateReturn(mount, initTransaction, readyObserver, validObserver, { host, clientKey, apiKey, amount })
 }

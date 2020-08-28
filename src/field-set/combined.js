@@ -93,17 +93,5 @@ export default async(
 
     const validObserver = cb => common.handleMessage(common.combinedCCTypeMessage, message => cb(message.valid))
 
-    return {
-        mount: mount,
-
-        initTransaction: initTransaction,
-
-        readyObserver: readyObserver,
-
-        transactedObserver: common.transactedObserver(host, clientKey, apiKey, amount),
-
-        errorObserver: common.errorObserver,
-
-        validObserver: validObserver,
-    }
+    return common.generateReturn(mount, initTransaction, readyObserver, validObserver, { host, clientKey, apiKey, amount })
 }
