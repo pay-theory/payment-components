@@ -15,7 +15,7 @@ export default async(
     const handleInialized = () => {
         framed.transact = true
     }
-    const establishElement = (forming, element) = {
+    const establishElement = (forming, element) => {
         framed = common.processElement(formed, element, styles)
     }
     return {
@@ -41,13 +41,13 @@ export default async(
 
                     processedElements.forEach(element => {
 
-                        const stateType = stateMap[element.type] ?
-                            stateMap[element.type] :
+                        const stateType = common.stateMap[element.type] ?
+                            common.stateMap[element.type] :
                             element.type
 
                         const stated = state[stateType]
 
-                        const invalidElement = invalidate(stated)
+                        const invalidElement = common.invalidate(stated)
 
                         const frameValidationStep = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
 
