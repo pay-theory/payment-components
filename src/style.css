@@ -1,42 +1,55 @@
-.paytheory-card-badge {
+.pay-theory-card-badge {
 	background-repeat: no-repeat;
 	background-size: 100%;
 	background-position: 50%;
 	height: 30px;
 	width: 48px;
 	align-self: center;
+	margin: 0.5em;
 }
 
-.paytheory-card-visa {
+#pay-theory-badge-wrapper {
+	display: flex;
+	align-content: center;
+	justify-content: center;
+}
+
+.pay-theory-card-visa {
 	background-image: url(https://storage.googleapis.com/pt-assets/visa-badge-icon.svg);
 }
 
-.paytheory-card-mastercard {
+.pay-theory-card-mastercard {
 	background-image: url(https://storage.googleapis.com/pt-assets/mastercard-badge-icon.svg);
 }
 
-.paytheory-card-amex {
+.pay-theory-card-amex {
 	background-image: url(https://storage.googleapis.com/pt-assets/amex-badge-icon.svg);
 }
 
-.paytheory-card-discover {
+.pay-theory-card-discover {
 	background-image: url(https://storage.googleapis.com/pt-assets/discover-badge-icon.svg);
 }
 
+.combined {
+	justify-content: flex-start;
+	align-items: center;
+}
+
 #field-wrapper-number {
-	max-width: 55%;
+	min-width: 213px;
+	flex-grow: 1;
 }
 
 #field-wrapper-expiration_date {
-	max-width: 15%;
+	min-width: 75px;
 }
 
 #field-wrapper-security_code {
-	max-width: 15%;
+	min-width: 75px;
 }
 
 #field-wrapper-address-postal_code {
-	max-width: 15%;
+	min-width: 75px;
 }
 
 .field-wrapper {
@@ -53,13 +66,14 @@
 	border: none;
 }
 
-.pay-theory-card-field {
+.pay-theory-field {
 	display: flex;
 	flex-direction: row;
 }
 
-.pay-theory-card-field div {
+.pay-theory-field div {
 	display: flex;
+	flex-grow: 1;
 }
 
 .framed {
