@@ -1,19 +1,5 @@
 /* global localStorage */
-import {
-    appendFinix,
-    fields,
-    findTransactingElement,
-    generateInitialization,
-    generateTransacted,
-    handleMessage,
-    IDENTITY,
-    invalidate,
-    postData,
-    processElements,
-    stateMap,
-    transactionEndpoint
-}
-from './util'
+import common from './common'
 
 export default async(
     apiKey,
@@ -25,7 +11,7 @@ export default async(
         error: {},
     },
     tags = {},
-    host = transactionEndpoint
+    host = common.transactionEndpoint
 ) => {
     let identity = false
 
@@ -71,8 +57,8 @@ export default async(
             },
         ) => {
             if (formed) {
-                processedElements = processElements(formed, elements, styles)
-                transactingElement = processedElements.reduce(findTransactingElement)
+                processedElements = common.processElements(formed, elements, styles)
+                transactingElement = common.processedElements.reduce(common.findTransactingElement)
                 return
             }
             else {
@@ -81,13 +67,13 @@ export default async(
 
                     processedElements.forEach(element => {
 
-                        const stateType = stateMap[element.type] ?
-                            stateMap[element.type] :
+                        const stateType = common.stateMap[element.type] ?
+                            common.stateMap[element.type] :
                             element.type
 
                         const stated = state[stateType]
 
-                        const invalidElement = invalidate(stated)
+                        const invalidElement = common.invalidate(stated)
 
                         if (element.frame.field === element.type) {
                             element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
@@ -104,17 +90,17 @@ export default async(
                 }
 
                 const handleFormed = finalForm => {
-                    processedElements = processElements(finalForm, elements, styles);
-                    transactingElement = processedElements.reduce(findTransactingElement);
+                    processedElements = common.processElements(finalForm, elements, styles);
+                    transactingElement = processedElements.reduce(common.findTransactingElement);
                 }
 
-                appendFinix(formed, handleState, handleFormed)
+                common.appendFinix(formed, handleState, handleFormed)
             }
         },
 
-        initTransaction: generateInitialization(handleInialized, host, clientKey, apiKey),
+        initTransaction: common.generateInitialization(handleInialized, host, clientKey, apiKey),
 
-        readyObserver: cb => handleMessage(
+        readyObserver: cb => common.handleMessage(
             message => message.type.endsWith('-ready'),
             message => {
                 let calling = false
@@ -213,13 +199,13 @@ export default async(
                 }
             }),
 
-        transactedObserver: cb => handleMessage(
+        transactedObserver: cb => common.handleMessage(
             message => message.type === 'tokenized',
-            generateTransacted(cb, host, clientKey, apiKey, amount)),
+            common.generateTransacted(cb, host, clientKey, apiKey, amount)),
 
-        errorObserver: cb => handleMessage(message => message.type === 'error', message => cb(message.error)),
+        errorObserver: cb => common.handleMessage(message => message.type === 'error', message => cb(message.error)),
 
-        validObserver: cb => handleMessage(
+        validObserver: cb => common.handleMessage(
             message => {
                 const validType = message.type.split('-')[0]
                 return message.type.endsWith('-valid') && processedElements.map(element => element.type).includes(`${validType}`)

@@ -1,17 +1,5 @@
 /* global localStorage */
-import {
-    appendFinix,
-    generateInitialization,
-    generateTransacted,
-    handleMessage,
-    IDENTITY,
-    invalidate,
-    postData,
-    processElement,
-    stateMap,
-    transactionEndpoint
-}
-from './util'
+import common from './common'
 
 export default async(
     apiKey,
@@ -23,7 +11,7 @@ export default async(
         error: {},
     },
     tags = {},
-    host = transactionEndpoint
+    host = common.transactionEndpoint
 ) => {
     let formed = false
     let identity = false
@@ -34,7 +22,7 @@ export default async(
     return {
         mount: async(element = 'pay-theory-credit-card') => {
             if (formed) {
-                framed = processElement(formed, element, styles)
+                framed = common.processElement(formed, element, styles)
             }
             else {
                 const handleState = state => {
@@ -99,23 +87,23 @@ export default async(
                 }
 
                 const handleFormed = finalForm => {
-                    framed = processElement(finalForm, element, styles)
+                    framed = common.processElement(finalForm, element, styles)
                 }
 
-                appendFinix(formed, handleState, handleFormed)
+                common.appendFinix(formed, handleState, handleFormed)
             }
         },
 
-        initTransaction: generateInitialization(handleInialized, host, clientKey, apiKey),
+        initTransaction: common.generateInitialization(handleInialized, host, clientKey, apiKey),
 
-        readyObserver: cb => handleMessage(message => message.type === 'credit-card-ready', message => cb(message.ready)),
+        readyObserver: cb => common.handleMessage(message => message.type === 'credit-card-ready', message => cb(message.ready)),
 
-        transactedObserver: cb => handleMessage(
+        transactedObserver: cb => common.handleMessage(
             message => message.type === 'tokenized',
-            generateTransacted(cb, host, clientKey, apiKey, amount)),
+            common.generateTransacted(cb, host, clientKey, apiKey, amount)),
 
-        errorObserver: cb => handleMessage(message => message.type === 'error', message => cb(message.error)),
+        errorObserver: cb => common.handleMessage(message => message.type === 'error', message => cb(message.error)),
 
-        validObserver: cb => handleMessage(message => message.type === 'credit-card-valid', message => cb(message.valid)),
+        validObserver: cb => common.handleMessage(message => message.type === 'credit-card-valid', message => cb(message.valid)),
     }
 }
