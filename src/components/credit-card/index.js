@@ -9,7 +9,7 @@ const FIELDS = [
 
 const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
 
-/* global HTMLElement */
+
 class CreditCardFrame extends PayTheoryFinixFrame {
 
   constructor() {

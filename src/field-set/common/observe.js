@@ -13,6 +13,6 @@ export const generateReturn = (mount, initTransaction, readyObserver, validObser
     initTransaction,
     readyObserver,
     transactedObserver: transactedObserver(sdk.host, sdk.clientKey, sdk.apiKey, sdk.amount),
-    errorObserver: errorObserver,
+    errorObserver,
     validObserver,
 })

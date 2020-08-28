@@ -2,7 +2,7 @@ import PayTheory from '../pay-theory-finix'
 const NAME = 'number'
 const FIELDS = [{ name: 'number', label: 'Card Number' }];
 const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
-/* global HTMLElement */
+
 class CreditCardNumberFrame extends PayTheory {
 
   constructor() {

@@ -1,4 +1,3 @@
-/* global localStorage */
 import common from './common'
 
 export default async(

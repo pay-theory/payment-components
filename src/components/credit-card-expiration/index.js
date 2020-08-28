@@ -2,7 +2,6 @@ import PayTheoryFinixFrame from '../pay-theory-finix'
 const NAME = 'expiration'
 const FIELDS = [{ name: 'expiration_date', label: 'MM/YY' }];
 
-/* global HTMLElement */
 class CreditCardExpirationFrame extends PayTheoryFinixFrame {
 
   constructor() {

@@ -2,7 +2,6 @@ import PayTheoryFinixFrame from '../pay-theory-finix'
 const NAME = 'name'
 const FIELDS = [{ name: 'name', label: 'Name on card' }];
 
-/* global HTMLElement */
 class CreditCardNameFrame extends PayTheoryFinixFrame {
 
   constructor() {

@@ -2,7 +2,6 @@ import PayTheory from '../pay-theory-finix'
 const NAME = 'cvv'
 const FIELDS = [{ name: 'security_code', label: 'CVC' }];
 
-/* global HTMLElement */
 class CreditCardSecurityFrame extends PayTheory {
 
   constructor() {

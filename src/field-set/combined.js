@@ -1,4 +1,3 @@
-/* global localStorage */
 import common from './common'
 
 export default async(
@@ -13,14 +12,13 @@ export default async(
     let identity = false
     let framed
     const handleInialized = () => {
-        console.log('setting property')
         framed.transact = true
     }
     const establishElement = (forming, element) => {
         framed = common.processElement(forming, element, styles)
     }
 
-    const stateHandler = element => state => {
+    const stateHandler = () => state => {
         const processedElements = [
             { type: 'zip', frame: framed },
             { type: 'expiration', frame: framed },

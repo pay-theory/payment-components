@@ -1,5 +1,3 @@
-import * as dom from './dom'
-
 const generateWindowListener = (validTarget, handleMessage) => {
     return event => {
         if ([window.location.origin].includes(event.origin)) {
