@@ -47,209 +47,217 @@ export default async(
         transactingElement = common.processedElements.reduce(common.findTransactingElement)
     }
 
-    return {
-        mount: async(
-            elements = {
-                'account-name': common.fields.CREDIT_CARD_NAME,
-                number: common.fields.CREDIT_CARD_NUMBER,
-                cvv: common.fields.CREDIT_CARD_CVV,
-                expiration: common.fields.CREDIT_CARD_EXPIRATION,
-                zip: common.fields.CREDIT_CARD_ZIP,
-            },
-        ) => {
-            if (formed) {
-                establishElements(formed, elements)
-                return
-            }
-            else {
-                const handleState = state => {
-                    let errors = []
-
-                    processedElements.forEach(element => {
-
-                        const [, stated, invalidElement] = common.stateMapping(element.type)
-
-                        if (element.frame.field === element.type) {
-                            element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
-
-                            if (invalidElement) {
-                                errors.push(stated.errorMessages[0])
-                                element.frame.error = stated.errorMessages[0]
-                            }
-                            else {
-                                element.frame.error = false
-                            }
-                        }
-                    })
-                }
-
-                const handleFormed = finalForm => {
-                    establishElements(finalForm, elements)
-                }
-
-                common.appendFinix(formed, handleState, handleFormed)
-            }
+    const mount = async(
+        elements = {
+            'account-name': common.fields.CREDIT_CARD_NAME,
+            number: common.fields.CREDIT_CARD_NUMBER,
+            cvv: common.fields.CREDIT_CARD_CVV,
+            expiration: common.fields.CREDIT_CARD_EXPIRATION,
+            zip: common.fields.CREDIT_CARD_ZIP,
         },
+    ) => {
+        if (formed) {
+            establishElements(formed, elements)
+            return
+        }
+        else {
+            const handleState = state => {
+                let errors = []
 
-        initTransaction: common.generateInitialization(handleInialized, host, clientKey, apiKey),
+                processedElements.forEach(element => {
 
-        readyObserver: cb => common.handleMessage(
-            common.readyTypeMessage,
-            message => {
-                let calling = false
+                    const [, stated, invalidElement] = common.stateMapping(element.type)
 
-                let processed = false
+                    if (element.frame.field === element.type) {
+                        element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
 
-                if (!message.type.endsWith('-ready')) { return }
-
-                if (!setReady) {
-                    processedElements.forEach(element => {
-                        switch (element.type) {
-                        case 'name':
-                            {
-                                readyName = false
-                                setReady = true
-                                break
-                            }
-                        case 'cvv':
-                            {
-                                readyCVV = false
-                                setReady = true
-                                break
-                            }
-                        case 'number':
-                            {
-                                readyNumber = false
-                                setReady = true
-                                break
-                            }
-                        case 'expiration':
-                            {
-                                readyExpiration = false
-                                setReady = true
-                                break
-                            }
-                        case 'zip':
-                            {
-                                readyZip = false
-                                setReady = true
-                                break
-                            }
-                        default:
-                            {
-                                break
-                            }
+                        if (invalidElement) {
+                            errors.push(stated.errorMessages[0])
+                            element.frame.error = stated.errorMessages[0]
                         }
-                    })
-                }
+                        else {
+                            element.frame.error = false
+                        }
+                    }
+                })
+            }
 
-                const readyType = message.type.split('-')[0]
+            const handleFormed = finalForm => {
+                establishElements(finalForm, elements)
+            }
 
-                if (!processedElements.map(element => element.type).includes(`${readyType}`)) { return }
+            common.appendFinix(formed, handleState, handleFormed)
+        }
+    }
 
-                switch (readyType) {
-                case 'name':
-                    {
-                        readyName = message.ready
-                        calling = true
-                        break
+    const initTransaction = common.generateInitialization(handleInialized, host, clientKey, apiKey)
+
+    const readyObserver = cb => common.handleMessage(
+        common.readyTypeMessage,
+        message => {
+            let calling = false
+
+            let processed = false
+
+            if (!message.type.endsWith('-ready')) { return }
+
+            if (!setReady) {
+                processedElements.forEach(element => {
+                    switch (element.type) {
+                    case 'name':
+                        {
+                            readyName = false
+                            setReady = true
+                            break
+                        }
+                    case 'cvv':
+                        {
+                            readyCVV = false
+                            setReady = true
+                            break
+                        }
+                    case 'number':
+                        {
+                            readyNumber = false
+                            setReady = true
+                            break
+                        }
+                    case 'expiration':
+                        {
+                            readyExpiration = false
+                            setReady = true
+                            break
+                        }
+                    case 'zip':
+                        {
+                            readyZip = false
+                            setReady = true
+                            break
+                        }
+                    default:
+                        {
+                            break
+                        }
                     }
-                case 'cvv':
-                    {
-                        readyCVV = message.ready
-                        calling = true
-                        break
-                    }
-                case 'number':
-                    {
-                        readyNumber = message.ready
-                        calling = true
-                        break
-                    }
-                case 'expiration':
-                    {
-                        readyExpiration = message.ready
-                        calling = true
-                        break
-                    }
-                case 'zip':
-                    {
-                        readyZip = message.ready
-                        calling = true
-                        break
-                    }
-                default:
-                    {
-                        break
-                    }
+                })
+            }
+
+            const readyType = message.type.split('-')[0]
+
+            if (!processedElements.map(element => element.type).includes(`${readyType}`)) { return }
+
+            switch (readyType) {
+            case 'name':
+                {
+                    readyName = message.ready
+                    calling = true
+                    break
                 }
-                const readying = (readyCVV && readyNumber && readyExpiration && readyName && readyZip)
-                if (isReady !== readying) {
-                    isReady = readying
-                    if (calling) {
-                        cb(isReady)
-                    }
+            case 'cvv':
+                {
+                    readyCVV = message.ready
+                    calling = true
+                    break
                 }
-            }),
+            case 'number':
+                {
+                    readyNumber = message.ready
+                    calling = true
+                    break
+                }
+            case 'expiration':
+                {
+                    readyExpiration = message.ready
+                    calling = true
+                    break
+                }
+            case 'zip':
+                {
+                    readyZip = message.ready
+                    calling = true
+                    break
+                }
+            default:
+                {
+                    break
+                }
+            }
+            const readying = (readyCVV && readyNumber && readyExpiration && readyName && readyZip)
+            if (isReady !== readying) {
+                isReady = readying
+                if (calling) {
+                    cb(isReady)
+                }
+            }
+        })
+
+    const validObserver = cb => common.handleMessage(
+        message => {
+            const validType = message.type.split('-')[0]
+            return message.type.endsWith('-valid') && processedElements.map(element => element.type).includes(`${validType}`)
+        },
+        message => {
+            const validType = message.type.split('-')[0]
+            let calling = false
+
+            switch (validType) {
+            case 'name':
+                {
+                    validName = message.valid
+                    calling = true
+                    break
+                }
+            case 'cvv':
+                {
+                    validCVV = message.valid
+                    calling = true
+                    break
+                }
+            case 'number':
+                {
+                    validNumber = message.valid
+                    calling = true
+                    break
+                }
+            case 'expiration':
+                {
+                    validExpiration = message.valid
+                    calling = true
+                    break
+                }
+            case 'zip':
+                {
+                    validZip = message.valid
+                    calling = true
+                    break
+                }
+            default:
+                {
+                    break
+                }
+            }
+
+            const validating = (validCVV && validNumber && validExpiration && validZip && validName)
+
+            if (isValid !== validating) {
+                isValid = validating
+                if (calling) {
+                    cb(isValid)
+                }
+            }
+        })
+
+    return {
+        mount: mount,
+
+        initTransaction: initTransaction,
+
+        readyObserver: readyObserver,
 
         transactedObserver: common.transactedObserver(host, clientKey, apiKey, amount),
 
         errorObserver: common.errorObserver,
 
-        validObserver: cb => common.handleMessage(
-            message => {
-                const validType = message.type.split('-')[0]
-                return message.type.endsWith('-valid') && processedElements.map(element => element.type).includes(`${validType}`)
-            },
-            message => {
-                const validType = message.type.split('-')[0]
-                let calling = false
-
-                switch (validType) {
-                case 'name':
-                    {
-                        validName = message.valid
-                        calling = true
-                        break
-                    }
-                case 'cvv':
-                    {
-                        validCVV = message.valid
-                        calling = true
-                        break
-                    }
-                case 'number':
-                    {
-                        validNumber = message.valid
-                        calling = true
-                        break
-                    }
-                case 'expiration':
-                    {
-                        validExpiration = message.valid
-                        calling = true
-                        break
-                    }
-                case 'zip':
-                    {
-                        validZip = message.valid
-                        calling = true
-                        break
-                    }
-                default:
-                    {
-                        break
-                    }
-                }
-
-                const validating = (validCVV && validNumber && validExpiration && validZip && validName)
-
-                if (isValid !== validating) {
-                    isValid = validating
-                    if (calling) {
-                        cb(isValid)
-                    }
-                }
-            }),
+        validObserver: validObserver,
     }
 }
