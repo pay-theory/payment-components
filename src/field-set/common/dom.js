@@ -66,6 +66,7 @@ export const appendFinix = (formed, handleState, handleFormed) => {
     // eslint-disable-next-line scanjs-rules/assign_to_src
     script.src = 'https://forms.finixpymnts.com/finix.js'
     script.addEventListener('load', () => {
+
         formed = window.PaymentForm.card((state, binInformation) => {
             if (binInformation) {
                 const badge = binInformation.cardBrand

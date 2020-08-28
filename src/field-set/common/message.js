@@ -1,4 +1,4 @@
-import dom from './dom'
+import * as dom from './dom'
 
 const generateWindowListener = (validTarget, handleMessage) => {
     return event => {

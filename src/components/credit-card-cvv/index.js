@@ -13,6 +13,4 @@ class CreditCardSecurityFrame extends PayTheory {
 
 }
 
-if (!window.customElements.get('pay-theory-credit-card-cvv-tag-frame')) {
-  window.customElements.define('pay-theory-credit-card-cvv-tag-frame', CreditCardSecurityFrame);
-}
+window.customElements.define('pay-theory-credit-card-cvv-tag-frame', CreditCardSecurityFrame);

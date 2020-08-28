@@ -44,7 +44,7 @@ export default async(
 
     const establishElements = (forming, elements) => {
         processedElements = common.processElements(forming, elements, styles)
-        transactingElement = common.processedElements.reduce(common.findTransactingElement)
+        transactingElement = processedElements.reduce(common.findTransactingElement)
     }
 
     const stateHandler = elements => state => {

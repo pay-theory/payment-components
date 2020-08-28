@@ -44,6 +44,4 @@ class CreditCardNumberFrame extends PayTheory {
   }
 }
 
-if (!window.customElements.get('pay-theory-credit-card-number-tag-frame')) {
-  window.customElements.define('pay-theory-credit-card-number-tag-frame', CreditCardNumberFrame);
-}
+window.customElements.define('pay-theory-credit-card-number-tag-frame', CreditCardNumberFrame);

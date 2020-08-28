@@ -13,6 +13,4 @@ class CreditCardBillingZipFrame extends PayTheory {
 
 }
 
-if (!window.customElements.get('pay-theory-credit-card-zip-tag-frame')) {
-  window.customElements.define('pay-theory-credit-card-zip-tag-frame', CreditCardBillingZipFrame);
-}
+window.customElements.define('pay-theory-credit-card-zip-tag-frame', CreditCardBillingZipFrame);

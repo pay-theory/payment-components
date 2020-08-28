@@ -52,6 +52,7 @@ export const generateTransacted = (cb, host, clientKey, apiKey, amount) => {
             },
         )
 
+
         const payment = await postData(
             `${host}/${clientKey}/payment`,
             apiKey, {
@@ -76,7 +77,7 @@ export const generateTransacted = (cb, host, clientKey, apiKey, amount) => {
     }
 }
 
-export const generateInitialization = (handleInialized, host, clientKey, apiKey) => {
+export const generateInitialization = (handleInialized, host, clientKey, apiKey, element) => {
     return async(buyerOptions = {}) => {
         const stored = localStorage.getItem(data.IDENTITY)
 

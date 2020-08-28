@@ -7,15 +7,9 @@ module.exports = config => {
     merge(createDefaultConfig(config), {
       files: [
         './karma-variables.js',
-        './dist/index.js',
+        { pattern: 'src/*.js', type: 'module' },
         { pattern: 'src/**/*.js', type: 'module' },
-        { pattern: 'src/**/**/*.js', type: 'module' },
-        // runs all files ending with .test in the test folder,
-        // can be overwritten by passing a --grep flag. examples:
-        //
-        // npm run test -- --grep test/foo/bar.test.js
-        // npm run test -- --grep test/bar/*
-        { pattern: config.grep ? config.grep : 'test/**/*.test.js', type: 'module' },
+        { pattern: config.grep ? config.grep : 'test/*.test.js', type: 'module' },
       ],
       coverageReporter: {
         dir: 'build/reports/coverage',
@@ -24,7 +18,14 @@ module.exports = config => {
           { type: 'text', subdir: '.' },
         ]
       },
-      // see the karma-esm docs for all options
+      plugins: [
+        // load plugin
+        require.resolve('@open-wc/karma-esm'),
+        'karma-*',
+      ],
+
+      frameworks: ['esm'],
+
       esm: {
         // if you are using 'bare module imports' you will need this option
         nodeResolve: true,

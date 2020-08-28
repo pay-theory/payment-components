@@ -13,6 +13,7 @@ export default async(
     let identity = false
     let framed
     const handleInialized = () => {
+        console.log('setting property')
         framed.transact = true
     }
     const establishElement = (forming, element) => {
@@ -78,15 +79,12 @@ export default async(
         const handleState = stateHandler(element)
 
         const handleFormed = finalForm => {
-            console.log('establish element')
             establishElement(finalForm, element)
         }
         if (formed) {
-            console.log('already formed establishing elements')
             establishElement(formed, element)
         }
         else {
-            console.log('appending finix')
             common.appendFinix(formed, handleState, handleFormed)
         }
     }
