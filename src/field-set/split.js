@@ -5,12 +5,8 @@ export default async(
     apiKey,
     clientKey,
     amount,
-    styles = {
-        default: {},
-        success: {},
-        error: {},
-    },
-    tags = {},
+    styles = common.defaultStyles,
+    tags = common.defaultTags,
     host = common.transactionEndpoint
 ) => {
     let identity = false

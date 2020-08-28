@@ -1,12 +1,12 @@
 export const IDENTITY = 'pt-identity'
 
-export defaultStyles = {
+export const defaultStyles = {
     default: {},
     success: {},
     error: {},
 }
 
-export defaultTags = {}
+export const defaultTags = {}
 
 export const fields = {
     CREDIT_CARD_NAME: 'pay-theory-credit-card-account-name',
