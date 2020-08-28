@@ -12,7 +12,7 @@ module.exports = config => {
         { pattern: config.grep ? config.grep : 'test/*.test.js', type: 'module' },
       ],
       coverageReporter: {
-        dir: 'build/reports/coverage',
+        dir: 'coverage',
         reporters: [
           { type: 'html', subdir: 'report-html' },
           { type: 'text', subdir: '.' },
