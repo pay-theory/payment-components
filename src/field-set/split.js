@@ -50,11 +50,11 @@ export default async(
     return {
         mount: async(
             elements = {
-                'account-name': fields.CREDIT_CARD_NAME,
-                number: fields.CREDIT_CARD_NUMBER,
-                cvv: fields.CREDIT_CARD_CVV,
-                expiration: fields.CREDIT_CARD_EXPIRATION,
-                zip: fields.CREDIT_CARD_ZIP,
+                'account-name': common.fields.CREDIT_CARD_NAME,
+                number: common.fields.CREDIT_CARD_NUMBER,
+                cvv: common.fields.CREDIT_CARD_CVV,
+                expiration: common.fields.CREDIT_CARD_EXPIRATION,
+                zip: common.fields.CREDIT_CARD_ZIP,
             },
         ) => {
             if (formed) {
