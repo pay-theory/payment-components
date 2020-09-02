@@ -45,7 +45,14 @@ export const processElements = (form, elements, styles) => {
         if (container) {
             const contained = document.getElementById(`${elements[type]}-tag-frame`)
             if (contained === null) {
-                const frame = addFrame(form, container, elements[type], styles, `pay-theory-credit-card-${type}-tag-frame`)
+                const frame = addFrame(
+                    form,
+                    container,
+                    elements[type],
+                    styles,
+                    type === 'credit-card' ?
+                    `pay-theory-credit-card-tag-frame` :
+                    `pay-theory-credit-card-${type}-tag-frame`)
                 processed.push({ type, frame })
             }
             else {
