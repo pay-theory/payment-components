@@ -86,7 +86,7 @@ export const stateMapping = (elementType, state) => {
         const stated = state[stateType]
 
         // validate finix state
-        const invalid = network.invalidate(state[typed])
+        const invalid = network.invalidate(stated)
         if (cInvalid) {
             return [cStated, cInvalid]
         }
