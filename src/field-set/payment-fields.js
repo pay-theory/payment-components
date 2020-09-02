@@ -1,5 +1,7 @@
 import common from './common'
 
+const ELEMENTS = [{ type: 'security_code|expiration_date|number', type: 'name', type: 'address.postal_code' }]
+
 export default async(
     apiKey,
     clientKey,
@@ -68,15 +70,15 @@ export default async(
             zip: common.fields.CREDIT_CARD_ZIP,
         },
     ) => {
-        const handleState = stateHandler(elements)
+
+        establishElements(elements)
+
+        const handleState = stateHandler(processedElements)
 
         const handleFormed = finalForm => {
-            establishElements(finalForm, elements)
+            processedElements.forEach(processed => { processed.frame.form = finalForm })
         }
-        if (formed) {
-            establishElements(formed, elements)
-        }
-        else {
+        if (!formed) {
             common.appendFinix(formed, handleState, handleFormed)
         }
     }

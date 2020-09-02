@@ -4,7 +4,6 @@ import * as network from './network'
 export const findTransactingElement = (element, cv) => element.type === 'number' ? element.frame : cv
 
 export const addFrame = (
-    form,
     container,
     element,
     styles,
@@ -12,32 +11,13 @@ export const addFrame = (
 ) => {
     const tagFrame = document.createElement(frameType)
     tagFrame.styles = styles
-    tagFrame.form = form
     tagFrame.setAttribute('ready', true)
     tagFrame.setAttribute('id', `${element}-tag-frame`)
     container.appendChild(tagFrame)
     return tagFrame
 }
 
-export const processElement = (form, element, styles) => {
-    if (typeof element !== 'string') { throw new Error('invalid element') }
-    const container = document.getElementById(element)
-    if (container) {
-        const contained = document.getElementById(`${element}-tag-frame`)
-        if (contained === null) {
-            const framed = addFrame(form, container, element, styles)
-            return framed
-        }
-        else {
-            throw new Error(`${element} is already mounted`)
-        }
-    }
-    else {
-        throw new Error(`${element} is not available in dom`)
-    }
-}
-
-export const processElements = (form, elements, styles) => {
+export const processElements = (elements, styles) => {
     let processed = []
     data.fieldTypes.forEach(type => {
         if (elements[type] && typeof elements[type] !== 'string') { throw new Error('invalid element') }
@@ -46,7 +26,6 @@ export const processElements = (form, elements, styles) => {
             const contained = document.getElementById(`${elements[type]}-tag-frame`)
             if (contained === null) {
                 const frame = addFrame(
-                    form,
                     container,
                     elements[type],
                     styles,

@@ -76,8 +76,6 @@ class PayTheoryFinixFrame extends HTMLElement {
             <div id="pay-theory-${this.field}-field-container" class="pay-theory-field">
             </div>
         </span>`
-
-    this.defineFields(this.formed, this.styling)
   }
 
   disconnectedCallback() {
@@ -96,6 +94,7 @@ class PayTheoryFinixFrame extends HTMLElement {
 
   set form(_formed) {
     this.formed = _formed
+    this.defineFields(this.formed, this.styling)
   }
 
   get application() {
