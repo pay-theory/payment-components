@@ -57,7 +57,7 @@ export const generateTransacted = (cb, host, clientKey, apiKey, amount) => {
             `${host}/${clientKey}/payment`,
             apiKey, {
                 source: instrument.id,
-                message.amount,
+                amount: message.amount,
                 currency: 'USD',
                 idempotency_id: identity.idempotencyId,
                 identityToken: identity['tags-token'],
