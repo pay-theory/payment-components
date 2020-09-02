@@ -18,7 +18,6 @@ export const fieldTypes = ['account-name', 'credit-card', 'zip']
 
 export const stateMap = {
     'account-name': 'name',
-    'cvv': 'security_code',
-    'expiration': 'expiration_date',
+    'credit-card': 'security_code|expiration_date|number',
     'zip': 'address.postal_code'
 }

@@ -96,13 +96,26 @@ export const appendFinix = (formed, handleState, handleFormed) => {
 }
 
 export const stateMapping = (elementType, state) => {
+    // find the finix data element (number,security_code etc)
     const stateType = data.stateMap[elementType] ?
         data.stateMap[elementType] :
         elementType
 
-    const stated = state[stateType]
+    // extract the finix state for state type
+    // use reduce in case there are combined elements
+    const [stated, invalidElement] = stateType.split('|').reduce((typed, [cStated, cInvalid]) => {
+        const stated = state[stateType]
 
-    const invalidElement = network.invalidate(stated)
+        // validate finix state
+        const invalid = network.invalidate(state[typed])
+        if (cInvalid) {
+            return [cStated, cInvalid]
+        }
+        else {
+            return [stated, invalid]
+        }
+    }, ['', false])
 
+    // return the finix data element, state for that element, and validation
     return [stateType, stated, invalidElement]
 }

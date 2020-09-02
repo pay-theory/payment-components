@@ -68,7 +68,7 @@ export default async(
             zip: common.fields.CREDIT_CARD_ZIP,
         },
     ) => {
-        const handleState = stateHandler(processedElements)
+        const handleState = stateHandler(elements)
 
         const handleFormed = finalForm => {
             establishElements(finalForm, elements)
