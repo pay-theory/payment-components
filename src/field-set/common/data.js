@@ -14,7 +14,7 @@ export const fields = {
     CREDIT_CARD_ZIP: 'pay-theory-credit-card-zip',
 }
 
-export const fieldTypes = ['cvv', 'account-name', 'credit-card', 'zip']
+export const fieldTypes = ['account-name', 'credit-card', 'zip']
 
 export const stateMap = {
     'account-name': 'name',

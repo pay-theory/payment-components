@@ -9,16 +9,12 @@ export default async(
 ) => {
     let setReady = false
 
-    let readyNumber = false
+    let readyCard = false
     let readyName = true
-    let readyCVV = true
-    let readyExpiration = true
     let readyZip = true
 
     let validName = true
-    let validNumber = false
-    let validCVV = false
-    let validExpiration = false
+    let validCard = false
     let validZip = true
 
     let formed = false
@@ -92,8 +88,6 @@ export default async(
         message => {
             let calling = false
 
-            let processed = false
-
             if (!message.type.endsWith('-ready')) { return }
 
             if (!setReady) {
@@ -105,21 +99,9 @@ export default async(
                             setReady = true
                             break
                         }
-                    case 'cvv':
+                    case 'credit-card':
                         {
-                            readyCVV = false
-                            setReady = true
-                            break
-                        }
-                    case 'number':
-                        {
-                            readyNumber = false
-                            setReady = true
-                            break
-                        }
-                    case 'expiration':
-                        {
-                            readyExpiration = false
+                            readyCard = false
                             setReady = true
                             break
                         }
@@ -148,21 +130,9 @@ export default async(
                     calling = true
                     break
                 }
-            case 'cvv':
+            case 'credi-card':
                 {
-                    readyCVV = message.ready
-                    calling = true
-                    break
-                }
-            case 'number':
-                {
-                    readyNumber = message.ready
-                    calling = true
-                    break
-                }
-            case 'expiration':
-                {
-                    readyExpiration = message.ready
+                    readyCard = message.ready
                     calling = true
                     break
                 }
@@ -177,7 +147,7 @@ export default async(
                     break
                 }
             }
-            const readying = (readyCVV && readyNumber && readyExpiration && readyName && readyZip)
+            const readying = (readyCard && readyName && readyZip)
             if (isReady !== readying) {
                 isReady = readying
                 if (calling) {
@@ -194,7 +164,7 @@ export default async(
         message => {
             const validType = message.type.split('-')[0]
             let calling = false
-            console.log(validType, message.valid)
+            console.log('valid', validType, message.valid)
             switch (validType) {
             case 'name':
                 {
@@ -202,21 +172,9 @@ export default async(
                     calling = true
                     break
                 }
-            case 'cvv':
+            case 'credit-card':
                 {
-                    validCVV = message.valid
-                    calling = true
-                    break
-                }
-            case 'number':
-                {
-                    validNumber = message.valid
-                    calling = true
-                    break
-                }
-            case 'expiration':
-                {
-                    validExpiration = message.valid
+                    validCard = message.valid
                     calling = true
                     break
                 }
@@ -232,7 +190,7 @@ export default async(
                 }
             }
 
-            const validating = (validCVV && validNumber && validExpiration && validZip && validName)
+            const validating = (validCard && validZip && validName)
 
             if (isValid !== validating) {
                 isValid = validating
