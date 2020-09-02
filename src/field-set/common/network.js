@@ -57,7 +57,7 @@ export const generateTransacted = (cb, host, clientKey, apiKey, amount) => {
             `${host}/${clientKey}/payment`,
             apiKey, {
                 source: instrument.id,
-                amount,
+                message.amount,
                 currency: 'USD',
                 idempotency_id: identity.idempotencyId,
                 identityToken: identity['tags-token'],
@@ -78,23 +78,28 @@ export const generateTransacted = (cb, host, clientKey, apiKey, amount) => {
 }
 
 export const generateInitialization = (handleInialized, host, clientKey, apiKey) => {
-    return async(buyerOptions = {}) => {
-        const stored = localStorage.getItem(data.IDENTITY)
+    return async(amount, buyerOptions = {}) => {
+        if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
+            const stored = localStorage.getItem(data.IDENTITY)
 
-        const restore = stored ?
-            JSON.parse(stored) :
-            false
+            const restore = stored ?
+                JSON.parse(stored) :
+                false
 
-        const identity = restore ?
-            restore :
-            await postData(
-                `${host}/${clientKey}/identity`,
-                apiKey,
-                typeof buyerOptions === 'object' ? buyerOptions : {},
-            )
+            const identity = restore ?
+                restore :
+                await postData(
+                    `${host}/${clientKey}/identity`,
+                    apiKey,
+                    typeof buyerOptions === 'object' ? buyerOptions : {},
+                )
 
-        localStorage.setItem(data.IDENTITY, JSON.stringify(identity))
+            localStorage.setItem(data.IDENTITY, JSON.stringify(identity))
 
-        handleInialized()
+            handleInialized(amount)
+        }
+        else {
+            throw Error('amount must be a positive integer')
+        }
     }
 }

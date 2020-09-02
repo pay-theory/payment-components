@@ -29,11 +29,13 @@ export default async(
     let processedElements = []
     let transactingElement
 
-    const handleInialized = () => {
+    const handleInialized = (amount) => {
         if (transactingElement.frame) {
+            transactingElement.frame.amount = true
             transactingElement.frame.transact = true
         }
         else {
+            transactingElement.amount = true
             transactingElement.transact = true
         }
     }
@@ -240,5 +242,5 @@ export default async(
             }
         })
 
-    return common.generateReturn(mount, initTransaction, readyObserver, validObserver, { host, clientKey, apiKey, amount })
+    return common.generateReturn(mount, initTransaction, readyObserver, validObserver, { host, clientKey, apiKey })
 }

@@ -3,8 +3,7 @@ const NAME = 'credit-card'
 const FIELDS = [
   { name: 'number', label: 'Card Number' },
   { name: 'expiration_date', label: 'MM/YY' },
-  { name: 'security_code', label: 'CVC' },
-  { name: 'address.postal_code', label: 'Zip' }
+  { name: 'security_code', label: 'CVC' }
 ]
 
 const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
@@ -30,6 +29,7 @@ class CreditCardFrame extends PayTheoryFinixFrame {
   }
 
   set transact(_transacting) {
+    const provided_amount = Number.isInteger(parseInt(this.amount))
     if (this.transacting !== _transacting) {
       this.transacting = _transacting;
       this.form.submit(FINIX_ENV, this.application, (err, res) => {
@@ -41,11 +41,22 @@ class CreditCardFrame extends PayTheoryFinixFrame {
           window.postMessage({
               type: 'tokenized',
               tokenized,
+              provided_amount
             },
             window.location.origin,
           );
         }
       });
+    }
+  }
+
+  get amount() {
+    return this.amounting;
+  }
+
+  set amount(_amounting) {
+    if (this.amounting !== _amounting) {
+      this.amounting = _amounting;
     }
   }
 }
