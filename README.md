@@ -20,7 +20,7 @@ or
 <script src="https://stage.sdk.paytheorystudy.com"></script>
 ```
 
-either way the SDK will be exposed as 
+either way the SDK will be exposed as
 
 ```javascript
 window.paytheory
@@ -120,7 +120,7 @@ const USE_SINGLE_FIELD = true
     * as a placeholder
     */
     let myCreditCardConstructor
-    
+
     if (USE_SINGLE_FIELD) {
         // for single field call createCreditCard
         myCreditCardConstructor = window.paytheory.createCreditCard
@@ -128,38 +128,38 @@ const USE_SINGLE_FIELD = true
         // for multiple fields call createCreditCardFields
         myCreditCardConstructor = window.paytheory.createCreditCardFields
     }
-    
+
     myCreditCard = await myCreditCardConstructor(
-        API_KEY, 
-        CLIENT_ID, 
-        AMOUNT, 
-        STYLES, 
+        API_KEY,
+        CLIENT_ID,
+        AMOUNT,
+        STYLES,
         TAGS)
-            
+
     // mount the hosted fields into the container
     myCreditCard.mount()
-    
+
     // handle callbacks
     myCreditCard.readyObserver(ready => {
         // ready is a boolean indictor
         // fires when SDK is loaded and ready
     })
-    
+
     myCreditCard.transactedObserver(transactionResult => {
         // results of the transaction
         // fires once when transaction is completed
     })
-    
+
     myCreditCard.validObserver(valid => {
         // valid is a boolean indictor
         // fires every time the valid state of the hosted field changes
     })
-    
+
     myCreditCard.errorObserver(error => {
         // error is false or a message
         // fires every time the error state/message changes
-    })             
-        
+    })
+
 })()
 
 ```
@@ -183,7 +183,7 @@ const BUYER_OPTIONS = {
         "line2": "Apartment 17",
         "postal_code": "12345"
     }
-    
+
 // begin the transaction authorization using saved credit card entry
 myCreditCard.initTransaction(BUYER_OPTIONS)
 ```
@@ -194,17 +194,11 @@ Upon completion of authorization and capture, the following details are returned
 
 ```json
 {
-        "last_four": "4242", 
-        "brand": "VISA",
-        "payment-detail-reference": "authorization id",
-        "payment-source-id": "payment instrument id",
-        "payment-application-id": "application environment id",
-        "state": "XX",
-        "amount": 100,
-        "currency": "USD",
-        "tags": { "YOUR_TAG_KEY": "YOUR TAG VALUE"},
-        "created_at": "2020-06-30T03:08:27.24Z",
-        "updated_at": "2020-06-30T03:08:27.24Z",
+    "last_four":"4242",
+    "brand":"VISA",
+    "type":"DEBIT",
+    "receipt_number":"pt-test-000002",
+    "state":"APPROVED"
 }
 ```
 
@@ -214,12 +208,12 @@ To enable IE 11 support you must include the following in your HTML head:
 
 ```html
 <head>
-    <!-- 
+    <!--
         you can find the latest versions of these at the following links
         https://cdnjs.com/libraries/webcomponentsjs
         https://cdnjs.com/libraries/core-js
     -->
-    
+
     <!-- begin polyfill -->
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.6.5/minified.js"
@@ -232,9 +226,9 @@ To enable IE 11 support you must include the following in your HTML head:
       crossorigin="anonymous"
     ></script>
     <!-- end polyfill -->
-    
+
     <script src="https://stage.sdk.paytheorystudy.com"></script>
-    
+
 </head>
 ```
 
