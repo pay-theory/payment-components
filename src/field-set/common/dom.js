@@ -83,7 +83,7 @@ export const stateMapping = (elementType, state) => {
     // extract the finix state for state type
     // use reduce in case there are combined elements
     const [stated, invalidElement] = stateType.split('|').reduce(([cStated, cInvalid], typed) => {
-        const stated = state[stateType]
+        const stated = state[typed]
 
         // validate finix state
         const invalid = network.invalidate(stated)
