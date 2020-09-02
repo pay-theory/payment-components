@@ -1,11 +1,14 @@
 {
-  "presets": [[
+  "presets": [
+    [
       "@babel/preset-env",
       {
         "useBuiltIns": "usage",
         "modules": "systemjs",
         "corejs": "3.6.5"
       }
-    ],"minify"],
-  plugins:["@babel/plugin-transform-modules-commonjs"]
+    ],
+    ['minify', { builtIns: false }]
+  ],
+  plugins: ["@babel/plugin-transform-modules-commonjs"]
 }
