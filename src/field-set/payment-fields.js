@@ -194,7 +194,7 @@ export default async(
         message => {
             const validType = message.type.split('-')[0]
             let calling = false
-
+            console.log(validType, message.valid)
             switch (validType) {
             case 'name':
                 {
