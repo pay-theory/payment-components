@@ -10,9 +10,7 @@ export const defaultTags = {}
 
 export const fields = {
     CREDIT_CARD_NAME: 'pay-theory-credit-card-account-name',
-    CREDIT_CARD_CVV: 'pay-theory-credit-card-cvv',
-    CREDIT_CARD_EXPIRATION: 'pay-theory-credit-card-expiration',
-    CREDIT_CARD_NUMBER: 'pay-theory-credit-card-number',
+    CREDIT_CARD: 'pay-theory-credit-card',
     CREDIT_CARD_ZIP: 'pay-theory-credit-card-zip',
 }
 

@@ -1,18 +1,17 @@
 import './components/credit-card'
 import './components/credit-card-account-name'
-import './components/credit-card-cvv'
-import './components/credit-card-expiration'
-import './components/credit-card-number'
 import './components/credit-card-zip'
 import 'regenerator-runtime'
 import './style.css'
 
-import createCreditCard from './field-set/combined'
+import createPaymentFields from './field-set/payment-fields'
 import createCreditCardFields from './field-set/split'
+import createCreditCard from './field-set/combined'
 
 window.paytheory = {
-  createCreditCard,
+  createPaymentFields,
   createCreditCardFields,
+  createCreditCard
 }
 
 export default window.paytheory
