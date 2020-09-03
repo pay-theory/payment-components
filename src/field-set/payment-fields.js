@@ -58,10 +58,17 @@ export default async(
         const handleState = stateHandler(processedElements)
 
         const handleFormed = finalForm => {
+            const transacting = processedElements.reduce(common.findTransactingElement, false)
+
+            if (transacting === false) {
+                throw new Error('missing field required for payments')
+            }
+
             processedElements.forEach(processed => { processed.frame.form = finalForm })
+
             window.postMessage({
                     type: `pay-theory-ready`,
-                    ready: isValid,
+                    ready: true,
                 },
                 window.location.origin,
             )

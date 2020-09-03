@@ -2,8 +2,11 @@ import * as data from './data'
 import * as network from './network'
 
 export const findTransactingElement = (element, cv) => {
-    console.log('findTransactingElement', cv, element)
-    return element.type === 'credit-card' ? element.frame : cv
+    return element === false ?
+        cv.type === 'credit-card' ?
+        cv.frame :
+        false :
+        element
 }
 
 export const addFrame = (

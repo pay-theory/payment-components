@@ -52,6 +52,8 @@ Requires a container for the credit card input:
 </form>
 ```
 
+If the credit card container is not available in the DOM an error will be thrown.
+
 ### Credit Card Account Name & Zip code
 
 [codesandbox credit card optional fields example](https://codesandbox.io/s/payment-examples-split-pvtfi?file=/public/index.html)
@@ -169,7 +171,11 @@ const BUYER_OPTIONS = {
         "postal_code": "12345"
     }
 
-// begin the transaction authorization by providing an amount and optionally details about the buyer
+/** 
+ * begin the transaction authorization by providing an amount 
+ * and optionally details about the buyer
+ * amount must be a positive integer or an error will be thrown
+ * */
 myCreditCard.initTransaction(AMOUNT, BUYER_OPTIONS)
 ```
 
