@@ -34,7 +34,7 @@ There are three elements available to use for payments.
 
 This element is required for all payments.
 
-[codesandbox credit card element example](https://codesandbox.io/s/payment-example-combined-1i61g?file=/public/index.html)
+[codesandbox credit card element example](https://codesandbox.io/s/sdk-payment-example-solok)
 
 The credit card element provides a single form entry combining:
 
@@ -56,7 +56,7 @@ If the credit card container is not available in the DOM an error will be thrown
 
 ### Credit Card Account Name & Zip code
 
-[codesandbox credit card optional fields example](https://codesandbox.io/s/payment-examples-split-pvtfi?file=/public/index.html)
+[codesandbox credit card optional fields example](https://codesandbox.io/s/sdk-payment-example-with-optional-cw5c0)
 
 Two optional elements are available to capture additional details about the card:
 
