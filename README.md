@@ -28,9 +28,11 @@ window.paytheory
 
 ## Usage
 
-There are two approaches for you to choose from for your implementation.
+There are three elements available to use for payments.
 
 ### Credit Card Element
+
+This element is required for all payments.
 
 [codesandbox credit card element example](https://codesandbox.io/s/payment-example-combined-1i61g?file=/public/index.html)
 
@@ -39,7 +41,6 @@ The credit card element provides a single form entry combining:
 -   credit card number
 -   credit card CVV security code
 -   credit card expiration date
--   credit card zip code
 
 Requires a container for the credit card input:
 
@@ -51,29 +52,24 @@ Requires a container for the credit card input:
 </form>
 ```
 
-### Credit Card Fields Elements
+### Credit Card Account Name & Zip code
 
-[codesandbox credit card fields example](https://codesandbox.io/s/payment-examples-split-pvtfi?file=/public/index.html)
+[codesandbox credit card optional fields example](https://codesandbox.io/s/payment-examples-split-pvtfi?file=/public/index.html)
 
-The credit card fields elements provide distinct entries for:
+Two optional elements are available to capture additional details about the card:
 
 -   credit card account name
--   credit card number
--   credit card CVV security code
--   credit card expiration date
 -   credit card zip code
 
-These entries can be placed wherever you prefer.
+These entries can be placed wherever you prefer in relation to the credit card element.
 
-Requires a container for each of the inputs:
+Include a container for each of the optional inputs you wish to use:
 
 ```html
 <form>
 ...
 <div id="pay-theory-credit-card-account-name" />
-<div id="pay-theory-credit-card-number" />
-<div id="pay-theory-credit-card-cvv" />
-<div id="pay-theory-credit-card-expiration" />
+...
 <div id="pay-theory-credit-card-zip" />
 ...
 </form>
@@ -110,7 +106,6 @@ const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
 
 // create a place to store the credit card
 let myCreditCard
-const USE_SINGLE_FIELD = true
 
 (async() => {
     /*
@@ -119,20 +114,10 @@ const USE_SINGLE_FIELD = true
     * if providing tags but no styles, provide an empty object
     * as a placeholder
     */
-    let myCreditCardConstructor
 
-    if (USE_SINGLE_FIELD) {
-        // for single field call createCreditCard
-        myCreditCardConstructor = window.paytheory.createCreditCard
-    } else {
-        // for multiple fields call createCreditCardFields
-        myCreditCardConstructor = window.paytheory.createCreditCardFields
-    }
-
-    myCreditCard = await myCreditCardConstructor(
+    myCreditCard = await window.paytheory.createPaymentFields(
         API_KEY,
         CLIENT_ID,
-        AMOUNT,
         STYLES,
         TAGS)
 
@@ -184,21 +169,35 @@ const BUYER_OPTIONS = {
         "postal_code": "12345"
     }
 
-// begin the transaction authorization using saved credit card entry
-myCreditCard.initTransaction(BUYER_OPTIONS)
+// begin the transaction authorization by providing an amount and optionally details about the buyer
+myCreditCard.initTransaction(AMOUNT, BUYER_OPTIONS)
 ```
 
 ## Completion response
 
-Upon completion of authorization and capture, the following details are returned:
+Upon completion of authorization and capture, details similar to the following are returned:
 
 ```json
 {
+    "receipt_number":"pt-test-000002",
     "last_four":"4242",
     "brand":"VISA",
     "type":"DEBIT",
+    "created_at":"2020-09-03T13:39:24.74Z",
+    "amount":10200,
+    "state":"APPROVED",
+    "tags":{"pt-number":"pt-test-000002","pay-theory-environment":"demo","custom-key1":"custom-value1","custom-key2":"custom-value2"}
+}
+```
+If an error occurs during the transaction, the response will be similar to the following:
+
+```json
+{
     "receipt_number":"pt-test-000002",
-    "state":"APPROVED"
+    "last_four":"4242",
+    "brand":"VISA",
+    "state":"error",
+    "type":"some descriptive reason for the error"
 }
 ```
 

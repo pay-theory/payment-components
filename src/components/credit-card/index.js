@@ -29,7 +29,11 @@ class CreditCardFrame extends PayTheoryFinixFrame {
   }
 
   set transact(_transacting) {
-    const provided_amount = Number.isInteger(parseInt(this.amount))
+    const valid_amount = Number.isInteger(parseInt(_transacting))
+    const amount = parseInt(_transacting)
+    if (!valid_amount) {
+      throw new Error('amount must be a positive integer')
+    }
     if (this.transacting !== _transacting) {
       this.transacting = _transacting;
       this.form.submit(FINIX_ENV, this.application, (err, res) => {
@@ -37,11 +41,10 @@ class CreditCardFrame extends PayTheoryFinixFrame {
           this.error = err;
         }
         else {
-          const tokenized = { bin: this.bin, ...res };
+          const tokenized = { amount: amount, token: { bin: this.bin, ...res } };
           window.postMessage({
               type: 'tokenized',
-              tokenized,
-              provided_amount
+              tokenized
             },
             window.location.origin,
           );

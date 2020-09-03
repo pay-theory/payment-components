@@ -1,7 +1,10 @@
 import * as data from './data'
 import * as network from './network'
 
-export const findTransactingElement = (element, cv) => element.type === 'number' ? element.frame : cv
+export const findTransactingElement = (element, cv) => {
+    console.log('findTransactingElement', cv, element)
+    return element.type === 'credit-card' ? element.frame : cv
+}
 
 export const addFrame = (
     container,
@@ -10,6 +13,7 @@ export const addFrame = (
     frameType = 'pay-theory-credit-card-tag-frame',
 ) => {
     const tagFrame = document.createElement(frameType)
+    console.log('adding frame', styles)
     tagFrame.styles = styles
     tagFrame.setAttribute('ready', true)
     tagFrame.setAttribute('id', `${element}-tag-frame`)
@@ -82,19 +86,49 @@ export const stateMapping = (elementType, state) => {
 
     // extract the finix state for state type
     // use reduce in case there are combined elements
-    const [stated, invalidElement] = stateType.split('|').reduce(([cStated, cInvalid], typed) => {
-        const stated = state[typed]
+    const splitLength = stateType.split('|').length
+    if (splitLength > 1) {
+        const [cValid, cInvalid, cUndefined] = stateType.split('|').reduce(([cValid, cInvalid, cUndefined], typed, index) => {
+            const stated = state[typed]
+
+            // validate finix state
+            const invalid = network.invalidate(stated)
+
+            if (invalid === true) {
+                cInvalid.push(stated)
+            }
+            else if (invalid === false) {
+                cValid.push(stated)
+            }
+            else {
+                cUndefined.push(stated)
+            }
+
+            return [cValid, cInvalid, cUndefined]
+        }, [
+            [],
+            [],
+            []
+        ])
+        if (cValid.length === splitLength) {
+            return [stateType, cValid[0], false]
+        }
+        else if (cInvalid.length > 0) {
+            return [stateType, cInvalid[0], true]
+        }
+        else {
+            return [stateType, cUndefined[0], ]
+        }
+    }
+    else {
+
+        const stated = state[stateType]
 
         // validate finix state
         const invalid = network.invalidate(stated)
-        if (cInvalid) {
-            return [cStated, cInvalid]
-        }
-        else {
-            return [stated, invalid]
-        }
-    }, ['', false])
 
-    // return the finix data element, state for that element, and validation
-    return [stateType, stated, invalidElement]
+        // return the finix data element, state for that element, and validation
+        return [stateType, stated, invalid]
+    }
+
 }

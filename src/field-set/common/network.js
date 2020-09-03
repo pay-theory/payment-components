@@ -38,47 +38,52 @@ export const transactionEndpoint = (() => {
     }
 })()
 
-export const generateTransacted = (cb, host, clientKey, apiKey, amount) => {
+export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
     return async message => {
         const identity = JSON.parse(localStorage.getItem(data.IDENTITY))
 
         const instrument = await postData(
             `${host}/${clientKey}/instrument`,
             apiKey, {
-                token: message.tokenized.data.id,
+                token: message.tokenized.token.data.id,
                 type: 'TOKEN',
                 identity: identity.id,
                 identityToken: identity['tags-token']
             },
         )
 
+        tags['pt-number'] = identity.idempotencyId
 
         const payment = await postData(
             `${host}/${clientKey}/payment`,
             apiKey, {
                 source: instrument.id,
-                amount: message.amount,
+                amount: message.tokenized.amount,
                 currency: 'USD',
                 idempotency_id: identity.idempotencyId,
                 identityToken: identity['tags-token'],
-                tags: { 'pt-number': identity.idempotencyId },
+                tags: tags,
             },
         )
 
         localStorage.removeItem(data.IDENTITY)
 
         cb({
+            receipt_number: identity.idempotencyId,
             last_four: instrument.last_four,
             brand: instrument.brand,
-            type: payment.state === 'error' ? payment.message : payment.type,
-            receipt_number: identity.idempotencyId,
-            state: payment.state === 'PENDING' ? 'APPROVED' : payment.state
+            type: payment.state === 'error' ? payment.reason : payment.type,
+            created_at: payment.created_at,
+            amount: payment.amount,
+            state: payment.state === 'PENDING' ? 'APPROVED' : payment.state,
+            tags: payment.tags,
         })
     }
 }
 
-export const generateInitialization = (handleInialized, host, clientKey, apiKey) => {
+export const generateInitialization = (handleInitialized, host, clientKey, apiKey) => {
     return async(amount, buyerOptions = {}) => {
+        console.log(amount, buyerOptions)
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
             const stored = localStorage.getItem(data.IDENTITY)
 
@@ -96,7 +101,7 @@ export const generateInitialization = (handleInialized, host, clientKey, apiKey)
 
             localStorage.setItem(data.IDENTITY, JSON.stringify(identity))
 
-            handleInialized(amount)
+            handleInitialized(amount)
         }
         else {
             throw Error('amount must be a positive integer')

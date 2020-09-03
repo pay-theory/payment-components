@@ -49,11 +49,8 @@ class PayTheoryFinixFrame extends HTMLElement {
       return
     }
     const message = typeof event.data === 'object' ? event.data : { type: 'unknown' }
-    if (message.type.startsWith(this.field) && message.type.endsWith('-ready')) {
+    if (message.type.startsWith(this.field) && message.type.endsWith(':ready')) {
       this.ready = event.data.ready
-    }
-    else if (message.type.startsWith(this.field) && message.type.endsWith('-valid')) {
-      this.valid = event.data.valid
     }
   }
 
@@ -62,7 +59,7 @@ class PayTheoryFinixFrame extends HTMLElement {
       this.loaded = true
 
       window.postMessage({
-          type: `${this.field}-ready`,
+          type: `${this.field}:ready`,
           ready: true,
         },
         window.location.origin,
@@ -174,7 +171,7 @@ class PayTheoryFinixFrame extends HTMLElement {
     if (isValid !== this.validated) {
       this.validated = isValid
       window.postMessage({
-          type: `${this.field}-valid`,
+          type: `${this.field}:valid`,
           valid: isValid,
         },
         window.location.origin,
