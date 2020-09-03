@@ -329,6 +329,7 @@ describe('createCreditCardFields', () => {
         const ccTag = await document.getElementById('pay-theory-credit-card-number')
 
         await expect(ccTag).to.be.ok;
+        console.log(creditCard.mount)
 
         creditCard.mount();
 

@@ -3,9 +3,9 @@ import { aTimeout } from '@open-wc/testing-helpers'
 import sinon from 'sinon';
 
 import * as common from './common'
-import createCreditCard from '../src/field-set/combined'
+import createPaymentFields from '../src/field-set/payment-fields'
 
-describe('createCreditCard', () => {
+describe('createPaymentFields', () => {
     let error;
 
     beforeEach(() => {
@@ -17,7 +17,42 @@ describe('createCreditCard', () => {
 
         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
 
-        const creditCard = await createCreditCard(common.api, common.client, 2500);
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        await aTimeout(300);
+
+        await expect(error).to.not.be;
+
+        const tfTag = await document.getElementById('pay-theory-credit-card-tag-frame');
+        await expect(tfTag).to.be.ok;
+
+        const fcTag = await document.getElementById('pay-theory-credit-card-field-container');
+        await expect(fcTag).to.be.ok;
+
+        const fwNum = await document.getElementById('field-wrapper-number').childElementCount;
+        await expect(fwNum).to.be.ok;
+
+        const fwExp = await document.getElementById('field-wrapper-expiration_date').childElementCount;
+        await expect(fwExp).to.be.ok;
+
+        const fwCvv = await document.getElementById('field-wrapper-security_code').childElementCount;
+        await expect(fwCvv).to.be.ok;
+    });
+
+    it('renders finix iframes with an additional account name and zip field', async() => {
+
+        const fixed = await fixture(html `
+        <div id="pay-theory-credit-card" />
+        <div id="pay-theory-credit-card-account-name" />
+        <div id="pay-theory-credit-card-zip" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
 
         const ccTag = await document.getElementById('pay-theory-credit-card');
 
@@ -44,6 +79,9 @@ describe('createCreditCard', () => {
         const fwCvv = await document.getElementById('field-wrapper-security_code').childElementCount;
         await expect(fwCvv).to.be.ok;
 
+        const fwName = await document.getElementById('field-wrapper-name').childElementCount;
+        await expect(fwName).to.be.ok;
+
         const fwZip = await document.getElementById('field-wrapper-address-postal_code').childElementCount;
         await expect(fwZip).to.be.ok;
     });
@@ -52,13 +90,13 @@ describe('createCreditCard', () => {
 
         const fixed = await fixture(html ` <div id="pay-theory-credit-card-custom" />`);
 
-        const creditCard = await createCreditCard(common.api, common.client, 2500);
+        const creditCard = await createPaymentFields(common.api, common.client, 2500);
 
         const ccTag = await document.getElementById('pay-theory-credit-card-custom');
 
         await expect(ccTag).to.be.ok;
 
-        await creditCard.mount('pay-theory-credit-card-custom');
+        await creditCard.mount({ 'credit-card': 'pay-theory-credit-card-custom' });
 
         await aTimeout(300);
 
@@ -79,15 +117,13 @@ describe('createCreditCard', () => {
         const fwCvv = await document.getElementById('field-wrapper-security_code').childElementCount;
         await expect(fwCvv).to.be.ok;
 
-        const fwZip = await document.getElementById('field-wrapper-address-postal_code').childElementCount;
-        await expect(fwZip).to.be.ok;
     });
 
     it('cannot render finix frames', async() => {
 
         const fixed = await fixture(html ` <div id="not-the-div-youre-looking-for" />`);
 
-        const creditCard = await createCreditCard(common.api, common.client, 2500)
+        const creditCard = await createPaymentFields(common.api, common.client, 2500)
 
         const wrongDiv = await document.getElementById('not-the-div-youre-looking-for');
 
@@ -104,7 +140,7 @@ describe('createCreditCard', () => {
 
         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
 
-        const creditCard = await createCreditCard(common.api, common.client, 2500);
+        const creditCard = await createPaymentFields(common.api, common.client);
 
         const ccTag = await document.getElementById('pay-theory-credit-card');
 
@@ -120,7 +156,7 @@ describe('createCreditCard', () => {
 
         await expect(ccTagFrame.transact).to.not.be;
 
-        await creditCard.initTransaction()
+        await creditCard.initTransaction(2500)
 
         await expect(ccTagFrame.transact).to.be;
     });
@@ -128,7 +164,7 @@ describe('createCreditCard', () => {
     it('readyObserver triggers on ready message from mount', async() => {
         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
 
-        const creditCard = await createCreditCard(common.api, common.client, 2500);
+        const creditCard = await createPaymentFields(common.api, common.client, 2500);
 
         let ready;
 
@@ -151,11 +187,13 @@ describe('createCreditCard', () => {
 
         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
 
-        const creditCard = await createCreditCard(common.api, common.client, 2500);
+        const creditCard = await createPaymentFields(common.api, common.client);
 
         const ccTag = await document.getElementById('pay-theory-credit-card');
 
         await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
 
         await aTimeout(200);
 
@@ -168,8 +206,10 @@ describe('createCreditCard', () => {
         window.postMessage({
                 type: 'tokenized',
                 tokenized: {
-                    data: {
-                        id: 'testId'
+                    token: {
+                        data: {
+                            id: 'testId'
+                        }
                     }
                 },
             },
@@ -183,7 +223,7 @@ describe('createCreditCard', () => {
 
     it('errorObserver triggers on error message', async() => {
 
-        const creditCard = await createCreditCard(common.api, common.client, 2500);
+        const creditCard = await createPaymentFields(common.api, common.client, 2500);
 
         let testError;
 
@@ -207,7 +247,15 @@ describe('createCreditCard', () => {
 
     it('validObserver triggers on valid message', async() => {
 
-        const creditCard = await createCreditCard(common.api, common.client, 2500);
+        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
 
         const spy = sinon.spy();
 
@@ -216,7 +264,7 @@ describe('createCreditCard', () => {
         assert(spy.notCalled)
 
         window.postMessage({
-                type: 'credit-card-valid',
+                type: 'credit-card:valid',
                 valid: true,
             },
             window.location.origin,
