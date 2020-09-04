@@ -16,7 +16,6 @@ export const addFrame = (
     frameType = 'pay-theory-credit-card-tag-frame',
 ) => {
     const tagFrame = document.createElement(frameType)
-    console.log('adding frame', styles)
     tagFrame.styles = styles
     tagFrame.setAttribute('ready', true)
     tagFrame.setAttribute('id', `${element}-tag-frame`)

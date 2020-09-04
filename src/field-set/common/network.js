@@ -55,7 +55,7 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
         tags['pt-number'] = identity.idempotencyId
 
         const payment = await postData(
-            `${host}/${clientKey}/payment`,
+            `${host}/${clientKey}/authorize`,
             apiKey, {
                 source: instrument.id,
                 amount: message.tokenized.amount,
@@ -83,7 +83,6 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
 
 export const generateInitialization = (handleInitialized, host, clientKey, apiKey) => {
     return async(amount, buyerOptions = {}) => {
-        console.log(amount, buyerOptions)
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
             const stored = localStorage.getItem(data.IDENTITY)
 
