@@ -19,7 +19,7 @@ export default async(
 
     let processedElements = []
 
-
+    let isReady = false
 
     const establishElements = (elements) => {
         return common.processElements(elements, styles)
@@ -94,8 +94,8 @@ export default async(
     const readyObserver = cb => common.handleMessage(
         common.readyTypeMessage,
         message => {
-            if (!message.type === 'pay-theory-ready') { return }
-
+            if (!message.type === 'pay-theory-ready' || isReady) { return }
+            isReady = message.ready
             cb(message.ready)
         })
 
