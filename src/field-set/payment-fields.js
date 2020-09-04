@@ -80,7 +80,7 @@ export default async(
     }
 
     const handleInitialized = (amount) => {
-        const transacting = processedElements.reduce(common.findTransactingElement)
+        const transacting = processedElements.reduce(common.findTransactingElement, false)
         if (transacting.frame) {
             transacting.frame.transact = amount
         }
