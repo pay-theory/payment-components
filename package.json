@@ -35,7 +35,7 @@
         "publish-prod-cdn": "npm run build-prod && aws s3 cp dist s3://payment-components-prod --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "publish-dev": "npm run publish-dev-npm && npm run publish-dev-cdn",
         "publish-stage": "npm run publish-stage-npm && npm run publish-stage-cdn",
-        "publish - prod": "npm run publish-prod-npm && npm run publish-prod-cdn",
+        "publish-prod": "npm run publish-prod-npm && npm run publish-prod-cdn",
         "test": "karma start --coverage",
         "test:watch": "karma start --auto-watch=true --single-run=false",
         "test:update-snapshots": "karma start --update-snapshots",
