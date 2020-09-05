@@ -17,21 +17,31 @@ export const jsonOk = (body) => {
 export const MOCK_JSON = {
     id: 'jsonId',
     last_four: 1234,
-    brand: 'visa'
+    brand: 'visa',
+    type: 'Debit',
+    created_at: 'now',
+    amount: 1200,
+    state: "APPROVED",
+    tags: {}
 };
 
 export const MOCK_TRANSACT = {
+    receipt_number: undefined,
     last_four: 1234,
     brand: 'visa',
-    type: undefined,
-    receipt_number: undefined,
-    state: undefined
+    type: 'Debit',
+    created_at: 'now',
+    amount: 1200,
+    state: 'APPROVED',
+    tags: {},
 }
 
 beforeEach(() => {
     let stub = sinon.stub(window, 'fetch'); //add stub
     stub.onCall(0).returns(jsonOk(MOCK_JSON));
     stub.onCall(1).returns(jsonOk(MOCK_JSON));
+    stub.onCall(2).returns(jsonOk(MOCK_JSON));
+    stub.onCall(3).returns(jsonOk(MOCK_JSON));
 });
 
 afterEach(() => {
