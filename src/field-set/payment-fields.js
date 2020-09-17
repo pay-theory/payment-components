@@ -108,7 +108,7 @@ export default async(
             const validType = message.type.split(':')[0]
             let calling = false
             switch (validType) {
-            case 'name':
+            case 'account-name':
                 {
                     validName = message.valid
                     calling = true
