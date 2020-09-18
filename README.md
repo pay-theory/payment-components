@@ -190,6 +190,9 @@ const BUYER_OPTIONS = {
     }
 
 
+// optional parameter to require confimation step
+const REQUIRE_CONFIRMATION = true
+
 /**
  * create a listener that will trigger the payment process
  * if REQUIRE_CONFIRMATION is true 
@@ -224,7 +227,7 @@ const confirmListener = (e) => {
 
 /**
  * use the ready observer from above to apply listeners
- * provide your own element ID
+ * provide your own element IDs
  **/
 myCreditCard.readyObserver(ready => {
     ...
@@ -264,7 +267,7 @@ Upon completion of authorization and capture, details similar to the following a
     "created_at":"YYYY-MM-DDTHH:MM:SS.ssZ",
     "amount":100,
     "state":"SUCCEEDED",
-    "tags":{ "pay-theory-environment":"aron","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
+    "tags":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
 }
 ```
 If an error occurs during the transaction, the response will be similar to the following:
