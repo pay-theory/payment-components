@@ -1,4 +1,3 @@
-/* global localStorage */
 import * as data from './data'
 export const postData = async(url, apiKey, data = {}) => {
     const options = {
@@ -38,14 +37,82 @@ export const transactionEndpoint = (() => {
     }
 })()
 
+
+const generateInstrument = async(host, clientKey, apiKey, message) => {
+    const identity = data.getIdentity()
+
+    return await postData(
+        `${host}/${clientKey}/instrument`,
+        apiKey, {
+            token: message.tokenize.token.data.id,
+            type: 'TOKEN',
+            identity: identity.id,
+            identityToken: identity['tags-token']
+        },
+    )
+}
+
+export const generateTokenize = (cb, host, clientKey, apiKey, tags = {}) => {
+    return async message => {
+        const identity = data.getIdentity()
+        const instrument = await generateInstrument(host, clientKey, apiKey, message)
+        const setting = {
+            instrument: instrument.id,
+            last_four: instrument.last_four,
+            brand: instrument.brand,
+            idempotencyId: identity.idempotencyId,
+            identityToken: instrument['tags-token'],
+            amount: message.tokenize.amount
+        }
+        data.setInstrument(setting)
+        cb(setting)
+    }
+}
+
+export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
+    return async() => {
+        const instrumental = data.getInstrument()
+        const identity = data.getIdentity()
+
+        tags['pt-number'] = identity.idempotencyId
+
+
+        const payment = await postData(
+            `${host}/${clientKey}/authorize`,
+            apiKey, {
+                source: instrumental.instrument,
+                amount: instrumental.amount,
+                currency: 'USD',
+                idempotency: identity.idempotencyId,
+                identityToken: instrumental.identityToken,
+                tags: tags,
+            },
+        )
+
+        data.removeInstrument()
+        data.removeIdentity()
+
+        cb({
+            receipt_number: instrumental.idempotencyId,
+            last_four: instrumental.instrument.last_four,
+            brand: instrumental.instrument.brand,
+            type: payment.state === 'error' ? payment.reason : payment.type,
+            created_at: payment.created_at,
+            amount: payment.amount,
+            state: payment.state === 'PENDING' ? 'APPROVED' : payment.state,
+            tags: payment.tags,
+        })
+    }
+}
+
 export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
     return async message => {
-        const identity = JSON.parse(localStorage.getItem(data.IDENTITY))
+        const identity = data.getIdentity()
 
         const instrument = await postData(
             `${host}/${clientKey}/instrument`,
             apiKey, {
-                token: message.tokenized.token.data.id,
+                token: message.transact.token.data.id,
                 type: 'TOKEN',
                 identity: identity.id,
                 identityToken: identity['tags-token']
@@ -58,15 +125,15 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
             `${host}/${clientKey}/authorize`,
             apiKey, {
                 source: instrument.id,
-                amount: message.tokenized.amount,
+                amount: message.transact.amount,
                 currency: 'USD',
-                idempotency_id: identity.idempotencyId,
+                idempotency: identity.idempotencyId,
                 identityToken: identity['tags-token'],
                 tags: tags,
             },
         )
 
-        localStorage.removeItem(data.IDENTITY)
+        data.removeIdentity()
 
         cb({
             receipt_number: identity.idempotencyId,
@@ -82,12 +149,12 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
 }
 
 export const generateInitialization = (handleInitialized, host, clientKey, apiKey) => {
-    return async(amount, buyerOptions = {}) => {
+    return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
-            const stored = localStorage.getItem(data.IDENTITY)
+            const stored = data.getIdentity()
 
             const restore = stored ?
-                JSON.parse(stored) :
+                stored :
                 false
 
             const identity = restore ?
@@ -98,9 +165,9 @@ export const generateInitialization = (handleInitialized, host, clientKey, apiKe
                     typeof buyerOptions === 'object' ? buyerOptions : {},
                 )
 
-            localStorage.setItem(data.IDENTITY, JSON.stringify(identity))
+            data.setIdentity(identity)
 
-            handleInitialized(amount)
+            handleInitialized(amount, confirmation)
         }
         else {
             throw Error('amount must be a positive integer')

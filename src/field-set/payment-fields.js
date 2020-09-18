@@ -79,17 +79,33 @@ export default async(
         }
     }
 
-    const handleInitialized = (amount) => {
+    const handleInitialized = (amount, confirmation) => {
         const transacting = processedElements.reduce(common.findTransactingElement, false)
+
+        const action = confirmation ? 'tokenize' : 'transact'
+
         if (transacting.frame) {
-            transacting.frame.transact = amount
+            transacting.frame[action] = amount
         }
         else {
-            transacting.transact = amount
+            transacting[action] = amount
         }
+
     }
 
     const initTransaction = common.generateInitialization(handleInitialized, host, clientKey, apiKey)
+
+    const confirm = () => {
+        const transacting = processedElements.reduce(common.findTransactingElement, false)
+
+        if (transacting.frame) {
+            transacting.frame.capture = true
+        }
+        else {
+            transacting.capture = true
+        }
+
+    }
 
     const readyObserver = cb => common.handleMessage(
         common.readyTypeMessage,
@@ -142,5 +158,5 @@ export default async(
             }
         })
 
-    return common.generateReturn(mount, initTransaction, readyObserver, validObserver, { host, clientKey, apiKey }, tags)
+    return common.generateReturn(mount, initTransaction, confirm, readyObserver, validObserver, { host, clientKey, apiKey }, tags)
 }

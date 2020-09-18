@@ -74,10 +74,10 @@ class AccountNameFrame extends HTMLElement {
           this.error = err;
         }
         else {
-          const tokenized = { bin: this.bin, ...res };
+          const tokenize= { bin: this.bin, ...res };
           window.postMessage({
-              type: 'tokenized',
-              tokenized,
+              type: 'tokenize',
+              tokenize,
             },
             window.location.origin,
           );

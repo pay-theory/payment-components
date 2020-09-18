@@ -24,6 +24,48 @@ class CreditCardFrame extends PayTheoryFinixFrame {
     this.appendElement(badgeElement)
   }
 
+  get tokenize() {
+    return this.tokenizing;
+  }
+
+  set tokenize(_tokenizing) {
+    const valid_amount = Number.isInteger(parseInt(_tokenizing))
+    const amount = parseInt(_tokenizing)
+    if (!valid_amount) {
+      throw new Error('amount must be a positive integer')
+    }
+    if (this.tokenizing !== _tokenizing) {
+      this.tokenizing = _tokenizing;
+      this.form.submit(FINIX_ENV, this.application, (err, res) => {
+        if (err) {
+          this.error = err;
+        }
+        else {
+          const tokenize = { amount: amount, token: { bin: this.bin, ...res } };
+          window.postMessage({
+              type: 'tokenize',
+              tokenize
+            },
+            window.location.origin,
+          );
+        }
+      });
+    }
+  }
+
+  get capture() {
+    return this.capturing;
+  }
+
+  set capture(_capturing) {
+    window.postMessage({
+        type: 'capture',
+        capture: true
+      },
+      window.location.origin,
+    );
+  }
+
   get transact() {
     return this.transacting;
   }
@@ -41,10 +83,10 @@ class CreditCardFrame extends PayTheoryFinixFrame {
           this.error = err;
         }
         else {
-          const tokenized = { amount: amount, token: { bin: this.bin, ...res } };
+          const transact = { amount: amount, token: { bin: this.bin, ...res } };
           window.postMessage({
-              type: 'tokenized',
-              tokenized
+              type: 'transact',
+              transact
             },
             window.location.origin,
           );

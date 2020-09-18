@@ -130,10 +130,28 @@ let myCreditCard
     myCreditCard.readyObserver(ready => {
         // ready is a boolean indictor
         // fires when SDK is loaded and ready
+        // this is where you would associate any listeners
+        // to trigger initTransaction
+        // or optionally confirmation
     })
 
+    // only needed when REQUIRE_CONFIRMATION is true
+    myCreditCard.tokenizeObserver(tokenized => {
+        // results of the payment card tokenization
+        // fires once when tokenization is completed
+        // you can associate listeners
+        // to trigger confirmation here
+    })
+    
+    // only needed when REQUIRE_CONFIRMATION is true
+    myCreditCard.captureObserver(transactionResult => {
+        // results of the transaction with confirmation
+        // fires once when capture is completed
+    })    
+
+    // only needed when REQUIRE_CONFIRMATION is false
     myCreditCard.transactedObserver(transactionResult => {
-        // results of the transaction
+        // results of the transaction without confirmation
         // fires once when transaction is completed
     })
 
@@ -171,12 +189,69 @@ const BUYER_OPTIONS = {
         "postal_code": "12345"
     }
 
-/** 
- * begin the transaction authorization by providing an amount 
- * and optionally details about the buyer
- * amount must be a positive integer or an error will be thrown
- * */
-myCreditCard.initTransaction(AMOUNT, BUYER_OPTIONS)
+
+/**
+ * create a listener that will trigger the payment process
+ * if REQUIRE_CONFIRMATION is true 
+ * this step will only complete tokenization
+ * otherwise tokenization and capture observers are bypassed
+ **/
+const clickListener = (e) => {
+    e.preventDefault()
+    ...
+    /** 
+     * begin the transaction authorization by providing an amount 
+     * and optionally details about the buyer and a flag for confirmation
+     * amount must be a positive integer or an error will be thrown
+     * */    
+    myCreditCard.initTransaction(
+      AMOUNT,
+      BUYER_OPTIONS,
+      REQUIRE_CONFIRMATION // defaults to false
+    )
+}
+
+/**
+ * optional
+ * create a listener that will trigger the payment process
+ * that follows tokenization
+ **/
+const confirmListener = (e) => {
+    e.preventDefault()
+    myCreditCard.confirm()
+}   
+
+
+/**
+ * use the ready observer from above to apply listeners
+ * provide your own element ID
+ **/
+myCreditCard.readyObserver(ready => {
+    ...
+    document
+        .getElementById("initiate-payment-button-id")
+        .addEventListener("click", clickListener)
+    document
+        .getElementById("confirm-payment-button-id")
+        .addEventListener("click", confirmListener)
+    ...
+})
+
+```
+
+## Tokenization response
+
+When the confirm option of initTransaction is set to true, the payment card token details are returned in tokenizeObserver
+
+```json
+{
+    "instrument":"PIXXXXXXXXXXX",
+    "last_four":"9999",
+    "brand":"CARD_BRAND",
+    "idempotencyId": "pt-env-XXXXXXX",
+    "identityToken":"xXXXXXX",
+    "amount":999
+}
 ```
 
 ## Completion response
@@ -185,14 +260,11 @@ Upon completion of authorization and capture, details similar to the following a
 
 ```json
 {
-    "receipt_number":"pt-test-000002",
-    "last_four":"4242",
-    "brand":"VISA",
-    "type":"DEBIT",
-    "created_at":"2020-09-03T13:39:24.74Z",
-    "amount":10200,
-    "state":"APPROVED",
-    "tags":{"pt-number":"pt-test-000002","pay-theory-environment":"demo","custom-key1":"custom-value1","custom-key2":"custom-value2"}
+    "receipt_number":"pt-env-XXXXXX",
+    "created_at":"YYYY-MM-DDTHH:MM:SS.ssZ",
+    "amount":100,
+    "state":"SUCCEEDED",
+    "tags":{ "pay-theory-environment":"aron","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
 }
 ```
 If an error occurs during the transaction, the response will be similar to the following:

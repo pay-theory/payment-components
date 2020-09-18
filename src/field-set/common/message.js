@@ -15,7 +15,11 @@ export const handleMessage = (validTarget, handleMessage) => {
 
 export const errorTypeMessage = message => message.type === 'error'
 
-export const tokenizedTypeMessage = message => message.type === 'tokenized'
+export const tokenizeTypeMessage = message => message.type === 'tokenize'
+
+export const captureTypeMessage = message => message.type === 'capture'
+
+export const transactedTypeMessage = message => message.type === 'transact'
 
 export const readyTypeMessage = message => message.type.endsWith('-ready')
 
