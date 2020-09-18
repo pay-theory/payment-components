@@ -139,8 +139,7 @@ let myCreditCard
     myCreditCard.tokenizeObserver(tokenized => {
         // results of the payment card tokenization
         // fires once when tokenization is completed
-        // you can associate listeners
-        // to trigger confirmation here
+        // this is a good place to enable confirmation
     })
     
     // only needed when REQUIRE_CONFIRMATION is true
@@ -158,6 +157,7 @@ let myCreditCard
     myCreditCard.validObserver(valid => {
         // valid is a boolean indictor
         // fires every time the valid state of the hosted field changes
+        // when valid is true is a good time to enable initTransaction
     })
 
     myCreditCard.errorObserver(error => {
