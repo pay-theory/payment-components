@@ -137,32 +137,42 @@ let myCreditCard
 
     // only needed when REQUIRE_CONFIRMATION is true
     myCreditCard.tokenizeObserver(tokenized => {
-        // results of the payment card tokenization
-        // fires once when tokenization is completed
-        // this is a good place to enable confirmation
+        /**
+        * results of the payment card tokenization
+        * fires once when tokenization is completed
+        * this is a good place to enable confirmation
+        **/
     })
     
     // only needed when REQUIRE_CONFIRMATION is true
     myCreditCard.captureObserver(transactionResult => {
-        // results of the transaction with confirmation
-        // fires once when capture is completed
+        /**
+        * results of the transaction with confirmation
+        * fires once when capture is completed
+        **/
     })    
 
     // only needed when REQUIRE_CONFIRMATION is false
     myCreditCard.transactedObserver(transactionResult => {
-        // results of the transaction without confirmation
-        // fires once when transaction is completed
+        /**
+        * results of the transaction without confirmation
+        * fires once when transaction is completed
+        **/
     })
 
     myCreditCard.validObserver(valid => {
-        // valid is a boolean indictor
-        // fires every time the valid state of the hosted field changes
-        // when valid is true is a good time to enable initTransaction
+        /**
+        * valid is a boolean indictor
+        * fires every time the valid state of the hosted field changes
+        * when valid is true is a good time to enable initTransaction
+        **/
     })
 
     myCreditCard.errorObserver(error => {
-        // error is false or a message
-        // fires every time the error state/message changes
+        /**
+        * error is false or a message
+        * fires every time the error state/message changes
+        **/
     })
 
 })()
