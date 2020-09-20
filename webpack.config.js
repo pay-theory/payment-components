@@ -6,7 +6,8 @@ module.exports = {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
   },
-  devtool: 'eval-source-map',
+  mode: "production",
+  devtool: 'none',
   module: {
     rules: [{
       test: /\.m?js$/,
