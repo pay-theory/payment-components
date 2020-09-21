@@ -6,6 +6,7 @@
     "author": "Aron Price",
     "license": "MIT",
     "repository": "pay-theory/payment-components",
+    "sideEffects": false,
     "publishConfig": {
         "access": "public"
     },
