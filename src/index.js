@@ -7,7 +7,7 @@ import './style.css'
 import createPaymentFields from './field-set/payment-fields'
 
 window.paytheory = {
-  createPaymentFields
+    createPaymentFields
 }
 
 export default window.paytheory
