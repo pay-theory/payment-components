@@ -63,7 +63,9 @@ export const appendFinix = (formed, handleState, handleFormed) => {
             if (binInformation) {
                 const badge = binInformation.cardBrand
                 const badger = document.createElement('div')
-                badger.setAttribute('class', `paytheory-card-badge paytheory-card-${badge}`)
+                const branded = `paytheory-card-badge paytheory-card-${badge}`
+                badger.setAttribute('class', branded)
+                console.log('set-brand', branded)
                 const badged = document.getElementById('pay-theory-badge-wrapper')
                 if (badged !== null) {
                     badged.innerHTML = ''
