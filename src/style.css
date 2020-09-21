@@ -15,6 +15,8 @@
 }
 
 .pay-theory-card-visa {
+	width: 48px;
+	background-color: #000;
 	background-image: url(card-images/visa-badge-icon.svg);
 }
 
