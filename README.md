@@ -54,6 +54,7 @@ Credit Card Component requires a container for the credit card input:
 
 Credit Card Component cannot be used in combination with: 
 
+-   Credit Card Number Component
 -   Credit Card Expiration Component 
 -   Credit Card CVV Component
    
@@ -91,12 +92,12 @@ These components cannot be used in combination with:
 
 Six optional components are available to capture additional details about the card:
 
--   credit card account name
--   credit card address line 1
--   credit card address line 2
--   credit card city
--   credit card state
--   credit card zip code
+-   Credit Card Account Name Component
+-   Credit Card Address Line 1 Component
+-   Credit Card Address Line 2 Component
+-   Credit Card City Component
+-   Credit Card State Component
+-   Credit Card Zip Code Component
 
 These entries can be placed wherever you prefer in relation to the other credit card component(s).
 
@@ -319,15 +320,15 @@ Upon completion of authorization and capture, details similar to the following a
     "tags":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
 }
 ```
-If an error occurs during the transaction, the response will be similar to the following:
+If an failure or decline occurs during the transaction, the response will be similar to the following:
 
 ```json
 {
     "receipt_number":"pt-test-000002",
     "last_four":"4242",
     "brand":"VISA",
-    "state":"error",
-    "type":"some descriptive reason for the error"
+    "state":"FAILURE",
+    "type":"some descriptive reason for the failure / decline"
 }
 ```
 
