@@ -1,4 +1,4 @@
-import PayTheoryFinixFrame from '../pay-theory-finix'
+import PayTheoryFinixTransactionalFrame from '../pay-theory-finix-transactional'
 const NAME = 'credit-card'
 const FIELDS = [
   { name: 'number', label: 'Card Number' },
@@ -6,10 +6,7 @@ const FIELDS = [
   { name: 'security_code', label: 'CVC' }
 ]
 
-const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
-
-
-class CreditCardFrame extends PayTheoryFinixFrame {
+class CreditCardFrame extends PayTheoryFinixTransactionalFrame {
 
   constructor() {
     super()
@@ -17,93 +14,6 @@ class CreditCardFrame extends PayTheoryFinixFrame {
     this.field = NAME
   }
 
-  defineFields(form, styles) {
-    super.defineFields(form, styles)
-    const badgeElement = document.createElement('span')
-    badgeElement.setAttribute('id', 'pay-theory-badge-wrapper')
-    this.appendElement(badgeElement)
-  }
-
-  get tokenize() {
-    return this.tokenizing;
-  }
-
-  set tokenize(_tokenizing) {
-    const valid_amount = Number.isInteger(parseInt(_tokenizing))
-    const amount = parseInt(_tokenizing)
-    if (!valid_amount) {
-      throw new Error('amount must be a positive integer')
-    }
-    if (this.tokenizing !== _tokenizing) {
-      this.tokenizing = _tokenizing;
-      this.form.submit(FINIX_ENV, this.application, (err, res) => {
-        if (err) {
-          this.error = err;
-        }
-        else {
-          const tokenize = { amount: amount, token: { bin: this.bin, ...res } };
-          window.postMessage({
-              type: 'tokenize',
-              tokenize
-            },
-            window.location.origin,
-          );
-        }
-      });
-    }
-  }
-
-  get capture() {
-    return this.capturing;
-  }
-
-  set capture(_capturing) {
-    window.postMessage({
-        type: 'capture',
-        capture: true
-      },
-      window.location.origin,
-    );
-  }
-
-  get transact() {
-    return this.transacting;
-  }
-
-  set transact(_transacting) {
-    const valid_amount = Number.isInteger(parseInt(_transacting))
-    const amount = parseInt(_transacting)
-    if (!valid_amount) {
-      throw new Error('amount must be a positive integer')
-    }
-    if (this.transacting !== _transacting) {
-      this.transacting = _transacting;
-      this.form.submit(FINIX_ENV, this.application, (err, res) => {
-        if (err) {
-          this.error = err;
-        }
-        else {
-          const transact = { amount: amount, token: { bin: this.bin, ...res } };
-          window.postMessage({
-              type: 'transact',
-              transact
-            },
-            window.location.origin,
-          );
-        }
-      });
-    }
-  }
-
-  get amount() {
-    return this.amounting;
-  }
-
-  set amount(_amounting) {
-    if (this.amounting !== _amounting) {
-      this.amounting = _amounting;
-    }
-  }
 }
 
 

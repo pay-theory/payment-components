@@ -3,7 +3,23 @@ import * as network from './network'
 
 export const findTransactingElement = (element, cv) => {
     return element === false ?
-        cv.type === 'credit-card' ?
+        (cv.type === 'credit-card' || cv.type === 'credit-card-number') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findCVV = (element, cv) => {
+    return element === false ?
+        (cv.type === 'credit-card-cvv') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findExp = (element, cv) => {
+    return element === false ?
+        (cv.type === 'credit-card-exp') ?
         cv.frame :
         false :
         element
@@ -45,8 +61,9 @@ export const processElements = (elements, styles) => {
             }
         }
         else {
-            /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
-            console.warn(`${elements[type]} is not available in dom`)
+            if (type === )
+                /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
+                console.warn(`${elements[type]} is not available in dom`)
         }
 
     })

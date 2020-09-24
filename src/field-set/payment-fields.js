@@ -1,7 +1,5 @@
 import common from './common'
 
-const ELEMENTS = [{ type: 'security_code|expiration_date|number', type: 'name', type: 'address.postal_code' }]
-
 export default async(
     apiKey,
     clientKey,
@@ -9,8 +7,15 @@ export default async(
     tags = common.defaultTags,
     host = common.transactionEndpoint
 ) => {
-    let validName = true
     let validCard = false
+    let validCardNumber = false
+    let validCardCVV = false
+    let validCardExp = false
+    let validName = true
+    let validAddress1 = true
+    let validAddress2 = true
+    let validCity = true
+    let validState = true
     let validZip = true
 
     let formed = false
@@ -47,8 +52,15 @@ export default async(
 
     const mount = async(
         elements = {
-            'account-name': common.fields.CREDIT_CARD_NAME,
             'credit-card': common.fields.CREDIT_CARD,
+            'credit-card-number': common.fields.CREDIT_CARD_NUMBER,
+            'credit-card-exp': common.fields.CREDIT_CARD_EXP,
+            'credit-card-cvv': common.fields.CREDIT_CARD_CVV,
+            'account-name': common.fields.CREDIT_CARD_NAME,
+            'account-address-1': common.fields.CREDIT_CARD_ADDRESS1,
+            'account-address-2': common.fields.CREDIT_CARD_ADDRESS2,
+            'account-city': common.fields.CREDIT_CARD_CITY,
+            'account-state': common.fields.CREDIT_CARD_STATE,
             zip: common.fields.CREDIT_CARD_ZIP,
         },
     ) => {
@@ -61,7 +73,17 @@ export default async(
             const transacting = processedElements.reduce(common.findTransactingElement, false)
 
             if (transacting === false) {
-                throw new Error('missing field required for payments')
+                throw new Error('missing credit card entry field required for payments')
+            }
+
+            if (transacting.type === 'credit-card-number') {
+                if (processedElements.reduce(common.findExp, false) === false) {
+                    throw new Error('missing credit card expiration field required for payments')
+                }
+
+                if (processedElements.reduce(common.findCVV, false) === false) {
+                    throw new Error('missing credit card CVV field required for payments')
+                }
             }
 
             processedElements.forEach(processed => { processed.frame.form = finalForm })
@@ -124,15 +146,57 @@ export default async(
             const validType = message.type.split(':')[0]
             let calling = false
             switch (validType) {
+            case 'credit-card':
+                {
+                    validCard = message.valid
+                    calling = true
+                    break
+                }
+            case 'credit-card-number':
+                {
+                    validCardNumber = message.valid
+                    calling = true
+                    break
+                }
+            case 'credit-card-exp':
+                {
+                    validCardExp = message.valid
+                    calling = true
+                    break
+                }
+            case 'credit-card-cvv':
+                {
+                    validCardCVV = message.valid
+                    calling = true
+                    break
+                }
             case 'account-name':
                 {
                     validName = message.valid
                     calling = true
                     break
                 }
-            case 'credit-card':
+            case 'account-address-1':
                 {
-                    validCard = message.valid
+                    validAddress1 = message.valid
+                    calling = true
+                    break
+                }
+            case 'account-address-2':
+                {
+                    validAddress2 = message.valid
+                    calling = true
+                    break
+                }
+            case 'account-city':
+                {
+                    validCity = message.valid
+                    calling = true
+                    break
+                }
+            case 'account-state':
+                {
+                    validState = message.valid
                     calling = true
                     break
                 }
@@ -148,7 +212,15 @@ export default async(
                 }
             }
 
-            const validating = (validCard && validZip && validName)
+            const validatingCard = (validCard || (validCardNumber && validCardCVV && validCardExp))
+
+            const validating = (validatingCard &&
+                validName &&
+                validAddress1 &&
+                validAddress2 &&
+                validCity &&
+                validState &&
+                validZip)
 
             if (isValid !== validating) {
                 isValid = validating
