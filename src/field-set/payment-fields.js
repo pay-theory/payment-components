@@ -34,17 +34,22 @@ export default async(
         let errors = []
         elements.forEach(element => {
 
+
+
             const [, stated, invalidElement] = common.stateMapping(element.type, state)
 
+            if (stated.isDirty) {
+                element.frame.valid = typeof invalidElement === 'undefined' ?
+                    invalidElement :
+                    !invalidElement
 
-            element.frame.valid = typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
-
-            if (invalidElement) {
-                errors.push(stated.errorMessages[0])
-                element.frame.error = stated.errorMessages[0]
-            }
-            else {
-                element.frame.error = false
+                if (invalidElement && stated.isDirty) {
+                    errors.push(stated.errorMessages[0])
+                    element.frame.error = stated.errorMessages[0]
+                }
+                else {
+                    element.frame.error = false
+                }
             }
 
         })
@@ -53,14 +58,14 @@ export default async(
     const mount = async(
         elements = {
             'credit-card': common.fields.CREDIT_CARD,
-            'credit-card-number': common.fields.CREDIT_CARD_NUMBER,
-            'credit-card-exp': common.fields.CREDIT_CARD_EXP,
-            'credit-card-cvv': common.fields.CREDIT_CARD_CVV,
+            'number': common.fields.CREDIT_CARD_NUMBER,
+            'exp': common.fields.CREDIT_CARD_EXP,
+            'cvv': common.fields.CREDIT_CARD_CVV,
             'account-name': common.fields.CREDIT_CARD_NAME,
-            'account-address-1': common.fields.CREDIT_CARD_ADDRESS1,
-            'account-address-2': common.fields.CREDIT_CARD_ADDRESS2,
-            'account-city': common.fields.CREDIT_CARD_CITY,
-            'account-state': common.fields.CREDIT_CARD_STATE,
+            'address-1': common.fields.CREDIT_CARD_ADDRESS1,
+            'address-2': common.fields.CREDIT_CARD_ADDRESS2,
+            city: common.fields.CREDIT_CARD_CITY,
+            state: common.fields.CREDIT_CARD_STATE,
             zip: common.fields.CREDIT_CARD_ZIP,
         },
     ) => {
@@ -76,7 +81,7 @@ export default async(
                 throw new Error('missing credit card entry field required for payments')
             }
 
-            if (transacting.type === 'credit-card-number') {
+            if (transacting.id === 'pay-theory-credit-card-number-tag-frame') {
                 if (processedElements.reduce(common.findExp, false) === false) {
                     throw new Error('missing credit card expiration field required for payments')
                 }
@@ -84,9 +89,28 @@ export default async(
                 if (processedElements.reduce(common.findCVV, false) === false) {
                     throw new Error('missing credit card CVV field required for payments')
                 }
+
+                if (document.getElementById(`pay-theory-credit-card`)) {
+                    throw new Error('credit card element is not allowed when using credit card number')
+                }
+            }
+            else {
+                if (processedElements.reduce(common.findExp, false)) {
+                    throw new Error('expiration is not allowed when using combined credit card')
+                }
+
+                if (processedElements.reduce(common.findCVV, false)) {
+                    throw new Error('cvv is not allowed when using combined credit card')
+                }
+
+                if (document.getElementById(`pay-theory-credit-card-number`)) {
+                    throw new Error('credit card number is not allowed when using combined credit card')
+                }
             }
 
-            processedElements.forEach(processed => { processed.frame.form = finalForm })
+            processedElements.forEach(processed => {
+                processed.frame.form = finalForm
+            })
 
             window.postMessage({
                     type: `pay-theory-ready`,
@@ -152,19 +176,19 @@ export default async(
                     calling = true
                     break
                 }
-            case 'credit-card-number':
+            case 'number':
                 {
                     validCardNumber = message.valid
                     calling = true
                     break
                 }
-            case 'credit-card-exp':
+            case 'exp':
                 {
                     validCardExp = message.valid
                     calling = true
                     break
                 }
-            case 'credit-card-cvv':
+            case 'cvv':
                 {
                     validCardCVV = message.valid
                     calling = true
@@ -176,25 +200,25 @@ export default async(
                     calling = true
                     break
                 }
-            case 'account-address-1':
+            case 'address-1':
                 {
                     validAddress1 = message.valid
                     calling = true
                     break
                 }
-            case 'account-address-2':
+            case 'address-2':
                 {
                     validAddress2 = message.valid
                     calling = true
                     break
                 }
-            case 'account-city':
+            case 'city':
                 {
                     validCity = message.valid
                     calling = true
                     break
                 }
-            case 'account-state':
+            case 'state':
                 {
                     validState = message.valid
                     calling = true

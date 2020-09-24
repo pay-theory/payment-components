@@ -1,5 +1,5 @@
 import PayTheory from '../pay-theory-finix'
-const NAME = 'expiration_date'
+const NAME = 'exp'
 const FIELDS = [{ name: 'expiration_date', label: 'MM/YY' }];
 
 class CreditCardExpirationFrame extends PayTheory {

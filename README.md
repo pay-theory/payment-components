@@ -28,51 +28,90 @@ window.paytheory
 
 ## Usage
 
-There are three elements available to use for payments.
+There are ten components available to use for payments.
 
-### Credit Card Element
+### Credit Card Component
 
-This element is required for all payments.
+This component will provide a full payment implementation.
 
-[codesandbox credit card element example](https://codesandbox.io/s/sdk-payment-example-solok)
+[codesandbox credit card component example](https://codesandbox.io/s/sdk-payment-example-solok)
 
-The credit card element provides a single form entry combining:
+Credit Card Component provides a single form entry combining:
 
 -   credit card number
 -   credit card CVV security code
 -   credit card expiration date
 
-Requires a container for the credit card input:
+Credit Card Component requires a container for the credit card input:
 
 ```html
 <form>
 ...
-<div id="pay-theory-credit-card" />
+<div id="pay-theory-credit-card"></div>
 ...
 </form>
 ```
 
-If the credit card container is not available in the DOM an error will be thrown.
+Credit Card Component cannot be used in combination with: 
 
-### Credit Card Account Name & Zip code
+-   Credit Card Expiration Component 
+-   Credit Card CVV Component
+   
+### Credit Card Number, Expiration and CVV Components
+
+These components will provide a full payment implementation.
+
+[codesandbox credit card component example](https://codesandbox.io/s/sdk-payment-example-solok)
+
+These components must be combined in a form to enable payment:
+
+-   Credit Card Number Component
+-   Credit Card CVV Component
+-   Credit Card Expiration Component
+
+A container is required for each component:
+
+```html
+<form>
+...
+<div id="pay-theory-credit-card-number"></div>
+<div id="pay-theory-credit-card-exp"></div>
+<div id="pay-theory-credit-card-cvv"></div>
+...
+</form>
+```
+
+These components cannot be used in combination with: 
+
+-   Credit Card Component
+
+### Credit Card Account Name & Address Components
 
 [codesandbox credit card optional fields example](https://codesandbox.io/s/sdk-payment-example-with-optional-cw5c0)
 
-Two optional elements are available to capture additional details about the card:
+Six optional components are available to capture additional details about the card:
 
 -   credit card account name
+-   credit card address line 1
+-   credit card address line 2
+-   credit card city
+-   credit card state
 -   credit card zip code
 
-These entries can be placed wherever you prefer in relation to the credit card element.
+These entries can be placed wherever you prefer in relation to the other credit card component(s).
 
 Include a container for each of the optional inputs you wish to use:
 
 ```html
 <form>
 ...
-<div id="pay-theory-credit-card-account-name" />
+<div id="pay-theory-credit-card-account-name"></div>
 ...
-<div id="pay-theory-credit-card-zip" />
+<div id="pay-theory-credit-card-address-1"></div>
+<div id="pay-theory-credit-card-address-2"></div>
+<div id="pay-theory-credit-card-city"></div>
+<div id="pay-theory-credit-card-state"></div>
+<div id="pay-theory-credit-card-zip"></div>
 ...
 </form>
 ```
@@ -87,7 +126,7 @@ Mount to create the credit card field(s) and establish callbacks:
 const API_KEY = 'your-api-key'
 const CLIENT_ID = 'your-client-id'
 
-// optionally define custom styles for the input elements
+// optionally define custom styles for the input components
 const STYLES = {
     default: {
         color: 'black',
@@ -237,15 +276,15 @@ const confirmListener = (e) => {
 
 /**
  * use the ready observer from above to apply listeners
- * provide your own element IDs
+ * provide your own component IDs
  **/
 myCreditCard.readyObserver(ready => {
     ...
     document
-        .getElementById("initiate-payment-button-id")
+        .getComponentById("initiate-payment-button-id")
         .addEventListener("click", clickListener)
     document
-        .getElementById("confirm-payment-button-id")
+        .getComponentById("confirm-payment-button-id")
         .addEventListener("click", confirmListener)
     ...
 })

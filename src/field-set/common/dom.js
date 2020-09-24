@@ -3,7 +3,7 @@ import * as network from './network'
 
 export const findTransactingElement = (element, cv) => {
     return element === false ?
-        (cv.type === 'credit-card' || cv.type === 'credit-card-number') ?
+        (cv.type === 'credit-card' || cv.type === 'number') ?
         cv.frame :
         false :
         element
@@ -11,7 +11,7 @@ export const findTransactingElement = (element, cv) => {
 
 export const findCVV = (element, cv) => {
     return element === false ?
-        (cv.type === 'credit-card-cvv') ?
+        (cv.type === 'cvv') ?
         cv.frame :
         false :
         element
@@ -19,7 +19,7 @@ export const findCVV = (element, cv) => {
 
 export const findExp = (element, cv) => {
     return element === false ?
-        (cv.type === 'credit-card-exp') ?
+        (cv.type === 'exp') ?
         cv.frame :
         false :
         element
@@ -43,6 +43,9 @@ export const processElements = (elements, styles) => {
     let processed = []
     data.fieldTypes.forEach(type => {
         if (elements[type] && typeof elements[type] !== 'string') { throw new Error('invalid element') }
+        if (typeof elements[type] === 'undefined') {
+            throw Error('unknown type', type, elements)
+        }
         const container = document.getElementById(elements[type])
         if (container) {
             const contained = document.getElementById(`${elements[type]}-tag-frame`)
@@ -54,16 +57,12 @@ export const processElements = (elements, styles) => {
                     type === 'credit-card' ?
                     `pay-theory-credit-card-tag-frame` :
                     `pay-theory-credit-card-${type}-tag-frame`)
+
                 processed.push({ type, frame })
             }
             else {
                 throw new Error(`${elements[type]} is already mounted`)
             }
-        }
-        else {
-
-            /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
-            console.warn(`${elements[type]} is not available in dom`)
         }
 
     })
@@ -82,7 +81,6 @@ export const appendFinix = (formed, handleState, handleFormed) => {
                 const badger = document.createElement('div')
                 const branded = `pay-theory-card-badge pay-theory-card-${badge}`
                 badger.setAttribute('class', branded)
-                console.log('set-brand', branded)
                 const badged = document.getElementById('pay-theory-badge-wrapper')
                 if (badged !== null) {
                     badged.innerHTML = ''

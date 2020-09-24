@@ -1,5 +1,5 @@
 import PayTheory from '../pay-theory-finix'
-const NAME = 'address_line2'
+const NAME = 'address-2'
 const FIELDS = [{ name: 'address.address_line2', label: "Billing Address Cont'd" }];
 
 class CreditCardBillingAddress2Frame extends PayTheory {

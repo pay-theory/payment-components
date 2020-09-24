@@ -25,9 +25,9 @@ export const fields = {
 
 export const fieldTypes = [
     'credit-card',
-    'credit-card-number',
-    'credit-card-cvv',
-    'credit-card-exp',
+    'number',
+    'cvv',
+    'exp',
     'account-name',
     'address-1',
     'address-2',
@@ -38,14 +38,14 @@ export const fieldTypes = [
 
 export const stateMap = {
     'credit-card': 'security_code|expiration_date|number',
-    'credit-card-number': 'number',
-    'credit-card-exp': 'expiration_date',
-    'credit-card-cvv': 'security_code',
+    'number': 'number',
+    'exp': 'expiration_date',
+    'cvv': 'security_code',
     'account-name': 'name',
-    'zip': 'address.address_line1',
-    'zip': 'address.address_line2',
-    'zip': 'address.city',
-    'zip': 'address.region',
+    'address-1': 'address.address_line1',
+    'address-2': 'address.address_line2',
+    'city': 'address.city',
+    'state': 'address.region',
     'zip': 'address.postal_code'
 }
 

@@ -142,7 +142,7 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
             type: payment.state === 'error' ? payment.reason : payment.type,
             created_at: payment.created_at,
             amount: payment.amount,
-            state: payment.state === 'PENDING' ? 'APPROVED' : payment.state,
+            state: payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state,
             tags: payment.tags,
         })
     }

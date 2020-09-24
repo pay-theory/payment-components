@@ -1,8 +1,6 @@
 import PayTheoryFinixTransactionalFrame from '../pay-theory-finix-transactional'
-const NAME = 'credit-card-number'
-const FIELDS = [
-  { name: 'number', label: 'Card Number' }
-]
+const NAME = 'number'
+const FIELDS = [{ name: 'number', label: 'Card Number' }]
 
 class CreditCardNumberFrame extends PayTheoryFinixTransactionalFrame {
 

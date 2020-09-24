@@ -1,5 +1,5 @@
 import PayTheory from '../pay-theory-finix'
-const NAME = 'zip'
+const NAME = 'city'
 const FIELDS = [{ name: 'address.city', label: 'Billing City' }];
 
 class CreditCardBillingCityFrame extends PayTheory {
