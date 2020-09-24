@@ -62,7 +62,7 @@ Credit Card Component cannot be used in combination with:
 
 These components will provide a full payment implementation.
 
-[codesandbox credit card component example](https://codesandbox.io/s/sdk-payment-example-solok)
+[codesandbox credit card components example](https://codesandbox.io/s/sdk-payment-example-with-optional-cw5c0)
 
 These components must be combined in a form to enable payment:
 
