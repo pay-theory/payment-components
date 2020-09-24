@@ -61,9 +61,9 @@ export const processElements = (elements, styles) => {
             }
         }
         else {
-            if (type === )
-                /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
-                console.warn(`${elements[type]} is not available in dom`)
+
+            /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
+            console.warn(`${elements[type]} is not available in dom`)
         }
 
     })
