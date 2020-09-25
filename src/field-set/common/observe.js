@@ -20,10 +20,11 @@ export const transactedObserver = (host, clientKey, apiKey, tags = {}) =>
         messaging.transactedTypeMessage,
         network.generateTransacted(cb, host, clientKey, apiKey, tags))
 
-export const generateReturn = (mount, initTransaction, confirm, readyObserver, validObserver, sdk, tags = {}) => Object.create({
+export const generateReturn = (mount, initTransaction, confirm, cancel, readyObserver, validObserver, sdk, tags = {}) => Object.create({
     mount,
     initTransaction,
     confirm,
+    cancel,
     readyObserver,
     errorObserver,
     validObserver,

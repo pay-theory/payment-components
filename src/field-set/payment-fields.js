@@ -150,7 +150,11 @@ export default async(
         else {
             transacting.capture = true
         }
+    }
 
+    const cancel = () => {
+        common.removeIdentity()
+        common.removeInstrument()
     }
 
     const readyObserver = cb => common.handleMessage(
@@ -254,5 +258,5 @@ export default async(
             }
         })
 
-    return common.generateReturn(mount, initTransaction, confirm, readyObserver, validObserver, { host, clientKey, apiKey }, tags)
+    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, clientKey, apiKey }, tags)
 }

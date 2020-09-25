@@ -55,8 +55,10 @@ const generateInstrument = async(host, clientKey, apiKey, message) => {
 export const generateTokenize = (cb, host, clientKey, apiKey, tags = {}) => {
     return async message => {
         const identity = data.getIdentity()
+
         const instrument = await generateInstrument(host, clientKey, apiKey, message)
-        const setting = {
+
+        let setting = {
             instrument: instrument.id,
             last_four: instrument.last_four,
             brand: instrument.brand,
@@ -64,7 +66,18 @@ export const generateTokenize = (cb, host, clientKey, apiKey, tags = {}) => {
             identityToken: instrument['tags-token'],
             amount: message.tokenize.amount
         }
-        data.setInstrument(setting)
+
+        if (instrument.state === 'error') {
+            setting = {
+                type: instrument.reason,
+                state: 'FAILURE'
+            }
+            data.removeIdentity()
+        }
+        else {
+            data.setInstrument(setting)
+        }
+
         cb(setting)
     }
 }

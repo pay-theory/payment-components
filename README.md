@@ -221,6 +221,9 @@ let myCreditCard
 
 ## Initiate the transaction
 
+Once the transaction has ended in either success or failure the buyer should be 
+directed to a results page.
+
 When ready submit the transaction using the saved credit card:
 
 ```javascript
@@ -266,13 +269,16 @@ const clickListener = (e) => {
 
 /**
  * optional
- * create a listener that will trigger the payment process
- * that follows tokenization
+ * use the tokenObserver to handle confirmation step
  **/
-const confirmListener = (e) => {
-    e.preventDefault()
-    myCreditCard.confirm()
-}   
+myCreditCard.tokenizeObserver((card) => {
+    const confirmation =  `Are you sure you want to make a payment on ${card.brand} card ending with ${card.last_four}`
+    if (confirm(confirmation)) {
+      myCreditCard.confirm();
+    } else {
+      myCreditCard.cancel();
+    }
+});
 
 
 /**
@@ -284,9 +290,6 @@ myCreditCard.readyObserver(ready => {
     document
         .getComponentById("initiate-payment-button-id")
         .addEventListener("click", clickListener)
-    document
-        .getComponentById("confirm-payment-button-id")
-        .addEventListener("click", confirmListener)
     ...
 })
 
