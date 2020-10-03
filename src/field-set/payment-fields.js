@@ -122,10 +122,11 @@ export default async(
         }
     }
 
-    const handleInitialized = (amount, confirmation) => {
+    const handleInitialized = (amount, confirmation, buyerOptions) => {
         const transacting = processedElements.reduce(common.findTransactingElement, false)
 
         const action = confirmation ? 'tokenize' : 'transact'
+        common.setBuyer(buyerOptions)
 
         if (transacting.frame) {
             transacting.frame[action] = amount

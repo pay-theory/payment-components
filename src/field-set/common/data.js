@@ -1,6 +1,9 @@
 /* global localStorage */
 export const IDENTITY = 'pt-identity'
 export const INSTRUMENT = 'pt-instrument'
+export const BUYER = 'pt-buyer'
+export const TOKEN = 'pt-token'
+export const BIN = 'pt-bin'
 
 export const defaultStyles = {
     default: {},
@@ -47,6 +50,42 @@ export const stateMap = {
     'city': 'address.city',
     'state': 'address.region',
     'zip': 'address.postal_code'
+}
+
+export const getBuyer = () => {
+    return JSON.parse(localStorage.getItem(BUYER))
+}
+
+export const setBuyer = buyer => {
+    return localStorage.setItem(BUYER, JSON.stringify(buyer))
+}
+
+export const removeBuyer = () => {
+    return localStorage.removeItem(BUYER)
+}
+
+export const getBin = () => {
+    return JSON.parse(localStorage.getItem(BIN))
+}
+
+export const setBin = bin => {
+    return localStorage.setItem(BIN, JSON.stringify(bin))
+}
+
+export const removeBin = () => {
+    return localStorage.removeItem(BIN)
+}
+
+export const getToken = () => {
+    return JSON.parse(localStorage.getItem(TOKEN))
+}
+
+export const setToken = token => {
+    return localStorage.setItem(TOKEN, JSON.stringify(token))
+}
+
+export const removeToken = () => {
+    return localStorage.removeItem(TOKEN)
 }
 
 export const getIdentity = () => {

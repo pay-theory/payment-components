@@ -38,77 +38,102 @@ export const transactionEndpoint = (() => {
 })()
 
 
-const generateInstrument = async(host, clientKey, apiKey, message) => {
-    const identity = data.getIdentity()
-
+const generateInstrument = async(host, clientKey, apiKey) => {
+    const identityToken = data.getIdentity()['tags-token']
+    const identity = { identityToken }
     return await postData(
         `${host}/${clientKey}/instrument`,
-        apiKey, {
-            token: message.tokenize.token.data.id,
-            type: 'TOKEN',
-            identity: identity.id,
-            identityToken: identity['tags-token']
-        },
+        apiKey,
+        identity,
+    )
+}
+
+const generateIdentity = async(host, clientKey, apiKey, identity) => {
+    const paymentToken = data.getToken()
+    const idToken = {
+        paymentToken,
+        identity
+    }
+    return await postData(
+        `${host}/${clientKey}/identity`,
+        apiKey,
+        idToken
+    )
+}
+
+const generateToken = async(host, clientKey, apiKey, message) => {
+    const bin = data.getBin()
+    const payload = {
+        payment: message.tokenize ? message.tokenize : message.transact,
+        bin
+    }
+    console.log('generateToken', message, payload)
+    return await postData(
+        `${host}/${clientKey}/token`,
+        apiKey,
+        payload,
     )
 }
 
 export const generateTokenize = (cb, host, clientKey, apiKey, tags = {}) => {
     return async message => {
-        const identity = data.getIdentity()
 
-        const instrument = await generateInstrument(host, clientKey, apiKey, message)
+        let token = await generateToken(host, clientKey, apiKey, message)
 
-        let setting = {
-            instrument: instrument.id,
-            last_four: instrument.last_four,
-            brand: instrument.brand,
-            idempotencyId: identity.idempotencyId,
-            identityToken: instrument['tags-token'],
-            amount: message.tokenize.amount
-        }
-
-        if (instrument.state === 'error') {
-            setting = {
-                type: instrument.reason,
+        if (token.state === 'error') {
+            token = {
+                type: token.reason,
                 state: 'FAILURE'
             }
-            data.removeIdentity()
         }
         else {
-            data.setInstrument(setting)
+            data.setToken(token.paymentToken)
         }
 
-        cb(setting)
+        cb({
+            "first_six": token.bin.first_six,
+            "brand": token.bin.brand,
+            "idempotencyId": token.idempotency,
+            "amount": token.payment.amount
+        })
     }
 }
 
 export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
     return async() => {
-        const instrumental = data.getInstrument()
-        const identity = data.getIdentity()
+
+        const identity = await generateIdentity(host, clientKey, apiKey, data.getBuyer())
+
+        data.setIdentity(identity)
 
         tags['pt-number'] = identity.idempotencyId
 
+        const instrumental = await generateInstrument(host, clientKey, apiKey)
+
+        const auth = {
+            instrumentToken: instrumental['tags-token'],
+            tags
+        }
+
+        console.log('begin capture')
 
         const payment = await postData(
             `${host}/${clientKey}/authorize`,
-            apiKey, {
-                source: instrumental.instrument,
-                amount: instrumental.amount,
-                currency: 'USD',
-                idempotency: identity.idempotencyId,
-                identityToken: instrumental.identityToken,
-                tags: tags,
-            },
+            apiKey,
+            auth
         )
 
-        data.removeInstrument()
         data.removeIdentity()
+        data.removeToken()
+        data.removeBuyer()
+        data.removeBin()
+
+        console.log('capture callback')
 
         cb({
-            receipt_number: instrumental.idempotencyId,
-            last_four: instrumental.instrument.last_four,
-            brand: instrumental.instrument.brand,
+            receipt_number: identity.idempotencyId,
+            last_four: instrumental.last_four,
+            brand: instrumental.brand,
             type: payment.state === 'error' ? payment.reason : payment.type,
             created_at: payment.created_at,
             amount: payment.amount,
@@ -120,38 +145,50 @@ export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
 
 export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
     return async message => {
-        const identity = data.getIdentity()
+        //{ amount: amount, token: { bin: this.bin, ...res } }
 
-        const instrument = await postData(
-            `${host}/${clientKey}/instrument`,
-            apiKey, {
-                token: message.transact.token.data.id,
-                type: 'TOKEN',
-                identity: identity.id,
-                identityToken: identity['tags-token']
-            },
-        )
+        let token = await generateToken(host, clientKey, apiKey, message)
+
+        if (token.state === 'error') {
+            token = {
+                type: token.reason,
+                state: 'FAILURE'
+            }
+        }
+        else {
+            data.setToken(token.paymentToken)
+        }
+
+        const identity = await generateIdentity(host, clientKey, apiKey, data.getBuyer())
+
+        data.setIdentity(identity)
 
         tags['pt-number'] = identity.idempotencyId
 
+        const instrumental = await generateInstrument(host, clientKey, apiKey)
+
+        const auth = {
+            instrumentToken: instrumental['tags-token'],
+            tags
+        }
+
+        console.log('begin capture')
+
         const payment = await postData(
             `${host}/${clientKey}/authorize`,
-            apiKey, {
-                source: instrument.id,
-                amount: message.transact.amount,
-                currency: 'USD',
-                idempotency: identity.idempotencyId,
-                identityToken: identity['tags-token'],
-                tags: tags,
-            },
+            apiKey,
+            auth
         )
 
         data.removeIdentity()
+        data.removeToken()
+        data.removeBuyer()
+        data.removeBin()
 
         cb({
             receipt_number: identity.idempotencyId,
-            last_four: instrument.last_four,
-            brand: instrument.brand,
+            last_four: instrumental.last_four,
+            brand: instrumental.brand,
             type: payment.state === 'error' ? payment.reason : payment.type,
             created_at: payment.created_at,
             amount: payment.amount,
@@ -162,25 +199,11 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
 }
 
 export const generateInitialization = (handleInitialized, host, clientKey, apiKey) => {
-    return async(amount, buyerOptions = {}, confirmation = false) => {
+    return async(amount, confirmation = false, buyerOptions = {}) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
-            const stored = data.getIdentity()
+            const stored = data.getToken()
 
-            const restore = stored ?
-                stored :
-                false
-
-            const identity = restore ?
-                restore :
-                await postData(
-                    `${host}/${clientKey}/identity`,
-                    apiKey,
-                    typeof buyerOptions === 'object' ? buyerOptions : {},
-                )
-
-            data.setIdentity(identity)
-
-            handleInitialized(amount, confirmation)
+            handleInitialized(amount, confirmation, buyerOptions)
         }
         else {
             throw Error('amount must be a positive integer')

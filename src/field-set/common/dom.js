@@ -77,6 +77,7 @@ export const appendFinix = (formed, handleState, handleFormed) => {
 
         formed = window.PaymentForm.card((state, binInformation) => {
             if (binInformation) {
+                data.setBin({ first_six: binInformation.bin, brand: binInformation.cardBrand })
                 const badge = binInformation.cardBrand
                 const badger = document.createElement('div')
                 const branded = `pay-theory-card-badge pay-theory-card-${badge}`
