@@ -199,11 +199,11 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
 }
 
 export const generateInitialization = (handleInitialized, host, clientKey, apiKey) => {
-    return async(amount, confirmation = false, buyerOptions = {}) => {
+    return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
             const stored = data.getToken()
 
-            handleInitialized(amount, confirmation, buyerOptions)
+            handleInitialized(amount, buyerOptions, confirmation)
         }
         else {
             throw Error('amount must be a positive integer')

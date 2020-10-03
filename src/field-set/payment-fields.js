@@ -122,7 +122,7 @@ export default async(
         }
     }
 
-    const handleInitialized = (amount, confirmation, buyerOptions) => {
+    const handleInitialized = (amount, buyerOptions, confirmation) => {
         const transacting = processedElements.reduce(common.findTransactingElement, false)
 
         const action = confirmation ? 'tokenize' : 'transact'
