@@ -73,13 +73,23 @@ class PayTheoryFinixFrame extends HTMLElement {
             <div id="pay-theory-${this.field}-field-container" class="pay-theory-field">
             </div>
         </span>`
+
+    console.log('pay theory component connected', this.field)
+  }
+
+
+
+  adoptedCallback() {
+    console.log('pay theory component adopted', this.field)
   }
 
   disconnectedCallback() {
+    console.log('pay theory component removed', this.field)
     return document.removeEventListener('message', this.eventful)
   }
 
   attributeChangedCallback(attrName, oldValue, newValue) {
+    console.log('pay theory component changed', attrName, oldValue, newValue)
     if (newValue !== oldValue) {
       this[attrName.toString()] = this.hasAttribute(attrName)
     }

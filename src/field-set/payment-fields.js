@@ -69,11 +69,8 @@ export default async(
             zip: common.fields.CREDIT_CARD_ZIP,
         },
     ) => {
-
         processedElements = establishElements(elements)
-
         const handleState = stateHandler(processedElements)
-
         const handleFormed = finalForm => {
             const transacting = processedElements.reduce(common.findTransactingElement, false)
 
@@ -240,6 +237,7 @@ export default async(
                 }
             }
 
+
             const validatingCard = (validCard || (validCardNumber && validCardCVV && validCardExp))
 
             const validating = (validatingCard &&
@@ -249,6 +247,7 @@ export default async(
                 validCity &&
                 validState &&
                 validZip)
+
 
             if (isValid !== validating) {
                 isValid = validating
