@@ -168,7 +168,7 @@ let myCreditCard
 
     // handle callbacks
     myCreditCard.readyObserver(ready => {
-        // ready is a boolean indictor
+        // ready is a boolean indicator
         // fires when SDK is loaded and ready
         // this is where you would associate any listeners
         // to trigger initTransaction
@@ -202,7 +202,7 @@ let myCreditCard
 
     myCreditCard.validObserver(valid => {
         /**
-        * valid is a boolean indictor
+        * valid is a boolean indicator
         * fires every time the valid state of the hosted field changes
         * when valid is true is a good time to enable initTransaction
         **/
@@ -272,7 +272,7 @@ const clickListener = (e) => {
  * use the tokenObserver to handle confirmation step
  **/
 myCreditCard.tokenizeObserver((card) => {
-    const confirmation =  `Are you sure you want to make a payment on ${card.brand} card ending with ${card.last_four}`
+    const confirmation =  `Are you sure you want to make a payment on ${card.brand} card beginning with ${card.first_six}`
     if (confirm(confirmation)) {
       myCreditCard.confirm();
     } else {
@@ -298,37 +298,41 @@ myCreditCard.readyObserver(ready => {
 ## Tokenization response
 
 When the confirm option of initTransaction is set to true, the payment card token details are returned in tokenizeObserver
+*note that the convenience fee is included in amount*
 
 ```json
 {
-    "instrument":"PIXXXXXXXXXXX",
-    "last_four":"9999",
-    "brand":"CARD_BRAND",
-    "idempotencyId": "pt-env-XXXXXXX",
-    "identityToken":"xXXXXXX",
-    "amount":999
+	"first_six": "XXXXXX", 
+	"brand": "XXXX", 
+	"receipt_number": "pt-dev-XXXXXX", 
+	"amount": 999,
+	"convenience_fee": 195
 }
 ```
 
 ## Completion response
 
 Upon completion of authorization and capture, details similar to the following are returned:
+*note that the convenience fee is included in amount*
 
 ```json
 {
     "receipt_number":"pt-env-XXXXXX",
+    "last_four": "XXXX",
+    "brand": "XXXXXXXXX",    
     "created_at":"YYYY-MM-DDTHH:MM:SS.ssZ",
-    "amount":100,
+    "amount": 999,
+    "convenience_fee": 195,
     "state":"SUCCEEDED",
     "tags":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
 }
 ```
-If an failure or decline occurs during the transaction, the response will be similar to the following:
+If a failure or decline occurs during the transaction, the response will be similar to the following:
 
 ```json
 {
-    "receipt_number":"pt-test-000002",
-    "last_four":"4242",
+    "receipt_number":"pt-test-XXXXXX",
+    "last_four":"XXXX",
     "brand":"VISA",
     "state":"FAILURE",
     "type":"some descriptive reason for the failure / decline"

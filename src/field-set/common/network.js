@@ -93,8 +93,9 @@ export const generateTokenize = (cb, host, clientKey, apiKey, tags = {}) => {
         cb({
             "first_six": token.bin.first_six,
             "brand": token.bin.brand,
-            "idempotencyId": token.idempotency,
-            "amount": token.payment.amount
+            "receipt_number": token.idempotency,
+            "amount": token.payment.amount,
+            "convenience_fee": token.payment.convenience_fee
         })
     }
 }
@@ -137,6 +138,7 @@ export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
             type: payment.state === 'error' ? payment.reason : payment.type,
             created_at: payment.created_at,
             amount: payment.amount,
+            convenience_fee: payment.convenience_fee,
             state: payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state,
             tags: payment.tags,
         })
@@ -192,6 +194,7 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
             type: payment.state === 'error' ? payment.reason : payment.type,
             created_at: payment.created_at,
             amount: payment.amount,
+            convenience_fee: payment.convenience_fee,
             state: payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state,
             tags: payment.tags,
         })
