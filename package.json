@@ -1,6 +1,10 @@
 {
     "name": "@paytheory/payment-components",
+<<<<<<< HEAD
     "version": "0.2.46-0",
+=======
+    "version": "1.0.11-0",
+>>>>>>> dev
     "description": "Pay Theory SDK",
     "main": "dist/index.js",
     "author": "Aron Price",
@@ -27,10 +31,12 @@
         "lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
         "format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore",
         "publish-dev-npm": "npm run build-dev && npm version prepatch && git push && npm publish --tag alpha",
-        "publish-stage-npm": "npm run build-stage && npm version prepatch && git push && npm publish --tag beta",
+        "publish-stage-npm": "npm run build-stage && npm run beta-npm && npm run sandbox-npm",
         "publish-prod-npm": "env BUILD_ENV=prod npm run build-prod && npm run release-npm && npm run public-npm",
         "release-npm": "npm version prepatch && git push && npm publish --tag release",
         "public-npm": "npm version prepatch && git push && npm publish",
+        "beta-npm": "npm version prepatch && git push && npm publish --tag beta",
+        "sandbox-npm": "npm version prepatch && git push && npm publish --tag sandbox",
         "publish-dev-cdn": "npm run build-dev && aws s3 cp dist s3://payment-components-dev --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "publish-stage-cdn": "npm run build-stage && aws s3 cp dist s3://payment-components-stage --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "publish-prod-cdn": "npm run build-prod && aws s3 cp dist s3://payment-components-prod --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
