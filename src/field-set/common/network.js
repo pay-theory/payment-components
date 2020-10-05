@@ -67,7 +67,7 @@ const generateToken = async(host, clientKey, apiKey, message) => {
         payment: message.tokenize ? message.tokenize : message.transact,
         bin
     }
-    console.log('generateToken', message, payload)
+
     return await postData(
         `${host}/${clientKey}/token`,
         apiKey,
@@ -116,7 +116,7 @@ export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
             tags
         }
 
-        console.log('begin capture')
+
 
         const payment = await postData(
             `${host}/${clientKey}/authorize`,
@@ -129,7 +129,7 @@ export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
         data.removeBuyer()
         data.removeBin()
 
-        console.log('capture callback')
+
 
         cb({
             receipt_number: identity.idempotencyId,
@@ -174,7 +174,7 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
             tags
         }
 
-        console.log('begin capture')
+
 
         const payment = await postData(
             `${host}/${clientKey}/authorize`,
