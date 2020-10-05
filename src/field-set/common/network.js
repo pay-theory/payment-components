@@ -17,6 +17,13 @@ export const postData = async(url, apiKey, data = {}) => {
     return await response.json()
 }
 
+const isValidTransaction = (tokenized) => {
+
+    if (tokenized) {
+        throw Error('transaction already initiated')
+    }
+}
+
 export const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
 
 export const transactionEndpoint = (() => {
@@ -78,6 +85,10 @@ const generateToken = async(host, clientKey, apiKey, message) => {
 export const generateTokenize = (cb, host, clientKey, apiKey, tags = {}) => {
     return async message => {
 
+        isValidTransaction(data.getToken())
+
+        data.setToken(true)
+
         let token = await generateToken(host, clientKey, apiKey, message)
 
         if (token.state === 'error') {
@@ -102,6 +113,10 @@ export const generateTokenize = (cb, host, clientKey, apiKey, tags = {}) => {
 
 export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
     return async() => {
+
+        isValidTransaction(data.getIdentity())
+
+        data.setIdentity(true)
 
         const identity = await generateIdentity(host, clientKey, apiKey, data.getBuyer())
 
@@ -148,6 +163,10 @@ export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
 export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
     return async message => {
         //{ amount: amount, token: { bin: this.bin, ...res } }
+
+        isValidTransaction(data.getToken())
+
+        data.setToken(true)
 
         let token = await generateToken(host, clientKey, apiKey, message)
 
