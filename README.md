@@ -298,7 +298,6 @@ myCreditCard.readyObserver(ready => {
 ## Tokenization response
 
 When the confirm option of initTransaction is set to true, the payment card token details are returned in tokenizeObserver
-*note that the convenience fee is included in amount*
 
 ```json
 {
@@ -310,10 +309,11 @@ When the confirm option of initTransaction is set to true, the payment card toke
 }
 ```
 
+*note that the convenience fee is included in amount*
+
 ## Completion response
 
 Upon completion of authorization and capture, details similar to the following are returned:
-*note that the convenience fee is included in amount*
 
 ```json
 {
@@ -327,6 +327,9 @@ Upon completion of authorization and capture, details similar to the following a
     "tags":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
 }
 ```
+
+*note that the convenience fee is included in amount*
+
 If a failure or decline occurs during the transaction, the response will be similar to the following:
 
 ```json
