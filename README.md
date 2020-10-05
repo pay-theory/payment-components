@@ -2,16 +2,34 @@
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/d446eeab0c444274bfa00aceca3f0875)](https://www.codacy.com/gh/pay-theory/payment-components?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pay-theory/payment-components&amp;utm_campaign=Badge_Grade) [![Known Vulnerabilities](https://snyk.io/test/github/pay-theory/payment-components/badge.svg?targetFile=package.json)](https://snyk.io/test/github/pay-theory/payment-components?targetFile=package.json) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![NPM](https://img.shields.io/npm/v/@paytheory/payment-components.svg)](https://www.npmjs.com/package/@paytheory/payment-components)
 
-## Install
+## Live Install
 
 ```bash
-npm install --save @paytheory/payment-components@beta
+npm install --save @paytheory/payment-components
 ```
 
-## Import
+## Sandbox Install
+
+```bash
+npm install --save @paytheory/payment-components@sandbox
+```
+
+## Live Import
 
 ```javascript
-import '@paytheory/payment-components@beta'
+import '@paytheory/payment-components'
+```
+
+or
+
+```html
+<script src="https://sdk.paytheory.com"></script>
+```
+
+## Sandbox Import
+
+```javascript
+import '@paytheory/payment-components@sandbox'
 ```
 
 or
