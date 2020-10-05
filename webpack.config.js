@@ -7,7 +7,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   mode: "production",
-  devtool: 'eval-source-map',
+  devtool: 'none',
   module: {
     rules: [{
       test: /\.m?js$/,
