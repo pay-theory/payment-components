@@ -1,5 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
+const devmap = 'eval-source-map'
+const devnone = 'none'
 module.exports = {
   entry: './src/index.js',
   output: {
@@ -7,7 +9,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   mode: "production",
-  devtool: 'eval-source-map',
+  devtool: devnone,
   module: {
     rules: [{
       test: /\.m?js$/,
