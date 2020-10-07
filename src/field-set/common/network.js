@@ -223,8 +223,6 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
 export const generateInitialization = (handleInitialized, host, clientKey, apiKey) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
-            const stored = data.getToken()
-
             handleInitialized(amount, buyerOptions, confirmation)
         }
         else {

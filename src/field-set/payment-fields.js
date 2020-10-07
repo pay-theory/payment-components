@@ -151,8 +151,12 @@ export default async(
     }
 
     const cancel = () => {
+        const transacting = processedElements.reduce(common.findTransactingElement, false)
+        transacting['tokenize'] = false
         common.removeIdentity()
-        common.removeInstrument()
+        common.removeToken()
+        common.removeBuyer()
+        common.removeBin()
     }
 
     const readyObserver = cb => common.handleMessage(

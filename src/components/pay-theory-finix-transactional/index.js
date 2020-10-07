@@ -17,27 +17,32 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
   }
 
   set tokenize(_tokenizing) {
-    const valid_amount = _tokenizing % 1 === 0 && _tokenizing >= 1
-    const amount = _tokenizing
-    if (!valid_amount) {
-      throw new Error('amount must be a positive integer')
+    if (_tokenizing === false) {
+      this.tokenizing = false
     }
-    if (this.tokenizing !== _tokenizing) {
-      this.tokenizing = _tokenizing;
-      this.form.submit(FINIX_ENV, this.application, (err, res) => {
-        if (err) {
-          this.error = err;
-        }
-        else {
-          const tokenize = { amount: amount, currency: 'USD', finixToken: { bin: this.bin, ...res } };
-          window.postMessage({
-              type: 'tokenize',
-              tokenize
-            },
-            window.location.origin,
-          );
-        }
-      });
+    else {
+      const valid_amount = _tokenizing % 1 === 0 && _tokenizing >= 1
+      const amount = _tokenizing
+      if (!valid_amount) {
+        throw new Error('amount must be a positive integer')
+      }
+      if (this.tokenizing !== _tokenizing) {
+        this.tokenizing = _tokenizing;
+        this.form.submit(FINIX_ENV, this.application, (err, res) => {
+          if (err) {
+            this.error = err;
+          }
+          else {
+            const tokenize = { amount: amount, currency: 'USD', finixToken: { bin: this.bin, ...res } };
+            window.postMessage({
+                type: 'tokenize',
+                tokenize
+              },
+              window.location.origin,
+            );
+          }
+        });
+      }
     }
   }
 
