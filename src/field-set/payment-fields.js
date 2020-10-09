@@ -155,8 +155,6 @@ export default async(
         transacting['tokenize'] = false
         common.removeIdentity()
         common.removeToken()
-        common.removeBuyer()
-        common.removeBin()
     }
 
     const readyObserver = cb => common.handleMessage(

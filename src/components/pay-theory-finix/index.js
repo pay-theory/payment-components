@@ -44,13 +44,16 @@ class PayTheoryFinixFrame extends HTMLElement {
     container.appendChild(element)
   }
 
+  findEventMessage(event) {
+    return typeof event.data === 'object' ? event.data : { type: 'unknown' }
+  }
+
   eventful(event) {
-    if (![window.location.origin].includes(event.origin)) {
-      return
-    }
-    const message = typeof event.data === 'object' ? event.data : { type: 'unknown' }
-    if (message.type.startsWith(this.field) && message.type.endsWith(':ready')) {
-      this.ready = event.data.ready
+    if ([window.location.origin].includes(event.origin)) {
+      const message = this.findEventMessage(event)
+      if (message.type.startsWith(this.field) && message.type.endsWith(':ready')) {
+        this.ready = event.data.ready
+      }
     }
   }
 
@@ -69,10 +72,10 @@ class PayTheoryFinixFrame extends HTMLElement {
 
     window.addEventListener('message', this.eventful)
 
-    this.innerHTML = `<span class="framed">
+    this.innerHTML = `<div class="framed">
             <div id="pay-theory-${this.field}-field-container" class="pay-theory-field">
             </div>
-        </span>`
+        </div>`
 
 
   }

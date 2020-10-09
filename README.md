@@ -135,6 +135,22 @@ Include a container for each of the optional inputs you wish to use:
 </form>
 ```
 
+## Styling the container
+
+To style the input container simply provide your own CSS for the pay theory containers you create.
+Individual input containers should be at least 340px wide, pay-theory-credit-card combined input should be 400px;
+
+```css
+#pay-theory-credit-card-number,
+#pay-theory-credit-card-exp,
+#pay-theory-credit-card-cvv {
+  height: 1.75em;
+  border: solid 1px #ccc;
+  border-radius: 5px;
+  margin: 4px 0;
+}
+```
+
 ## Handle state with callbacks
 
 Mount to create the credit card field(s) and establish callbacks:
@@ -145,7 +161,7 @@ Mount to create the credit card field(s) and establish callbacks:
 const API_KEY = 'your-api-key'
 const CLIENT_ID = 'your-client-id'
 
-// optionally define custom styles for the input components
+// optionally define custom styles for the input components text
 const STYLES = {
     default: {
         color: 'black',
@@ -326,7 +342,6 @@ When the confirm option of initTransaction is set to true, the payment card toke
 	"convenience_fee": 195
 }
 ```
-
 *note that the convenience fee is included in amount*
 
 ## Completion response
@@ -345,7 +360,6 @@ Upon completion of authorization and capture, details similar to the following a
     "tags":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
 }
 ```
-
 *note that the convenience fee is included in amount*
 
 If a failure or decline occurs during the transaction, the response will be similar to the following:
