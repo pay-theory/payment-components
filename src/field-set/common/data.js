@@ -4,6 +4,7 @@ export const INSTRUMENT = 'pt-instrument'
 export const BUYER = 'pt-buyer'
 export const TOKEN = 'pt-token'
 export const BIN = 'pt-bin'
+export const READY = 'pt-ready'
 
 export const defaultStyles = {
     default: {},
@@ -50,6 +51,18 @@ export const stateMap = {
     'city': 'address.city',
     'state': 'address.region',
     'zip': 'address.postal_code'
+}
+
+export const getReady = () => {
+    return localStorage.getItem(READY)
+}
+
+export const setReady = ready => {
+    return localStorage.setItem(READY, ready)
+}
+
+export const removeReady = () => {
+    return localStorage.removeItem(READY)
 }
 
 export const getBuyer = () => {

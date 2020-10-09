@@ -160,9 +160,13 @@ export default async(
     const readyObserver = cb => common.handleMessage(
         common.readyTypeMessage,
         message => {
-            if (!message.type === 'pay-theory-ready' || isReady) { return }
-            isReady = message.ready
-            cb(message.ready)
+            const already = common.getReady()
+            if (message.type === 'pay-theory-ready' && isReady && typeof already === 'undefined') {
+                common.setReady(true)
+                window.addEventListener("beforeunload", () => { common.removeReady() })
+                isReady = message.ready
+                cb(message.ready)
+            }
         })
 
     const validObserver = cb => common.handleMessage(
