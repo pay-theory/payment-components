@@ -120,7 +120,7 @@ const determineStateType = (elementType) =>
     data.stateMap[elementType] :
     elementType
 
-const generateStateReducer = state => ([cValid, cInvalid, cUndefined], typed, index) => {
+const generateStateReducer = state => ([cValid, cInvalid, cUndefined], typed) => {
     const stated = state[typed]
 
     // validate finix state

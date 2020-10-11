@@ -83,7 +83,7 @@ const generateToken = async(host, clientKey, apiKey, message) => {
     )
 }
 
-export const generateTokenize = (cb, host, clientKey, apiKey, tags = {}) => {
+export const generateTokenize = (cb, host, clientKey, apiKey) => {
     return async message => {
 
         isValidTransaction(data.getToken())
@@ -226,7 +226,7 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
     }
 }
 
-export const generateInitialization = (handleInitialized, host, clientKey, apiKey) => {
+export const generateInitialization = (handleInitialized, host) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
             handleInitialized(amount, buyerOptions, confirmation)
