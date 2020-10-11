@@ -363,7 +363,6 @@ Upon completion of authorization and capture, details similar to the following a
     "tags":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
 }
 ```
-*note that the convenience fee is included in amount*
 
 If a failure or decline occurs during the transaction, the response will be similar to the following:
 

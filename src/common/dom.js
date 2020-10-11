@@ -39,41 +39,45 @@ export const addFrame = (
     return tagFrame
 }
 
+const processContainer = (container,elements,processed,styles,type) => {
+    let error = false
+    const contained = document.getElementById(`${elements[type]}-tag-frame`)
+    if (contained === null) {
+        const frame = addFrame(
+            container,
+            elements[type],
+            styles,
+            type === 'credit-card' ?
+            `pay-theory-credit-card-tag-frame` :
+            `pay-theory-credit-card-${type}-tag-frame`)
+
+        processed.push({ type, frame })
+    }
+    else {
+        error = `${elements[type]} is already mounted`
+    }
+    return error
+}
+
 export const processElements = (elements, styles) => {
     let processed = []
-    let error = false
     data.fieldTypes.forEach(type => {
-        if (elements[type] && typeof elements[type] !== 'string') { error = 'invalid element' }
-        if (typeof elements[type] === 'undefined' && error === false) {
+        let error = false
+        if (elements[type] && typeof elements[type] !== 'string') {
+            error = 'invalid element'
+        }
+        else if (typeof elements[type] === 'undefined') {
             error = `'unknown type ${type}`
         }
         const container = document.getElementById(elements[type])
         if (container && error === false) {
-            const contained = document.getElementById(`${elements[type]}-tag-frame`)
-            if (contained === null) {
-                const frame = addFrame(
-                    container,
-                    elements[type],
-                    styles,
-                    type === 'credit-card' ?
-                    `pay-theory-credit-card-tag-frame` :
-                    `pay-theory-credit-card-${type}-tag-frame`)
-
-                processed.push({ type, frame })
-            }
-            else {
-                error = `${elements[type]} is already mounted`
-            }
+            error = processContainer(container,elements,processed,styles,type)
         }
-
+        if (error) {
+            return message.handleError(error)
+        }
     })
-    if (error) {
-        return message.handleError(error)
-    }
-    else {
-        return processed
-    }
-
+    return processed
 }
 
 export const appendFinix = (formed, handleState, handleFormed) => {
@@ -111,8 +115,6 @@ export const stateMapping = (elementType, state) => {
         data.stateMap[elementType] :
         elementType
 
-    let mapped
-
     // extract the finix state for state type
     // use reduce in case there are combined elements
     const splitLength = stateType.split('|').length
@@ -140,13 +142,13 @@ export const stateMapping = (elementType, state) => {
             []
         ])
         if (cValid.length === splitLength) {
-            mapped = [stateType, cValid[0], false]
+            return [stateType, cValid[0], false]
         }
         else if (cInvalid.length > 0) {
-            mapped = [stateType, cInvalid[0], true]
+            return [stateType, cInvalid[0], true]
         }
         else {
-            mapped = [stateType, cUndefined[0], ]
+            return [stateType, cUndefined[0], ]
         }
     }
     else {
@@ -157,8 +159,7 @@ export const stateMapping = (elementType, state) => {
         const invalid = network.invalidate(stated)
 
         // return the finix data element, state for that element, and validation
-        mapped = [stateType, stated, invalid]
+        return [stateType, stated, invalid]
     }
 
-    return mapped
 }
