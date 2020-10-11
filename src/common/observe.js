@@ -1,7 +1,12 @@
 import * as messaging from './message'
 import * as network from './network'
 
-export const errorObserver = cb => messaging.handleMessage(messaging.errorTypeMessage, message => cb(message.error))
+export const errorObserver = cb => messaging.handleMessage(messaging.errorTypeMessage, message => {
+    cb(message.error)
+    if (message.throws) {
+        throw new Error(message.error)
+    }
+})
 
 
 export const tokenizeObserver = (host, clientKey, apiKey) =>

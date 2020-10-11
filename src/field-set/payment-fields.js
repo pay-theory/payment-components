@@ -1,4 +1,4 @@
-import common from './common'
+import common from '../common'
 
 export default async(
     apiKey,
@@ -25,6 +25,8 @@ export default async(
     let processedElements = []
 
     let isReady = false
+
+    window.addEventListener("beforeunload", () => { common.removeReady() })
 
     const establishElements = (elements) => {
         return common.processElements(elements, styles)
@@ -73,36 +75,40 @@ export default async(
         const handleState = stateHandler(processedElements)
         const handleFormed = finalForm => {
             const transacting = processedElements.reduce(common.findTransactingElement, false)
-
+            let error = false
             if (transacting === false) {
-                throw new Error('missing credit card entry field required for payments')
+                error = 'missing credit card entry field required for payments'
             }
 
             if (transacting.id === 'pay-theory-credit-card-number-tag-frame') {
                 if (processedElements.reduce(common.findExp, false) === false) {
-                    throw new Error('missing credit card expiration field required for payments')
+                    error = 'missing credit card expiration field required for payments'
                 }
 
                 if (processedElements.reduce(common.findCVV, false) === false) {
-                    throw new Error('missing credit card CVV field required for payments')
+                    error = 'missing credit card CVV field required for payments'
                 }
 
                 if (document.getElementById(`pay-theory-credit-card`)) {
-                    throw new Error('credit card element is not allowed when using credit card number')
+                    error = 'credit card element is not allowed when using credit card number'
                 }
             }
             else {
                 if (processedElements.reduce(common.findExp, false)) {
-                    throw new Error('expiration is not allowed when using combined credit card')
+                    error = 'expiration is not allowed when using combined credit card'
                 }
 
                 if (processedElements.reduce(common.findCVV, false)) {
-                    throw new Error('cvv is not allowed when using combined credit card')
+                    error = 'cvv is not allowed when using combined credit card'
                 }
 
                 if (document.getElementById(`pay-theory-credit-card-number`)) {
-                    throw new Error('credit card number is not allowed when using combined credit card')
+                    error = 'credit card number is not allowed when using combined credit card'
                 }
+            }
+
+            if (error) {
+                return common.handleError(error)
             }
 
             processedElements.forEach(processed => {
@@ -110,7 +116,7 @@ export default async(
             })
 
             window.postMessage({
-                    type: `pay-theory-ready`,
+                    type: `pay-theory:ready`,
                     ready: true,
                 },
                 window.location.origin,
@@ -160,10 +166,8 @@ export default async(
     const readyObserver = cb => common.handleMessage(
         common.readyTypeMessage,
         message => {
-            const already = common.getReady()
-            if (message.type === 'pay-theory-ready' && isReady && typeof already === 'undefined') {
+            if (message.type === 'pay-theory:ready' & !isReady && common.getReady() === null) {
                 common.setReady(true)
-                window.addEventListener("beforeunload", () => { common.removeReady() })
                 isReady = message.ready
                 cb(message.ready)
             }

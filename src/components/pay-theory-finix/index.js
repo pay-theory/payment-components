@@ -62,7 +62,7 @@ class PayTheoryFinixFrame extends HTMLElement {
       this.loaded = true
 
       window.postMessage({
-          type: `${this.field}:ready`,
+          type: `pt:${this.field}:ready`,
           ready: true,
         },
         window.location.origin,
@@ -139,7 +139,7 @@ class PayTheoryFinixFrame extends HTMLElement {
     if (_isReady !== this.isReady) {
       this.isReady = _isReady
       window.postMessage({
-          type: `${this.field}-ready`,
+          type: `pt:${this.field}:ready`,
           ready: this.isReady,
         },
         window.location.origin,
@@ -168,7 +168,7 @@ class PayTheoryFinixFrame extends HTMLElement {
     if (this.errored !== _errored) {
       this.errored = _errored;
       window.postMessage({
-          type: 'error',
+          type: 'pt:error',
           error: _errored,
         },
         window.location.origin,
@@ -184,7 +184,7 @@ class PayTheoryFinixFrame extends HTMLElement {
     if (isValid !== this.validated) {
       this.validated = isValid
       window.postMessage({
-          type: `${this.field}:valid`,
+          type: `pt:${this.field}:valid`,
           valid: isValid,
         },
         window.location.origin,

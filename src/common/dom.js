@@ -1,6 +1,6 @@
 import * as data from './data'
 import * as network from './network'
-
+import * as message from './message'
 export const findTransactingElement = (element, cv) => {
     return element === false ?
         (cv.type === 'credit-card' || cv.type === 'number') ?
@@ -44,7 +44,7 @@ export const processElements = (elements, styles) => {
     data.fieldTypes.forEach(type => {
         if (elements[type] && typeof elements[type] !== 'string') { throw new Error('invalid element') }
         if (typeof elements[type] === 'undefined') {
-            throw Error('unknown type', type, elements)
+            return message.handleError(`'unknown type ${type}`)
         }
         const container = document.getElementById(elements[type])
         if (container) {
@@ -61,7 +61,7 @@ export const processElements = (elements, styles) => {
                 processed.push({ type, frame })
             }
             else {
-                throw new Error(`${elements[type]} is already mounted`)
+                return message.handleError(`${elements[type]} is already mounted`)
             }
         }
 

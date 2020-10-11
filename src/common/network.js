@@ -1,4 +1,5 @@
 import * as data from './data'
+import * as message from './message'
 export const postData = async(url, apiKey, data = {}) => {
     const options = {
         method: 'POST',
@@ -226,7 +227,7 @@ export const generateInitialization = (handleInitialized, host, clientKey, apiKe
             handleInitialized(amount, buyerOptions, confirmation)
         }
         else {
-            throw Error('amount must be a positive integer')
+            return message.handleError('amount must be a positive integer')
         }
     }
 }

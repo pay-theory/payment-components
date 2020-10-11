@@ -1,6 +1,6 @@
 /* global HTMLElement */
 import PayTheoryFinixFrame from '../pay-theory-finix'
-
+import { handleError } from '../../common'
 const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
 
 class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
@@ -13,7 +13,7 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
   }
 
   get tokenize() {
-    return this.tokenizing;
+    return this.tokenizing
   }
 
   set tokenize(_tokenizing) {
@@ -24,77 +24,77 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
       const valid_amount = _tokenizing % 1 === 0 && _tokenizing >= 1
       const amount = _tokenizing
       if (!valid_amount) {
-        throw new Error('amount must be a positive integer')
+        return handleError('amount must be a positive integer')
       }
       if (this.tokenizing !== _tokenizing) {
-        this.tokenizing = _tokenizing;
+        this.tokenizing = _tokenizing
         this.form.submit(FINIX_ENV, this.application, (err, res) => {
           if (err) {
-            this.error = err;
+            this.error = err
           }
           else {
-            const tokenize = { amount: amount, currency: 'USD', finixToken: { bin: this.bin, ...res } };
+            const tokenize = { amount: amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
             window.postMessage({
-                type: 'tokenize',
+                type: 'pt:tokenize',
                 tokenize
               },
               window.location.origin,
-            );
+            )
           }
-        });
+        })
       }
     }
   }
 
   get capture() {
-    return this.capturing;
+    return this.capturing
   }
 
   set capture(_capturing) {
     window.postMessage({
-        type: 'capture',
+        type: 'pt:capture',
         capture: true
       },
       window.location.origin,
-    );
+    )
   }
 
   get transact() {
-    return this.transacting;
+    return this.transacting
   }
 
   set transact(_transacting) {
     const valid_amount = Number.isInteger(parseInt(_transacting))
     const amount = parseInt(_transacting)
     if (!valid_amount) {
-      throw new Error('amount must be a positive integer')
+      return handleError('amount must be a positive integer')
     }
     if (this.transacting !== _transacting) {
-      this.transacting = _transacting;
+      this.transacting = _transacting
       this.form.submit(FINIX_ENV, this.application, (err, res) => {
         if (err) {
-          this.error = err;
+          this.error = err
         }
         else {
-          const transact = { amount: amount, currency: 'USD', finixToken: { bin: this.bin, ...res } };
+          const transact = { amount: amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
           window.postMessage({
-              type: 'transact',
+              type: 'pt:transact',
               transact
             },
             window.location.origin,
-          );
+          )
         }
-      });
+      })
     }
   }
 
   get amount() {
-    return this.amounting;
+    return this.amounting
   }
 
   set amount(_amounting) {
     if (this.amounting !== _amounting) {
-      this.amounting = _amounting;
+      this.amounting = _amounting
     }
   }
 }
