@@ -112,52 +112,56 @@ export const generateTokenize = (cb, host, clientKey, apiKey) => {
     }
 }
 
+const processPayment = async(cb, host, clientKey, apiKey, tags = {}) => {
+    data.setIdentity(true)
+
+    const identity = await generateIdentity(host, clientKey, apiKey, data.getBuyer())
+
+    data.setIdentity(identity)
+
+    tags['pt-number'] = identity.idempotencyId
+
+    const instrumental = await generateInstrument(host, clientKey, apiKey)
+
+    const auth = {
+        instrumentToken: instrumental['tags-token'],
+        tags
+    }
+
+
+
+    const payment = await postData(
+        `${host}/${clientKey}/authorize`,
+        apiKey,
+        auth
+    )
+
+    data.removeIdentity()
+    data.removeToken()
+    data.removeBuyer()
+    data.removeBin()
+
+
+
+    cb({
+        receipt_number: identity.idempotencyId,
+        last_four: instrumental.last_four,
+        brand: instrumental.brand,
+        type: payment.state === 'error' ? payment.reason : payment.type,
+        created_at: payment.created_at,
+        amount: payment.amount,
+        convenience_fee: payment.convenience_fee,
+        state: payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state,
+        tags: payment.tags,
+    })
+}
+
 export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
     return async() => {
 
         isValidTransaction(data.getIdentity())
 
-        data.setIdentity(true)
-
-        const identity = await generateIdentity(host, clientKey, apiKey, data.getBuyer())
-
-        data.setIdentity(identity)
-
-        tags['pt-number'] = identity.idempotencyId
-
-        const instrumental = await generateInstrument(host, clientKey, apiKey)
-
-        const auth = {
-            instrumentToken: instrumental['tags-token'],
-            tags
-        }
-
-
-
-        const payment = await postData(
-            `${host}/${clientKey}/authorize`,
-            apiKey,
-            auth
-        )
-
-        data.removeIdentity()
-        data.removeToken()
-        data.removeBuyer()
-        data.removeBin()
-
-
-
-        cb({
-            receipt_number: identity.idempotencyId,
-            last_four: instrumental.last_four,
-            brand: instrumental.brand,
-            type: payment.state === 'error' ? payment.reason : payment.type,
-            created_at: payment.created_at,
-            amount: payment.amount,
-            convenience_fee: payment.convenience_fee,
-            state: payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state,
-            tags: payment.tags,
-        })
+        await processPayment(cb, host, clientKey, apiKey, tags = {})
     }
 }
 
@@ -185,44 +189,7 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
 
         processToken(await generateToken(host, clientKey, apiKey, message))
 
-
-
-        const identity = await generateIdentity(host, clientKey, apiKey, data.getBuyer())
-
-        data.setIdentity(identity)
-
-        tags['pt-number'] = identity.idempotencyId
-
-        const instrumental = await generateInstrument(host, clientKey, apiKey)
-
-        const auth = {
-            instrumentToken: instrumental['tags-token'],
-            tags
-        }
-
-        const payment = await postData(
-            `${host}/${clientKey}/authorize`,
-            apiKey,
-            auth
-        )
-
-        data.removeIdentity()
-        data.removeToken()
-        data.removeBuyer()
-        data.removeBin()
-
-
-        cb({
-            receipt_number: identity.idempotencyId,
-            last_four: instrumental.last_four,
-            brand: instrumental.brand,
-            type: determineType(payment),
-            created_at: payment.created_at,
-            amount: payment.amount,
-            convenience_fee: payment.convenience_fee,
-            state: determineState(payment),
-            tags: payment.tags,
-        })
+        await processPayment(cb, host, clientKey, apiKey, tags = {})
     }
 }
 

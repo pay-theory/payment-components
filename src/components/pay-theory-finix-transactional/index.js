@@ -18,7 +18,7 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
     return amount % 1 === 0 && amount >= 1
   }
 
-  generateTokenizeCallback = (tokenAmount) => {
+  generateTokenizeCallback(tokenAmount) {
     const amount = tokenAmount
     return (err, token) => {
       const finixToken = token
@@ -39,18 +39,20 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
     }
   }
 
-  generateTransactCallback = (amount) => (err, res) => {
-    if (err) {
-      this.error = err
-    }
-    else {
-      const transact = { amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
-      window.postMessage({
-          type: 'pt:transact',
-          transact
-        },
-        window.location.origin,
-      )
+  generateTransactCallback(amount) {
+    return (err, res) => {
+      if (err) {
+        this.error = err
+      }
+      else {
+        const transact = { amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
+        window.postMessage({
+            type: 'pt:transact',
+            transact
+          },
+          window.location.origin,
+        )
+      }
     }
   }
 

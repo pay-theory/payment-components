@@ -120,30 +120,28 @@ const determineStateType = (elementType) =>
     data.stateMap[elementType] :
     elementType
 
-const generateStateReducer = state => ([cValid, cInvalid, cUndefined], typed) => {
-    const stated = state[typed]
+const generateStateReducer = state => {
+    return ([cValid, cInvalid, cUndefined], typed) => {
+        const stated = state[typed]
 
-    // validate finix state
-    const invalid = network.invalidate(stated)
+        // validate finix state
+        const invalid = network.invalidate(stated)
 
-    if (invalid === true) {
-        cInvalid.push(stated)
-    }
-    else if (invalid === false) {
-        cValid.push(stated)
-    }
-    else {
-        cUndefined.push(stated)
-    }
+        if (invalid === true) {
+            cInvalid.push(stated)
+        }
+        else if (invalid === false) {
+            cValid.push(stated)
+        }
+        else {
+            cUndefined.push(stated)
+        }
 
-    return [cValid, cInvalid, cUndefined]
+        return [cValid, cInvalid, cUndefined]
+    }
 }
 
-const defaultReduction = [
-    [],
-    [],
-    []
-]
+
 
 const findStateResult = (cValid, cInvalid, cUndefined, splitLength, stateType) => {
     let result
@@ -167,9 +165,16 @@ export const stateMapping = (elementType, state) => {
     // use reduce in case there are combined elements
     const splitLength = stateType.split('|').length
 
+
+
     let result
     if (splitLength > 1) {
-        const [cValid, cInvalid, cUndefined] = stateType.split('|').reduce(generateStateReducer(state), defaultReduction)
+        const [cValid, cInvalid, cUndefined] = stateType.split('|').reduce(generateStateReducer(state), [
+            [],
+            [],
+            []
+        ])
+
         result = findStateResult(cValid, cInvalid, cUndefined, splitLength, stateType)
     }
     else {

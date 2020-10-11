@@ -220,8 +220,12 @@ export default async(
 
             let validating = false
 
+
+
             if (validTypes[type]) {
+
                 validTypes[type] = message.valid
+
                 const validatingCard = hasValidCard(validTypes)
 
                 const validatingDetails = hasValidDetails(validTypes)
