@@ -180,7 +180,7 @@ export default async(
 
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized, host)
+    const initTransaction = common.generateInitialization(handleInitialized)
 
     const confirm = () => {
         const transacting = processedElements.reduce(common.findTransactingElement, false)

@@ -226,7 +226,7 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
     }
 }
 
-export const generateInitialization = (handleInitialized, host) => {
+export const generateInitialization = (handleInitialized) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
             handleInitialized(amount, buyerOptions, confirmation)
