@@ -70,12 +70,12 @@ Credit Card Component requires a container for the credit card input:
 </form>
 ```
 
-Credit Card Component cannot be used in combination with: 
+Credit Card Component cannot be used in combination with:
 
 -   Credit Card Number Component
--   Credit Card Expiration Component 
+-   Credit Card Expiration Component
 -   Credit Card CVV Component
-   
+
 ### Credit Card Number, Expiration and CVV Components
 
 These components will provide a full payment implementation.
@@ -100,7 +100,7 @@ A container is required for each component:
 </form>
 ```
 
-These components cannot be used in combination with: 
+These components cannot be used in combination with:
 
 -   Credit Card Component
 
@@ -217,14 +217,14 @@ let myCreditCard
         * this is a good place to enable confirmation
         **/
     })
-    
+
     // only needed when REQUIRE_CONFIRMATION is true
     myCreditCard.captureObserver(transactionResult => {
         /**
         * results of the transaction with confirmation
         * fires once when capture is completed
         **/
-    })    
+    })
 
     // only needed when REQUIRE_CONFIRMATION is false
     myCreditCard.transactedObserver(transactionResult => {
@@ -255,7 +255,7 @@ let myCreditCard
 
 ## Initiate the transaction
 
-Once the transaction has ended in either success or failure the buyer should be 
+Once the transaction has ended in either success or failure the buyer should be
 directed to a results page.
 
 When ready submit the transaction using the saved credit card:
@@ -282,18 +282,18 @@ const REQUIRE_CONFIRMATION = true
 
 /**
  * create a listener that will trigger the payment process
- * if REQUIRE_CONFIRMATION is true 
+ * if REQUIRE_CONFIRMATION is true
  * this step will only complete tokenization
  * otherwise tokenization and capture observers are bypassed
  **/
 const clickListener = (e) => {
     e.preventDefault()
     ...
-    /** 
-     * begin the transaction authorization by providing an amount 
+    /**
+     * begin the transaction authorization by providing an amount
      * and optionally details about the buyer and a flag for confirmation
      * amount must be a positive integer or an error will be thrown
-     * */    
+     * */
     myCreditCard.initTransaction(
       AMOUNT,
       BUYER_OPTIONS,
@@ -333,26 +333,29 @@ myCreditCard.readyObserver(ready => {
 
 When the confirm option of initTransaction is set to true, the payment card token details are returned in tokenizeObserver
 
+*note that the convenience fee is included in amount*
+
 ```json
 {
-	"first_six": "XXXXXX", 
-	"brand": "XXXX", 
-	"receipt_number": "pt-dev-XXXXXX", 
+	"first_six": "XXXXXX",
+	"brand": "XXXX",
+	"receipt_number": "pt-dev-XXXXXX",
 	"amount": 999,
 	"convenience_fee": 195
 }
 ```
-*note that the convenience fee is included in amount*
 
 ## Completion response
 
 Upon completion of authorization and capture, details similar to the following are returned:
 
+*note that the convenience fee is included in amount*
+
 ```json
 {
     "receipt_number":"pt-env-XXXXXX",
     "last_four": "XXXX",
-    "brand": "XXXXXXXXX",    
+    "brand": "XXXXXXXXX",
     "created_at":"YYYY-MM-DDTHH:MM:SS.ssZ",
     "amount": 999,
     "convenience_fee": 195,

@@ -87,6 +87,65 @@ describe('createPaymentFields', () => {
         await expect(fwZip).to.be.ok;
     });
 
+    it('renders finix iframes with all fields split out', async() => {
+
+        const fixed = await fixture(html `
+        <div id="pay-theory-credit-card-number" />
+        <div id="pay-theory-credit-card-exp" />
+        <div id="pay-theory-credit-card-cvv" />
+        <div id="pay-theory-credit-card-account-name" />
+        <div id="pay-theory-credit-card-zip" />
+        <div id="pay-theory-credit-card-address-1" />
+        <div id="pay-theory-credit-card-address-2" />
+        <div id="pay-theory-credit-card-city" />
+        <div id="pay-theory-credit-card-state" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card-number');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        await aTimeout(300);
+
+        await expect(error).to.not.be;
+
+        const tfTag = await document.getElementById('pay-theory-credit-card-number-tag-frame');
+        await expect(tfTag).to.be.ok;
+
+        const fcTag = await document.getElementById('pay-theory-credit-card-exp-tag-frame');
+        await expect(fcTag).to.be.ok;
+
+        const fwNum = await document.getElementById('field-wrapper-number').childElementCount;
+        await expect(fwNum).to.be.ok;
+
+        const fwExp = await document.getElementById('field-wrapper-expiration_date').childElementCount;
+        await expect(fwExp).to.be.ok;
+
+        const fwCVV = await document.getElementById('field-wrapper-security_code').childElementCount;
+        await expect(fwCVV).to.be.ok;
+
+        const fwCvv = await document.getElementById('field-wrapper-security_code').childElementCount;
+        await expect(fwCvv).to.be.ok;
+
+        const fwName = await document.getElementById('field-wrapper-name').childElementCount;
+        await expect(fwName).to.be.ok;
+
+        const fwLineOne = await document.getElementById('field-wrapper-address-address_line1').childElementCount;
+        await expect(fwLineOne).to.be.ok;
+
+        const fwLineTwo = await document.getElementById('field-wrapper-address-address_line2').childElementCount;
+        await expect(fwLineTwo).to.be.ok;
+
+        const fwState = await document.getElementById('field-wrapper-address-region').childElementCount;
+        await expect(fwState).to.be.ok;
+
+        const fwZip = await document.getElementById('field-wrapper-address-postal_code').childElementCount;
+        await expect(fwZip).to.be.ok;
+    });
+
     it('renders finix iframes with custom element id', async() => {
 
         const fixed = await fixture(html ` <div id="pay-theory-credit-card-custom" />`);
@@ -97,11 +156,20 @@ describe('createPaymentFields', () => {
 
         await expect(ccTag).to.be.ok;
 
-        await creditCard.mount({ 'credit-card': 'pay-theory-credit-card-custom' });
+        await creditCard.mount({
+            'credit-card': 'pay-theory-credit-card-custom',
+            'number': '',
+            'exp': '',
+            'cvv': '',
+            'account-name': '',
+            'address-1': '',
+            'address-2': '',
+            city: '',
+            state: '',
+            zip: '',
+        });
 
         await aTimeout(300);
-
-        await expect(error).to.not.be;
 
         const tfTag = await document.getElementById('pay-theory-credit-card-custom-tag-frame');
         await expect(tfTag).to.be.ok;
@@ -118,66 +186,6 @@ describe('createPaymentFields', () => {
         const fwCvv = await document.getElementById('field-wrapper-security_code').childElementCount;
         await expect(fwCvv).to.be.ok;
 
-    });
-
-    it('errors when you try and mount twice', async() => {
-
-        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
-
-        const creditCard = await createPaymentFields(common.api, common.client);
-
-        const ccTag = await document.getElementById('pay-theory-credit-card');
-
-        await expect(ccTag).to.be.ok;
-
-        await creditCard.mount();
-
-        await aTimeout(300);
-
-        const tfTag = await document.getElementById('pay-theory-credit-card-tag-frame');
-        await expect(tfTag).to.be.ok;
-
-        const fcTag = await document.getElementById('pay-theory-credit-card-field-container');
-        await expect(fcTag).to.be.ok;
-
-        const fwNum = await document.getElementById('field-wrapper-number').childElementCount;
-        await expect(fwNum).to.be.ok;
-
-        const fwExp = await document.getElementById('field-wrapper-expiration_date').childElementCount;
-        await expect(fwExp).to.be.ok;
-
-        const fwCvv = await document.getElementById('field-wrapper-security_code').childElementCount;
-        await expect(fwCvv).to.be.ok;
-
-        let mountError
-
-        await expect(mountError).to.not.be;
-
-        try {
-            await creditCard.mount();
-        }
-        catch (err) {
-            mountError = err
-        }
-
-        await expect(mountError).to.be;
-    });
-
-    it('cannot render finix frames', async() => {
-
-        const fixed = await fixture(html ` <div id="not-the-div-youre-looking-for" />`);
-
-        const creditCard = await createPaymentFields(common.api, common.client, 2500)
-
-        const wrongDiv = await document.getElementById('not-the-div-youre-looking-for');
-
-        await expect(wrongDiv).to.be.ok;
-
-        await creditCard.mount()
-
-        await aTimeout(200)
-
-        await expect(error).to.be.ok;
     });
 
     it('initTransaction sets transact to true', async() => {
@@ -205,7 +213,7 @@ describe('createPaymentFields', () => {
         await expect(ccTagFrame.transact).to.be;
     });
 
-    it('initTransaction throws error with negative value', async() => {
+    it('initTransaction sets toeknize to true with verification step and cancel', async() => {
 
         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
 
@@ -223,20 +231,46 @@ describe('createPaymentFields', () => {
 
         const ccTagFrame = await document.getElementById('pay-theory-credit-card-tag-frame');
 
-        await expect(ccTagFrame.transact).to.not.be;
+        await expect(ccTagFrame.toeknize).to.not.be;
 
-        let negError
+        await creditCard.initTransaction(2500, {}, true)
 
-        await expect(negError).not.to.be;
+        await expect(ccTagFrame.toeknize).to.be;
 
-        try {
-            await creditCard.initTransaction(-2500)
-        }
-        catch (err) {
-            negError = err
-        }
+        await creditCard.cancel()
 
-        await expect(negError).to.be;
+        await expect(ccTagFrame.tokenize).not.to.be;
+    });
+
+    it('initTransaction sets capture to true with verification step and confirm', async() => {
+
+        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        await aTimeout(300);
+
+        await expect(error).to.not.be;
+
+        const ccTagFrame = await document.getElementById('pay-theory-credit-card-tag-frame');
+
+        await expect(ccTagFrame.toeknize).to.not.be;
+
+        await creditCard.initTransaction(2500, {}, true)
+
+        await expect(ccTagFrame.toeknize).to.be;
+
+        await expect(ccTagFrame.capture).not.to.be;
+
+        await creditCard.confirm()
+
+        await expect(ccTagFrame.capture).to.be;
     });
 
     it('readyObserver triggers on ready message from mount', async() => {
@@ -282,14 +316,7 @@ describe('createPaymentFields', () => {
         await assert(spy.notCalled)
 
         window.postMessage({
-                type: 'tokenized',
-                tokenized: {
-                    token: {
-                        data: {
-                            id: 'testId'
-                        }
-                    }
-                },
+                type: 'pt:transact',
             },
             window.location.origin,
         );
@@ -311,10 +338,11 @@ describe('createPaymentFields', () => {
 
         expect(testError).to.not.be.ok;
 
-        window.postMessage({
-                type: 'error',
+        window.postMessage(
+            JSON.stringify({
+                type: 'pt:error',
                 error: 'test',
-            },
+            }),
             window.location.origin,
         );
 
@@ -323,7 +351,7 @@ describe('createPaymentFields', () => {
         expect(testError).to.be.ok;
     })
 
-    it('validObserver triggers on valid message', async() => {
+    it('validObserver triggers on valid message combined element', async() => {
 
         const fixed = await fixture(html `
         <div id="pay-theory-credit-card" />
@@ -345,7 +373,7 @@ describe('createPaymentFields', () => {
         assert(spy.notCalled)
 
         window.postMessage({
-                type: 'credit-card:valid',
+                type: 'pt:credit-card:valid',
                 valid: true,
             },
             window.location.origin,
@@ -356,14 +384,14 @@ describe('createPaymentFields', () => {
         assert(spy.calledOnce)
 
         window.postMessage({
-                type: 'account-name:valid',
+                type: 'pt:account-name:valid',
                 valid: false,
             },
             window.location.origin,
         );
 
         window.postMessage({
-                type: 'zip:valid',
+                type: 'pt:zip:valid',
                 valid: false,
             },
             window.location.origin,
@@ -375,14 +403,158 @@ describe('createPaymentFields', () => {
 
 
         window.postMessage({
-                type: 'account-name:valid',
+                type: 'pt:account-name:valid',
                 valid: true,
             },
             window.location.origin,
         );
 
         window.postMessage({
-                type: 'zip:valid',
+                type: 'pt:zip:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        await aTimeout(1);
+
+        assert(spy.calledThrice)
+
+
+    })
+
+    it('validObserver triggers on valid message seperate elements', async() => {
+
+        const fixed = await fixture(html `
+        <div id="pay-theory-credit-card-number" />
+        <div id="pay-theory-credit-card-exp" />
+        <div id="pay-theory-credit-card-cvv" />
+        <div id="pay-theory-credit-card-account-name" />
+        <div id="pay-theory-credit-card-zip" />
+        <div id="pay-theory-credit-card-address-1" />
+        <div id="pay-theory-credit-card-address-2" />
+        <div id="pay-theory-credit-card-city" />
+        <div id="pay-theory-credit-card-state" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card-number');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        const spy = sinon.spy();
+
+        await creditCard.validObserver(spy);
+
+        assert(spy.notCalled)
+
+        window.postMessage({
+                type: 'pt:number:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:exp:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:cvv:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        await aTimeout(1);
+
+        assert(spy.calledOnce)
+
+        window.postMessage({
+                type: 'pt:account-name:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:zip:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+        window.postMessage({
+                type: 'pt:address-1:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:address-2:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+        window.postMessage({
+                type: 'pt:state:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:city:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+
+        await aTimeout(1);
+
+        assert(spy.calledTwice)
+
+
+        window.postMessage({
+                type: 'pt:account-name:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:zip:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+        window.postMessage({
+                type: 'pt:address-1:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:address-2:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+        window.postMessage({
+                type: 'pt:state:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:city:valid',
                 valid: true,
             },
             window.location.origin,
@@ -401,7 +573,7 @@ describe('createPaymentFields', () => {
         const creditCard = await createPaymentFields(common.api, common.client);
 
         window.postMessage({
-                type: `pay-theory-ready`,
+                type: `pt:pay-theory:ready`,
                 ready: true,
             },
             window.location.origin,
@@ -420,14 +592,326 @@ describe('createPaymentFields', () => {
     });
 });
 
+describe('createPaymentFields Errors:', () => {
+    let error;
+
+    beforeEach(() => {
+        error = undefined;
+        window.onerror = (e) => error = e;
+    });
+
+    it('errors when you try and mount twice', async() => {
+
+        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        await aTimeout(300);
+
+        const tfTag = await document.getElementById('pay-theory-credit-card-tag-frame');
+        await expect(tfTag).to.be.ok;
+
+        const fcTag = await document.getElementById('pay-theory-credit-card-field-container');
+        await expect(fcTag).to.be.ok;
+
+        const fwNum = await document.getElementById('field-wrapper-number').childElementCount;
+        await expect(fwNum).to.be.ok;
+
+        const fwExp = await document.getElementById('field-wrapper-expiration_date').childElementCount;
+        await expect(fwExp).to.be.ok;
+
+        const fwCvv = await document.getElementById('field-wrapper-security_code').childElementCount;
+        await expect(fwCvv).to.be.ok;
+
+        let mountError
+
+        await expect(mountError).to.not.be;
+
+        try {
+            await creditCard.mount();
+        }
+        catch (err) {
+            mountError = err
+        }
+
+        await expect(mountError).to.be;
+    });
+
+    it('errors when you try and mount seperate without credit card expiration', async() => {
+
+        const fixed = await fixture(html `
+        <div id="pay-theory-credit-card-number" />
+        <div id="pay-theory-credit-card-cvv" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card-number');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        await aTimeout(300);
+
+        let mountError
+
+        await expect(mountError).to.not.be;
+
+        try {
+            await creditCard.mount();
+        }
+        catch (err) {
+            mountError = err
+        }
+
+        await expect(mountError).to.be;
+    });
+
+    it('errors when you try and mount seperate without credit card cvv', async() => {
+
+        const fixed = await fixture(html `
+        <div id="pay-theory-credit-card-number" />
+        <div id="pay-theory-credit-card-exp" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card-number');
+
+        await expect(ccTag).to.be.ok;
+
+        await aTimeout(300);
+
+        let mountError
+
+        await expect(mountError).to.not.be;
+
+        try {
+            await creditCard.mount();
+        }
+        catch (err) {
+            mountError = err
+        }
+
+        await expect(mountError).to.be;
+    });
+
+    it('errors when you try and mount combined with additional credit card cvv', async() => {
+
+        const fixed = await fixture(html `
+        <div id="pay-theory-credit-card" />
+        <div id="pay-theory-credit-card-cvv" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await aTimeout(300);
+
+        let mountError
+
+        await expect(mountError).to.not.be;
+
+        try {
+            await creditCard.mount();
+        }
+        catch (err) {
+            mountError = err
+        }
+
+        await expect(mountError).to.be;
+    });
+
+    it('errors when you try and mount combined with additional credit card exp', async() => {
+
+        const fixed = await fixture(html `
+        <div id="pay-theory-credit-card" />
+        <div id="pay-theory-credit-card-exp" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await aTimeout(300);
+
+        let mountError
+
+        await expect(mountError).to.not.be;
+
+        try {
+            await creditCard.mount();
+        }
+        catch (err) {
+            mountError = err
+        }
+
+        await expect(mountError).to.be;
+    });
+
+    it('errors when you try and mount combined with additional credit card number', async() => {
+
+        const fixed = await fixture(html `
+        <div id="pay-theory-credit-card" />
+        <div id="pay-theory-credit-card-number" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await aTimeout(300);
+
+        let mountError
+
+        await expect(mountError).to.not.be;
+
+        try {
+            await creditCard.mount();
+        }
+        catch (err) {
+            mountError = err
+        }
+
+        await expect(mountError).to.be;
+    });
+
+    it('cannot render finix frames', async() => {
+
+        const fixed = await fixture(html ` <div id="not-the-div-youre-looking-for" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client, 2500)
+
+        const wrongDiv = await document.getElementById('not-the-div-youre-looking-for');
+
+        await expect(wrongDiv).to.be.ok;
+
+        await creditCard.mount()
+
+        await aTimeout(200)
+
+        await expect(error).to.be.ok;
+    });
+
+    it('initTransaction throws error with negative value', async() => {
+
+        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        await aTimeout(300);
+
+        await expect(error).to.not.be;
+
+        const ccTagFrame = await document.getElementById('pay-theory-credit-card-tag-frame');
+
+        await expect(ccTagFrame.transact).to.not.be;
+
+        let negError
+
+        await expect(negError).not.to.be;
+
+        try {
+            await creditCard.initTransaction(-2500)
+        }
+        catch (err) {
+            negError = err
+        }
+
+        await expect(negError).to.be;
+    });
+
+    it('initTransaction throws error with decimal in the value', async() => {
+
+        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        await aTimeout(300);
+
+        await expect(error).to.not.be;
+
+        const ccTagFrame = await document.getElementById('pay-theory-credit-card-tag-frame');
+
+        await expect(ccTagFrame.transact).to.not.be;
+
+        let negError
+
+        await expect(negError).not.to.be;
+
+        try {
+            await creditCard.initTransaction(2500.23)
+        }
+        catch (err) {
+            negError = err
+        }
+
+        await expect(negError).to.be;
+    });
+
+    it('throws unknown type error if undefined in elements', async() => {
+
+        const fixed = await fixture(html ` <div id="pay-theory-credit-card-custom" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client, 2500);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card-custom');
+
+        await expect(ccTag).to.be.ok;
+
+        let unknownError;
+
+        expect(unknownError).not.to.be;
+
+        try {
+            await creditCard.mount({
+                'credit-card': 'pay-theory-credit-card-custom',
+                'number': '',
+                'exp': '',
+                'cvv': '',
+                'account-name': '',
+                'address-1': '',
+                'address-2': '',
+                city: '',
+                state: '',
+            });
+        }
+        catch (err) {
+            unknownError = err
+        }
+
+        expect(unknownError).to.be;
+
+    });
+});
+
 describe('createPaymentFields with prod environment', () => {
     before(() => {
         process.env.BUILD_ENV = 'prod';
     })
 
     it('initTransaction sets transact to true', async() => {
-
-        console.log(process.env.BUILD_ENV)
 
         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
 

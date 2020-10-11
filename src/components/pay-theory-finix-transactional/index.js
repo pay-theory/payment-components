@@ -1,6 +1,6 @@
 /* global HTMLElement */
 import PayTheoryFinixFrame from '../pay-theory-finix'
-import { handleError } from '../../common'
+import { handleError } from '../../common/message'
 const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
 
 class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
@@ -12,37 +12,38 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
     this.appendElement(badgeElement)
   }
 
+  isValidAmount(amount) {
+    return amount % 1 === 0 && amount >= 1
+  }
+
   get tokenize() {
     return this.tokenizing
   }
 
   set tokenize(_tokenizing) {
-    if (_tokenizing === false) {
-      this.tokenizing = false
+    const amount = _tokenizing
+    if (amount && this.isValidAmount(amount) && this.tokenizing !== _tokenizing) {
+      this.tokenizing = _tokenizing
+      this.form.submit(FINIX_ENV, this.application, (err, res) => {
+        if (err) {
+          this.error = err
+        }
+        else {
+          const tokenize = { amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
+          window.postMessage({
+              type: 'pt:tokenize',
+              tokenize
+            },
+            window.location.origin,
+          )
+        }
+      })
     }
-    else {
-      const valid_amount = _tokenizing % 1 === 0 && _tokenizing >= 1
-      const amount = _tokenizing
-      if (!valid_amount) {
-        return handleError('amount must be a positive integer')
-      }
-      if (this.tokenizing !== _tokenizing) {
-        this.tokenizing = _tokenizing
-        this.form.submit(FINIX_ENV, this.application, (err, res) => {
-          if (err) {
-            this.error = err
-          }
-          else {
-            const tokenize = { amount: amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
-            window.postMessage({
-                type: 'pt:tokenize',
-                tokenize
-              },
-              window.location.origin,
-            )
-          }
-        })
-      }
+    else if (amount === false) {
+      this.tokenizing = amount
+    }
+    else if (!this.isValidAmount(amount)) {
+      return handleError('amount must be a positive integer')
     }
   }
 
@@ -76,7 +77,7 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
           this.error = err
         }
         else {
-          const transact = { amount: amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
+          const transact = { amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
           window.postMessage({
               type: 'pt:transact',
               transact

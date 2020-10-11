@@ -41,13 +41,14 @@ export const addFrame = (
 
 export const processElements = (elements, styles) => {
     let processed = []
+    let error = false
     data.fieldTypes.forEach(type => {
-        if (elements[type] && typeof elements[type] !== 'string') { throw new Error('invalid element') }
-        if (typeof elements[type] === 'undefined') {
-            return message.handleError(`'unknown type ${type}`)
+        if (elements[type] && typeof elements[type] !== 'string') { error = 'invalid element' }
+        if (typeof elements[type] === 'undefined' && error === false) {
+            error = `'unknown type ${type}`
         }
         const container = document.getElementById(elements[type])
-        if (container) {
+        if (container && error === false) {
             const contained = document.getElementById(`${elements[type]}-tag-frame`)
             if (contained === null) {
                 const frame = addFrame(
@@ -61,12 +62,18 @@ export const processElements = (elements, styles) => {
                 processed.push({ type, frame })
             }
             else {
-                return message.handleError(`${elements[type]} is already mounted`)
+                error = `${elements[type]} is already mounted`
             }
         }
 
     })
-    return processed
+    if (error) {
+        return message.handleError(error)
+    }
+    else {
+        return processed
+    }
+
 }
 
 export const appendFinix = (formed, handleState, handleFormed) => {
@@ -104,6 +111,8 @@ export const stateMapping = (elementType, state) => {
         data.stateMap[elementType] :
         elementType
 
+    let mapped
+
     // extract the finix state for state type
     // use reduce in case there are combined elements
     const splitLength = stateType.split('|').length
@@ -131,13 +140,13 @@ export const stateMapping = (elementType, state) => {
             []
         ])
         if (cValid.length === splitLength) {
-            return [stateType, cValid[0], false]
+            mapped = [stateType, cValid[0], false]
         }
         else if (cInvalid.length > 0) {
-            return [stateType, cInvalid[0], true]
+            mapped = [stateType, cInvalid[0], true]
         }
         else {
-            return [stateType, cUndefined[0], ]
+            mapped = [stateType, cUndefined[0], ]
         }
     }
     else {
@@ -148,7 +157,8 @@ export const stateMapping = (elementType, state) => {
         const invalid = network.invalidate(stated)
 
         // return the finix data element, state for that element, and validation
-        return [stateType, stated, invalid]
+        mapped = [stateType, stated, invalid]
     }
 
+    return mapped
 }

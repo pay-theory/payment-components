@@ -7,16 +7,73 @@ export default async(
     tags = common.defaultTags,
     host = common.transactionEndpoint
 ) => {
-    let validCard = false
-    let validCardNumber = false
-    let validCardCVV = false
-    let validCardExp = false
-    let validName = true
-    let validAddress1 = true
-    let validAddress2 = true
-    let validCity = true
-    let validState = true
-    let validZip = true
+    const validTypes = {
+        'credit-card': false,
+        'number': false,
+        'exp': false,
+        'cvv': false,
+        'account-name': true,
+        'address-1': true,
+        'address-2': true,
+        'city': true,
+        'state': true,
+        'zip': true
+    }
+
+    const isCallingType = type => Object.keys(validTypes).includes(type)
+
+    const hasValidCard = types => {
+        (types['credit-card'] || (types.number && types.cvv && types.exp))
+    }
+
+    const hasValidDetails = types =>
+        (types['account-name'] && types['address-1'] && types['address-2'] && types.city && types.state && types.zip)
+
+    const findCardNumberError = processedElements => {
+        let error = false
+        if (processedElements.reduce(common.findExp, false) === false) {
+            error = 'missing credit card expiration field required for payments'
+        }
+
+        if (processedElements.reduce(common.findCVV, false) === false) {
+            error = 'missing credit card CVV field required for payments'
+        }
+
+        if (document.getElementById(`pay-theory-credit-card`)) {
+            error = 'credit card element is not allowed when using credit card number'
+        }
+        return error
+    }
+
+    const findCardError = (transacting, processedElements) => {
+        let error = false
+        if (transacting === false) {
+            error = 'missing credit card entry field required for payments'
+        }
+        else if (transacting.id === 'pay-theory-credit-card-number-tag-frame') {
+            error = findCardNumberError(processedElements)
+        }
+        else {
+            error = findCombinedCardError(processedElements)
+        }
+        return error
+    }
+
+    const findCombinedCardError = processedElements => {
+        let error = false
+        if (processedElements.reduce(common.findExp, false)) {
+            error = 'expiration is not allowed when using combined credit card'
+        }
+
+        if (processedElements.reduce(common.findCVV, false)) {
+            error = 'cvv is not allowed when using combined credit card'
+        }
+
+        if (document.getElementById(`pay-theory-credit-card-number`)) {
+            error = 'credit card number is not allowed when using combined credit card'
+        }
+        return error
+    }
 
     let formed = false
 
@@ -75,38 +132,7 @@ export default async(
         const handleState = stateHandler(processedElements)
         const handleFormed = finalForm => {
             const transacting = processedElements.reduce(common.findTransactingElement, false)
-            let error = false
-            if (transacting === false) {
-                error = 'missing credit card entry field required for payments'
-            }
-
-            if (transacting.id === 'pay-theory-credit-card-number-tag-frame') {
-                if (processedElements.reduce(common.findExp, false) === false) {
-                    error = 'missing credit card expiration field required for payments'
-                }
-
-                if (processedElements.reduce(common.findCVV, false) === false) {
-                    error = 'missing credit card CVV field required for payments'
-                }
-
-                if (document.getElementById(`pay-theory-credit-card`)) {
-                    error = 'credit card element is not allowed when using credit card number'
-                }
-            }
-            else {
-                if (processedElements.reduce(common.findExp, false)) {
-                    error = 'expiration is not allowed when using combined credit card'
-                }
-
-                if (processedElements.reduce(common.findCVV, false)) {
-                    error = 'cvv is not allowed when using combined credit card'
-                }
-
-                if (document.getElementById(`pay-theory-credit-card-number`)) {
-                    error = 'credit card number is not allowed when using combined credit card'
-                }
-            }
-
+            let error = findCardError(transacting, processedElements)
             if (error) {
                 return common.handleError(error)
             }
@@ -175,96 +201,26 @@ export default async(
 
     const validObserver = cb => common.handleMessage(
         message => {
-            const validType = message.type.split(':')[0]
+            const validType = message.type.split(':')[1]
             return message.type.endsWith(':valid') && processedElements.map(element => element.type).includes(`${validType}`)
         },
         message => {
-            const validType = message.type.split(':')[0]
-            let calling = false
-            switch (validType) {
-            case 'credit-card':
-                {
-                    validCard = message.valid
-                    calling = true
-                    break
-                }
-            case 'number':
-                {
-                    validCardNumber = message.valid
-                    calling = true
-                    break
-                }
-            case 'exp':
-                {
-                    validCardExp = message.valid
-                    calling = true
-                    break
-                }
-            case 'cvv':
-                {
-                    validCardCVV = message.valid
-                    calling = true
-                    break
-                }
-            case 'account-name':
-                {
-                    validName = message.valid
-                    calling = true
-                    break
-                }
-            case 'address-1':
-                {
-                    validAddress1 = message.valid
-                    calling = true
-                    break
-                }
-            case 'address-2':
-                {
-                    validAddress2 = message.valid
-                    calling = true
-                    break
-                }
-            case 'city':
-                {
-                    validCity = message.valid
-                    calling = true
-                    break
-                }
-            case 'state':
-                {
-                    validState = message.valid
-                    calling = true
-                    break
-                }
-            case 'zip':
-                {
-                    validZip = message.valid
-                    calling = true
-                    break
-                }
-            default:
-                {
-                    break
-                }
+            const type = message.type.split(':')[1]
+
+
+            if (typeof validTypes[type] !== 'undefined') {
+                validTypes[type] = message.valid
             }
 
+            const validatingCard = hasValidCard(validTypes)
 
-            const validatingCard = (validCard || (validCardNumber && validCardCVV && validCardExp))
+            const validatingDetails = hasValidDetails(validTypes)
 
-            const validating = (validatingCard &&
-                validName &&
-                validAddress1 &&
-                validAddress2 &&
-                validCity &&
-                validState &&
-                validZip)
+            const validating = (validatingCard && validatingDetails)
 
-
-            if (isValid !== validating) {
+            if (isValid !== validating && isCallingType(type)) {
                 isValid = validating
-                if (calling) {
-                    cb(isValid)
-                }
+                cb(isValid)
             }
         })
 

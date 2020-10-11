@@ -161,6 +161,20 @@ export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
     }
 }
 
+const determineType = payment => payment.state === 'error' ? payment.reason : payment.type
+const determineState = payment => payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state
+const processToken = token => {
+    if (token.state === 'error') {
+        token = {
+            type: token.reason,
+            state: 'FAILURE'
+        }
+    }
+    else {
+        data.setToken(token.paymentToken)
+    }
+}
+
 export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
     return async message => {
         //{ amount: amount, token: { bin: this.bin, ...res } }
@@ -169,17 +183,9 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
 
         data.setToken(true)
 
-        let token = await generateToken(host, clientKey, apiKey, message)
+        processToken(await generateToken(host, clientKey, apiKey, message))
 
-        if (token.state === 'error') {
-            token = {
-                type: token.reason,
-                state: 'FAILURE'
-            }
-        }
-        else {
-            data.setToken(token.paymentToken)
-        }
+
 
         const identity = await generateIdentity(host, clientKey, apiKey, data.getBuyer())
 
@@ -194,8 +200,6 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
             tags
         }
 
-
-
         const payment = await postData(
             `${host}/${clientKey}/authorize`,
             apiKey,
@@ -207,15 +211,16 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
         data.removeBuyer()
         data.removeBin()
 
+
         cb({
             receipt_number: identity.idempotencyId,
             last_four: instrumental.last_four,
             brand: instrumental.brand,
-            type: payment.state === 'error' ? payment.reason : payment.type,
+            type: determineType(payment),
             created_at: payment.created_at,
             amount: payment.amount,
             convenience_fee: payment.convenience_fee,
-            state: payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state,
+            state: determineState(payment),
             tags: payment.tags,
         })
     }
