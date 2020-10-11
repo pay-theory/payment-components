@@ -31,7 +31,7 @@ export const handleError = error => {
     window.postMessage({
             type: 'pt:error',
             throws: true,
-            error: error,
+            error,
         },
         window.location.origin,
     );
