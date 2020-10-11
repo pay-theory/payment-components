@@ -165,8 +165,6 @@ export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
     }
 }
 
-const determineType = payment => payment.state === 'error' ? payment.reason : payment.type
-const determineState = payment => payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state
 const processToken = token => {
     if (token.state === 'error') {
         token = {
