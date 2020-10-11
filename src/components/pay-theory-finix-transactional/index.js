@@ -20,18 +20,20 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
 
   generateTokenizeCallback = (tokenAmount) => {
     const amount = tokenAmount
-    return (err, finixToken) => {
+    return (err, token) => {
+      const finixToken = token
       finixToken.bin = this.bin
+      const message = {
+        type: 'pt:tokenize',
+        tokenize: { amount, currency: 'USD', finixToken }
+      }
       if (err) {
         this.error = err
       }
       else {
-        const tokenize = { amount, currency: 'USD', finixToken }
-        window.postMessage({
-            type: 'pt:tokenize',
-            tokenize
-          },
-          window.location.origin,
+        window.postMessage(
+          message,
+          window.location.origin
         )
       }
     }
