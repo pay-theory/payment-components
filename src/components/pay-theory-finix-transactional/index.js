@@ -3,6 +3,8 @@ import PayTheoryFinixFrame from '../pay-theory-finix'
 import { handleError } from '../../common/message'
 const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
 
+
+
 class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
 
   defineFields(form, styles) {
@@ -16,6 +18,36 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
     return amount % 1 === 0 && amount >= 1
   }
 
+  generateTokenizeCallback = (amount) => (err, res) => {
+    if (err) {
+      this.error = err
+    }
+    else {
+      const tokenize = { amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
+      window.postMessage({
+          type: 'pt:tokenize',
+          tokenize
+        },
+        window.location.origin,
+      )
+    }
+  }
+
+  generateTransactCallback = (amount) => (err, res) => {
+    if (err) {
+      this.error = err
+    }
+    else {
+      const transact = { amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
+      window.postMessage({
+          type: 'pt:transact',
+          transact
+        },
+        window.location.origin,
+      )
+    }
+  }
+
   get tokenize() {
     return this.tokenizing
   }
@@ -24,20 +56,7 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
     const amount = _tokenizing
     if (amount && this.isValidAmount(amount) && this.tokenizing !== _tokenizing) {
       this.tokenizing = _tokenizing
-      this.form.submit(FINIX_ENV, this.application, (err, res) => {
-        if (err) {
-          this.error = err
-        }
-        else {
-          const tokenize = { amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
-          window.postMessage({
-              type: 'pt:tokenize',
-              tokenize
-            },
-            window.location.origin,
-          )
-        }
-      })
+      this.form.submit(FINIX_ENV, this.application, this.generateTokenizeCallback(amount))
     }
     else if (amount === false) {
       this.tokenizing = amount
@@ -72,20 +91,7 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
     }
     if (this.transacting !== _transacting) {
       this.transacting = _transacting
-      this.form.submit(FINIX_ENV, this.application, (err, res) => {
-        if (err) {
-          this.error = err
-        }
-        else {
-          const transact = { amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
-          window.postMessage({
-              type: 'pt:transact',
-              transact
-            },
-            window.location.origin,
-          )
-        }
-      })
+      this.form.submit(FINIX_ENV, this.application, this.generateTransactCallback(amount))
     }
   }
 

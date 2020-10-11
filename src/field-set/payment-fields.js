@@ -26,8 +26,14 @@ export default async(
         (types['credit-card'] || (types.number && types.cvv && types.exp))
     }
 
+    const hasValidStreetAddress = types =>
+        (types['address-1'] && types['address-2'])
+
+    const hasValidAddress = types =>
+        (hasValidStreetAddress(types) && types.city && types.state && types.zip)
+
     const hasValidDetails = types =>
-        (types['account-name'] && types['address-1'] && types['address-2'] && types.city && types.state && types.zip)
+        (types['account-name'] && hasValidAddress(types))
 
     const findCardNumberError = processedElements => {
         let error = false
@@ -41,20 +47,6 @@ export default async(
 
         if (document.getElementById(`pay-theory-credit-card`)) {
             error = 'credit card element is not allowed when using credit card number'
-        }
-        return error
-    }
-
-    const findCardError = (transacting, processedElements) => {
-        let error = false
-        if (transacting === false) {
-            error = 'missing credit card entry field required for payments'
-        }
-        else if (transacting.id === 'pay-theory-credit-card-number-tag-frame') {
-            error = findCardNumberError(processedElements)
-        }
-        else {
-            error = findCombinedCardError(processedElements)
         }
         return error
     }
@@ -75,6 +67,22 @@ export default async(
         return error
     }
 
+    const findCardError = (transacting, processedElements) => {
+        let error = false
+        if (transacting === false) {
+            error = 'missing credit card entry field required for payments'
+        }
+        else if (transacting.id === 'pay-theory-credit-card-number-tag-frame') {
+            error = findCardNumberError(processedElements)
+        }
+        else {
+            error = findCombinedCardError(processedElements)
+        }
+        return error
+    }
+
+
+
     let formed = false
 
     let isValid = false
@@ -89,26 +97,29 @@ export default async(
         return common.processElements(elements, styles)
     }
 
+    const isValidFrame = invalidElement => typeof invalidElement === 'undefined' ?
+        invalidElement :
+        !invalidElement
+
+    const handleElement = (element, errors, invalidElement, stated) => {
+        if (invalidElement) {
+            errors.push(stated.errorMessages[0])
+            element.frame.error = stated.errorMessages[0]
+        }
+        else {
+            element.frame.error = false
+        }
+    }
+
     const stateHandler = elements => state => {
         let errors = []
         elements.forEach(element => {
-
-
-
             const [, stated, invalidElement] = common.stateMapping(element.type, state)
 
             if (stated.isDirty) {
-                element.frame.valid = typeof invalidElement === 'undefined' ?
-                    invalidElement :
-                    !invalidElement
+                element.frame.valid = isValidFrame(invalidElement)
 
-                if (invalidElement && stated.isDirty) {
-                    errors.push(stated.errorMessages[0])
-                    element.frame.error = stated.errorMessages[0]
-                }
-                else {
-                    element.frame.error = false
-                }
+                handleElement(element, errors, invalidElement, stated)
             }
 
         })
