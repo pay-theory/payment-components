@@ -218,20 +218,20 @@ export default async(
         message => {
             const type = message.type.split(':')[1]
 
+            let validating = false
 
-            if (typeof validTypes[type] !== 'undefined') {
+            if (validTypes[type]) {
                 validTypes[type] = message.valid
-            }
+                const validatingCard = hasValidCard(validTypes)
 
-            const validatingCard = hasValidCard(validTypes)
+                const validatingDetails = hasValidDetails(validTypes)
 
-            const validatingDetails = hasValidDetails(validTypes)
+                validating = (validatingCard && validatingDetails)
 
-            const validating = (validatingCard && validatingDetails)
-
-            if (isValid !== validating && isCallingType(type)) {
-                isValid = validating
-                cb(isValid)
+                if (isCallingType(type)) {
+                    isValid = validating
+                    cb(isValid)
+                }
             }
         })
 
