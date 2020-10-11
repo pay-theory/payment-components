@@ -8,16 +8,7 @@ export default async(
     host = common.transactionEndpoint
 ) => {
     const validTypes = {
-        'credit-card': false,
-        'number': false,
-        'exp': false,
-        'cvv': false,
-        'account-name': true,
-        'address-1': true,
-        'address-2': true,
-        'city': true,
-        'state': true,
-        'zip': true
+        'credit-card': false
     }
 
     const isCallingType = type => Object.keys(validTypes).includes(type)

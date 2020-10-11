@@ -54,15 +54,15 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
 
   set tokenize(_tokenizing) {
     const amount = _tokenizing
-    if (amount && this.isValidAmount(amount) && this.tokenizing !== _tokenizing) {
-      this.tokenizing = _tokenizing
-      this.form.submit(FINIX_ENV, this.application, this.generateTokenizeCallback(amount))
-    }
-    else if (amount === false) {
+    if (amount === false) {
       this.tokenizing = amount
     }
     else if (!this.isValidAmount(amount)) {
       return handleError('amount must be a positive integer')
+    }
+    else if (this.tokenizing !== _tokenizing) {
+      this.tokenizing = _tokenizing
+      this.form.submit(FINIX_ENV, this.application, this.generateTokenizeCallback(amount))
     }
   }
 
