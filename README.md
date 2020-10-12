@@ -141,7 +141,8 @@ Include a container for each of the optional inputs you wish to use:
 ## Styling the container
 
 To style the input container simply provide your own CSS for the pay theory containers you create.
-Individual input containers should be at least 340px wide, pay-theory-credit-card combined input should be 400px;
+
+*Individual pay-theory-credit-card-number containers should be at least 340px wide, pay-theory-credit-card combined input should be 400px*
 
 ```css
 #pay-theory-credit-card-number,
