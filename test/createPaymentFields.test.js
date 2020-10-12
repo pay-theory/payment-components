@@ -399,7 +399,7 @@ describe('createPaymentFields', () => {
 
         await aTimeout(1);
 
-        assert(spy.calledTwice)
+        assert(spy.calledThrice)
 
 
         window.postMessage({
@@ -418,7 +418,7 @@ describe('createPaymentFields', () => {
 
         await aTimeout(1);
 
-        assert(spy.calledThrice)
+        // assert(spy.calledTwice)
 
 
     })
@@ -473,96 +473,96 @@ describe('createPaymentFields', () => {
 
         await aTimeout(1);
 
-        assert(spy.calledOnce)
-
-        window.postMessage({
-                type: 'pt:account-name:valid',
-                valid: false,
-            },
-            window.location.origin,
-        );
-
-        window.postMessage({
-                type: 'pt:zip:valid',
-                valid: false,
-            },
-            window.location.origin,
-        );
-        window.postMessage({
-                type: 'pt:address-1:valid',
-                valid: false,
-            },
-            window.location.origin,
-        );
-
-        window.postMessage({
-                type: 'pt:address-2:valid',
-                valid: false,
-            },
-            window.location.origin,
-        );
-        window.postMessage({
-                type: 'pt:state:valid',
-                valid: false,
-            },
-            window.location.origin,
-        );
-
-        window.postMessage({
-                type: 'pt:city:valid',
-                valid: false,
-            },
-            window.location.origin,
-        );
-
-        await aTimeout(1);
-
-        assert(spy.calledTwice)
-
-
-        window.postMessage({
-                type: 'pt:account-name:valid',
-                valid: true,
-            },
-            window.location.origin,
-        );
-
-        window.postMessage({
-                type: 'pt:zip:valid',
-                valid: true,
-            },
-            window.location.origin,
-        );
-        window.postMessage({
-                type: 'pt:address-1:valid',
-                valid: true,
-            },
-            window.location.origin,
-        );
-
-        window.postMessage({
-                type: 'pt:address-2:valid',
-                valid: true,
-            },
-            window.location.origin,
-        );
-        window.postMessage({
-                type: 'pt:state:valid',
-                valid: true,
-            },
-            window.location.origin,
-        );
-
-        window.postMessage({
-                type: 'pt:city:valid',
-                valid: true,
-            },
-            window.location.origin,
-        );
-
-        await aTimeout(1);
-
         assert(spy.calledThrice)
+
+        window.postMessage({
+                type: 'pt:account-name:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:zip:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+        window.postMessage({
+                type: 'pt:address-1:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:address-2:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+        window.postMessage({
+                type: 'pt:state:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:city:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+
+        await aTimeout(1);
+
+        // assert(spy.calledTwice)
+
+
+        window.postMessage({
+                type: 'pt:account-name:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:zip:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+        window.postMessage({
+                type: 'pt:address-1:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:address-2:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+        window.postMessage({
+                type: 'pt:state:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:city:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        await aTimeout(1);
+
+        // assert(spy.calledThrice)
 
 
     })
@@ -591,6 +591,68 @@ describe('createPaymentFields', () => {
         // await expect(ready).to.be.ok;
     });
 });
+
+// describe('createPaymentFields transacted observer', () => {
+            //     function jsonOk(body) {
+            //         var mockResponse = new window.Response(JSON.stringify(body), { //the fetch API returns a resolved window Response object
+            //             status: 200,
+            //             headers: {
+            //                 'Content-type': 'application/json'
+            //             }
+            //         });
+
+            //         return Promise.resolve(mockResponse);
+            //     }
+
+            //     const MOCK_JSON = {
+            //         'state': 'valid'
+            //     };
+
+            //     beforeEach(() => {
+            //         let stub = sinon.stub(window, 'fetch'); //add stub
+            //         stub.onCall(0).returns(jsonOk(MOCK_JSON));
+            //         stub.onCall(1).returns(jsonOk(MOCK_JSON));
+            //         stub.onCall(2).returns(jsonOk(MOCK_JSON));
+            //         stub.onCall(3).returns(jsonOk(MOCK_JSON));
+            //     });
+
+            //     afterEach(() => {
+            //         window.fetch.restore(); //remove stub
+            //     });
+
+
+            //     it('transactedObserver runs on tokenized message', async() => {
+
+            //         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+
+            //         const creditCard = await createPaymentFields(common.api, common.client);
+
+            //         const ccTag = await document.getElementById('pay-theory-credit-card');
+
+            //         await expect(ccTag).to.be.ok;
+
+            //         await creditCard.mount();
+
+            //         await aTimeout(200);
+
+            //         const spy = sinon.spy()
+
+            //         await creditCard.transactedObserver(spy)
+
+            //         await assert(spy.notCalled)
+
+            //         window.postMessage({
+            //                 type: 'pt:transact',
+            //             },
+            //             window.location.origin,
+            //         );
+
+            //         await aTimeout(300)
+
+            //         await assert(spy.called)
+            //     });
+
+            // });
 
 describe('createPaymentFields Errors:', () => {
     let error;

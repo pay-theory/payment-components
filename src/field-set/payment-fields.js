@@ -222,7 +222,7 @@ export default async(
 
 
 
-            if (validTypes[type]) {
+            if (typeof validTypes[type] !== 'undefined') {
 
                 validTypes[type] = message.valid
 
