@@ -74,12 +74,16 @@
 .pay-theory-field {
 	display: flex;
 	flex-direction: row;
-	width: 340px;
+	width: auto;
 	height: 100%;
 }
 
 #pay-theory-credit-card {
 	width: 400px;
+}
+
+#pay-theory-credit-card-number {
+	width: 340px;
 }
 
 .pay-theory-field div {
