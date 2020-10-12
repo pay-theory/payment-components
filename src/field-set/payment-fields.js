@@ -22,9 +22,9 @@ export default async(
 
     const isCallingType = type => Object.keys(validTypes).includes(type)
 
-    const hasValidCard = types => {
+    const hasValidCard = types =>
         (types['credit-card'] || (types.number && types.cvv && types.exp))
-    }
+
 
     const hasValidStreetAddress = types =>
         (types['address-1'] && types['address-2'])
@@ -232,7 +232,7 @@ export default async(
 
                 validating = (validatingCard && validatingDetails)
 
-                if (isCallingType(type)) {
+                if (isCallingType(type) && isValid !== validating) {
                     isValid = validating
                     cb(isValid)
                 }
