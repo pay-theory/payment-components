@@ -212,8 +212,11 @@ export default async(
 
     const validObserver = cb => common.handleMessage(
         message => {
-            const validType = message.type.split(':')[1]
-            return message.type.endsWith(':valid') && processedElements.map(element => element.type).includes(`${validType}`)
+            if (typeof message.type === 'string') {
+                const validType = message.type.split(':')[1]
+                return message.type.endsWith(':valid') && processedElements.map(element => element.type).includes(`${validType}`)
+            }
+            return false
         },
         message => {
             const type = message.type.split(':')[1]
