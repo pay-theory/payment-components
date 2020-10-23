@@ -21,8 +21,16 @@ export const postData = async(url, apiKey, data = {}) => {
 const isValidTransaction = (tokenized) => {
 
     if (tokenized) {
-        throw Error('transaction already initiated')
+        window.postMessage({
+                type: 'pt:error',
+                error: 'transaction already initiated',
+                throws: true
+            },
+            window.location.origin,
+        );
+        return false
     }
+    return true
 }
 
 export const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
@@ -86,29 +94,30 @@ const generateToken = async(host, clientKey, apiKey, message) => {
 export const generateTokenize = (cb, host, clientKey, apiKey) => {
     return async message => {
 
-        isValidTransaction(data.getToken())
+        if (isValidTransaction(data.getToken())) {
 
-        data.setToken(true)
+            data.setToken(true)
 
-        let token = await generateToken(host, clientKey, apiKey, message)
+            let token = await generateToken(host, clientKey, apiKey, message)
 
-        if (token.state === 'error') {
-            token = {
-                type: token.reason,
-                state: 'FAILURE'
+            if (token.state === 'error') {
+                token = {
+                    type: token.reason,
+                    state: 'FAILURE'
+                }
             }
-        }
-        else {
-            data.setToken(token.paymentToken)
-        }
+            else {
+                data.setToken(token.paymentToken)
+            }
 
-        cb({
-            "first_six": token.bin.first_six,
-            "brand": token.bin.brand,
-            "receipt_number": token.idempotency,
-            "amount": token.payment.amount,
-            "convenience_fee": token.payment.convenience_fee
-        })
+            cb({
+                "first_six": token.bin.first_six,
+                "brand": token.bin.brand,
+                "receipt_number": token.idempotency,
+                "amount": token.payment.amount,
+                "convenience_fee": token.payment.convenience_fee
+            })
+        }
     }
 }
 
