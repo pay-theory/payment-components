@@ -9,7 +9,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   mode: "production",
-  devtool: devmap,
+  devtool: devnone,
   module: {
     rules: [{
       test: /\.m?js$/,
