@@ -1,8 +1,9 @@
 const path = require('path');
 const webpack = require('webpack');
-const devmap = 'eval-source-map'
-const devnone = 'none'
+const devtool = 'eval-source-map'
+//const devtool = false
 module.exports = {
+  devtool,
   entry: './src/index.js',
   output: {
     filename: 'index.js',
