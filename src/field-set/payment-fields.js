@@ -2,6 +2,7 @@ import common from '../common'
 
 export default async(
     apiKey,
+    clientKey = '',
     styles = common.defaultStyles,
     tags = common.defaultTags,
     host = common.transactionEndpoint
@@ -241,5 +242,5 @@ export default async(
             }
         })
 
-    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, apiKey }, tags)
+    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, clientKey, apiKey }, tags)
 }
