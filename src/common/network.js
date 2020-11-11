@@ -130,13 +130,13 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
 
     data.setIdentity(true)
 
-    const identity = await generateIdentity(host, clientKey, apiKey, data.getBuyer())
+    const identity = await generateIdentity(host, apiKey, data.getBuyer())
 
     data.setIdentity(identity)
 
     tags['pt-number'] = identity.idempotencyId
 
-    const instrumental = await generateInstrument(host, clientKey, apiKey)
+    const instrumental = await generateInstrument(host, apiKey)
 
     const auth = {
         instrumentToken: instrumental['tags-token'],
