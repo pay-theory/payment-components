@@ -1,4 +1,5 @@
 /* global localStorage */
+export const MERCHANT = 'pt-merchant'
 export const IDENTITY = 'pt-identity'
 export const INSTRUMENT = 'pt-instrument'
 export const BUYER = 'pt-buyer'
@@ -123,4 +124,16 @@ export const setInstrument = instrument => {
 
 export const removeInstrument = () => {
     return localStorage.removeItem(INSTRUMENT)
+}
+
+export const getMerchant = () => {
+    return JSON.parse(localStorage.getItem(MERCHANT))
+}
+
+export const setMerchant = merchant => {
+    return localStorage.setItem(MERCHANT, JSON.stringify(merchant))
+}
+
+export const removeMerchant = () => {
+    return localStorage.removeItem(MERCHANT)
 }

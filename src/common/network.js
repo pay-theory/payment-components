@@ -54,7 +54,8 @@ export const transactionEndpoint = (() => {
 })()
 
 
-const generateInstrument = async(host, clientKey, apiKey) => {
+const generateInstrument = async(host, apiKey) => {
+    const clientKey = data.getMerchant()
     const identityToken = data.getIdentity()['tags-token']
     const identity = { identityToken }
     return await postData(
@@ -64,7 +65,8 @@ const generateInstrument = async(host, clientKey, apiKey) => {
     )
 }
 
-const generateIdentity = async(host, clientKey, apiKey, identity) => {
+const generateIdentity = async(host, apiKey, identity) => {
+    const clientKey = data.getMerchant()
     const paymentToken = data.getToken()
     const idToken = {
         paymentToken,
@@ -77,7 +79,7 @@ const generateIdentity = async(host, clientKey, apiKey, identity) => {
     )
 }
 
-const generateToken = async(host, clientKey, apiKey, message) => {
+const generateToken = async(host, apiKey, message) => {
     const bin = data.getBin()
     const payload = {
         payment: message.tokenize ? message.tokenize : message.transact,
@@ -85,20 +87,20 @@ const generateToken = async(host, clientKey, apiKey, message) => {
     }
 
     return await postData(
-        `${host}/${clientKey}/token`,
+        `${host}/token`,
         apiKey,
         payload,
     )
 }
 
-export const generateTokenize = (cb, host, clientKey, apiKey) => {
+export const generateTokenize = (cb, host, apiKey) => {
     return async message => {
 
         if (isValidTransaction(data.getToken())) {
 
             data.setToken(true)
 
-            let token = await generateToken(host, clientKey, apiKey, message)
+            let token = await generateToken(host, apiKey, message)
 
             if (token.state === 'error') {
                 token = {
@@ -108,6 +110,7 @@ export const generateTokenize = (cb, host, clientKey, apiKey) => {
             }
             else {
                 data.setToken(token.paymentToken)
+                data.setMerchant(token.payment.merchant)
             }
 
             cb({
@@ -121,7 +124,10 @@ export const generateTokenize = (cb, host, clientKey, apiKey) => {
     }
 }
 
-const processPayment = async(cb, host, clientKey, apiKey, tags = {}) => {
+const processPayment = async(cb, host, apiKey, tags = {}) => {
+
+    const clientKey = data.getMerchant()
+
     data.setIdentity(true)
 
     const identity = await generateIdentity(host, clientKey, apiKey, data.getBuyer())
@@ -145,6 +151,7 @@ const processPayment = async(cb, host, clientKey, apiKey, tags = {}) => {
         auth
     )
 
+    data.removeMerchant()
     data.removeIdentity()
     data.removeToken()
     data.removeBuyer()
@@ -165,12 +172,12 @@ const processPayment = async(cb, host, clientKey, apiKey, tags = {}) => {
     })
 }
 
-export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
+export const generateCapture = (cb, host, apiKey, tags = {}) => {
     return async() => {
 
         isValidTransaction(data.getIdentity())
 
-        await processPayment(cb, host, clientKey, apiKey, tags = {})
+        await processPayment(cb, host, apiKey, tags = {})
     }
 }
 
@@ -186,7 +193,7 @@ const processToken = token => {
     }
 }
 
-export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
+export const generateTransacted = (cb, host, apiKey, tags = {}) => {
     return async message => {
         //{ amount: amount, token: { bin: this.bin, ...res } }
 
@@ -194,9 +201,9 @@ export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
 
         data.setToken(true)
 
-        processToken(await generateToken(host, clientKey, apiKey, message))
+        processToken(await generateToken(host, apiKey, message))
 
-        await processPayment(cb, host, clientKey, apiKey, tags = {})
+        await processPayment(cb, host, apiKey, tags = {})
     }
 }
 

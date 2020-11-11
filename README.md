@@ -280,7 +280,7 @@ const BUYER_OPTIONS = {
         "line2": "Apartment 17",
         "postal_code": "12345"
     }
-
+}
 
 // optional parameter to require confimation step
 const REQUIRE_CONFIRMATION = true
