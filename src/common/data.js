@@ -12,6 +12,10 @@ export const defaultStyles = {
     success: {},
     error: {},
 }
+export const SURCHARGE = 'surcharge'
+export const SERVICE_FEE = 'service_fee'
+
+export const defaultFeeMode = SURCHARGE
 
 export const defaultTags = {}
 

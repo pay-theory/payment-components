@@ -79,10 +79,12 @@ const generateIdentity = async(host, apiKey, identity) => {
     )
 }
 
-const generateToken = async(host, apiKey, message) => {
+const generateToken = async(host, apiKey, fee_mode, message) => {
     const bin = data.getBin()
+    const payment = message.tokenize ? message.tokenize : message.transact
+    payment.fee_mode = fee_mode
     const payload = {
-        payment: message.tokenize ? message.tokenize : message.transact,
+        payment,
         bin
     }
 
@@ -93,14 +95,14 @@ const generateToken = async(host, apiKey, message) => {
     )
 }
 
-export const generateTokenize = (cb, host, apiKey) => {
+export const generateTokenize = (cb, host, apiKey, fee_mode) => {
     return async message => {
 
         if (isValidTransaction(data.getToken())) {
 
             data.setToken(true)
 
-            let token = await generateToken(host, apiKey, message)
+            let token = await generateToken(host, apiKey, fee_mode, message)
 
             if (token.state === 'error') {
                 token = {
@@ -118,7 +120,7 @@ export const generateTokenize = (cb, host, apiKey) => {
                 "brand": token.bin.brand,
                 "receipt_number": token.idempotency,
                 "amount": token.payment.amount,
-                "convenience_fee": token.payment.convenience_fee
+                "service_fee": token.payment.service_fee
             })
         }
     }
@@ -143,8 +145,6 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
         tags
     }
 
-
-
     const payment = await postData(
         `${host}/${clientKey}/authorize`,
         apiKey,
@@ -157,8 +157,6 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
     data.removeBuyer()
     data.removeBin()
 
-
-
     cb({
         receipt_number: identity.idempotencyId,
         last_four: instrumental.last_four,
@@ -166,7 +164,7 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
         type: payment.state === 'error' ? payment.reason : payment.type,
         created_at: payment.created_at,
         amount: payment.amount,
-        convenience_fee: payment.convenience_fee,
+        service_fee: payment.service_fee,
         state: payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state,
         tags: payment.tags,
     })
@@ -193,7 +191,7 @@ const processToken = token => {
     }
 }
 
-export const generateTransacted = (cb, host, apiKey, tags = {}) => {
+export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
     return async message => {
         //{ amount: amount, token: { bin: this.bin, ...res } }
 
@@ -201,7 +199,7 @@ export const generateTransacted = (cb, host, apiKey, tags = {}) => {
 
         data.setToken(true)
 
-        processToken(await generateToken(host, apiKey, message))
+        processToken(await generateToken(host, apiKey, fee_mode, message))
 
         await processPayment(cb, host, apiKey, tags = {})
     }

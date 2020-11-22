@@ -197,9 +197,9 @@ let myCreditCard
 
     myCreditCard = await window.paytheory.createPaymentFields(
         API_KEY,
-        CLIENT_ID,
         STYLES,
-        TAGS)
+        TAGS,
+        FEE_MODE)
 
     // mount the hosted fields into the container
     myCreditCard.mount()
@@ -338,7 +338,7 @@ myCreditCard.readyObserver(ready => {
 
 When the confirm option of initTransaction is set to true, the payment card token details are returned in tokenizeObserver
 
-*note that the convenience fee is included in amount*
+*note that the service fee is included in amount*
 
 ```json
 {
@@ -346,7 +346,7 @@ When the confirm option of initTransaction is set to true, the payment card toke
 	"brand": "XXXX",
 	"receipt_number": "pt-dev-XXXXXX",
 	"amount": 999,
-	"convenience_fee": 195
+	"service_fee": 195
 }
 ```
 
@@ -354,7 +354,7 @@ When the confirm option of initTransaction is set to true, the payment card toke
 
 Upon completion of authorization and capture, details similar to the following are returned:
 
-*note that the convenience fee is included in amount*
+*note that the service fee is included in amount*
 
 ```json
 {
@@ -363,7 +363,7 @@ Upon completion of authorization and capture, details similar to the following a
     "brand": "XXXXXXXXX",
     "created_at":"YYYY-MM-DDTHH:MM:SS.ssZ",
     "amount": 999,
-    "convenience_fee": 195,
+    "service_fee": 195,
     "state":"SUCCEEDED",
     "tags":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
 }

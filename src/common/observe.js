@@ -9,10 +9,10 @@ export const errorObserver = cb => messaging.handleMessage(messaging.errorTypeMe
 })
 
 
-export const tokenizeObserver = (host, apiKey) =>
+export const tokenizeObserver = (host, apiKey, fee_mode) =>
     cb => messaging.handleMessage(
         messaging.tokenizeTypeMessage,
-        network.generateTokenize(cb, host, apiKey))
+        network.generateTokenize(cb, host, apiKey, fee_mode))
 
 
 export const captureObserver = (host, apiKey, tags = {}) =>
@@ -20,10 +20,10 @@ export const captureObserver = (host, apiKey, tags = {}) =>
         messaging.captureTypeMessage,
         network.generateCapture(cb, host, apiKey, tags))
 
-export const transactedObserver = (host, apiKey, tags = {}) =>
+export const transactedObserver = (host, apiKey, fee_mode, tags = {}) =>
     cb => messaging.handleMessage(
         messaging.transactedTypeMessage,
-        network.generateTransacted(cb, host, apiKey, tags))
+        network.generateTransacted(cb, host, apiKey, fee_mode, tags))
 
 export const generateReturn = (mount, initTransaction, confirm, cancel, readyObserver, validObserver, sdk, tags = {}) => Object.create({
     mount,
@@ -34,6 +34,6 @@ export const generateReturn = (mount, initTransaction, confirm, cancel, readyObs
     errorObserver,
     validObserver,
     captureObserver: captureObserver(sdk.host, sdk.apiKey),
-    tokenizeObserver: tokenizeObserver(sdk.host, sdk.apiKey),
-    transactedObserver: transactedObserver(sdk.host, sdk.apiKey, tags),
+    tokenizeObserver: tokenizeObserver(sdk.host, sdk.apiKey, sdk.fee_mode),
+    transactedObserver: transactedObserver(sdk.host, sdk.apiKey, sdk.fee_mode, tags),
 })

@@ -2,9 +2,9 @@ import common from '../common'
 
 export default async(
     apiKey,
-    clientKey = '',
     styles = common.defaultStyles,
     tags = common.defaultTags,
+    fee_mode = common.defaultFeeMode,
     host = common.transactionEndpoint
 ) => {
     const validTypes = {
@@ -171,13 +171,9 @@ export default async(
         const action = confirmation ? 'tokenize' : 'transact'
         common.setBuyer(buyerOptions)
 
-        if (transacting.frame) {
-            transacting.frame[action] = amount
-        }
-        else {
-            transacting[action] = amount
-        }
-
+        const framed = transacting.frame ? transacting.frame : transacting
+        framed.fee_mode = fee_mode
+        framed[action] = amount
     }
 
     const initTransaction = common.generateInitialization(handleInitialized)
@@ -242,5 +238,5 @@ export default async(
             }
         })
 
-    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, clientKey, apiKey }, tags)
+    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, apiKey, fee_mode }, tags)
 }
