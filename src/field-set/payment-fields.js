@@ -172,7 +172,7 @@ export default async(
         common.setBuyer(buyerOptions)
 
         const framed = transacting.frame ? transacting.frame : transacting
-        framed.fee_mode = fee_mode
+
         framed[action] = amount
     }
 

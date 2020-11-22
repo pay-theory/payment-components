@@ -103,16 +103,6 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
     }
   }
 
-  get fee_mode() {
-    return this.fee_mode
-  }
-
-  set fee_mode(_fee_mode) {
-    if (this.fee_mode !== _fee_mode) {
-      this.fee_mode = _fee_mode
-    }
-  }
-
   get amount() {
     return this.amounting
   }
