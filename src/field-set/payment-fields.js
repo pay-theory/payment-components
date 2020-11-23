@@ -89,6 +89,8 @@ export default async(
 
     let processedElements = []
 
+    let transacting = {}
+
     let isReady = false
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
@@ -140,9 +142,9 @@ export default async(
         },
     ) => {
         processedElements = establishElements(elements)
+        transacting = processedElements.reduce(common.findTransactingElement, false)
         const handleState = stateHandler(processedElements)
         const handleFormed = finalForm => {
-            const transacting = processedElements.reduce(common.findTransactingElement, false)
             let error = findCardError(transacting, processedElements)
             if (error) {
                 return common.handleError(error)
@@ -166,7 +168,6 @@ export default async(
     }
 
     const handleInitialized = (amount, buyerOptions, confirmation) => {
-        const transacting = processedElements.reduce(common.findTransactingElement, false)
 
         const action = confirmation ? 'tokenize' : 'transact'
         common.setBuyer(buyerOptions)
@@ -179,7 +180,6 @@ export default async(
     const initTransaction = common.generateInitialization(handleInitialized)
 
     const confirm = () => {
-        const transacting = processedElements.reduce(common.findTransactingElement, false)
 
         if (transacting.frame) {
             transacting.frame.capture = true
@@ -190,7 +190,7 @@ export default async(
     }
 
     const cancel = () => {
-        const transacting = processedElements.reduce(common.findTransactingElement, false)
+
         transacting['tokenize'] = false
         common.removeIdentity()
         common.removeToken()
@@ -238,5 +238,5 @@ export default async(
             }
         })
 
-    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, apiKey, fee_mode }, tags)
+    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, apiKey, fee_mode }, transacting, tags)
 }

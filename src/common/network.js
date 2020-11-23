@@ -95,33 +95,40 @@ const generateToken = async(host, apiKey, fee_mode, message) => {
     )
 }
 
-export const generateTokenize = (cb, host, apiKey, fee_mode) => {
+export const generateTokenize = (cb, host, apiKey, element, fee_mode) => {
     return async message => {
 
         if (isValidTransaction(data.getToken())) {
 
             data.setToken(true)
 
-            let token = await generateToken(host, apiKey, fee_mode, message)
+            try {
+                let token = await generateToken(host, apiKey, fee_mode, message)
 
-            if (token.state === 'error') {
-                token = {
-                    type: token.reason,
-                    state: 'FAILURE'
+                // handle error when token fails
+
+                if (token.state === 'error') {
+                    token = {
+                        type: token.reason,
+                        state: 'FAILURE'
+                    }
                 }
-            }
-            else {
-                data.setToken(token.paymentToken)
-                data.setMerchant(token.payment.merchant)
-            }
+                else {
+                    data.setToken(token.paymentToken)
+                    data.setMerchant(token.payment.merchant)
+                }
 
-            cb({
-                "first_six": token.bin.first_six,
-                "brand": token.bin.brand,
-                "receipt_number": token.idempotency,
-                "amount": token.payment.amount,
-                "service_fee": token.payment.service_fee
-            })
+                cb({
+                    "first_six": token.bin.first_six,
+                    "brand": token.bin.brand,
+                    "receipt_number": token.idempotency,
+                    "amount": token.payment.amount,
+                    "service_fee": token.payment.service_fee
+                })
+            }
+            catch (error) {
+                element.error = error.message
+            }
         }
     }
 }
@@ -170,12 +177,15 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
     })
 }
 
-export const generateCapture = (cb, host, apiKey, tags = {}) => {
+export const generateCapture = (cb, host, apiKey, element, tags = {}) => {
     return async() => {
-
-        isValidTransaction(data.getIdentity())
-
-        await processPayment(cb, host, apiKey, tags = {})
+        try {
+            isValidTransaction(data.getIdentity())
+            await processPayment(cb, host, apiKey, tags = {})
+        }
+        catch (error) {
+            element.error = error.message
+        }
     }
 }
 
@@ -191,17 +201,21 @@ const processToken = token => {
     }
 }
 
-export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
+export const generateTransacted = (cb, host, apiKey, element, fee_mode, tags = {}) => {
     return async message => {
         //{ amount: amount, token: { bin: this.bin, ...res } }
+        try {
+            isValidTransaction(data.getToken())
 
-        isValidTransaction(data.getToken())
+            data.setToken(true)
 
-        data.setToken(true)
+            processToken(await generateToken(host, apiKey, fee_mode, message))
 
-        processToken(await generateToken(host, apiKey, fee_mode, message))
-
-        await processPayment(cb, host, apiKey, tags = {})
+            await processPayment(cb, host, apiKey, tags = {})
+        }
+        catch (error) {
+            element.error = error.message
+        }
     }
 }
 
