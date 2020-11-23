@@ -143,6 +143,8 @@ export default async(
     ) => {
         processedElements = establishElements(elements)
         transacting = processedElements.reduce(common.findTransactingElement, false)
+        common.setTransactingElement(transacting)
+
         const handleState = stateHandler(processedElements)
         const handleFormed = finalForm => {
             let error = findCardError(transacting, processedElements)
@@ -237,6 +239,5 @@ export default async(
                 }
             }
         })
-
-    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, apiKey, fee_mode }, transacting, tags)
+    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, apiKey, fee_mode }, tags)
 }

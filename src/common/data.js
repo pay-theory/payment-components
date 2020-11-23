@@ -6,6 +6,7 @@ export const BUYER = 'pt-buyer'
 export const TOKEN = 'pt-token'
 export const BIN = 'pt-bin'
 export const READY = 'pt-ready'
+export const TRANSACTING = 'pt-transacting'
 
 export const defaultStyles = {
     default: {},
@@ -58,6 +59,17 @@ export const stateMap = {
     'zip': 'address.postal_code'
 }
 
+export const getTransactingElement = () => {
+    return localStorage.getItem(TRANSACTING)
+}
+
+export const setTransactingElement = element => {
+    return localStorage.setItem(TRANSACTING, element.id)
+}
+
+export const removeTransactingElement = () => {
+    return localStorage.removeItem(TRANSACTING)
+}
 export const getReady = () => {
     return localStorage.getItem(READY)
 }
@@ -140,4 +152,13 @@ export const setMerchant = merchant => {
 
 export const removeMerchant = () => {
     return localStorage.removeItem(MERCHANT)
+}
+
+export const removeAll = () => {
+    removeMerchant()
+    removeIdentity()
+    removeToken()
+    removeBuyer()
+    removeBin()
+    removeTransactingElement()
 }
