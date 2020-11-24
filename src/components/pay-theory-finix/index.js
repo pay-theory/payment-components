@@ -166,7 +166,6 @@ class PayTheoryFinixFrame extends HTMLElement {
 
   set error(_errored) {
     if (this.errored !== _errored) {
-      console.warn('error set', _errored)
       this.errored = _errored;
       window.postMessage({
           type: 'pt:error',

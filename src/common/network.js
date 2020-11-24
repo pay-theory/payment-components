@@ -109,7 +109,6 @@ export const generateTokenize = (cb, host, apiKey, fee_mode) => {
                 const transactionalId = data.getTransactingElement()
                 const transactionalElement = document.getElementById(transactionalId)
                 transactionalElement.error = token.reason
-                console.warn('token', JSON.stringify(transactionalElement), transactionalElement.error)
             }
             else {
                 data.setToken(token.paymentToken)

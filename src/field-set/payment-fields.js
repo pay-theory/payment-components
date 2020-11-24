@@ -2,6 +2,7 @@ import common from '../common'
 
 export default async(
     apiKey,
+    legacy, // this used to be client id, left in place to preserve backwards compatibility
     styles = common.defaultStyles,
     tags = common.defaultTags,
     fee_mode = common.defaultFeeMode,

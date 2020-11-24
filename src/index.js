@@ -12,9 +12,15 @@ import 'regenerator-runtime'
 import './style.css'
 
 import createPaymentFields from './field-set/payment-fields'
+import { SURCHARGE, SERVICE_FEE } from './common/data'
+
+const create = (apiKey, styles, tags, feeMode, host) => createPaymentFields(apiKey, '', styles, tags, feeMode, host)
 
 window.paytheory = {
-    createPaymentFields
+    createPaymentFields,
+    create,
+    SURCHARGE,
+    SERVICE_FEE
 }
 
 export default window.paytheory

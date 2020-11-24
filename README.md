@@ -161,9 +161,8 @@ Mount to create the credit card field(s) and establish callbacks:
 
 ```javascript
 
-// API KEY and CLIENT ID are required
+// API KEY is required
 const API_KEY = 'your-api-key'
-const CLIENT_ID = 'your-client-id'
 
 // optionally define custom styles for the input components text
 const STYLES = {
@@ -183,6 +182,16 @@ const STYLES = {
 
 // optionally provide custom tags to help track purchases
 const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
+/*
+* optionally set the fee mode
+* by default SURCHARGE mode is used
+* SERVICE_FEE mode is available only when enabled by Pay Theory
+* SURCHARGE mode applies a fee of 2.9% + $0.30 
+* to be deducted from original amount
+* SERVICE FEE mode calculates a fee based on predetermined parameters 
+* and adds it to the original amount
+*/
+const FEE_MODE = window.paytheory.SURCHARGE
 
 // create a place to store the credit card
 let myCreditCard
@@ -195,7 +204,7 @@ let myCreditCard
     * as a placeholder
     */
 
-    myCreditCard = await window.paytheory.createPaymentFields(
+    myCreditCard = await window.paytheory.create(
         API_KEY,
         STYLES,
         TAGS,
