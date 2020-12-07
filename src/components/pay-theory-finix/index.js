@@ -51,7 +51,7 @@ class PayTheoryFinixFrame extends HTMLElement {
   eventful(event) {
     if ([window.location.origin].includes(event.origin)) {
       const message = this.findEventMessage(event)
-      if (message.type.startsWith(this.field) && message.type.endsWith(':ready')) {
+      if (message.type.startsWith(`pt:${this.field}`) && message.type.endsWith(':ready')) {
         this.ready = event.data.ready
       }
     }

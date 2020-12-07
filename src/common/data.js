@@ -112,15 +112,3 @@ export const setIdentity = identity => {
 export const removeIdentity = () => {
     return localStorage.removeItem(IDENTITY)
 }
-
-export const getInstrument = () => {
-    return JSON.parse(localStorage.getItem(INSTRUMENT))
-}
-
-export const setInstrument = instrument => {
-    return localStorage.setItem(INSTRUMENT, JSON.stringify(instrument))
-}
-
-export const removeInstrument = () => {
-    return localStorage.removeItem(INSTRUMENT)
-}

@@ -92,15 +92,7 @@ export const generateTokenize = (cb, host, clientKey, apiKey) => {
 
         let token = await generateToken(host, clientKey, apiKey, message)
 
-        if (token.state === 'error') {
-            token = {
-                type: token.reason,
-                state: 'FAILURE'
-            }
-        }
-        else {
-            data.setToken(token.paymentToken)
-        }
+        processToken(token)
 
         cb({
             "first_six": token.bin.first_six,
@@ -113,6 +105,7 @@ export const generateTokenize = (cb, host, clientKey, apiKey) => {
 }
 
 const processPayment = async(cb, host, clientKey, apiKey, tags = {}) => {
+
     data.setIdentity(true)
 
     const identity = await generateIdentity(host, clientKey, apiKey, data.getBuyer())
@@ -140,7 +133,6 @@ const processPayment = async(cb, host, clientKey, apiKey, tags = {}) => {
     data.removeToken()
     data.removeBuyer()
     data.removeBin()
-
 
 
     cb({

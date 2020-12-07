@@ -4,21 +4,37 @@ import sinon from 'sinon';
 
 import * as common from './common'
 import createPaymentFields from '../src/field-set/payment-fields'
-import '../src/components/credit-card'
+import * as data from '../src/common/data'
+
 
 describe('createPaymentFields', () => {
     let error;
 
     beforeEach(() => {
+        let stub = sinon.stub(window, 'fetch'); //add stub
+        stub.onCall(0).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(1).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(2).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(3).returns(common.jsonOk(common.MOCK_JSON));
+
         error = undefined;
         window.onerror = (e) => error = e;
+    });
+
+    afterEach(() => {
+        window.fetch.restore(); //remove stub
+        data.removeReady()
+        data.removeBin()
+        data.removeBuyer()
+        data.removeIdentity()
+        data.removeToken()
     });
 
     it('renders finix iframes', async() => {
 
         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
 
-        const creditCard = await createPaymentFields(common.api, common.client);
+        const creditCard = await createPaymentFields(common.api, common.client, {});
 
         const ccTag = await document.getElementById('pay-theory-credit-card');
 
@@ -295,7 +311,7 @@ describe('createPaymentFields', () => {
         await expect(ready).to.be.ok;
     });
 
-    it('transactedObserver runs on tokenized message', async() => {
+    it('transactedObserver runs on transact message', async() => {
 
         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
 
@@ -323,7 +339,69 @@ describe('createPaymentFields', () => {
 
         await aTimeout(300)
 
-        await assert(spy.calledWith(common.MOCK_TRANSACT))
+        await assert(spy.called)
+    });
+
+    it('tokenizeObserver runs on tokenize message', async() => {
+
+        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        await aTimeout(200);
+
+        const spy = sinon.spy()
+
+        await creditCard.tokenizeObserver(spy)
+
+        await assert(spy.notCalled)
+
+        window.postMessage({
+                type: 'pt:tokenize',
+            },
+            window.location.origin,
+        );
+
+        await aTimeout(300)
+
+        await assert(spy.called)
+    });
+
+    it('captureObserver runs on capture message', async() => {
+
+        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        await aTimeout(200);
+
+        const spy = sinon.spy()
+
+        await creditCard.captureObserver(spy)
+
+        await assert(spy.notCalled)
+
+        window.postMessage({
+                type: 'pt:capture',
+            },
+            window.location.origin,
+        );
+
+        await aTimeout(300)
+
+        await assert(spy.called)
     });
 
     it('errorObserver triggers on error message', async() => {
@@ -399,7 +477,7 @@ describe('createPaymentFields', () => {
 
         await aTimeout(1);
 
-        assert(spy.calledThrice)
+        assert(spy.calledTwice)
 
 
         window.postMessage({
@@ -418,7 +496,7 @@ describe('createPaymentFields', () => {
 
         await aTimeout(1);
 
-        // assert(spy.calledTwice)
+        assert(spy.calledThrice)
 
 
     })
@@ -473,96 +551,96 @@ describe('createPaymentFields', () => {
 
         await aTimeout(1);
 
+        assert(spy.calledOnce)
+
+        window.postMessage({
+                type: 'pt:account-name:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:zip:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+        window.postMessage({
+                type: 'pt:address-1:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:address-2:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+        window.postMessage({
+                type: 'pt:state:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:city:valid',
+                valid: false,
+            },
+            window.location.origin,
+        );
+
+        await aTimeout(1);
+
+        assert(spy.calledTwice)
+
+
+        window.postMessage({
+                type: 'pt:account-name:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:zip:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+        window.postMessage({
+                type: 'pt:address-1:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:address-2:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+        window.postMessage({
+                type: 'pt:state:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        window.postMessage({
+                type: 'pt:city:valid',
+                valid: true,
+            },
+            window.location.origin,
+        );
+
+        await aTimeout(1);
+
         assert(spy.calledThrice)
-
-        window.postMessage({
-                type: 'pt:account-name:valid',
-                valid: false,
-            },
-            window.location.origin,
-        );
-
-        window.postMessage({
-                type: 'pt:zip:valid',
-                valid: false,
-            },
-            window.location.origin,
-        );
-        window.postMessage({
-                type: 'pt:address-1:valid',
-                valid: false,
-            },
-            window.location.origin,
-        );
-
-        window.postMessage({
-                type: 'pt:address-2:valid',
-                valid: false,
-            },
-            window.location.origin,
-        );
-        window.postMessage({
-                type: 'pt:state:valid',
-                valid: false,
-            },
-            window.location.origin,
-        );
-
-        window.postMessage({
-                type: 'pt:city:valid',
-                valid: false,
-            },
-            window.location.origin,
-        );
-
-        await aTimeout(1);
-
-        // assert(spy.calledTwice)
-
-
-        window.postMessage({
-                type: 'pt:account-name:valid',
-                valid: true,
-            },
-            window.location.origin,
-        );
-
-        window.postMessage({
-                type: 'pt:zip:valid',
-                valid: true,
-            },
-            window.location.origin,
-        );
-        window.postMessage({
-                type: 'pt:address-1:valid',
-                valid: true,
-            },
-            window.location.origin,
-        );
-
-        window.postMessage({
-                type: 'pt:address-2:valid',
-                valid: true,
-            },
-            window.location.origin,
-        );
-        window.postMessage({
-                type: 'pt:state:valid',
-                valid: true,
-            },
-            window.location.origin,
-        );
-
-        window.postMessage({
-                type: 'pt:city:valid',
-                valid: true,
-            },
-            window.location.origin,
-        );
-
-        await aTimeout(1);
-
-        // assert(spy.calledThrice)
 
 
     })
@@ -572,94 +650,47 @@ describe('createPaymentFields', () => {
 
         const creditCard = await createPaymentFields(common.api, common.client);
 
+        let spy = sinon.spy()
+
+        await creditCard.readyObserver(spy)
+
+        assert(spy.notCalled)
+
         window.postMessage({
-                type: `pt:pay-theory:ready`,
+                type: `pay-theory:ready`,
                 ready: true,
             },
             window.location.origin,
         )
 
-        await aTimeout(100);
-
-        // await expect(ready).to.not.be.ok;
-
-        await creditCard.mount();
-
         await aTimeout(200);
 
+        assert(spy.called)
 
-        // await expect(ready).to.be.ok;
+        expect(data.getReady()).to.be;
+
+        data.removeReady()
+
+        expect(data.getReady()).not.to.be;
     });
 });
-
-// describe('createPaymentFields transacted observer', () => {
-            //     function jsonOk(body) {
-            //         var mockResponse = new window.Response(JSON.stringify(body), { //the fetch API returns a resolved window Response object
-            //             status: 200,
-            //             headers: {
-            //                 'Content-type': 'application/json'
-            //             }
-            //         });
-
-            //         return Promise.resolve(mockResponse);
-            //     }
-
-            //     const MOCK_JSON = {
-            //         'state': 'valid'
-            //     };
-
-            //     beforeEach(() => {
-            //         let stub = sinon.stub(window, 'fetch'); //add stub
-            //         stub.onCall(0).returns(jsonOk(MOCK_JSON));
-            //         stub.onCall(1).returns(jsonOk(MOCK_JSON));
-            //         stub.onCall(2).returns(jsonOk(MOCK_JSON));
-            //         stub.onCall(3).returns(jsonOk(MOCK_JSON));
-            //     });
-
-            //     afterEach(() => {
-            //         window.fetch.restore(); //remove stub
-            //     });
-
-
-            //     it('transactedObserver runs on tokenized message', async() => {
-
-            //         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
-
-            //         const creditCard = await createPaymentFields(common.api, common.client);
-
-            //         const ccTag = await document.getElementById('pay-theory-credit-card');
-
-            //         await expect(ccTag).to.be.ok;
-
-            //         await creditCard.mount();
-
-            //         await aTimeout(200);
-
-            //         const spy = sinon.spy()
-
-            //         await creditCard.transactedObserver(spy)
-
-            //         await assert(spy.notCalled)
-
-            //         window.postMessage({
-            //                 type: 'pt:transact',
-            //             },
-            //             window.location.origin,
-            //         );
-
-            //         await aTimeout(300)
-
-            //         await assert(spy.called)
-            //     });
-
-            // });
 
 describe('createPaymentFields Errors:', () => {
     let error;
 
     beforeEach(() => {
+        let stub = sinon.stub(window, 'fetch'); //add stub
+        stub.onCall(0).returns(common.jsonOk(common.MOCK_JSON_FAIL));
+        stub.onCall(1).returns(common.jsonOk(common.MOCK_JSON_FAIL));
+        stub.onCall(2).returns(common.jsonOk(common.MOCK_JSON_FAIL));
+        stub.onCall(3).returns(common.jsonOk(common.MOCK_JSON_FAIL));
+
         error = undefined;
         window.onerror = (e) => error = e;
+    });
+
+    afterEach(() => {
+        window.fetch.restore(); //remove stub
     });
 
     it('errors when you try and mount twice', async() => {
@@ -966,12 +997,88 @@ describe('createPaymentFields Errors:', () => {
         expect(unknownError).to.be;
 
     });
+
+    it('throws invalid element error if not a string in elements', async() => {
+
+        const fixed = await fixture(html ` <div id="pay-theory-credit-card-custom" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client, 2500);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card-custom');
+
+        await expect(ccTag).to.be.ok;
+
+        let unknownError;
+
+        expect(unknownError).not.to.be;
+
+        try {
+            await creditCard.mount({
+                'credit-card': 'pay-theory-credit-card-custom',
+                'number': '',
+                'exp': '',
+                'cvv': '',
+                'account-name': '',
+                'address-1': '',
+                'address-2': '',
+                city: '',
+                state: '',
+                zip: {}
+            });
+        }
+        catch (err) {
+            unknownError = err
+        }
+
+        expect(unknownError).to.be;
+
+    });
+
+    it('tokenizeObserver doesnt run callback on tokenize message if token state is error', async() => {
+
+        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+
+        const creditCard = await createPaymentFields(common.api, common.client);
+
+        const ccTag = await document.getElementById('pay-theory-credit-card');
+
+        await expect(ccTag).to.be.ok;
+
+        await creditCard.mount();
+
+        await aTimeout(200);
+
+        const spy = sinon.spy()
+
+        await creditCard.tokenizeObserver(spy)
+
+        await expect(error).not.to.be.ok;
+
+        await assert(spy.notCalled)
+
+        window.postMessage({
+                type: 'pt:tokenize',
+            },
+            window.location.origin,
+        );
+
+        await aTimeout(300)
+
+        await assert(spy.notCalled)
+
+    });
 });
 
 describe('createPaymentFields with prod environment', () => {
-    before(() => {
+    const OLD_ENV = process.env;
+
+    beforeEach(() => {
         process.env.BUILD_ENV = 'prod';
-    })
+    });
+
+    afterEach(() => {
+        process.env = OLD_ENV; // restore old env
+    });
 
     it('initTransaction sets transact to true', async() => {
 

@@ -30,6 +30,18 @@ module.exports = config => {
         // if you are using 'bare module imports' you will need this option
         nodeResolve: true,
       },
+
+      plugins: ['karma-threshold-reporter'],
+
+      reporters: ['progress', 'coverage', 'threshold'],
+
+      // the configure thresholds
+      thresholdReporter: {
+        statements: 90,
+        branches: 60,
+        functions: 85,
+        lines: 90
+      }
     }),
   );
   return config;
