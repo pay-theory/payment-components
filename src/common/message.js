@@ -13,19 +13,19 @@ export const handleMessage = (validTarget, handleMessage) => {
     window.addEventListener('message', generateWindowListener(validTarget, handleMessage))
 }
 
-export const errorTypeMessage = message => message.type === 'pt:error'
+export const errorTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:error'
 
-export const tokenizeTypeMessage = message => message.type === 'pt:tokenize'
+export const tokenizeTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:tokenize'
 
-export const captureTypeMessage = message => message.type === 'pt:capture'
+export const captureTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:capture'
 
-export const transactedTypeMessage = message => message.type === 'pt:transact'
+export const transactedTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:transact'
 
-export const readyTypeMessage = message => message.type.endsWith(':ready')
+export const readyTypeMessage = message => typeof message.type === 'string' && message.type.endsWith(':ready')
 
-export const combinedCCReadyTypeMessage = message => message.type === 'pt:credit-card:ready'
+export const combinedCCReadyTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:credit-card:ready'
 
-export const combinedCCTypeMessage = message => message.type === 'pt:credit-card:valid'
+export const combinedCCTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:credit-card:valid'
 
 export const handleError = error => {
     window.postMessage({

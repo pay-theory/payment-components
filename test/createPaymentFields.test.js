@@ -325,11 +325,11 @@ describe('createPaymentFields', () => {
 
         await aTimeout(200);
 
-        const spy = sinon.spy()
+        let transacted;
 
-        await creditCard.transactedObserver(spy)
+        const observe = () => transacted = true;
 
-        await assert(spy.notCalled)
+        await creditCard.transactedObserver(observe)
 
         window.postMessage({
                 type: 'pt:transact',
@@ -337,7 +337,7 @@ describe('createPaymentFields', () => {
             window.location.origin,
         );
 
-        await aTimeout(300)
+        // await aTimeout(500)
 
         await assert(spy.called)
     });
@@ -674,6 +674,7 @@ describe('createPaymentFields', () => {
         expect(data.getReady()).not.to.be;
     });
 });
+
 
 describe('createPaymentFields Errors:', () => {
     let error;

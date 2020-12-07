@@ -1,16 +1,22 @@
 /* global localStorage */
+export const MERCHANT = 'pt-merchant'
 export const IDENTITY = 'pt-identity'
 export const INSTRUMENT = 'pt-instrument'
 export const BUYER = 'pt-buyer'
 export const TOKEN = 'pt-token'
 export const BIN = 'pt-bin'
 export const READY = 'pt-ready'
+export const TRANSACTING = 'pt-transacting'
 
 export const defaultStyles = {
     default: {},
     success: {},
     error: {},
 }
+export const SURCHARGE = 'surcharge'
+export const SERVICE_FEE = 'service_fee'
+
+export const defaultFeeMode = SURCHARGE
 
 export const defaultTags = {}
 
@@ -53,6 +59,17 @@ export const stateMap = {
     'zip': 'address.postal_code'
 }
 
+export const getTransactingElement = () => {
+    return localStorage.getItem(TRANSACTING)
+}
+
+export const setTransactingElement = element => {
+    return localStorage.setItem(TRANSACTING, element.id)
+}
+
+export const removeTransactingElement = () => {
+    return localStorage.removeItem(TRANSACTING)
+}
 export const getReady = () => {
     return localStorage.getItem(READY)
 }
@@ -111,4 +128,37 @@ export const setIdentity = identity => {
 
 export const removeIdentity = () => {
     return localStorage.removeItem(IDENTITY)
+}
+
+export const getInstrument = () => {
+    return JSON.parse(localStorage.getItem(INSTRUMENT))
+}
+
+export const setInstrument = instrument => {
+    return localStorage.setItem(INSTRUMENT, JSON.stringify(instrument))
+}
+
+export const removeInstrument = () => {
+    return localStorage.removeItem(INSTRUMENT)
+}
+
+export const getMerchant = () => {
+    return JSON.parse(localStorage.getItem(MERCHANT))
+}
+
+export const setMerchant = merchant => {
+    return localStorage.setItem(MERCHANT, JSON.stringify(merchant))
+}
+
+export const removeMerchant = () => {
+    return localStorage.removeItem(MERCHANT)
+}
+
+export const removeAll = () => {
+    removeMerchant()
+    removeIdentity()
+    removeToken()
+    removeBuyer()
+    removeBin()
+    removeTransactingElement()
 }

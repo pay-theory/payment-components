@@ -11,10 +11,16 @@ import './components/credit-card-zip'
 import 'regenerator-runtime'
 import './style.css'
 
-import createPaymentFields from './field-set/payment-fields'
+import createPaymentFieldsLegacy from './field-set/payment-fields'
+import { SURCHARGE, SERVICE_FEE } from './common/data'
 
+const create = (apiKey, styles, tags, feeMode, host) => createPaymentFieldsLegacy(apiKey, '', styles, tags, feeMode, host)
+const createPaymentFields = (apiKey, clientId, styles, tags, host) => createPaymentFieldsLegacy(apiKey, clientId, styles, tags, SERVICE_FEE, host)
 window.paytheory = {
-    createPaymentFields
+    createPaymentFields,
+    create,
+    SURCHARGE,
+    SERVICE_FEE
 }
 
 export default window.paytheory

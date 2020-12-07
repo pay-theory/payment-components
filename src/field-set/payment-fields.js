@@ -2,9 +2,10 @@ import common from '../common'
 
 export default async(
     apiKey,
-    clientKey,
+    legacy, // this used to be client id, left in place to preserve backwards compatibility
     styles = common.defaultStyles,
     tags = common.defaultTags,
+    fee_mode = common.defaultFeeMode,
     host = common.transactionEndpoint
 ) => {
     const validTypes = {
@@ -89,6 +90,8 @@ export default async(
 
     let processedElements = []
 
+    let transacting = {}
+
     let isReady = false
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
@@ -140,9 +143,11 @@ export default async(
         },
     ) => {
         processedElements = establishElements(elements)
+        transacting = processedElements.reduce(common.findTransactingElement, false)
+        common.setTransactingElement(transacting)
+
         const handleState = stateHandler(processedElements)
         const handleFormed = finalForm => {
-            const transacting = processedElements.reduce(common.findTransactingElement, false)
             let error = findCardError(transacting, processedElements)
             if (error) {
                 return common.handleError(error)
@@ -166,24 +171,18 @@ export default async(
     }
 
     const handleInitialized = (amount, buyerOptions, confirmation) => {
-        const transacting = processedElements.reduce(common.findTransactingElement, false)
 
         const action = confirmation ? 'tokenize' : 'transact'
         common.setBuyer(buyerOptions)
 
-        if (transacting.frame) {
-            transacting.frame[action] = amount
-        }
-        else {
-            transacting[action] = amount
-        }
+        const framed = transacting.frame ? transacting.frame : transacting
 
+        framed[action] = amount
     }
 
     const initTransaction = common.generateInitialization(handleInitialized)
 
     const confirm = () => {
-        const transacting = processedElements.reduce(common.findTransactingElement, false)
 
         if (transacting.frame) {
             transacting.frame.capture = true
@@ -194,7 +193,7 @@ export default async(
     }
 
     const cancel = () => {
-        const transacting = processedElements.reduce(common.findTransactingElement, false)
+
         transacting['tokenize'] = false
         common.removeIdentity()
         common.removeToken()
@@ -212,8 +211,11 @@ export default async(
 
     const validObserver = cb => common.handleMessage(
         message => {
-            const validType = message.type.split(':')[1]
-            return message.type.endsWith(':valid') && processedElements.map(element => element.type).includes(`${validType}`)
+            if (typeof message.type === 'string') {
+                const validType = message.type.split(':')[1]
+                return message.type.endsWith(':valid') && processedElements.map(element => element.type).includes(`${validType}`)
+            }
+            return false
         },
         message => {
             const type = message.type.split(':')[1]
@@ -238,6 +240,5 @@ export default async(
                 }
             }
         })
-
-    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, clientKey, apiKey }, tags)
+    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, apiKey, fee_mode }, tags)
 }

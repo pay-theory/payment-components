@@ -21,8 +21,16 @@ export const postData = async(url, apiKey, data = {}) => {
 const isValidTransaction = (tokenized) => {
 
     if (tokenized) {
-        throw Error('transaction already initiated')
+        window.postMessage({
+                type: 'pt:error',
+                error: 'transaction already initiated',
+                throws: true
+            },
+            window.location.origin,
+        );
+        return false
     }
+    return true
 }
 
 export const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
@@ -46,7 +54,8 @@ export const transactionEndpoint = (() => {
 })()
 
 
-const generateInstrument = async(host, clientKey, apiKey) => {
+const generateInstrument = async(host, apiKey) => {
+    const clientKey = data.getMerchant()
     const identityToken = data.getIdentity()['tags-token']
     const identity = { identityToken }
     return await postData(
@@ -56,7 +65,8 @@ const generateInstrument = async(host, clientKey, apiKey) => {
     )
 }
 
-const generateIdentity = async(host, clientKey, apiKey, identity) => {
+const generateIdentity = async(host, apiKey, identity) => {
+    const clientKey = data.getMerchant()
     const paymentToken = data.getToken()
     const idToken = {
         paymentToken,
@@ -69,59 +79,70 @@ const generateIdentity = async(host, clientKey, apiKey, identity) => {
     )
 }
 
-const generateToken = async(host, clientKey, apiKey, message) => {
+const generateToken = async(host, apiKey, fee_mode, message) => {
     const bin = data.getBin()
+    const payment = message.tokenize ? message.tokenize : message.transact
+    payment.fee_mode = fee_mode
     const payload = {
-        payment: message.tokenize ? message.tokenize : message.transact,
+        payment,
         bin
     }
 
     return await postData(
-        `${host}/${clientKey}/token`,
+        `${host}/token`,
         apiKey,
         payload,
     )
 }
 
-export const generateTokenize = (cb, host, clientKey, apiKey) => {
+export const generateTokenize = (cb, host, apiKey, fee_mode) => {
     return async message => {
 
-        isValidTransaction(data.getToken())
+        if (isValidTransaction(data.getToken())) {
 
-        data.setToken(true)
+            data.setToken(true)
+            let token = await generateToken(host, apiKey, fee_mode, message)
+            //{"state":"error","reason":"service fee unavailable"}
+            // handle error when token fails
 
-        let token = await generateToken(host, clientKey, apiKey, message)
-
-        processToken(token)
-
-        cb({
-            "first_six": token.bin.first_six,
-            "brand": token.bin.brand,
-            "receipt_number": token.idempotency,
-            "amount": token.payment.amount,
-            "convenience_fee": token.payment.convenience_fee
-        })
+            if (token.state === 'error') {
+                const transactionalId = data.getTransactingElement()
+                const transactionalElement = document.getElementById(transactionalId)
+                transactionalElement.error = token.reason
+            }
+            else {
+                data.setToken(token.paymentToken)
+                data.setMerchant(token.payment.merchant)
+                cb({
+                    "first_six": token.bin.first_six,
+                    "brand": token.bin.brand,
+                    "receipt_number": token.idempotency,
+                    "amount": token.payment.amount,
+                    "service_fee": token.payment.service_fee
+                })
+            }
+        }
     }
 }
 
-const processPayment = async(cb, host, clientKey, apiKey, tags = {}) => {
+const processPayment = async(cb, host, apiKey, tags = {}) => {
+
+    const clientKey = data.getMerchant()
 
     data.setIdentity(true)
 
-    const identity = await generateIdentity(host, clientKey, apiKey, data.getBuyer())
+    const identity = await generateIdentity(host, apiKey, data.getBuyer())
 
     data.setIdentity(identity)
 
     tags['pt-number'] = identity.idempotencyId
 
-    const instrumental = await generateInstrument(host, clientKey, apiKey)
+    const instrumental = await generateInstrument(host, apiKey)
 
     const auth = {
         instrumentToken: instrumental['tags-token'],
         tags
     }
-
-
 
     const payment = await postData(
         `${host}/${clientKey}/authorize`,
@@ -129,11 +150,7 @@ const processPayment = async(cb, host, clientKey, apiKey, tags = {}) => {
         auth
     )
 
-    data.removeIdentity()
-    data.removeToken()
-    data.removeBuyer()
-    data.removeBin()
-
+    data.removeAll()
 
     cb({
         receipt_number: identity.idempotencyId,
@@ -142,18 +159,16 @@ const processPayment = async(cb, host, clientKey, apiKey, tags = {}) => {
         type: payment.state === 'error' ? payment.reason : payment.type,
         created_at: payment.created_at,
         amount: payment.amount,
-        convenience_fee: payment.convenience_fee,
+        service_fee: payment.service_fee,
         state: payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state,
         tags: payment.tags,
     })
 }
 
-export const generateCapture = (cb, host, clientKey, apiKey, tags = {}) => {
+export const generateCapture = (cb, host, apiKey, tags = {}) => {
     return async() => {
-
         isValidTransaction(data.getIdentity())
-
-        await processPayment(cb, host, clientKey, apiKey, tags = {})
+        await processPayment(cb, host, apiKey, tags = {})
     }
 }
 
@@ -169,17 +184,16 @@ const processToken = token => {
     }
 }
 
-export const generateTransacted = (cb, host, clientKey, apiKey, tags = {}) => {
+export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
     return async message => {
-        //{ amount: amount, token: { bin: this.bin, ...res } }
 
         isValidTransaction(data.getToken())
 
         data.setToken(true)
 
-        processToken(await generateToken(host, clientKey, apiKey, message))
+        processToken(await generateToken(host, apiKey, fee_mode, message))
 
-        await processPayment(cb, host, clientKey, apiKey, tags = {})
+        await processPayment(cb, host, apiKey, tags = {})
     }
 }
 

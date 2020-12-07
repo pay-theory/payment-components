@@ -2,7 +2,6 @@
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/d446eeab0c444274bfa00aceca3f0875)](https://www.codacy.com/gh/pay-theory/payment-components?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pay-theory/payment-components&amp;utm_campaign=Badge_Grade) 
 [![Known Vulnerabilities](https://snyk.io/test/github/pay-theory/payment-components/badge.svg?targetFile=package.json)](https://snyk.io/test/github/pay-theory/payment-components?targetFile=package.json) 
-[![Dependencies](https://img.shields.io/david/pay-theory/payment-components)](https://david-dm.org/)
 [![NPM](https://img.shields.io/npm/v/@paytheory/payment-components.svg)](https://www.npmjs.com/package/@paytheory/payment-components)
 
 ## Live Install
@@ -161,9 +160,8 @@ Mount to create the credit card field(s) and establish callbacks:
 
 ```javascript
 
-// API KEY and CLIENT ID are required
+// API KEY is required
 const API_KEY = 'your-api-key'
-const CLIENT_ID = 'your-client-id'
 
 // optionally define custom styles for the input components text
 const STYLES = {
@@ -183,34 +181,46 @@ const STYLES = {
 
 // optionally provide custom tags to help track purchases
 const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
+/**
+* optionally set the fee mode
+* by default SURCHARGE mode is used
+* SERVICE_FEE mode is available only when enabled by Pay Theory
+* SURCHARGE mode applies a fee of 2.9% + $0.30 
+* to be deducted from original amount
+* SERVICE FEE mode calculates a fee based on predetermined parameters 
+* and adds it to the original amount
+**/
+const FEE_MODE = window.paytheory.SURCHARGE
 
 // create a place to store the credit card
 let myCreditCard
 
 (async() => {
-    /*
+    /**
     * initialize the SDK (can also be called as a promise)
     *
     * if providing tags but no styles, provide an empty object
     * as a placeholder
-    */
+    **/
 
-    myCreditCard = await window.paytheory.createPaymentFields(
+    myCreditCard = await window.paytheory.create(
         API_KEY,
-        CLIENT_ID,
         STYLES,
-        TAGS)
+        TAGS,
+        FEE_MODE)
 
     // mount the hosted fields into the container
     myCreditCard.mount()
 
     // handle callbacks
     myCreditCard.readyObserver(ready => {
-        // ready is a boolean indicator
-        // fires when SDK is loaded and ready
-        // this is where you would associate any listeners
-        // to trigger initTransaction
-        // or optionally confirmation
+        /**
+        * ready is a boolean indicator
+        * fires when SDK is loaded and ready
+        * this is where you would associate any listeners
+        * to trigger initTransaction
+        * or optionally confirmation
+        **/
     })
 
     // only needed when REQUIRE_CONFIRMATION is true
@@ -280,7 +290,7 @@ const BUYER_OPTIONS = {
         "line2": "Apartment 17",
         "postal_code": "12345"
     }
-
+}
 
 // optional parameter to require confimation step
 const REQUIRE_CONFIRMATION = true
@@ -338,7 +348,7 @@ myCreditCard.readyObserver(ready => {
 
 When the confirm option of initTransaction is set to true, the payment card token details are returned in tokenizeObserver
 
-*note that the convenience fee is included in amount*
+*note that the service fee is included in amount*
 
 ```json
 {
@@ -346,7 +356,7 @@ When the confirm option of initTransaction is set to true, the payment card toke
 	"brand": "XXXX",
 	"receipt_number": "pt-dev-XXXXXX",
 	"amount": 999,
-	"convenience_fee": 195
+	"service_fee": 195
 }
 ```
 
@@ -354,7 +364,7 @@ When the confirm option of initTransaction is set to true, the payment card toke
 
 Upon completion of authorization and capture, details similar to the following are returned:
 
-*note that the convenience fee is included in amount*
+*note that the service fee is included in amount*
 
 ```json
 {
@@ -363,7 +373,7 @@ Upon completion of authorization and capture, details similar to the following a
     "brand": "XXXXXXXXX",
     "created_at":"YYYY-MM-DDTHH:MM:SS.ssZ",
     "amount": 999,
-    "convenience_fee": 195,
+    "service_fee": 195,
     "state":"SUCCEEDED",
     "tags":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
 }

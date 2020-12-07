@@ -1,6 +1,6 @@
 import PayTheory from '../pay-theory-finix'
 const NAME = 'state'
-const FIELDS = [{ name: 'address.region', label: 'State' }];
+const FIELDS = [{ name: 'address.region', label: 'Billing State' }];
 
 class CreditCardBillingStateFrame extends PayTheory {
 
