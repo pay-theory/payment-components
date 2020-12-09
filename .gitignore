@@ -3,3 +3,8 @@
 /build
 /coverage
 /legacy
+
+# testing
+/coverage
+.codacy-coverage
+get.sh

@@ -87,7 +87,6 @@ const generateToken = async(host, apiKey, fee_mode, message) => {
         payment,
         bin
     }
-
     return await postData(
         `${host}/token`,
         apiKey,
@@ -186,13 +185,11 @@ const processToken = token => {
 
 export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
     return async message => {
-
         isValidTransaction(data.getToken())
 
         data.setToken(true)
 
         processToken(await generateToken(host, apiKey, fee_mode, message))
-
         await processPayment(cb, host, apiKey, tags = {})
     }
 }

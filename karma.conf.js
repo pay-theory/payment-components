@@ -16,6 +16,7 @@ module.exports = config => {
         reporters: [
           { type: 'html', subdir: 'report-html' },
           { type: 'text', subdir: '.' },
+          { type: 'lcov', subdir: '.' }
         ]
       },
       plugins: [
@@ -42,6 +43,7 @@ module.exports = config => {
         functions: 85,
         lines: 90
       }
+
     }),
   );
   return config;

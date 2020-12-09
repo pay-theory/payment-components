@@ -23,11 +23,7 @@ describe('createPaymentFields', () => {
 
     afterEach(() => {
         window.fetch.restore(); //remove stub
-        data.removeReady()
-        data.removeBin()
-        data.removeBuyer()
-        data.removeIdentity()
-        data.removeToken()
+        data.removeAll()
     });
 
     it('renders finix iframes', async() => {
@@ -294,21 +290,19 @@ describe('createPaymentFields', () => {
 
         const creditCard = await createPaymentFields(common.api, common.client, 2500);
 
-        let ready;
+        const spy = sinon.spy()
 
-        const readied = () => ready = true;
-
-        await creditCard.readyObserver(readied);
+        await creditCard.readyObserver(spy);
 
         await aTimeout(100);
 
-        await expect(ready).to.not.be.ok;
+        await assert(spy.notCalled)
 
         await creditCard.mount();
 
         await aTimeout(200);
 
-        await expect(ready).to.be.ok;
+        await assert(spy.called)
     });
 
     it('transactedObserver runs on transact message', async() => {
@@ -325,19 +319,18 @@ describe('createPaymentFields', () => {
 
         await aTimeout(200);
 
-        let transacted;
+        const spy = sinon.spy()
 
-        const observe = () => transacted = true;
-
-        await creditCard.transactedObserver(observe)
+        await creditCard.transactedObserver(spy)
 
         window.postMessage({
                 type: 'pt:transact',
+                transact: { amount: 210, currency: 'USD', finixToken: {} }
             },
             window.location.origin,
         );
 
-        // await aTimeout(500)
+        await aTimeout(500)
 
         await assert(spy.called)
     });
@@ -364,6 +357,7 @@ describe('createPaymentFields', () => {
 
         window.postMessage({
                 type: 'pt:tokenize',
+                tokenize: { amount: 1000, currency: 'USD', finixToken: {} }
             },
             window.location.origin,
         );
@@ -645,34 +639,6 @@ describe('createPaymentFields', () => {
 
     })
 
-    it('readyObserver sets formed to what we want it to be', async() => {
-        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
-
-        const creditCard = await createPaymentFields(common.api, common.client);
-
-        let spy = sinon.spy()
-
-        await creditCard.readyObserver(spy)
-
-        assert(spy.notCalled)
-
-        window.postMessage({
-                type: `pay-theory:ready`,
-                ready: true,
-            },
-            window.location.origin,
-        )
-
-        await aTimeout(200);
-
-        assert(spy.called)
-
-        expect(data.getReady()).to.be;
-
-        data.removeReady()
-
-        expect(data.getReady()).not.to.be;
-    });
 });
 
 
