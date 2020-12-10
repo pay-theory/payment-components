@@ -94,33 +94,39 @@ const generateToken = async(host, apiKey, fee_mode, message) => {
     )
 }
 
+const tokenize = async(host, apiKey, fee_mode, message) => {
+    if (isValidTransaction(data.getToken())) {
+
+        data.setToken(true)
+        let token = await generateToken(host, apiKey, fee_mode, message)
+        //{"state":"error","reason":"service fee unavailable"}
+        // handle error when token fails
+
+        if (token.state === 'error') {
+            const transactionalId = data.getTransactingElement()
+            const transactionalElement = document.getElementById(transactionalId)
+            transactionalElement.error = token.reason
+        }
+        else {
+            data.setToken(token.paymentToken)
+            data.setMerchant(token.payment.merchant)
+        }
+        return token
+    }
+    return false
+}
+
 export const generateTokenize = (cb, host, apiKey, fee_mode) => {
     return async message => {
+        const token = await tokenize(host, apiKey, fee_mode, message)
 
-        if (isValidTransaction(data.getToken())) {
-
-            data.setToken(true)
-            let token = await generateToken(host, apiKey, fee_mode, message)
-            //{"state":"error","reason":"service fee unavailable"}
-            // handle error when token fails
-
-            if (token.state === 'error') {
-                const transactionalId = data.getTransactingElement()
-                const transactionalElement = document.getElementById(transactionalId)
-                transactionalElement.error = token.reason
-            }
-            else {
-                data.setToken(token.paymentToken)
-                data.setMerchant(token.payment.merchant)
-                cb({
-                    "first_six": token.bin.first_six,
-                    "brand": token.bin.brand,
-                    "receipt_number": token.idempotency,
-                    "amount": token.payment.amount,
-                    "service_fee": token.payment.service_fee
-                })
-            }
-        }
+        cb({
+            "first_six": token.bin.first_six,
+            "brand": token.bin.brand,
+            "receipt_number": token.idempotency,
+            "amount": token.payment.amount,
+            "service_fee": token.payment.service_fee
+        })
     }
 }
 
@@ -187,10 +193,9 @@ export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
     return async message => {
         isValidTransaction(data.getToken())
 
-        data.setToken(true)
+        await tokenize(host, apiKey, fee_mode, message)
 
-        processToken(await generateToken(host, apiKey, fee_mode, message))
-        await processPayment(cb, host, apiKey, tags = {})
+        await processPayment(cb, host, apiKey, tags)
     }
 }
 
