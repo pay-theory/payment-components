@@ -22,7 +22,11 @@ export const MOCK_JSON = {
     created_at: 'now',
     amount: 1200,
     state: "APPROVED",
-    tags: {}
+    tags: {},
+    paymentToken: {},
+    bin: {},
+    payment: {}
+
 };
 
 export const MOCK_TRANSACT = {
@@ -36,14 +40,17 @@ export const MOCK_TRANSACT = {
     tags: {},
 }
 
-beforeEach(() => {
-    let stub = sinon.stub(window, 'fetch'); //add stub
-    stub.onCall(0).returns(jsonOk(MOCK_JSON));
-    stub.onCall(1).returns(jsonOk(MOCK_JSON));
-    stub.onCall(2).returns(jsonOk(MOCK_JSON));
-    stub.onCall(3).returns(jsonOk(MOCK_JSON));
-});
+export const MOCK_JSON_FAIL = {
+    id: 'jsonId',
+    last_four: 1234,
+    brand: 'visa',
+    type: 'Debit',
+    created_at: 'now',
+    amount: 1200,
+    state: "error",
+    tags: {},
+    paymentToken: {},
+    bin: {},
+    payment: {}
 
-afterEach(() => {
-    window.fetch.restore(); //remove stub
-});
+};

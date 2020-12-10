@@ -63,7 +63,7 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
   set tokenize(_tokenizing) {
     const amount = _tokenizing
     if (amount === false) {
-      this.tokenizing = amount
+      this.tokenizing = false
     }
     else if (!this.isValidAmount(amount)) {
       return handleError('amount must be a positive integer')
@@ -92,8 +92,11 @@ class PayTheoryFinixTransactionalFrame extends PayTheoryFinixFrame {
   }
 
   set transact(_transacting) {
-    const valid_amount = Number.isInteger(parseInt(_transacting))
-    const amount = parseInt(_transacting)
+    const valid_amount = this.isValidAmount(_transacting)
+    const amount = _transacting
+    if (amount === false) {
+      this.transacting = false
+    }
     if (!valid_amount) {
       return handleError('amount must be a positive integer')
     }
