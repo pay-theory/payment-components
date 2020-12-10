@@ -26,7 +26,7 @@ describe('createPaymentFields', () => {
         data.removeAll()
     });
 
-    it('renders finix iframes', async() => {
+    it('renders finix iFrames', async() => {
 
         const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
 
