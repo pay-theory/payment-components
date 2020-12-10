@@ -89,6 +89,7 @@
         "eslint-plugin-standard": "^5.0.0",
         "karma": "^5.2.3",
         "karma-sourcemap-loader": "^0.3.8",
+        "karma-threshold-reporter": "^0.1.15",
         "karma-webpack": "^4.0.2",
         "prettier": "^2.2.0",
         "puppeteer": "^5.5.0",
