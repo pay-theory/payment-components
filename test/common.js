@@ -25,7 +25,9 @@ export const MOCK_JSON = {
     tags: {},
     paymentToken: {},
     bin: {},
-    payment: {}
+    payment: {
+        merchant: {}
+    }
 
 };
 
