@@ -1,6 +1,7 @@
 # Pay Theory Web SDK
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/d446eeab0c444274bfa00aceca3f0875)](https://www.codacy.com/gh/pay-theory/payment-components?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pay-theory/payment-components&amp;utm_campaign=Badge_Grade) 
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/d446eeab0c444274bfa00aceca3f0875)](https://www.codacy.com/gh/pay-theory/payment-components/dashboard?utm_source=github.com&utm_medium=referral&utm_content=pay-theory/payment-components&utm_campaign=Badge_Coverage)
 [![Known Vulnerabilities](https://snyk.io/test/github/pay-theory/payment-components/badge.svg?targetFile=package.json)](https://snyk.io/test/github/pay-theory/payment-components?targetFile=package.json) 
 [![NPM](https://img.shields.io/npm/v/@paytheory/payment-components.svg)](https://www.npmjs.com/package/@paytheory/payment-components)
 
@@ -82,7 +83,7 @@ Credit Card Component cannot be used in combination with:
 
 These components will provide a full payment implementation.
 
-[codesandbox credit card components example](https://codesandbox.io/s/sdk-payment-example-with-optional-cw5c0)
+[codesandbox credit card components example](https://codesandbox.io/s/sdk-payment-example-individual-cw5c0)
 
 These components must be combined in a form to enable payment:
 
@@ -108,7 +109,7 @@ These components cannot be used in combination with:
 
 ### Credit Card Account Name & Address Components
 
-[codesandbox credit card optional fields example](https://codesandbox.io/s/sdk-payment-example-with-optional-cw5c0)
+[codesandbox credit card address fields example](https://codesandbox.io/s/sdk-payment-example-with-address-543xy)
 
 Six optional components are available to capture additional details about the card:
 
@@ -416,10 +417,10 @@ To enable IE 11 support you must include the following in your HTML head:
     ></script>
     <!-- end polyfill -->
 
-    <!-- for live -->
+    <!-- for sandbox -->
     <script src="https://stage.sdk.paytheorystudy.com"></script>
     
-    <!-- for sandbox -->
+    <!-- for live -->
     <script src="https://sdk.paytheory.com"></script>
     
 </head>
