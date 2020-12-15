@@ -1,6 +1,6 @@
 {
     "name": "@paytheory/payment-components",
-    "version": "1.0.68-0",
+    "version": "1.0.69-0",
     "description": "Pay Theory SDK",
     "main": "dist/index.js",
     "author": "Aron Price",
@@ -11,12 +11,12 @@
         "access": "public"
     },
     "files": [
-                "dist"
-        ],
+        "dist"
+    ],
     "eslintConfig": {
         "extends": [
-                        "eslint-config-prettier"
-                ]
+            "eslint-config-prettier"
+        ]
     },
     "scripts": {
         "build-dev": "env BUILD_ENV=dev APP_ID=APrPDbJxbZuiRuwN3NjfajpH webpack",
