@@ -1,6 +1,6 @@
 import PayTheory from '../pay-theory-finix'
 const NAME = 'cvv'
-const FIELDS = [{ name: 'security_code', label: 'CVV' }];
+const FIELDS = [{ name: 'security_code', label: 'CVV', validations: 'required', autoComplete: 'cc-csc' }];
 
 class CreditCardCVVFrame extends PayTheory {
 

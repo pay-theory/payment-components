@@ -1,6 +1,6 @@
 import PayTheory from '../pay-theory-finix'
 const NAME = 'zip'
-const FIELDS = [{ name: 'address.postal_code', label: 'Billing Zip' }];
+const FIELDS = [{ name: 'address.postal_code', label: 'Billing Zip', validations: null, autoComplete: 'postal-code' }];
 
 class CreditCardBillingZipFrame extends PayTheory {
 

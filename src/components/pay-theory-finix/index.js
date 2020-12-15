@@ -25,7 +25,9 @@ class PayTheoryFinixFrame extends HTMLElement {
       wrapperElement.setAttribute('class', 'field-wrapper')
 
       const f = form.field(field.name, {
+        validations: field.validations,
         placeholder: field.label,
+        autoComplete: field.autoComplete,
         styles: {
           default: styles.default,
           success: styles.success ? styles.success : styles.default,

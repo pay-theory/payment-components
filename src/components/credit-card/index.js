@@ -1,9 +1,9 @@
 import PayTheoryFinixTransactionalFrame from '../pay-theory-finix-transactional'
 const NAME = 'credit-card'
 const FIELDS = [
-  { name: 'number', label: 'Card Number' },
-  { name: 'expiration_date', label: 'MM/YY' },
-  { name: 'security_code', label: 'CVC' }
+  { name: 'number', label: 'Card Number', validations: 'required', autoComplete: 'cc-number' },
+  { name: 'expiration_date', label: 'MM/YY', validations: 'required', autoComplete: 'cc-exp' },
+  { name: 'security_code', label: 'CVC', validations: 'required', autoComplete: 'cc-csc' }
 ]
 
 class CreditCardFrame extends PayTheoryFinixTransactionalFrame {

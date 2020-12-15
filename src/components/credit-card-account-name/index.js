@@ -1,6 +1,6 @@
 import PayTheoryFinixFrame from '../pay-theory-finix'
 const NAME = 'account-name'
-const FIELDS = [{ name: 'name', label: 'Name on card' }];
+const FIELDS = [{ name: 'name', label: 'Name on card', validations: null, autoComplete: 'cc-name' }];
 
 class CreditCardNameFrame extends PayTheoryFinixFrame {
 
