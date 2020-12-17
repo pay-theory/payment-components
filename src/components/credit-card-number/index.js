@@ -1,6 +1,6 @@
 import PayTheoryFinixTransactionalFrame from '../pay-theory-finix-transactional'
 const NAME = 'number'
-const FIELDS = [{ name: 'number', label: 'Card Number' }]
+const FIELDS = [{ name: 'number', label: 'Card Number', validations: 'required', autoComplete: 'cc-number' }]
 
 class CreditCardNumberFrame extends PayTheoryFinixTransactionalFrame {
 
