@@ -86,6 +86,40 @@ export const processElements = (elements, styles) => {
     return processed
 }
 
+export const processAchElements = (elements, styles) => {
+    let processed = []
+    data.achFieldTypes.forEach(type => {
+        let error = findElementError(elements, type)
+
+        const container = document.getElementById(elements[type])
+        if (container && error === false) {
+            error = processAchContainer(container, elements, processed, styles, type)
+        }
+        if (error) {
+            return message.handleError(error)
+        }
+    })
+    return processed
+}
+
+const processAchContainer = (container, elements, processed, styles, type) => {
+    let error = false
+    const contained = document.getElementById(`${elements[type]}-tag-frame`)
+    if (contained === null) {
+        const frame = addFrame(
+            container,
+            elements[type],
+            styles,
+            `pay-theory-ach-${type}-tag-frame`)
+
+        processed.push({ type, frame })
+    }
+    else {
+        error = `${elements[type]} is already mounted`
+    }
+    return error
+}
+
 export const appendFinix = (formed, handleState, handleFormed) => {
     const script = document.createElement('script')
     // eslint-disable-next-line scanjs-rules/assign_to_src

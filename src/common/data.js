@@ -33,6 +33,20 @@ export const fields = {
     CREDIT_CARD_ZIP: 'pay-theory-credit-card-zip',
 }
 
+export const achFields = {
+    ACCOUNT_NUMBER: 'pay-theory-ach-account-number',
+    ACCOUNT_TYPE: 'pay-theory-ach-account-type',
+    ACCOUNT_NAME: 'pay-theory-ach-account-name',
+    BANK_CODE: 'pay-theory-ach-bank-code'
+}
+
+export const achFieldTypes = [
+    'account-name',
+    'account-type',
+    'account-number',
+    'bank-code'
+    ]
+
 export const fieldTypes = [
     'credit-card',
     'number',

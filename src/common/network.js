@@ -18,6 +18,23 @@ export const postData = async(url, apiKey, data = {}) => {
     return await response.json()
 }
 
+export const getData = async(url, apiKey, data = {}) => {
+    const options = {
+        method: 'GET',
+        mode: 'cors',
+        cache: 'no-cache',
+        headers: {
+            'x-api-key': apiKey,
+            'content-type': 'application/json',
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer'
+    }
+    /* global fetch */
+    const response = await fetch(url, options)
+    return await response.json()
+}
+
 const isValidTransaction = (tokenized) => {
 
     if (tokenized) {
