@@ -18,7 +18,7 @@ export const postData = async(url, apiKey, data = {}) => {
     return await response.json()
 }
 
-export const getData = async(url, apiKey, data = {}) => {
+export const getData = async(url, apiKey) => {
     const options = {
         method: 'GET',
         mode: 'cors',

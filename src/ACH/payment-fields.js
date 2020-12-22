@@ -168,8 +168,9 @@ export default async(
         common.removeToken()
     }
 
-    const testApi = () => {
-        console.log('Test API')
+    const testApi = async(url, apiKey) => {
+        const result = await common.getData(url, apiKey)
+        return result
     }
 
     const readyObserver = cb => common.handleMessage(
