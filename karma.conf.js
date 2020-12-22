@@ -38,10 +38,10 @@ module.exports = config => {
 
       // the configure thresholds
       thresholdReporter: {
-        statements: 85,
+        statements: 80,
         branches: 60,
-        functions: 85,
-        lines: 90
+        functions: 80,
+        lines: 80
       }
 
     }),
