@@ -137,6 +137,9 @@ export default async(
         },
     ) => {
         processedElements = establishElements(elements)
+        processedElements.forEach(processed => {
+            processed.frame.form = true
+        })
     }
 
     const handleInitialized = (amount, buyerOptions, confirmation) => {
