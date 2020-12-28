@@ -9,8 +9,21 @@ const generateWindowListener = (validTarget, handleMessage) => {
     }
 }
 
+const generateiFrameWindowListener = (validTarget, handleMessage) => {
+    return event => {
+        const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+        if (validTarget(message)) {
+            handleMessage(message)
+        }
+    }
+}
+
 export const handleMessage = (validTarget, handleMessage) => {
     window.addEventListener('message', generateWindowListener(validTarget, handleMessage))
+}
+
+export const handleHostedFieldMessage = (validTarget, handleMessage) => {
+    window.addEventListener('message', generateiFrameWindowListener(validTarget, handleMessage))
 }
 
 export const errorTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:error'

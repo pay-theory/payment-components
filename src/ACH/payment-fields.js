@@ -121,7 +121,7 @@ export default async(
         );
     }
 
-    common.handleMessage(common.hostedReadyTypeMessage, setupHandler)
+    common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler)
 
     const mount = async(
         elements = {
