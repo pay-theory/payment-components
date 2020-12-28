@@ -111,6 +111,7 @@ export default async(
     }
 
     const setupHandler = () => {
+        console.log('setup')
         window.postMessage({
                 type: "pt:setup",
                 style: styles,
