@@ -27,6 +27,8 @@ export const combinedCCReadyTypeMessage = message => typeof message.type === 'st
 
 export const combinedCCTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:credit-card:valid'
 
+export const achReadyTypeMessage = message => typeof message.type === 'string' && message.type.endsWith(':ready') && message.type.startsWith('pt-static:')
+
 export const handleError = error => {
     window.postMessage({
             type: 'pt:error',

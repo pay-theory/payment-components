@@ -9,7 +9,7 @@ export default async(
     host = common.transactionEndpoint
 ) => {
     const validTypes = {
-        'credit-card': false,
+        'credit - card': false,
         'number': false,
         'exp': false,
         'cvv': false,

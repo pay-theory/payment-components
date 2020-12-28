@@ -9,32 +9,16 @@ export default async(
     host = common.transactionEndpoint
 ) => {
     const validTypes = {
-        'credit-card': false,
-        'number': false,
-        'exp': false,
-        'cvv': false,
-        'account-name': true,
-        'address-1': true,
-        'address-2': true,
-        'city': true,
-        'state': true,
-        'zip': true
+        'account-number': false,
+        'bank-code': false,
+        'account-name': false,
+        'account-type': false
     }
 
     const isCallingType = type => Object.keys(validTypes).includes(type)
 
-    const hasValidCard = types =>
-        (types['credit-card'] || (types.number && types.cvv && types.exp))
-
-
-    const hasValidStreetAddress = types =>
-        (types['address-1'] && types['address-2'])
-
-    const hasValidAddress = types =>
-        (hasValidStreetAddress(types) && types.city && types.state && types.zip)
-
-    const hasValidDetails = types =>
-        (types['account-name'] && hasValidAddress(types))
+    const hasValidAccount = types =>
+        (types['account-number'] && types['account-type'] && types['account-name'] && types['bank-code'])
 
     const findCardNumberError = processedElements => {
         let error = false
@@ -82,8 +66,6 @@ export default async(
         return error
     }
 
-
-
     let formed = false
 
     let isValid = false
@@ -127,6 +109,18 @@ export default async(
 
         })
     }
+
+    const setupHandler = () => {
+        window.postMessage({
+                type: "pt:setup",
+                style: styles,
+                token: { ready: true }
+            },
+            window.location.origin,
+        );
+    }
+
+    common.handleMessage(common.hostedReadyTypeMessage, setupHandler)
 
     const mount = async(
         elements = {

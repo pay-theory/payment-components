@@ -27,7 +27,8 @@ class PayTheoryFinixFrame extends HTMLElement {
       const f = form.field(field.name, {
         validations: field.validations,
         placeholder: field.label,
-        autoComplete: field.autoComplete,
+        //Commented out autoComplete feature waiting for update
+        //autoComplete: field.autoComplete,
         styles: {
           default: styles.default,
           success: styles.success ? styles.success : styles.default,
