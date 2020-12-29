@@ -111,10 +111,10 @@ export default async(
     }
 
     const setupHandler = () => {
-        document.getElementsByTagName('iframe').forEach(element => {
+        window.getElementsByTagName('iframe').forEach(element => {
             console.log(element)
             console.log(common.hostedFieldsEndpoint)
-            element.postMessage({
+            element.contentWindow.postMessage({
                     type: "pt:setup",
                     style: styles,
                     token: { ready: true }
