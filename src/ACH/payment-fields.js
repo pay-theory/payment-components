@@ -112,6 +112,7 @@ export default async(
 
     const setupHandler = () => {
         const length = document.getElementsByTagName('iframe').length
+        console.log(common.hostedFieldsEndpoint, 'setup handler', length)
         for (var i = 0; i < length; i++) {
             document.getElementsByTagName('iframe')[i].contentWindow.postMessage({
                     type: "pt:setup",
