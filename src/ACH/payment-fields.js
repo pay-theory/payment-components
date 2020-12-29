@@ -111,8 +111,8 @@ export default async(
     }
 
     const setupHandler = () => {
-        console.log('setup')
         document.getElementsByTagName('iframe').forEach(element => {
+            console.log(element)
             element.postMessage({
                     type: "pt:setup",
                     style: styles,
