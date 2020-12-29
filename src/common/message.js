@@ -11,9 +11,11 @@ const generateWindowListener = (validTarget, handleMessage) => {
 
 const generateiFrameWindowListener = (validTarget, handleMessage) => {
     return event => {
-        const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
-        if (validTarget(message)) {
-            handleMessage(message)
+        if ([window.location.origin].endsWith('tags.static.paytheorystudy.com')) {
+            const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+            if (validTarget(message)) {
+                handleMessage(message)
+            }
         }
     }
 }
@@ -23,7 +25,7 @@ export const handleMessage = (validTarget, handleMessage) => {
 }
 
 export const handleHostedFieldMessage = (validTarget, handleMessage) => {
-    window.addEventListener('message', generateiFrameWindowListener(validTarget, handleMessage))
+    window.addEventListener('iframe_message', generateiFrameWindowListener(validTarget, handleMessage))
 }
 
 export const errorTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:error'

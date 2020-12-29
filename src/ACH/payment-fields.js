@@ -112,13 +112,15 @@ export default async(
 
     const setupHandler = () => {
         console.log('setup')
-        window.postMessage({
-                type: "pt:setup",
-                style: styles,
-                token: { ready: true }
-            },
-            window.location.origin,
-        );
+        document.getElementsByTagName('iframe').forEach(element => {
+            element.postMessage({
+                    type: "pt:setup",
+                    style: styles,
+                    token: { ready: true }
+                },
+                common.hostedFieldsEndpoint,
+            );
+        })
     }
 
     common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler)

@@ -70,6 +70,23 @@ export const transactionEndpoint = (() => {
     }
 })()
 
+export const hostedFieldsEndpoint = (() => {
+
+    switch (process.env.BUILD_ENV) {
+    case 'prod':
+        {
+            return `https://tags.static.paytheory.com`
+        }
+    case 'stage':
+        {
+            return `https://demo.tags.static.paytheorystudy.com`
+        }
+    default:
+        {
+            return `https://dev.tags.static.paytheorystudy.com`
+        }
+    }
+})()
 
 const generateInstrument = async(host, apiKey) => {
     const clientKey = data.getMerchant()
