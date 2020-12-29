@@ -113,6 +113,7 @@ export default async(
     const setupHandler = () => {
         document.getElementsByTagName('iframe').forEach(element => {
             console.log(element)
+            console.log(common.hostedFieldsEndpoint)
             element.postMessage({
                     type: "pt:setup",
                     style: styles,
