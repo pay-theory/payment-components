@@ -110,12 +110,14 @@ export default async(
         })
     }
 
+    const token = await common.getData(`${common.transactionEndpoint}/achtoken`, apiKey)
+
     const setupHandler = (message) => {
         console.log(message.element)
         document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
                 type: "pt:setup",
                 style: styles,
-                token: { ready: true }
+                token: token
             },
             common.hostedFieldsEndpoint,
         );
