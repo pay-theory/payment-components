@@ -110,7 +110,7 @@ export default async(
         })
     }
 
-    const token = await common.getData(`${common.transactionEndpoint}/achtoken`, apiKey)
+    const token = await common.getData(`${common.transactionEndpoint}/pt-token`, apiKey)
 
     const setupHandler = (message) => {
         console.log(apiKey, 'api')
