@@ -30,9 +30,11 @@ export const addFrame = (
     element,
     styles,
     frameType = 'pay-theory-credit-card-tag-frame',
+    token
 ) => {
     const tagFrame = document.createElement(frameType)
     tagFrame.styles = styles
+    tagFrame.token = token
     tagFrame.setAttribute('ready', true)
     tagFrame.setAttribute('id', `${element}-tag-frame`)
     container.appendChild(tagFrame)
@@ -86,14 +88,14 @@ export const processElements = (elements, styles) => {
     return processed
 }
 
-export const processAchElements = (elements, styles) => {
+export const processAchElements = (elements, styles, token) => {
     let processed = []
     data.achFieldTypes.forEach(type => {
         let error = findElementError(elements, type)
 
         const container = document.getElementById(elements[type])
         if (container && error === false) {
-            error = processAchContainer(container, elements, processed, styles, type)
+            error = processAchContainer(container, elements, processed, styles, type, token)
         }
         if (error) {
             return message.handleError(error)
@@ -102,7 +104,7 @@ export const processAchElements = (elements, styles) => {
     return processed
 }
 
-const processAchContainer = (container, elements, processed, styles, type) => {
+const processAchContainer = (container, elements, processed, styles, type, token) => {
     let error = false
     const contained = document.getElementById(`${elements[type]}-tag-frame`)
     if (contained === null) {
@@ -110,7 +112,8 @@ const processAchContainer = (container, elements, processed, styles, type) => {
             container,
             elements[type],
             styles,
-            `pay-theory-ach-${type}-tag-frame`)
+            `pay-theory-ach-${type}-tag-frame`,
+            token)
 
         processed.push({ type, frame })
     }

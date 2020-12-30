@@ -78,8 +78,8 @@ export default async(
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
-    const establishElements = (elements) => {
-        return common.processAchElements(elements, styles)
+    const establishElements = (elements, token) => {
+        return common.processAchElements(elements, styles, token)
     }
 
     const isValidFrame = invalidElement => typeof invalidElement === 'undefined' ?
@@ -116,8 +116,7 @@ export default async(
         console.log(apiKey, 'api')
         document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
                 type: "pt:setup",
-                style: styles,
-                token: token
+                style: styles
             },
             common.hostedFieldsEndpoint,
         );
@@ -133,7 +132,7 @@ export default async(
             'account-type': common.achFields.ACCOUNT_TYPE,
         },
     ) => {
-        processedElements = establishElements(elements)
+        processedElements = establishElements(elements, token['pt-token'])
         processedElements.forEach(processed => {
             processed.frame.form = true
         })

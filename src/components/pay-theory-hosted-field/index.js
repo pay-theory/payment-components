@@ -19,7 +19,7 @@ class PayTheoryHostedField extends HTMLElement {
     this.fields = fieldArray
   }
 
-  defineFields(form, styles) {
+  defineFields() {
     this.fields.forEach(field => {
       const wrapper = `field-wrapper-${field.name.replace(/\./, '-')}`
       const wrapperElement = document.createElement('div')
@@ -27,7 +27,7 @@ class PayTheoryHostedField extends HTMLElement {
       wrapperElement.setAttribute('class', 'field-wrapper')
 
       const f = document.createElement('iframe')
-      f.setAttribute('src', `${common.hostedFieldsEndpoint}/${field.name}`)
+      f.setAttribute('src', `${common.hostedFieldsEndpoint}/${field.name}/${this.tokened}`)
       f.setAttribute('frameBorder', '0')
       f.setAttribute('id', `${field.name}-iframe`)
 
@@ -102,7 +102,7 @@ class PayTheoryHostedField extends HTMLElement {
 
   set form(_formed) {
     this.formed = _formed
-    this.defineFields(this.formed, this.styling)
+    this.defineFields()
   }
 
   get application() {
@@ -127,6 +127,14 @@ class PayTheoryHostedField extends HTMLElement {
 
   set loaded(_isLoaded) {
     this.isLoaded = _isLoaded
+  }
+
+  get token() {
+    return this.tokened
+  }
+
+  set token(_tokened) {
+    this.tokened = _tokened
   }
 
   get ready() {
