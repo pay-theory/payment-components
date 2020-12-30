@@ -11,11 +11,9 @@ const generateWindowListener = (validTarget, handleMessage) => {
 
 const generateiFrameWindowListener = (validTarget, handleMessage) => {
     return event => {
-        if ([window.location.origin].endsWith('tags.static.paytheorystudy.com')) {
-            const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
-            if (validTarget(message)) {
-                handleMessage(message)
-            }
+        const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+        if (validTarget(message)) {
+            handleMessage(message)
         }
     }
 }
