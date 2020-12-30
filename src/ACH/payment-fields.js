@@ -110,14 +110,14 @@ export default async(
         })
     }
 
-    // const token = await common.getData(`${common.transactionEndpoint}/achtoken`, apiKey)
+    const token = await common.getData(`${common.transactionEndpoint}/challenge`, apiKey)
 
     const setupHandler = (message) => {
-        console.log(message.element)
+        console.log(apiKey, 'api')
         document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
                 type: "pt:setup",
                 style: styles,
-                token: {}
+                token: token
             },
             common.hostedFieldsEndpoint,
         );
