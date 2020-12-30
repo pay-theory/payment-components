@@ -1,3 +1,4 @@
+import { hostedFieldsEndpoint } from './network'
 const generateWindowListener = (validTarget, handleMessage) => {
     return event => {
         if ([window.location.origin].includes(event.origin)) {
@@ -11,7 +12,7 @@ const generateWindowListener = (validTarget, handleMessage) => {
 
 const generateiFrameWindowListener = (validTarget, handleMessage) => {
     return event => {
-        if ([event.origin].endsWith('tags.static.paytheorystudy.com')) {
+        if (event.origin === hostedFieldsEndpoint) {
             const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
             if (validTarget(message)) {
                 handleMessage(message)
