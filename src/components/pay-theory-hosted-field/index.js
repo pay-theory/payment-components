@@ -1,4 +1,6 @@
 /* global HTMLElement */
+import common from '../../common'
+
 class PayTheoryHostedField extends HTMLElement {
 
   constructor() {
@@ -25,7 +27,7 @@ class PayTheoryHostedField extends HTMLElement {
       wrapperElement.setAttribute('class', 'field-wrapper')
 
       const f = document.createElement('iframe')
-      f.setAttribute('src', `https://dev.tags.static.paytheorystudy.com/${field.name}`)
+      f.setAttribute('src', `${common.hostedFieldsEndpoint}/${field.name}`)
       f.setAttribute('frameBorder', '0')
 
       wrapperElement.appendChild(f)

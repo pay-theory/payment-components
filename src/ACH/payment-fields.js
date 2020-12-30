@@ -112,16 +112,16 @@ export default async(
 
     const setupHandler = () => {
         console.log(common.hostedFieldsEndpoint, 'setup handler')
-        // const length = document.getElementsByTagName('iframe').length
-        // for (var i = 0; i < length; i++) {
-        //     document.getElementsByTagName('iframe')[i].contentWindow.postMessage({
-        //             type: "pt:setup",
-        //             style: styles,
-        //             token: { ready: true }
-        //         },
-        //         common.hostedFieldsEndpoint,
-        //     );
-        //}
+        const length = document.getElementsByTagName('iframe').length
+        for (var i = 0; i < length; i++) {
+            document.getElementsByTagName('iframe')[i].contentWindow.postMessage({
+                    type: "pt:setup",
+                    style: styles,
+                    token: { ready: true }
+                },
+                common.hostedFieldsEndpoint,
+            );
+        }
     }
 
     common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler)
