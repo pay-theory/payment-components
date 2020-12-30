@@ -110,7 +110,7 @@ export default async(
         })
     }
 
-    const token = await common.getData(`${common.transactionEndpoint}/helloworld`, apiKey)
+    const token = await common.getData(`${common.transactionEndpoint}/achtoken`, apiKey)
 
     const setupHandler = (message) => {
         console.log(apiKey, 'api')
@@ -168,9 +168,14 @@ export default async(
         common.removeToken()
     }
 
-    const testApi = async(url, apiKey) => {
-        const result = await common.getData(url, apiKey)
-        return result
+    const testApi = async() => {
+        document.getElementById(`account-number-iframe`).contentWindow.postMessage({
+                type: "pt:init",
+                apiKey: apiKey,
+                token: token
+            },
+            common.hostedFieldsEndpoint,
+        );
     }
 
     const readyObserver = cb => common.handleMessage(
