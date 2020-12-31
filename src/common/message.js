@@ -45,6 +45,8 @@ export const combinedCCTypeMessage = message => typeof message.type === 'string'
 
 export const hostedReadyTypeMessage = message => typeof message.type === 'string' && message.type.endsWith(':ready') && message.type.startsWith('pt-static:')
 
+export const stateTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:state'
+
 export const handleError = error => {
     window.postMessage({
             type: 'pt:error',

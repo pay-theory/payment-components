@@ -76,6 +76,8 @@ export default async(
 
     let isReady = false
 
+    let state = {}
+
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
     const establishElements = (elements, token) => {
@@ -122,6 +124,11 @@ export default async(
         );
     }
 
+    const stateUpdater = (message) => {
+        state[message.element] = message.state
+    }
+
+    common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater)
     common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler)
 
     const mount = async(
@@ -218,5 +225,5 @@ export default async(
                 }
             }
         })
-    return { mount, testApi }
+    return { mount, state }
 }
