@@ -175,14 +175,12 @@ export default async(
 
     const transact = async() => {
         processedElements.forEach(processed => {
-            let type = processed.type.substring(15)
-            console.log(processed)
-            // document.getElementById(`${type}-iframe`).contentWindow.postMessage({
-            //         type: "pt-static:transact",
-            //         element: type
-            //     },
-            //     common.hostedFieldsEndpoint,
-            // );
+            document.getElementById(`${processed.type}-iframe`).contentWindow.postMessage({
+                    type: "pt-static:transact",
+                    element: processed.type
+                },
+                common.hostedFieldsEndpoint,
+            );
         })
     }
 
