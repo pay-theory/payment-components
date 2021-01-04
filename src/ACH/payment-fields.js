@@ -176,6 +176,7 @@ export default async(
     const transact = async() => {
         processedElements.forEach(processed => {
             let type = processed.type.substring(15)
+            console.log(type)
             document.getElementById(`${type}-iframe`).contentWindow.postMessage({
                     type: "pt-static:transact",
                     element: type
