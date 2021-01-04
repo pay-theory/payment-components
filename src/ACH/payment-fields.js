@@ -168,20 +168,21 @@ export default async(
     }
 
     const cancel = () => {
-
         transacting['tokenize'] = false
         common.removeIdentity()
         common.removeToken()
     }
 
-    const testApi = async() => {
-        document.getElementById(`account-number-iframe`).contentWindow.postMessage({
-                type: "pt:init",
-                apiKey: apiKey,
-                token: token
-            },
-            common.hostedFieldsEndpoint,
-        );
+    const transact = async() => {
+        processedElements.forEach(processed => {
+            let type = processed.type.substring(15)
+            document.getElementById(`${type}-iframe`).contentWindow.postMessage({
+                    type: "pt-static:transact",
+                    element: type
+                },
+                common.hostedFieldsEndpoint,
+            );
+        })
     }
 
     const readyObserver = cb => common.handleMessage(
@@ -225,5 +226,5 @@ export default async(
                 }
             }
         })
-    return { mount, state }
+    return { mount, state, transact }
 }

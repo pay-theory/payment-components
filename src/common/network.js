@@ -21,6 +21,8 @@ export const postData = async(url, apiKey, data = {}) => {
 export const getData = async(url, apiKey) => {
     const options = {
         method: 'GET',
+        mode: 'cors',
+        cache: 'no-cache',
         headers: {
             'x-api-key': apiKey,
             'content-type': 'application/json',
