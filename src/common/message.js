@@ -47,6 +47,8 @@ export const hostedReadyTypeMessage = message => typeof message.type === 'string
 
 export const stateTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:state'
 
+export const staticTransactTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:transact'
+
 export const handleError = error => {
     window.postMessage({
             type: 'pt:error',
