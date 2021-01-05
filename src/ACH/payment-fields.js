@@ -180,11 +180,12 @@ export default async(
         common.removeToken()
     }
 
-    const transact = async() => {
+    const transact = async(buyerOptions = {}) => {
         processedElements.forEach(processed => {
             document.getElementById(`${processed.type}-iframe`).contentWindow.postMessage({
                     type: "pt-static:transact",
-                    element: processed.type
+                    element: processed.type,
+                    buyerOptions
                 },
                 common.hostedFieldsEndpoint,
             );
