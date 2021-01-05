@@ -85,7 +85,7 @@ const generateToken = async(host, clientKey, apiKey, message) => {
     }
 
     return await postData(
-        `${host}/token`,
+        `${host}/${clientKey}/token`,
         apiKey,
         payload,
     )
