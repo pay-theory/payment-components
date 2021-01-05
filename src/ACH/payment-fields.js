@@ -128,7 +128,7 @@ export default async(
         state[message.element] = message.state
     }
 
-    const transactHandler = message => {
+    const relayHandler = message => {
         document.getElementById(`account-number-iframe`).contentWindow.postMessage(message,
             common.hostedFieldsEndpoint,
         );
@@ -136,7 +136,7 @@ export default async(
 
     common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater)
     common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler)
-    common.handleHostedFieldMessage(common.staticTransactTypeMessage, transactHandler)
+    common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler)
 
     const mount = async(
         elements = {
