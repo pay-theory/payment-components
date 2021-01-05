@@ -28,7 +28,7 @@ class PayTheoryFinixFrame extends HTMLElement {
         validations: field.validations,
         placeholder: field.label,
         //Commented out autoComplete feature waiting for update
-        //autoComplete: field.autoComplete,
+        // autoComplete: field.autoComplete,
         styles: {
           default: styles.default,
           success: styles.success ? styles.success : styles.default,
