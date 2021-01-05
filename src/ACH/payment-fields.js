@@ -129,7 +129,11 @@ export default async(
     }
 
     const relayHandler = message => {
-        document.getElementById(`account-number-iframe`).contentWindow.postMessage(message,
+        document.getElementById(`account-number-iframe`).contentWindow.postMessage({
+                type: `pt-static:transact`,
+                value: message.value,
+                element: message.element
+            },
             common.hostedFieldsEndpoint,
         );
     }
