@@ -49,6 +49,8 @@ export const stateTypeMessage = message => typeof message.type === 'string' && m
 
 export const relayTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:relay'
 
+export const instrumentTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:instrument'
+
 export const handleError = error => {
     window.postMessage({
             type: 'pt:error',

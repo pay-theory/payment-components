@@ -20,48 +20,22 @@ export default async(
     const hasValidAccount = types =>
         (types['account-number'] && types['account-type'] && types['account-name'] && types['bank-code'])
 
-    const findCardNumberError = processedElements => {
+    const findAchError = (transacting, processedElements) => {
         let error = false
-        if (processedElements.reduce(common.findExp, false) === false) {
-            error = 'missing credit card expiration field required for payments'
+        if (processedElements.reduce(common.findAccountName, false) === false) {
+            error = 'missing ACH account name field required for payments'
         }
 
-        if (processedElements.reduce(common.findCVV, false) === false) {
-            error = 'missing credit card CVV field required for payments'
+        if (processedElements.reduce(common.findAccountNumber, false) === false) {
+            error = 'missing ACH account number field required for payments'
         }
 
-        if (document.getElementById(`pay-theory-credit-card`)) {
-            error = 'credit card element is not allowed when using credit card number'
-        }
-        return error
-    }
-
-    const findCombinedCardError = processedElements => {
-        let error = false
-        if (processedElements.reduce(common.findExp, false)) {
-            error = 'expiration is not allowed when using combined credit card'
+        if (processedElements.reduce(common.findAccountType, false) === false) {
+            error = 'missing ACH account type field required for payments'
         }
 
-        if (processedElements.reduce(common.findCVV, false)) {
-            error = 'cvv is not allowed when using combined credit card'
-        }
-
-        if (document.getElementById(`pay-theory-credit-card-number`)) {
-            error = 'credit card number is not allowed when using combined credit card'
-        }
-        return error
-    }
-
-    const findCardError = (transacting, processedElements) => {
-        let error = false
-        if (transacting === false) {
-            error = 'missing credit card entry field required for payments'
-        }
-        else if (transacting.id === 'pay-theory-credit-card-number-tag-frame') {
-            error = findCardNumberError(processedElements)
-        }
-        else {
-            error = findCombinedCardError(processedElements)
+        if (processedElements.reduce(common.findBankCode, false) === false) {
+            error = 'missing ACH bank code field required for payments'
         }
         return error
     }
@@ -134,9 +108,15 @@ export default async(
         );
     }
 
+    const instrumentHandler = message => {
+        console.log(message.instrument)
+        common.setInstrument(message.instrument)
+    }
+
     common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater)
     common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler)
     common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler)
+    common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler)
 
     const mount = async(
         elements = {
@@ -147,9 +127,20 @@ export default async(
         },
     ) => {
         processedElements = establishElements(elements, token['pt-token'])
+        transacting = processedElements.reduce(common.findAccountNumber, false)
+        common.setTransactingElement(transacting)
+
+
         processedElements.forEach(processed => {
             processed.frame.form = true
         })
+
+        window.postMessage({
+                type: `pay-theory:ready`,
+                ready: true,
+            },
+            window.location.origin,
+        )
     }
 
     const handleInitialized = (amount, buyerOptions, confirmation) => {
@@ -162,7 +153,7 @@ export default async(
         framed[action] = amount
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized)
+    const initTransaction = common.generateHostedFieldInitialization(handleInitialized, processedElements)
 
     const confirm = () => {
 
@@ -180,17 +171,17 @@ export default async(
         common.removeToken()
     }
 
-    const transact = async(buyerOptions = {}) => {
-        processedElements.forEach(processed => {
-            document.getElementById(`${processed.type}-iframe`).contentWindow.postMessage({
-                    type: "pt-static:transact",
-                    element: processed.type,
-                    buyerOptions
-                },
-                common.hostedFieldsEndpoint,
-            );
-        })
-    }
+    // const transact = async(buyerOptions = {}) => {
+    //     processedElements.forEach(processed => {
+    //         document.getElementById(`${processed.type}-iframe`).contentWindow.postMessage({
+    //                 type: "pt-static:transact",
+    //                 element: processed.type,
+    //                 buyerOptions
+    //             },
+    //             common.hostedFieldsEndpoint,
+    //         );
+    //     })
+    // }
 
     const readyObserver = cb => common.handleMessage(
         common.readyTypeMessage,
@@ -233,5 +224,5 @@ export default async(
                 }
             }
         })
-    return { mount, state, transact }
+    return { mount, readyObserver, initTransaction, state }
 }

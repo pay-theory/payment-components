@@ -1,8 +1,8 @@
-import PayTheoryHostedField from '../pay-theory-hosted-field'
+import PayTheoryHostedFieldTransactional from '../pay-theory-hosted-field-transactional'
 const NAME = 'account-number'
 const FIELDS = [{ name: 'account-number', label: 'Account Number' }];
 
-class CreditCardNameFrame extends PayTheoryHostedField {
+class CreditCardNameFrame extends PayTheoryHostedFieldTransactional {
 
   constructor() {
     super()

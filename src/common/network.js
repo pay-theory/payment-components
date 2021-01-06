@@ -241,3 +241,23 @@ export const generateInitialization = (handleInitialized) => {
         }
     }
 }
+
+export const generateHostedFieldInitialization = (handleInitialized, processedElements) => {
+    return async(amount, buyerOptions = {}, confirmation = false) => {
+        if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
+            processedElements.forEach(processed => {
+                document.getElementById(`${processed.type}-iframe`).contentWindow.postMessage({
+                        type: "pt-static:transact",
+                        element: processed.type,
+                        buyerOptions
+                    },
+                    hostedFieldsEndpoint,
+                );
+            })
+            // handleInitialized(amount, buyerOptions, confirmation)
+        }
+        else {
+            return message.handleError('amount must be a positive integer')
+        }
+    }
+}

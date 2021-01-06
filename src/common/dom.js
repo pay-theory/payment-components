@@ -25,6 +25,38 @@ export const findExp = (element, cv) => {
         element
 }
 
+export const findAccountNumber = (element, cv) => {
+    return element === false ?
+        (cv.type === 'account-number') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findBankCode = (element, cv) => {
+    return element === false ?
+        (cv.type === 'bank-code') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findAccountType = (element, cv) => {
+    return element === false ?
+        (cv.type === 'account-type') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findAccountName = (element, cv) => {
+    return element === false ?
+        (cv.type === 'account-name') ?
+        cv.frame :
+        false :
+        element
+}
+
 export const addFrame = (
     container,
     element,
