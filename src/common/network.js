@@ -242,11 +242,10 @@ export const generateInitialization = (handleInitialized) => {
     }
 }
 
-export const generateHostedFieldInitialization = (handleInitialized, processedElements) => {
+export const generateHostedFieldInitialization = (handleInitialized) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
-            console.log('initialized')
-            processedElements.forEach(processed => {
+            data.achFieldTypes.forEach(processed => {
                 document.getElementById(`${processed.type}-iframe`).contentWindow.postMessage({
                         type: "pt-static:transact",
                         element: processed.type,
