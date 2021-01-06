@@ -246,7 +246,7 @@ export const generateHostedFieldInitialization = (handleInitialized) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
             data.achFieldTypes.forEach(field => {
-                document.getElementById(`${field.type}-iframe`).contentWindow.postMessage({
+                document.getElementById(`${field}-iframe`).contentWindow.postMessage({
                         type: "pt-static:transact",
                         element: field,
                         buyerOptions
