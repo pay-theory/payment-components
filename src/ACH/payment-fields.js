@@ -98,10 +98,6 @@ export default async(
         );
     }
 
-    const stateUpdater = (message) => {
-        state[message.element] = message.state
-    }
-
     const relayHandler = message => {
         document.getElementById(`account-number-iframe`).contentWindow.postMessage(message,
             common.hostedFieldsEndpoint,
@@ -113,7 +109,7 @@ export default async(
         common.setInstrument(message.instrument)
     }
 
-    common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater)
+
     common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler)
     common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler)
     common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler)
@@ -130,10 +126,21 @@ export default async(
         transacting = processedElements.reduce(common.findAccountNumber, false)
         common.setTransactingElement(transacting)
 
+        let error = findAchError(transacting, processedElements)
+        if (error) {
+            return common.handleError(error)
+        }
 
+        const handleState = stateHandler(processedElements)
         processedElements.forEach(processed => {
             processed.frame.form = true
         })
+
+        const stateUpdater = (message) => {
+            state[message.element] = message.state
+            handleState(state)
+        }
+        common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater)
 
         window.postMessage({
                 type: `pay-theory:ready`,
@@ -212,11 +219,9 @@ export default async(
 
                 validTypes[type] = message.valid
 
-                const validatingCard = hasValidCard(validTypes)
+                const validatingAccount = hasValidAccount(validTypes)
 
-                const validatingDetails = hasValidDetails(validTypes)
-
-                validating = (validatingCard && validatingDetails)
+                validating = (validatingAccount)
 
                 if (isCallingType(type) && isValid !== validating) {
                     isValid = validating
@@ -224,5 +229,5 @@ export default async(
                 }
             }
         })
-    return { mount, readyObserver, initTransaction, state }
+    return { mount, readyObserver, initTransaction, validObserver }
 }
