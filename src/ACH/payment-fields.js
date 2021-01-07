@@ -131,14 +131,35 @@ export default async(
             return common.handleError(error)
         }
 
-        const handleState = stateHandler(processedElements)
         processedElements.forEach(processed => {
             processed.frame.form = true
         })
 
         const stateUpdater = (message) => {
-            state[message.element] = message.state
-            handleState(state)
+            let element
+            switch (message.element) {
+            case 'account-name':
+                {
+                    element = processedElements.reduce(common.findAccountName, false)
+                    break
+                }
+            case 'account-number':
+                {
+                    element = processedElements.reduce(common.findAccountNumber, false)
+                    break
+                }
+            case 'account-type':
+                {
+                    element = processedElements.reduce(common.findAccountType, false)
+                    break
+                }
+            case 'bank-code':
+                {
+                    element = processedElements.reduce(common.findBankCode, false)
+                    break
+                }
+            }
+            element.state = message.state
         }
         common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater)
 

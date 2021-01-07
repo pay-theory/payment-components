@@ -6,6 +6,7 @@ class PayTheoryHostedField extends HTMLElement {
   constructor() {
     super()
     this.defineFields = this.defineFields.bind(this)
+    this.isValidFrame = this.isValidFrame.bind(this)
     this.appendElement = this.appendElement.bind(this)
     this.setFields = this.setFields.bind(this)
     this.eventful = this.eventful.bind(this)
@@ -40,6 +41,10 @@ class PayTheoryHostedField extends HTMLElement {
   appendElement(element) {
     const container = document.getElementById(`pay-theory-${this.field}-field-container`)
     container.appendChild(element)
+  }
+
+  isValidFrame(invalidElement) {
+    return typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
   }
 
   findEventMessage(event) {
@@ -163,6 +168,19 @@ class PayTheoryHostedField extends HTMLElement {
     }
     else {
       this.styling = this.defaultStyles;
+    }
+  }
+
+  get state() {
+    return this.stated
+  }
+
+  set state(_stated) {
+    this.stated = _stated
+    const invalid = common.invalidate(_stated)
+    this.valid = this.isValidFrame(invalid)
+    if (_stated.isDirty && invalid) {
+      this.error = _stated.errorMessages[0]
     }
   }
 
