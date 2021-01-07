@@ -136,6 +136,7 @@ export default async(
         })
 
         const stateUpdater = (message) => {
+            console.log(message, 'state')
             let element
             switch (message.element) {
             case 'account-name':
