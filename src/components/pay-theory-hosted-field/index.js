@@ -177,13 +177,12 @@ class PayTheoryHostedField extends HTMLElement {
 
   set state(_stated) {
     this.stated = _stated
-    const invalid = common.invalidate(_stated)
-    if (_stated.isDirty) {
-      this.valid = this.isValidFrame(invalid)
-      if (invalid) {
-        this.error = _stated.errorMessages[0]
-      }
+    const invalid = _stated.errorMessages.length > 0
+    this.valid = this.isValidFrame(invalid)
+    if (_stated.isDirty && invalid) {
+      this.error = _stated.errorMessages[0]
     }
+
   }
 
   get error() {
