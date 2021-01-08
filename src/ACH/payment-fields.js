@@ -60,7 +60,7 @@ export default async(
         console.log(apiKey, 'api')
         document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
                 type: "pt:setup",
-                style: styles
+                style: styles ? styles : common.defaultStyles
             },
             common.hostedFieldsEndpoint,
         );
