@@ -72,15 +72,9 @@ export default async(
         );
     }
 
-    const instrumentHandler = message => {
-        common.setInstrument(message.instrument)
-        common.getTransactingElement().instrument = message.instrument
-    }
-
 
     common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler)
     common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler)
-    common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler)
 
     const mount = async(
         elements = {
@@ -102,6 +96,11 @@ export default async(
         processedElements.forEach(processed => {
             processed.frame.form = true
         })
+
+        const instrumentHandler = message => {
+            common.setInstrument(message.instrument)
+            transacting = message.instrument
+        }
 
         const stateUpdater = (message) => {
             let element
@@ -129,7 +128,10 @@ export default async(
             }
             element.state = message.state
         }
+
         common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater)
+        common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler)
+
 
         window.postMessage({
                 type: `pay-theory:ready`,
