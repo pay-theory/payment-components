@@ -99,7 +99,7 @@ export default async(
 
         const instrumentHandler = message => {
             common.setInstrument(message.instrument)
-            transacting = message.instrument
+            transacting.instrument = message.instrument
         }
 
         const stateUpdater = (message) => {
