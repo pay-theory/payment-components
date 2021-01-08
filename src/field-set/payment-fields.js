@@ -193,7 +193,6 @@ export default async(
     }
 
     const cancel = () => {
-
         transacting['tokenize'] = false
         common.removeIdentity()
         common.removeToken()

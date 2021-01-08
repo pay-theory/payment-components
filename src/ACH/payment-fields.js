@@ -22,22 +22,29 @@ export default async(
 
     const findAchError = (processedElements) => {
         let error = false
+        let count = 0
+
         if (processedElements.reduce(common.findAccountName, false) === false) {
             error = 'missing ACH account name field required for payments'
+            count++
         }
 
         if (processedElements.reduce(common.findAccountNumber, false) === false) {
             error = 'missing ACH account number field required for payments'
+            count++
         }
 
         if (processedElements.reduce(common.findAccountType, false) === false) {
             error = 'missing ACH account type field required for payments'
+            count++
         }
 
         if (processedElements.reduce(common.findBankCode, false) === false) {
             error = 'missing ACH bank code field required for payments'
+            count++
         }
-        return error
+
+        return count === 4 ? false : error
     }
 
     let isValid = false
