@@ -285,6 +285,7 @@ const transfer = async(cb, host, apiKey, tags) => {
         created_at: transfer.created_at,
         amount: transfer.amount,
         service_fee: transfer.service_fee,
+        state: transfer.state === 'PENDING' ? 'APPROVED' : transfer.state === 'error' ? 'FAILURE' : transfer.state,
         tags: transfer.tags,
     })
 }
