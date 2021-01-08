@@ -165,9 +165,9 @@ export default async(
     }
 
     const cancel = () => {
-        transacting.instrument = 'cancel'
         common.removeIdentity()
         common.removeToken()
+        transacting.instrument = 'cancel'
     }
 
     const readyObserver = cb => common.handleMessage(
