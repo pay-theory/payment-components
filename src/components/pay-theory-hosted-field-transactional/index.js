@@ -95,8 +95,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   set instrument(_instrumented) {
     console.log(this.instrumented)
-    if (!this.instrumented || _instrumented === 'cancel') {
-      this.instrumented = _instrumented === 'cancel' ? false : _instrumented
+    if (!this.instrumented) {
+      this.instrumented = _instrumented
       switch (this.actioned) {
       case ('tokenize'):
         {
@@ -109,6 +109,9 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
           break
         }
       }
+    }
+    if (_instrumented === 'cancel') {
+      this.instrumented = false
     }
   }
 
