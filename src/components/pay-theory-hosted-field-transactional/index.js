@@ -94,7 +94,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set instrument(_instrumented) {
-    console.log('instrument', _instrumented, this.actioned)
     this.instrumented = _instrumented
     switch (this.actioned) {
     case ('tokenize'):
