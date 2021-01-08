@@ -130,7 +130,7 @@ const callIdempotency = async(host, apiKey, fee_mode, message) => {
     const payment = message.tokenize ? message.tokenize : message.transact
     payment.fee_mode = fee_mode
     return await postData(
-        `${host}/token`,
+        `${host}/ach-idempotency`,
         apiKey,
         payment
     )
