@@ -126,6 +126,30 @@ const generateToken = async(host, apiKey, fee_mode, message) => {
     )
 }
 
+const callIdempotency = async(host, apiKey, fee_mode, message) => {
+    const payment = message.tokenize ? message.tokenize : message.transact
+    payment.fee_mode = fee_mode
+    return await postData(
+        `${host}/token`,
+        apiKey,
+        payment
+    )
+}
+
+const callAuthorization = async(host, apiKey, fee_mode, message) => {
+
+    const payment = message.tokenize ? message.tokenize : message.transact
+    payment.fee_mode = fee_mode
+    const payload = {
+        payment
+    }
+    return await postData(
+        `${host}/token`,
+        apiKey,
+        payload,
+    )
+}
+
 const tokenize = async(host, apiKey, fee_mode, message) => {
     if (isValidTransaction(data.getToken())) {
 
@@ -158,6 +182,41 @@ export const generateTokenize = (cb, host, apiKey, fee_mode) => {
             "receipt_number": token.idempotency,
             "amount": token.payment.amount,
             "service_fee": token.payment.service_fee
+        })
+    }
+}
+
+const idempotency = async(host, apiKey, fee_mode, message) => {
+    if (isValidTransaction(data.getToken())) {
+
+        data.setToken(true)
+        let token = await callIdempotency(host, apiKey, fee_mode, message)
+        //{"state":"error","reason":"service fee unavailable"}
+        // handle error when token fails
+
+        if (token.state === 'error') {
+            const transactionalId = data.getTransactingElement()
+            const transactionalElement = document.getElementById(transactionalId)
+            transactionalElement.error = token.reason
+        }
+        else {
+            data.setToken(token['payment-token'])
+            data.setBin(token.bin)
+        }
+        return token
+    }
+    return false
+}
+
+export const generateIdempotency = (cb, host, apiKey, fee_mode) => {
+    return async message => {
+        const token = await idempotency(host, apiKey, fee_mode, message)
+
+        cb({
+            "last_four": token.bin.last_four,
+            "receipt_number": token.idempotency,
+            "amount": token.bin.amount,
+            "service_fee": token.bin.service_fee
         })
     }
 }
@@ -200,6 +259,50 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
         state: payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state,
         tags: payment.tags,
     })
+}
+
+const transfer = async(cb, host, apiKey, tags) => {
+    const bin = data.getBin()
+    tags['pt-number'] = bin.reciept_number
+
+    const token = data.getToken()
+    const payload = {
+        "payment-token": token,
+        tags
+    }
+
+    const transfer = await postData(
+        `${host}/ach-transfer`,
+        apiKey,
+        payload,
+    )
+
+    data.removeAll()
+
+    cb({
+        receipt_number: bin.reciept_number,
+        last_four: bin.last_four,
+        created_at: transfer.created_at,
+        amount: transfer.amount,
+        service_fee: transfer.service_fee,
+        tags: transfer.tags,
+    })
+}
+
+export const generateTransfer = (cb, host, apiKey, tags = {}) => {
+    return async() => {
+        await transfer(cb, host, apiKey, tags)
+    }
+}
+
+export const generateHostedFieldTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
+    return async message => {
+        isValidTransaction(data.getToken())
+
+        await idempotency(host, apiKey, fee_mode, message)
+
+        await transfer(cb, host, apiKey, tags)
+    }
 }
 
 export const generateCapture = (cb, host, apiKey, tags = {}) => {
@@ -245,6 +348,7 @@ export const generateInitialization = (handleInitialized) => {
 export const generateHostedFieldInitialization = (handleInitialized) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
+            await handleInitialized(amount, buyerOptions, confirmation)
             data.achFieldTypes.forEach(field => {
                 document.getElementById(`${field}-iframe`).contentWindow.postMessage({
                         type: "pt-static:transact",
@@ -254,7 +358,6 @@ export const generateHostedFieldInitialization = (handleInitialized) => {
                     hostedFieldsEndpoint,
                 );
             })
-            // handleInitialized(amount, buyerOptions, confirmation)
         }
         else {
             return message.handleError('amount must be a positive integer')

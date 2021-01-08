@@ -18,42 +18,25 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     return amount % 1 === 0 && amount >= 1
   }
 
-  generateTokenizeCallback(tokenAmount) {
-    const amount = tokenAmount
-    return (err, token) => {
-      const finixToken = token
-      finixToken.bin = this.bin
-      const message = {
-        type: 'pt:tokenize',
-        tokenize: { amount, currency: 'USD', finixToken }
-      }
-      if (err) {
-        this.error = err
-      }
-      else {
-        window.postMessage(
-          message,
-          window.location.origin
-        )
-      }
+  generateTokenizeCallback(amount, token) {
+    const message = {
+      type: 'pt:tokenize',
+      tokenize: { amount, currency: 'USD', "pt-instrument": token }
     }
+    window.postMessage(
+      message,
+      window.location.origin
+    )
   }
 
-  generateTransactCallback(amount) {
-    return (err, res) => {
-      if (err) {
-        this.error = err
-      }
-      else {
-        const transact = { amount, currency: 'USD', finixToken: { bin: this.bin, ...res } }
-        window.postMessage({
-            type: 'pt:transact',
-            transact
-          },
-          window.location.origin,
-        )
-      }
-    }
+  generateTransactCallback(amount, token) {
+    const transact = { amount, currency: 'USD', "pt-instrument": token }
+    window.postMessage({
+        type: 'pt:transact',
+        transact
+      },
+      window.location.origin,
+    )
   }
 
   get tokenize() {
@@ -104,6 +87,34 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       this.transacting = _transacting
       this.form.submit(FINIX_ENV, this.application, this.generateTransactCallback(amount))
     }
+  }
+
+  get instrument() {
+    return this.instrumented
+  }
+
+  set instrument(_instrumented) {
+    this.instrumented = _instrumented
+    switch (this.actioned) {
+    case ('tokenize'):
+      {
+        this.generateTokenizeCallback(this.amounting, _instrumented)
+        break
+      }
+    case ('transact'):
+      {
+        this.generateTransactCallback(this.amounting, _instrumented)
+        break
+      }
+    }
+  }
+
+  get action() {
+    return this.actioned
+  }
+
+  set action(_actioned) {
+    this.actioned = _actioned
   }
 
   get amount() {

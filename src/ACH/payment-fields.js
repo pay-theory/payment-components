@@ -20,7 +20,7 @@ export default async(
     const hasValidAccount = types =>
         (types['account-number'] && types['account-type'] && types['account-name'] && types['bank-code'])
 
-    const findAchError = (transacting, processedElements) => {
+    const findAchError = (processedElements) => {
         let error = false
         if (processedElements.reduce(common.findAccountName, false) === false) {
             error = 'missing ACH account name field required for payments'
@@ -40,8 +40,6 @@ export default async(
         return error
     }
 
-    let formed = false
-
     let isValid = false
 
     let processedElements = []
@@ -50,40 +48,10 @@ export default async(
 
     let isReady = false
 
-    let state = {}
-
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
     const establishElements = (elements, token) => {
         return common.processAchElements(elements, styles, token)
-    }
-
-    const isValidFrame = invalidElement => typeof invalidElement === 'undefined' ?
-        invalidElement :
-        !invalidElement
-
-    const handleElement = (element, errors, invalidElement, stated) => {
-        if (invalidElement) {
-            errors.push(stated.errorMessages[0])
-            element.frame.error = stated.errorMessages[0]
-        }
-        else {
-            element.frame.error = false
-        }
-    }
-
-    const stateHandler = elements => state => {
-        let errors = []
-        elements.forEach(element => {
-            const [, stated, invalidElement] = common.stateMapping(element.type, state)
-
-            if (stated.isDirty) {
-                element.frame.valid = isValidFrame(invalidElement)
-
-                handleElement(element, errors, invalidElement, stated)
-            }
-
-        })
     }
 
     const token = await common.getData(`${common.transactionEndpoint}/pt-token`, apiKey)
@@ -105,8 +73,8 @@ export default async(
     }
 
     const instrumentHandler = message => {
-        console.log(message.instrument)
         common.setInstrument(message.instrument)
+        common.getTransactingElement().instrument = message.instrument
     }
 
 
@@ -126,7 +94,7 @@ export default async(
         transacting = processedElements.reduce(common.findAccountNumber, false)
         common.setTransactingElement(transacting)
 
-        let error = findAchError(transacting, processedElements)
+        let error = findAchError(processedElements)
         if (error) {
             return common.handleError(error)
         }
@@ -178,10 +146,11 @@ export default async(
 
         const framed = transacting.frame ? transacting.frame : transacting
 
-        framed[action] = amount
+        framed.amount = amount
+        framed.action = action
     }
 
-    const initTransaction = common.generateHostedFieldInitialization(handleInitialized, processedElements)
+    const initTransaction = common.generateHostedFieldInitialization(handleInitialized)
 
     const confirm = () => {
 
@@ -198,18 +167,6 @@ export default async(
         common.removeIdentity()
         common.removeToken()
     }
-
-    // const transact = async(buyerOptions = {}) => {
-    //     processedElements.forEach(processed => {
-    //         document.getElementById(`${processed.type}-iframe`).contentWindow.postMessage({
-    //                 type: "pt-static:transact",
-    //                 element: processed.type,
-    //                 buyerOptions
-    //             },
-    //             common.hostedFieldsEndpoint,
-    //         );
-    //     })
-    // }
 
     const readyObserver = cb => common.handleMessage(
         common.readyTypeMessage,
@@ -250,5 +207,5 @@ export default async(
                 }
             }
         })
-    return { mount, readyObserver, initTransaction, validObserver }
+    return common.generateHostedFieldsReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, apiKey, fee_mode }, tags)
 }
