@@ -94,24 +94,18 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set instrument(_instrumented) {
-    console.log(this.instrumented)
-    if (!this.instrumented) {
-      this.instrumented = _instrumented
-      switch (this.actioned) {
-      case ('tokenize'):
-        {
-          this.generateTokenizeCallback(this.amounting, _instrumented)
-          break
-        }
-      case ('transact'):
-        {
-          this.generateTransactCallback(this.amounting, _instrumented)
-          break
-        }
+    this.instrumented = _instrumented
+    switch (this.actioned) {
+    case ('tokenize'):
+      {
+        this.generateTokenizeCallback(this.amounting, _instrumented)
+        break
       }
-    }
-    if (_instrumented === 'cancel') {
-      this.instrumented = false
+    case ('transact'):
+      {
+        this.generateTransactCallback(this.amounting, _instrumented)
+        break
+      }
     }
   }
 
