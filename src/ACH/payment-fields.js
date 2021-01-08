@@ -165,7 +165,7 @@ export default async(
     }
 
     const cancel = () => {
-        transacting['tokenize'] = false
+        transacting.instrument = false
         common.removeIdentity()
         common.removeToken()
     }
