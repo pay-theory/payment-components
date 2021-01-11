@@ -182,5 +182,5 @@ export const removeAll = () => {
     removeToken()
     removeBuyer()
     removeBin()
-    removeTransactingElement()
+    removeTransactingElements()
 }

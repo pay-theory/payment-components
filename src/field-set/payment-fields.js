@@ -204,30 +204,48 @@ export default async(
             city: common.fields.CREDIT_CARD_CITY,
             state: common.fields.CREDIT_CARD_STATE,
             zip: common.fields.CREDIT_CARD_ZIP,
+            'account-number': common.achFields.ACCOUNT_NUMBER,
+            'ach-name': common.achFields.ACCOUNT_NAME,
+            'bank-code': common.achFields.BANK_CODE,
+            'account-type': common.achFields.ACCOUNT_TYPE,
         },
     ) => {
         const achElements = {
-            'account-number': common.achFields.ACCOUNT_NUMBER,
-            'account-name': common.achFields.ACCOUNT_NAME,
-            'bank-code': common.achFields.BANK_CODE,
-            'account-type': common.achFields.ACCOUNT_TYPE,
+            'account-number': elements['account-number'],
+            'account-name': elements['ach-name'],
+            'bank-code': elements['bank-code'],
+            'account-type': elements['account-type'],
         }
 
-        processedCardElements = establishElements(elements)
+        const cardElements = {
+            'credit-card': elements['credit-card'],
+            'number': elements.number,
+            'exp': elements.exp,
+            'cvv': elements.cvv,
+            'account-name': elements['account-name'],
+            'address-1': elements['address-1'],
+            'address-2': elements['address-2'],
+            city: elements.city,
+            state: elements.state,
+            zip: elements.zip,
+        }
+
+        processedCardElements = establishElements(cardElements)
         processedACHElements = common.processAchElements(achElements, styles, token)
         transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
         transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
 
-        if (processedACHElements.length === 0 && processedACHElements.length === 0) {
+        if (processedACHElements.length === 0 && processedCardElements.length === 0) {
             return common.handleError('There are no PayTheory fields')
         }
 
         common.setTransactingElements(transacting)
 
         if (processedCardElements.length > 0) {
+            ccInitialized = true
             const handleState = stateHandler(processedCardElements)
             const handleFormed = finalForm => {
-                let error = findCardError(transacting, processedCardElements)
+                let error = findCardError(transacting.card, processedCardElements)
                 if (error) {
                     return common.handleError(error)
                 }
@@ -235,8 +253,6 @@ export default async(
                 processedCardElements.forEach(processed => {
                     processed.frame.form = finalForm
                 })
-
-                ccInitialized = true
 
                 if (achInitialized || processedACHElements.length === 0) {
                     window.postMessage({
@@ -254,6 +270,7 @@ export default async(
         }
 
         if (processedACHElements.length > 0) {
+            achInitialized = true
             let error = findAchError(processedACHElements)
             if (error) {
                 return common.handleError(error)
@@ -265,7 +282,7 @@ export default async(
 
             const instrumentHandler = message => {
                 common.setInstrument(message.instrument)
-                transacting.instrument = message.instrument
+                transacting.ach.instrument = message.instrument
             }
 
             const stateUpdater = (message) => {
@@ -297,8 +314,6 @@ export default async(
 
             common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater)
             common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler)
-
-            achInitialized = true
 
             if (ccInitialized || processedCardElements.length === 0) {
                 window.postMessage({

@@ -12,10 +12,11 @@ describe('createPaymentFields', () => {
 
     beforeEach(() => {
         let stub = sinon.stub(window, 'fetch'); //add stub
-        stub.onCall(0).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(0).returns(common.jsonOk(common.MOCK_TOKEN));
         stub.onCall(1).returns(common.jsonOk(common.MOCK_JSON));
         stub.onCall(2).returns(common.jsonOk(common.MOCK_JSON));
         stub.onCall(3).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(4).returns(common.jsonOk(common.MOCK_JSON));
 
         error = undefined;
         window.onerror = (e) => error = e;
@@ -647,10 +648,11 @@ describe('createPaymentFields Errors:', () => {
 
     beforeEach(() => {
         let stub = sinon.stub(window, 'fetch'); //add stub
-        stub.onCall(0).returns(common.jsonOk(common.MOCK_JSON_FAIL));
-        stub.onCall(1).returns(common.jsonOk(common.MOCK_JSON_FAIL));
-        stub.onCall(2).returns(common.jsonOk(common.MOCK_JSON_FAIL));
-        stub.onCall(3).returns(common.jsonOk(common.MOCK_JSON_FAIL));
+        stub.onCall(0).returns(common.jsonOk(common.MOCK_TOKEN));
+        stub.onCall(1).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(2).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(3).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(4).returns(common.jsonOk(common.MOCK_JSON));
 
         error = undefined;
         window.onerror = (e) => error = e;
@@ -1038,13 +1040,25 @@ describe('createPaymentFields Errors:', () => {
 
 describe('createPaymentFields with prod environment', () => {
     const OLD_ENV = process.env;
+    let error;
 
     beforeEach(() => {
         process.env.BUILD_ENV = 'prod';
+        let stub = sinon.stub(window, 'fetch'); //add stub
+        stub.onCall(0).returns(common.jsonOk(common.MOCK_TOKEN));
+        stub.onCall(1).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(2).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(3).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(4).returns(common.jsonOk(common.MOCK_JSON));
+
+        error = undefined;
+        window.onerror = (e) => error = e;
     });
 
     afterEach(() => {
+        window.fetch.restore(); //remove stub
         process.env = OLD_ENV; // restore old env
+        data.removeAll()
     });
 
     it('initTransaction sets transact to true', async() => {
