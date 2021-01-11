@@ -211,6 +211,7 @@ class PayTheoryHostedField extends HTMLElement {
       window.postMessage({
           type: `pt:${this.field}:valid`,
           valid: isValid,
+          hosted: true
         },
         window.location.origin,
       )

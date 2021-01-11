@@ -73,17 +73,25 @@ export const stateMap = {
     'zip': 'address.postal_code'
 }
 
-export const getTransactingElement = () => {
-    return localStorage.getItem(TRANSACTING)
+export const getTransactingElements = () => {
+    return JSON.parse(localStorage.getItem(TRANSACTING))
 }
 
-export const setTransactingElement = element => {
-    return localStorage.setItem(TRANSACTING, element.id)
+export const setTransactingElements = element => {
+    const transacting = []
+    if (element.card) {
+        transacting.push(element.card.id)
+    }
+    if (element.ach) {
+        transacting.push(element.ach.id)
+    }
+    return localStorage.setItem(TRANSACTING, JSON.stringify(transacting))
 }
 
-export const removeTransactingElement = () => {
+export const removeTransactingElements = () => {
     return localStorage.removeItem(TRANSACTING)
 }
+
 export const getReady = () => {
     return localStorage.getItem(READY)
 }

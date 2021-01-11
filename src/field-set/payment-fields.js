@@ -18,14 +18,17 @@ export default async(
         'address-2': true,
         'city': true,
         'state': true,
-        'zip': true
+        'zip': true,
+        'account-number': false,
+        'bank-code': false,
+        'ach-name': false,
+        'account-type': false
     }
 
     const isCallingType = type => Object.keys(validTypes).includes(type)
 
     const hasValidCard = types =>
         (types['credit-card'] || (types.number && types.cvv && types.exp))
-
 
     const hasValidStreetAddress = types =>
         (types['address-1'] && types['address-2'])
@@ -35,6 +38,9 @@ export default async(
 
     const hasValidDetails = types =>
         (types['account-name'] && hasValidAddress(types))
+
+    const hasValidAccount = types =>
+        (types['account-number'] && types['account-type'] && types['ach-name'] && types['bank-code'])
 
     const findCardNumberError = processedElements => {
         let error = false
@@ -68,8 +74,37 @@ export default async(
         return error
     }
 
+    const findAchError = (processedElements) => {
+        let error = false
+        if (processedElements.length === 0) {
+            return error
+        }
+
+        if (processedElements.reduce(common.findAccountName, false) === false) {
+            error = 'missing ACH account name field required for payments'
+        }
+
+        if (processedElements.reduce(common.findAccountNumber, false) === false) {
+            error = 'missing ACH account number field required for payments'
+        }
+
+        if (processedElements.reduce(common.findAccountType, false) === false) {
+            error = 'missing ACH account type field required for payments'
+        }
+
+        if (processedElements.reduce(common.findBankCode, false) === false) {
+            error = 'missing ACH bank code field required for payments'
+        }
+
+        return error
+    }
+
     const findCardError = (transacting, processedElements) => {
         let error = false
+        if (processedElements.length === 0) {
+            return error
+        }
+
         if (transacting === false) {
             error = 'missing credit card entry field required for payments'
         }
@@ -88,11 +123,15 @@ export default async(
 
     let isValid = false
 
-    let processedElements = []
+    let processedCardElements = []
+    let processedACHElements = []
 
     let transacting = {}
 
     let isReady = false
+
+    let achInitialized = false
+    let ccInitialized = false
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
@@ -128,6 +167,31 @@ export default async(
         })
     }
 
+    //fetches token for pt-hosted fields
+    const token = await common.getData(`${common.transactionEndpoint}/pt-token`, apiKey)
+
+    //sends styles to hosted fields when they are set up
+    const setupHandler = (message) => {
+        console.log(apiKey, 'api')
+        document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
+                type: "pt:setup",
+                style: styles.default ? styles : common.defaultStyles
+            },
+            common.hostedFieldsEndpoint,
+        );
+    }
+
+    //relays state to the hosted fields to tokenize the instrument
+    const relayHandler = message => {
+        document.getElementById(`account-number-iframe`).contentWindow.postMessage(message,
+            common.hostedFieldsEndpoint,
+        );
+    }
+
+
+    common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler)
+    common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler)
+
     const mount = async(
         elements = {
             'credit-card': common.fields.CREDIT_CARD,
@@ -142,31 +206,108 @@ export default async(
             zip: common.fields.CREDIT_CARD_ZIP,
         },
     ) => {
-        processedElements = establishElements(elements)
-        transacting = processedElements.reduce(common.findTransactingElement, false)
-        common.setTransactingElement(transacting)
+        const achElements = {
+            'account-number': common.achFields.ACCOUNT_NUMBER,
+            'account-name': common.achFields.ACCOUNT_NAME,
+            'bank-code': common.achFields.BANK_CODE,
+            'account-type': common.achFields.ACCOUNT_TYPE,
+        }
 
-        const handleState = stateHandler(processedElements)
-        const handleFormed = finalForm => {
-            let error = findCardError(transacting, processedElements)
+        processedCardElements = establishElements(elements)
+        processedACHElements = common.processAchElements(achElements, styles, token)
+        transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
+        transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
+
+        if (processedACHElements.length === 0 && processedACHElements.length === 0) {
+            return common.handleError('There are no PayTheory fields')
+        }
+
+        common.setTransactingElements(transacting)
+
+        if (processedCardElements.length > 0) {
+            const handleState = stateHandler(processedCardElements)
+            const handleFormed = finalForm => {
+                let error = findCardError(transacting, processedCardElements)
+                if (error) {
+                    return common.handleError(error)
+                }
+
+                processedCardElements.forEach(processed => {
+                    processed.frame.form = finalForm
+                })
+
+                ccInitialized = true
+
+                if (achInitialized || processedACHElements.length === 0) {
+                    window.postMessage({
+                            type: `pay-theory:ready`,
+                            ready: true
+                        },
+                        window.location.origin,
+                    )
+                }
+            }
+
+            if (!formed) {
+                common.appendFinix(formed, handleState, handleFormed)
+            }
+        }
+
+        if (processedACHElements.length > 0) {
+            let error = findAchError(processedACHElements)
             if (error) {
                 return common.handleError(error)
             }
 
-            processedElements.forEach(processed => {
-                processed.frame.form = finalForm
+            processedACHElements.forEach(processed => {
+                processed.frame.form = true
             })
 
-            window.postMessage({
-                    type: `pay-theory:ready`,
-                    ready: true,
-                },
-                window.location.origin,
-            )
-        }
+            const instrumentHandler = message => {
+                common.setInstrument(message.instrument)
+                transacting.instrument = message.instrument
+            }
 
-        if (!formed) {
-            common.appendFinix(formed, handleState, handleFormed)
+            const stateUpdater = (message) => {
+                let element
+                switch (message.element) {
+                case 'account-name':
+                    {
+                        element = processedACHElements.reduce(common.findAccountName, false)
+                        break
+                    }
+                case 'account-number':
+                    {
+                        element = processedACHElements.reduce(common.findAccountNumber, false)
+                        break
+                    }
+                case 'account-type':
+                    {
+                        element = processedACHElements.reduce(common.findAccountType, false)
+                        break
+                    }
+                case 'bank-code':
+                    {
+                        element = processedACHElements.reduce(common.findBankCode, false)
+                        break
+                    }
+                }
+                element.state = message.state
+            }
+
+            common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater)
+            common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler)
+
+            achInitialized = true
+
+            if (ccInitialized || processedCardElements.length === 0) {
+                window.postMessage({
+                        type: `pay-theory:ready`,
+                        ready: true
+                    },
+                    window.location.origin,
+                )
+            }
         }
     }
 
@@ -212,12 +353,13 @@ export default async(
         message => {
             if (typeof message.type === 'string') {
                 const validType = message.type.split(':')[1]
-                return message.type.endsWith(':valid') && processedElements.map(element => element.type).includes(`${validType}`)
+                return message.type.endsWith(':valid') && (processedCardElements.map(element => element.type).includes(`${validType}`) || processedACHElements.map(element => element.type).includes(`${validType}`))
             }
             return false
         },
         message => {
-            const type = message.type.split(':')[1]
+            const field = message.type.split(':')[1]
+            const type = field === 'account-name' && field.hosted ? 'ach-name' : field
 
             let validating = false
 
@@ -231,7 +373,9 @@ export default async(
 
                 const validatingDetails = hasValidDetails(validTypes)
 
-                validating = (validatingCard && validatingDetails)
+                const validAch = hasValidAccount(validTypes)
+
+                validating = (validatingCard && validatingDetails) ? 'card' : validAch ? 'ach' : false
 
                 if (isCallingType(type) && isValid !== validating) {
                     isValid = validating
