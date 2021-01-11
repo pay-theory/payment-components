@@ -231,7 +231,7 @@ export default async(
         }
 
         processedCardElements = establishElements(cardElements)
-        processedACHElements = common.processAchElements(achElements, styles, token)
+        processedACHElements = common.processAchElements(achElements, styles, token['pt-token'])
         transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
         transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
 
