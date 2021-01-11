@@ -239,8 +239,6 @@ export default async(
             return common.handleError('There are no PayTheory fields')
         }
 
-        common.setTransactingElements(transacting)
-
         if (processedCardElements.length > 0) {
             ccInitialized = true
             const handleState = stateHandler(processedCardElements)
@@ -331,24 +329,52 @@ export default async(
         const action = confirmation ? 'tokenize' : 'transact'
         common.setBuyer(buyerOptions)
 
-        const framed = transacting.frame ? transacting.frame : transacting
+        if (common.isHidden(transacting.card) === false && isValid === 'card') {
+            const framed = transacting.card.frame ? transacting.card.frame : transacting.card
+            common.setTransactingElement(framed.id)
+            framed[action] = amount
+        }
 
-        framed[action] = amount
+        if (common.isHidden(transacting.ach) === false && isValid === 'ach') {
+            const framed = transacting.ach.frame ? transacting.ach.frame : transacting.ach
+            common.setTransactingElement(framed.id)
+            framed.amount = amount
+            framed.action = action
+        }
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized)
+    const initTransaction = common.generateInitialization(handleInitialized, isValid)
 
     const confirm = () => {
 
-        if (transacting.frame) {
-            transacting.frame.capture = true
+        let transactor = {}
+
+        if (isValid === 'card') {
+            transactor = transacting.card.frame ? transacting.card.frame : transacting.card
         }
-        else {
-            transacting.capture = true
+        else if (isValid === 'ach') {
+            transactor = transacting.ach.frame ? transacting.ach.frame : transacting.ach
         }
+
+        transactor.capture = true
+
     }
 
     const cancel = () => {
+        if (isValid === 'card') {
+            let transactor = transacting.card.frame ? transacting.card.frame : transacting.card
+            transactor['tokenize'] = false
+            common.removeIdentity()
+            common.removeToken()
+        }
+        else if (isValid === 'ach') {
+            let transactor = transacting.ach.frame ? transacting.ach.frame : transacting.ach
+            common.removeIdentity()
+            common.removeToken()
+            transactor.instrument = 'cancel'
+        }
+
+
         transacting['tokenize'] = false
         common.removeIdentity()
         common.removeToken()

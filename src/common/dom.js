@@ -258,3 +258,27 @@ export const stateMapping = (elementType, state) => {
     }
     return result
 }
+
+export const isHidden = element => {
+    if (element === false) return true
+
+    var style = window.getComputedStyle(element);
+    if (style.display === 'none') {
+        return true
+    }
+
+    var elem = element;
+    var parents = []
+
+    for (; elem && elem !== document; elem = elem.parentNode) {
+        parents.push(elem);
+    }
+
+    const displayNone = (hidden, cv) => {
+        var style = window.getComputedStyle(cv)
+        const result = style.display === 'none'
+        return hidden ? hidden : result
+    }
+
+    return parents.reduce(displayNone, false)
+}
