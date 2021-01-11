@@ -374,7 +374,7 @@ export default async(
         },
         message => {
             const field = message.type.split(':')[1]
-            const type = field === 'account-name' && field.hosted ? 'ach-name' : field
+            const type = field === 'account-name' && message.hosted ? 'ach-name' : field
 
             let validating = false
 
