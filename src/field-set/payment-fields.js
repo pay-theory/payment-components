@@ -329,13 +329,13 @@ export default async(
         const action = confirmation ? 'tokenize' : 'transact'
         common.setBuyer(buyerOptions)
 
-        if (common.isHidden(transacting.card) === false && isValid === 'card') {
+        if (common.isHidden(transacting.card) === false && (isValid === 'card' || isValid === 'both')) {
             const framed = transacting.card.frame ? transacting.card.frame : transacting.card
             common.setTransactingElement(framed)
             framed[action] = amount
         }
 
-        if (common.isHidden(transacting.ach) === false && isValid === 'ach') {
+        if (common.isHidden(transacting.ach) === false && (isValid === 'ach' || isValid === 'both')) {
             const framed = transacting.ach.frame ? transacting.ach.frame : transacting.ach
             common.setTransactingElement(framed)
             framed.amount = amount
@@ -349,10 +349,10 @@ export default async(
 
         let transactor = {}
 
-        if (isValid === 'card') {
+        if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
             transactor = transacting.card.frame ? transacting.card.frame : transacting.card
         }
-        else if (isValid === 'ach') {
+        else if (common.getTransactingElement()) {
             transactor = transacting.ach.frame ? transacting.ach.frame : transacting.ach
         }
 
@@ -361,23 +361,20 @@ export default async(
     }
 
     const cancel = () => {
-        if (isValid === 'card') {
+        if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
+            let transactor = transacting.ach.frame ? transacting.ach.frame : transacting.ach
+            common.removeIdentity()
+            common.removeToken()
+            common.removeTransactingElement()
+            transactor.instrument = 'cancel'
+        }
+        else if (common.getTransactingElement()) {
             let transactor = transacting.card.frame ? transacting.card.frame : transacting.card
             transactor['tokenize'] = false
             common.removeIdentity()
             common.removeToken()
+            common.removeTransactingElement()
         }
-        else if (isValid === 'ach') {
-            let transactor = transacting.ach.frame ? transacting.ach.frame : transacting.ach
-            common.removeIdentity()
-            common.removeToken()
-            transactor.instrument = 'cancel'
-        }
-
-
-        transacting['tokenize'] = false
-        common.removeIdentity()
-        common.removeToken()
     }
 
     const readyObserver = cb => common.handleMessage(
@@ -416,7 +413,7 @@ export default async(
 
                 const validAch = hasValidAccount(validTypes)
 
-                validating = (validatingCard && validatingDetails) ? 'card' : validAch ? 'ach' : false
+                validating = (validatingCard && validatingDetails && validAch) ? 'both' : (validatingCard && validatingDetails) ? 'card' : validAch ? 'ach' : false
 
                 if (isCallingType(type) && isValid !== validating) {
                     isValid = validating
