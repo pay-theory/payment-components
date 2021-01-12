@@ -215,8 +215,7 @@ const idempotency = async(host, apiKey, fee_mode, message) => {
             transactionalElement.error = token.reason
         }
         else {
-            const ptToken = token['payment-token']
-            data.setToken(ptToken)
+            data.setToken(token['payment-token'])
             data.setMerchant(token.payment.merchant)
             data.setIdempotency(token)
         }
@@ -294,7 +293,7 @@ const transfer = async(cb, host, apiKey, tags) => {
         payload,
     )
 
-    data.removeAll()
+    // data.removeAll()
 
     cb({
         receipt_number: idempotency.idempotency,
