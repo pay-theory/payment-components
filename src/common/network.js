@@ -130,7 +130,7 @@ const callIdempotency = async(host, apiKey, fee_mode, message) => {
     const payment = message.tokenize ? message.tokenize : message.transact
     payment.fee_mode = fee_mode
     return await postData(
-        `${host}/ach-idempotency`,
+        `${host}/pt-idempotency`,
         apiKey,
         payment
     )
@@ -287,7 +287,7 @@ const transfer = async(cb, host, apiKey, tags) => {
     }
 
     const transfer = await postData(
-        `${host}/ach-transfer`,
+        `${host}/transfer`,
         apiKey,
         payload,
     )
