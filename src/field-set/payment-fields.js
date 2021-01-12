@@ -343,7 +343,7 @@ export default async(
         }
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized, isValid)
+    const initTransaction = common.generateInitialization(handleInitialized)
 
     const confirm = () => {
 
