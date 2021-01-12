@@ -174,15 +174,30 @@ const tokenize = async(host, apiKey, fee_mode, message) => {
 
 export const generateTokenize = (cb, host, apiKey, fee_mode) => {
     return async message => {
-        const token = await tokenize(host, apiKey, fee_mode, message)
+        let transacting = data.getTransactingElement()
+        let cbToken
 
-        cb({
-            "first_six": token.bin.first_six,
-            "brand": token.bin.brand,
-            "receipt_number": token.idempotency,
-            "amount": token.payment.amount,
-            "service_fee": token.payment.service_fee
-        })
+        if (transacting === 'pay-theory-ach-account-number-tag-frame') {
+            const token = await idempotency(host, apiKey, fee_mode, message)
+            cbToken = {
+                "last_four": token.bin.last_four,
+                "receipt_number": token.idempotency,
+                "amount": token.payment.amount,
+                "service_fee": token.payment.service_fee
+            }
+        }
+        else {
+            const token = await tokenize(host, apiKey, fee_mode, message)
+            cbToken = {
+                "first_six": token.bin.first_six,
+                "brand": token.bin.brand,
+                "receipt_number": token.idempotency,
+                "amount": token.payment.amount,
+                "service_fee": token.payment.service_fee
+            }
+        }
+
+        cb(cbToken)
     }
 }
 
@@ -201,7 +216,7 @@ const idempotency = async(host, apiKey, fee_mode, message) => {
         }
         else {
             data.setToken(token['payment-token'])
-            data.setBin(token.bin)
+            data.setMerchant(token.payment.merchant)
         }
         return token
     }
@@ -309,7 +324,14 @@ export const generateHostedFieldTransacted = (cb, host, apiKey, fee_mode, tags =
 export const generateCapture = (cb, host, apiKey, tags = {}) => {
     return async() => {
         isValidTransaction(data.getIdentity())
-        await processPayment(cb, host, apiKey, tags = {})
+        let transacting = data.getTransactingElement()
+
+        if (transacting === 'pay-theory-ach-account-number-tag-frame') {
+            await transfer(cb, host, apiKey, tags)
+        }
+        else {
+            await processPayment(cb, host, apiKey, tags = {})
+        }
     }
 }
 
@@ -329,9 +351,18 @@ export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
     return async message => {
         isValidTransaction(data.getToken())
 
-        await tokenize(host, apiKey, fee_mode, message)
+        let transacting = data.getTransactingElement()
 
-        await processPayment(cb, host, apiKey, tags)
+        if (transacting === 'pay-theory-ach-account-number-tag-frame') {
+            await idempotency(host, apiKey, fee_mode, message)
+
+            await transfer(cb, host, apiKey, tags)
+        }
+        else {
+            await tokenize(host, apiKey, fee_mode, message)
+
+            await processPayment(cb, host, apiKey, tags)
+        }
     }
 }
 
