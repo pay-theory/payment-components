@@ -366,11 +366,11 @@ export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
     }
 }
 
-export const generateInitialization = (handleInitialized) => {
+export const generateInitialization = (handleInitialized, type) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
-            await handleInitialized(amount, buyerOptions, confirmation)
-            if (data.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
+            if (type === 'ach') {
+                await handleInitialized(amount, buyerOptions, confirmation)
                 data.achFieldTypes.forEach(field => {
                     document.getElementById(`${field}-iframe`).contentWindow.postMessage({
                             type: "pt-static:transact",
@@ -381,6 +381,9 @@ export const generateInitialization = (handleInitialized) => {
                     );
                 })
 
+            }
+            else if (type === 'card') {
+                handleInitialized(amount, buyerOptions, confirmation)
             }
         }
         else {
