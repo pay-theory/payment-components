@@ -17,15 +17,12 @@ import './style.css'
 
 import createPaymentFieldsLegacy from './field-set/payment-fields'
 import { SURCHARGE, SERVICE_FEE } from './common/data'
-import ACH from './ACH/payment-fields'
 
 const create = (apiKey, styles, tags, feeMode, host) => createPaymentFieldsLegacy(apiKey, '', styles, tags, feeMode, host)
 const createPaymentFields = (apiKey, clientId, styles, tags, host) => createPaymentFieldsLegacy(apiKey, clientId, styles, tags, SERVICE_FEE, host)
-const createAchFields = (apiKey, styles, tags, feeMode, host) => ACH(apiKey, '', styles, tags, feeMode, host)
 window.paytheory = {
     createPaymentFields,
     create,
-    createAchFields,
     SURCHARGE,
     SERVICE_FEE
 }

@@ -343,7 +343,6 @@ export const generateInitialization = (handleInitialized) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
             await handleInitialized(amount, buyerOptions, confirmation)
             const transacting = data.getTransactingElement()
-            console.log(transacting, 'init')
             if (transacting === 'pay-theory-ach-account-number-tag-frame') {
                 data.achFieldTypes.forEach(field => {
                     document.getElementById(`${field}-iframe`).contentWindow.postMessage({
