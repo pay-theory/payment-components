@@ -224,19 +224,6 @@ const idempotency = async(host, apiKey, fee_mode, message) => {
     return false
 }
 
-export const generateIdempotency = (cb, host, apiKey, fee_mode) => {
-    return async message => {
-        const token = await idempotency(host, apiKey, fee_mode, message)
-
-        cb({
-            "last_four": token.bin.last_four,
-            "receipt_number": token.idempotency,
-            "amount": token.bin.amount,
-            "service_fee": token.bin.service_fee
-        })
-    }
-}
-
 const processPayment = async(cb, host, apiKey, tags = {}) => {
 
     const clientKey = data.getMerchant()
@@ -306,22 +293,6 @@ const transfer = async(cb, host, apiKey, tags) => {
     })
 }
 
-export const generateTransfer = (cb, host, apiKey, tags = {}) => {
-    return async() => {
-        await transfer(cb, host, apiKey, tags)
-    }
-}
-
-export const generateHostedFieldTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
-    return async message => {
-        isValidTransaction(data.getToken())
-
-        await idempotency(host, apiKey, fee_mode, message)
-
-        await transfer(cb, host, apiKey, tags)
-    }
-}
-
 export const generateCapture = (cb, host, apiKey, tags = {}) => {
     return async() => {
         isValidTransaction(data.getIdentity())
@@ -384,26 +355,6 @@ export const generateInitialization = (handleInitialized) => {
                     );
                 })
             }
-        }
-        else {
-            return message.handleError('amount must be a positive integer')
-        }
-    }
-}
-
-export const generateHostedFieldInitialization = (handleInitialized) => {
-    return async(amount, buyerOptions = {}, confirmation = false) => {
-        if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
-            await handleInitialized(amount, buyerOptions, confirmation)
-            data.achFieldTypes.forEach(field => {
-                document.getElementById(`${field}-iframe`).contentWindow.postMessage({
-                        type: "pt-static:transact",
-                        element: field,
-                        buyerOptions
-                    },
-                    hostedFieldsEndpoint,
-                );
-            })
         }
         else {
             return message.handleError('amount must be a positive integer')
