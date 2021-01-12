@@ -331,13 +331,13 @@ export default async(
 
         if (common.isHidden(transacting.card) === false && isValid === 'card') {
             const framed = transacting.card.frame ? transacting.card.frame : transacting.card
-            common.setTransactingElement(framed.id)
+            common.setTransactingElement(framed)
             framed[action] = amount
         }
 
         if (common.isHidden(transacting.ach) === false && isValid === 'ach') {
             const framed = transacting.ach.frame ? transacting.ach.frame : transacting.ach
-            common.setTransactingElement(framed.id)
+            common.setTransactingElement(framed)
             framed.amount = amount
             framed.action = action
         }
