@@ -215,8 +215,8 @@ const idempotency = async(host, apiKey, fee_mode, message) => {
             transactionalElement.error = token.reason
         }
         else {
-            console.log(token['payment-token'])
-            data.setToken(token['payment-token'])
+            const ptToken = token['payment-token']
+            data.setToken(ptToken)
             data.setMerchant(token.payment.merchant)
             data.setIdempotency(token)
         }
