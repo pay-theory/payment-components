@@ -182,6 +182,9 @@ class PayTheoryHostedField extends HTMLElement {
     if (_stated.isDirty && invalid) {
       this.error = _stated.errorMessages[0]
     }
+    else if (_stated.isDirty) {
+      this.error = false
+    }
 
   }
 
