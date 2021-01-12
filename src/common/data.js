@@ -7,6 +7,7 @@ export const TOKEN = 'pt-token'
 export const BIN = 'pt-bin'
 export const READY = 'pt-ready'
 export const TRANSACTING = 'pt-transacting'
+export const IDEMPOTENCY = 'pt-idempotency'
 
 export const defaultStyles = {
     default: {},
@@ -134,15 +135,15 @@ export const removeToken = () => {
 }
 
 export const getIdempotency = () => {
-    return JSON.parse(localStorage.getItem(TOKEN))
+    return JSON.parse(localStorage.getItem(IDEMPOTENCY))
 }
 
 export const setIdempotency = token => {
-    return localStorage.setItem(TOKEN, JSON.stringify(token))
+    return localStorage.setItem(IDEMPOTENCY, JSON.stringify(token))
 }
 
 export const removeIdempotency = () => {
-    return localStorage.removeItem(TOKEN)
+    return localStorage.removeItem(IDEMPOTENCY)
 }
 
 export const getIdentity = () => {

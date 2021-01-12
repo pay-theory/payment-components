@@ -293,7 +293,7 @@ const transfer = async(cb, host, apiKey, tags) => {
         payload,
     )
 
-    // data.removeAll()
+    data.removeAll()
 
     cb({
         receipt_number: idempotency.idempotency,
