@@ -133,6 +133,18 @@ export const removeToken = () => {
     return localStorage.removeItem(TOKEN)
 }
 
+export const getIdempotency = () => {
+    return JSON.parse(localStorage.getItem(TOKEN))
+}
+
+export const setIdempotency = token => {
+    return localStorage.setItem(TOKEN, JSON.stringify(token))
+}
+
+export const removeIdempotency = () => {
+    return localStorage.removeItem(TOKEN)
+}
+
 export const getIdentity = () => {
     return JSON.parse(localStorage.getItem(IDENTITY))
 }
@@ -176,4 +188,5 @@ export const removeAll = () => {
     removeBuyer()
     removeBin()
     removeTransactingElement()
+    removeIdempotency()
 }

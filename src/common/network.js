@@ -217,6 +217,7 @@ const idempotency = async(host, apiKey, fee_mode, message) => {
         else {
             data.setToken(token['payment-token'])
             data.setMerchant(token.payment.merchant)
+            data.setIdempotency(token)
         }
         return token
     }
@@ -277,8 +278,8 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
 }
 
 const transfer = async(cb, host, apiKey, tags) => {
-    const bin = data.getBin()
-    tags['pt-number'] = bin.reciept_number
+    const idempotency = data.getIdempotency()
+    tags['pt-number'] = idempotency.idempotency
 
     const token = data.getToken()
     const payload = {
@@ -295,8 +296,8 @@ const transfer = async(cb, host, apiKey, tags) => {
     data.removeAll()
 
     cb({
-        receipt_number: bin.reciept_number,
-        last_four: bin.last_four,
+        receipt_number: idempotency.idempotency,
+        last_four: idempotency.bin.last_four,
         created_at: transfer.created_at,
         amount: transfer.amount,
         service_fee: transfer.service_fee,
