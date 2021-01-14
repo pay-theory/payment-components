@@ -39,7 +39,7 @@ class PayTheoryHostedField extends HTMLElement {
   }
 
   appendElement(element) {
-    const container = document.getElementById(`pay-theory-${this.field}-field-container`)
+    const container = document.getElementById(`pay-theory-${this.field}-hosted-field-container`)
     container.appendChild(element)
   }
 
@@ -76,7 +76,7 @@ class PayTheoryHostedField extends HTMLElement {
     window.addEventListener('message', this.eventful)
 
     this.innerHTML = `<div class="framed">
-            <div id="pay-theory-${this.field}-field-container" class="pay-theory-field">
+            <div id="pay-theory-${this.field}-hosted-field-container" class="pay-theory-field">
             </div>
         </div>`
 
