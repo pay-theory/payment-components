@@ -350,15 +350,14 @@ export default async(
         let transactor = {}
 
         if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
-            transactor = transacting.card.frame ? transacting.card.frame : transacting.card
+            transactor = transacting.ach.frame ? transacting.ach.frame : transacting.ach
         }
         else if (common.getTransactingElement()) {
-            transactor = transacting.ach.frame ? transacting.ach.frame : transacting.ach
+            transactor = transacting.card.frame ? transacting.card.frame : transacting.card
         }
 
         transactor.capture = true
-
-    }
+}
 
     const cancel = () => {
         if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
