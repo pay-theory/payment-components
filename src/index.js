@@ -20,7 +20,7 @@ import { SURCHARGE, SERVICE_FEE } from './common/data'
 
 const create = (apiKey, styles, tags, feeMode, host) => createPaymentFieldsLegacy(apiKey, '', styles, tags, feeMode, host)
 const createPaymentFields = (apiKey, clientId, styles, tags, host) => {
-    console.warn('createPaymentFields has been deprecated')
+    console.warn('createPaymentFields has been deprecated https://github.com/pay-theory/payment-components#deprecations')
     return createPaymentFieldsLegacy(apiKey, clientId, styles, tags, SERVICE_FEE, host)
 }
 window.paytheory = {
