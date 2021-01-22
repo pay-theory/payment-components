@@ -426,6 +426,10 @@ To enable IE 11 support you must include the following in your HTML head:
 </head>
 ```
 
+## Deprecations
+
+The createPaymentFields initializing function has been replaced with create. The create function no longer requires a clientID to be passed and allows you to set a feeMode. 
+
 ## License
 
 MIT © [pay theory](https://github.com/pay-theory)
