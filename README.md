@@ -49,7 +49,7 @@ window.paytheory
 
 ## Usage
 
-There are ten components available to use for payments.
+There are ten Card and four ACH components available to use for payments.
 
 ### Credit Card Component
 
@@ -137,6 +137,34 @@ Include a container for each of the optional inputs you wish to use:
 ...
 </form>
 ```
+
+### ACH Account Number, Bank Code, Name, and Account Type Components
+
+These components will provide a full payment implementation.
+
+These components must be combined in a form to enable ACH payment:
+
+-   ACH Account Name Component
+-   ACH Account Type Component
+-   ACH Account Number Component
+-   ACH Bank Code Component
+
+A container is required for each component:
+
+```html
+<form>
+...
+<div id="pay-theory-ach-account-name"></div>
+<div id="pay-theory-ach-account-type"></div>
+<div id="pay-theory-ach-account-number"></div>
+<div id="pay-theory-ach-bank-code"></div>
+...
+</form>
+```
+
+## Card and ACH components on the same page
+
+To display both Card and ACH on the same page make sure only one is visible at a time and the other is wrapped by a parent element whose css is set to ``` display:none ```
 
 ## Styling the container
 
