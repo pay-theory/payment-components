@@ -420,5 +420,5 @@ export default async(
                 }
             }
         })
-    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { env, apiKey, fee_mode }, tags)
+    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { common.transactionEndpoint(env), apiKey, fee_mode }, tags)
 }
