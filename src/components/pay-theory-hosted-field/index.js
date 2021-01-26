@@ -12,10 +12,10 @@ class PayTheoryHostedField extends HTMLElement {
     this.eventful = this.eventful.bind(this)
     this.defaultStyles = { default: {}, success: {}, error: {} }
     this.application = process.env.APP_ID
-    this.environment = process.env.STAGE
+    this.environment = process.env.BUILD_ENV
     this.fields = []
     this.wrappers = []
-    console.log('environment', process.env.STAGE)
+    console.log('environment', process.env.BUILD_ENV)
   }
 
   setFields(fieldArray) {
