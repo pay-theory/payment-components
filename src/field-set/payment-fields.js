@@ -135,7 +135,7 @@ export default async(
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
-    const establishElements = (elements) => {
+    const establishElements = (elements, env) => {
         return common.processElements(elements, styles, env)
     }
 
@@ -230,7 +230,7 @@ export default async(
             zip: elements.zip,
         }
 
-        processedCardElements = establishElements(cardElements)
+        processedCardElements = establishElements(cardElements, env)
         processedACHElements = common.processAchElements(achElements, styles, token['pt-token'], env)
         transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
         transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
