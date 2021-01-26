@@ -46,7 +46,7 @@ export const achFieldTypes = [
     'account-type',
     'account-number',
     'bank-code'
-    ]
+]
 
 export const fieldTypes = [
     'credit-card',
@@ -60,6 +60,17 @@ export const fieldTypes = [
     'state',
     'zip'
 ]
+
+export const findEnv = () => {
+    switch (process.env.BUILD_ENV) {
+    case 'prod':
+        return 'prod'
+    case 'stage':
+        return 'demo'
+    default:
+        return 'dev'
+    }
+}
 
 export const stateMap = {
     'credit-card': 'security_code|expiration_date|number',
