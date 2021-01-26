@@ -3,6 +3,17 @@ import sinon from 'sinon';
 export const api = "pt-sandbox-demo-89f9afeeb9953508186f7cd1a721c269";
 export const client = "IDmESP4jtv5BH15NTPdz8SGk";
 
+export const findEnv() {
+    switch (process.env.BUILD_ENV) {
+    case 'prod':
+        return 'prod'
+    case 'stage':
+        return 'demo'
+    default:
+        return 'dev'
+    }
+}
+
 export const jsonOk = (body) => {
     var mockResponse = new window.Response(JSON.stringify(body), { //the fetch API returns a resolved window Response object
         status: 200,
