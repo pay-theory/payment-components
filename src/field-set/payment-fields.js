@@ -136,7 +136,7 @@ export default async(
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
     const establishElements = (elements) => {
-        return common.processElements(elements, styles)
+        return common.processElements(elements, styles, env)
     }
 
     const isValidFrame = invalidElement => typeof invalidElement === 'undefined' ?

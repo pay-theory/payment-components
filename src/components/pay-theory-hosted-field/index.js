@@ -12,6 +12,7 @@ class PayTheoryHostedField extends HTMLElement {
     this.eventful = this.eventful.bind(this)
     this.defaultStyles = { default: {}, success: {}, error: {} }
     this.application = process.env.APP_ID
+    this.environment = process.env.STAGE
     this.fields = []
     this.wrappers = []
   }
