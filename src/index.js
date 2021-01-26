@@ -11,7 +11,7 @@ import './components/credit-card-zip'
 import './components/ach-account-name'
 import './components/ach-account-number'
 import './components/ach-account-type'
-import './components/ach-bank-code'
+import './components/ach-routing-number'
 import 'regenerator-runtime'
 import './style.css'
 

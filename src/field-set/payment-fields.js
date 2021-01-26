@@ -20,7 +20,7 @@ export default async(
         'state': true,
         'zip': true,
         'account-number': false,
-        'bank-code': false,
+        'routing-number': false,
         'ach-name': false,
         'account-type': false
     }
@@ -40,7 +40,7 @@ export default async(
         (types['account-name'] && hasValidAddress(types))
 
     const hasValidAccount = types =>
-        (types['account-number'] && types['account-type'] && types['ach-name'] && types['bank-code'])
+        (types['account-number'] && types['account-type'] && types['ach-name'] && types['routing-number'])
 
     const findCardNumberError = processedElements => {
         let error = false
@@ -206,7 +206,7 @@ export default async(
             zip: common.fields.CREDIT_CARD_ZIP,
             'account-number': common.achFields.ACCOUNT_NUMBER,
             'ach-name': common.achFields.ACCOUNT_NAME,
-            'bank-code': common.achFields.BANK_CODE,
+            'routing-number': common.achFields.BANK_CODE,
             'account-type': common.achFields.ACCOUNT_TYPE,
         },
         env = env
@@ -214,7 +214,7 @@ export default async(
         const achElements = {
             'account-number': elements['account-number'],
             'account-name': elements['ach-name'],
-            'bank-code': elements['bank-code'],
+            'routing-number': elements['routing-number'],
             'account-type': elements['account-type'],
         }
 
@@ -302,7 +302,7 @@ export default async(
                         element = processedACHElements.reduce(common.findAccountType, false)
                         break
                     }
-                case 'bank-code':
+                case 'routing-number':
                     {
                         element = processedACHElements.reduce(common.findBankCode, false)
                         break

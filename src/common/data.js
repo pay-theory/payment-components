@@ -38,14 +38,14 @@ export const achFields = {
     ACCOUNT_NUMBER: 'pay-theory-ach-account-number',
     ACCOUNT_TYPE: 'pay-theory-ach-account-type',
     ACCOUNT_NAME: 'pay-theory-ach-account-name',
-    BANK_CODE: 'pay-theory-ach-bank-code'
+    BANK_CODE: 'pay-theory-ach-routing-number'
 }
 
 export const achFieldTypes = [
     'account-name',
     'account-type',
     'account-number',
-    'bank-code'
+    'routing-number'
 ]
 
 export const fieldTypes = [

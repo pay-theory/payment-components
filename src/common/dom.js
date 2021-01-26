@@ -35,7 +35,7 @@ export const findAccountNumber = (element, cv) => {
 
 export const findBankCode = (element, cv) => {
     return element === false ?
-        (cv.type === 'bank-code') ?
+        (cv.type === 'routing-number') ?
         cv.frame :
         false :
         element
@@ -62,11 +62,13 @@ export const addFrame = (
     element,
     styles,
     frameType = 'pay-theory-credit-card-tag-frame',
+    env,
     token
 ) => {
     const tagFrame = document.createElement(frameType)
     tagFrame.styles = styles
     tagFrame.token = token
+    tagFrame.env = env
     tagFrame.setAttribute('ready', true)
     tagFrame.setAttribute('id', `${element}-tag-frame`)
     container.appendChild(tagFrame)
@@ -83,8 +85,8 @@ const processContainer = (container, elements, processed, styles, type, env) => 
             styles,
             type === 'credit-card' ?
             `pay-theory-credit-card-tag-frame` :
-            `pay-theory-credit-card-${type}-tag-frame`)
-        frame.setAttribute('env', env)
+            `pay-theory-credit-card-${type}-tag-frame`,
+            env)
         processed.push({ type, frame })
     }
     else {
@@ -145,9 +147,8 @@ const processAchContainer = (container, elements, processed, styles, type, token
             elements[type],
             styles,
             `pay-theory-ach-${type}-tag-frame`,
+            env,
             token)
-
-        frame.setAttribute('env', env)
 
         processed.push({ type, frame })
     }

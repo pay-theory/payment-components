@@ -2,7 +2,7 @@ import PayTheoryHostedFieldTransactional from '../pay-theory-hosted-field-transa
 const NAME = 'account-number'
 const FIELDS = [{ name: 'account-number', label: 'Account Number' }];
 
-class CreditCardNameFrame extends PayTheoryHostedFieldTransactional {
+class ACHAccountNumberFrame extends PayTheoryHostedFieldTransactional {
 
   constructor() {
     super()
@@ -12,4 +12,4 @@ class CreditCardNameFrame extends PayTheoryHostedFieldTransactional {
 
 }
 
-window.customElements.define('pay-theory-ach-account-number-tag-frame', CreditCardNameFrame);
+window.customElements.define('pay-theory-ach-account-number-tag-frame', ACHAccountNumberFrame);
