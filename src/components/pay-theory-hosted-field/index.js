@@ -28,7 +28,7 @@ class PayTheoryHostedField extends HTMLElement {
       wrapperElement.setAttribute('class', 'field-wrapper')
 
       const f = document.createElement('iframe')
-      f.setAttribute('src', `${common.hostedFieldsEndpoint}/${field.name}/${this.tokened}`)
+      f.setAttribute('src', `${common.hostedFieldsEndpoint(this.environment)}/${field.name}/${this.tokened}`)
       f.setAttribute('frameBorder', '0')
       f.setAttribute('id', `${field.name}-iframe`)
 
@@ -140,6 +140,15 @@ class PayTheoryHostedField extends HTMLElement {
 
   set token(_tokened) {
     this.tokened = _tokened
+  }
+
+
+  get env() {
+    return this.environment
+  }
+
+  set env(_env) {
+    this.environment = _env
   }
 
   get ready() {

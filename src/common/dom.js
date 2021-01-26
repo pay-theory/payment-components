@@ -120,14 +120,14 @@ export const processElements = (elements, styles) => {
     return processed
 }
 
-export const processAchElements = (elements, styles, token) => {
+export const processAchElements = (elements, styles, token, env) => {
     let processed = []
     data.achFieldTypes.forEach(type => {
         let error = findElementError(elements, type)
 
         const container = document.getElementById(elements[type])
         if (container && error === false) {
-            error = processAchContainer(container, elements, processed, styles, type, token)
+            error = processAchContainer(container, elements, processed, styles, type, token, env)
         }
         if (error) {
             return message.handleError(error)
@@ -136,7 +136,7 @@ export const processAchElements = (elements, styles, token) => {
     return processed
 }
 
-const processAchContainer = (container, elements, processed, styles, type, token) => {
+const processAchContainer = (container, elements, processed, styles, type, token, env) => {
     let error = false
     const contained = document.getElementById(`${elements[type]}-tag-frame`)
     if (contained === null) {
@@ -146,6 +146,8 @@ const processAchContainer = (container, elements, processed, styles, type, token
             styles,
             `pay-theory-ach-${type}-tag-frame`,
             token)
+
+        frame.setAttribute('env', env)
 
         processed.push({ type, frame })
     }

@@ -50,23 +50,37 @@ const isValidTransaction = (tokenized) => {
 
 export const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
 
-export const transactionEndpoint = (() => {
+export const defaultEnvironment = (() => {
 
     switch (process.env.BUILD_ENV) {
     case 'prod':
         {
-            return `https://tags.api.paytheory.com`
+            return 'prod'
         }
     case 'stage':
         {
-            return `https://demo.tags.api.paytheorystudy.com`
+            return 'demo'
         }
     default:
         {
-            return `https://dev.tags.api.paytheorystudy.com`
+            return 'dev'
         }
     }
 })()
+
+export const transactionEndpoint = (env) => {
+
+    switch (env) {
+    case 'prod':
+        {
+            return `https://tags.api.paytheory.com`
+        }
+    default:
+        {
+            return `https://${env}.tags.api.paytheorystudy.com`
+        }
+    }
+}
 
 export const hostedFieldsEndpoint = (() => {
 
@@ -338,7 +352,7 @@ export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
     }
 }
 
-export const generateInitialization = (handleInitialized) => {
+export const generateInitialization = (handleInitialized, env) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
             await handleInitialized(amount, buyerOptions, confirmation)
@@ -350,7 +364,7 @@ export const generateInitialization = (handleInitialized) => {
                             element: field,
                             buyerOptions
                         },
-                        hostedFieldsEndpoint,
+                        hostedFieldsEndpoint(env),
                     );
                 })
             }

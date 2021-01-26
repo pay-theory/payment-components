@@ -6,7 +6,7 @@ export default async(
     styles = common.defaultStyles,
     tags = common.defaultTags,
     fee_mode = common.defaultFeeMode,
-    host = common.transactionEndpoint
+    env = common.defaultEnvironment
 ) => {
     const validTypes = {
         'credit-card': false,
@@ -168,7 +168,7 @@ export default async(
     }
 
     //fetches token for pt-hosted fields
-    const token = await common.getData(`${common.transactionEndpoint}/pt-token`, apiKey)
+    const token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
 
     //sends styles to hosted fields when they are set up
     const setupHandler = (message) => {
@@ -177,20 +177,20 @@ export default async(
                 type: "pt:setup",
                 style: styles.default ? styles : common.defaultStyles
             },
-            common.hostedFieldsEndpoint,
+            common.hostedFieldsEndpoint(env),
         );
     }
 
     //relays state to the hosted fields to tokenize the instrument
     const relayHandler = message => {
         document.getElementById(`account-number-iframe`).contentWindow.postMessage(message,
-            common.hostedFieldsEndpoint,
+            common.hostedFieldsEndpoint(env),
         );
     }
 
 
-    common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler)
-    common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler)
+    common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
+    common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler, env)
 
     const mount = async(
         elements = {
@@ -231,7 +231,7 @@ export default async(
         }
 
         processedCardElements = establishElements(cardElements)
-        processedACHElements = common.processAchElements(achElements, styles, token['pt-token'])
+        processedACHElements = common.processAchElements(achElements, styles, token['pt-token'], env)
         transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
         transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
 
@@ -310,8 +310,8 @@ export default async(
                 element.state = message.state
             }
 
-            common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater)
-            common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler)
+            common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater, env)
+            common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler, env)
 
             if (ccInitialized || processedCardElements.length === 0) {
                 window.postMessage({
@@ -343,7 +343,7 @@ export default async(
         }
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized)
+    const initTransaction = common.generateInitialization(handleInitialized, env)
 
     const confirm = () => {
 
@@ -357,7 +357,7 @@ export default async(
         }
 
         transactor.capture = true
-}
+    }
 
     const cancel = () => {
         if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {

@@ -10,9 +10,9 @@ const generateWindowListener = (validTarget, handleMessage) => {
     }
 }
 
-const generateiFrameWindowListener = (validTarget, handleMessage) => {
+const generateiFrameWindowListener = (validTarget, handleMessage, env) => {
     return event => {
-        if (event.origin === hostedFieldsEndpoint) {
+        if (event.origin === hostedFieldsEndpoint(env)) {
             const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
             if (validTarget(message)) {
                 handleMessage(message)
@@ -25,8 +25,8 @@ export const handleMessage = (validTarget, handleMessage) => {
     window.addEventListener('message', generateWindowListener(validTarget, handleMessage))
 }
 
-export const handleHostedFieldMessage = (validTarget, handleMessage) => {
-    window.addEventListener('message', generateiFrameWindowListener(validTarget, handleMessage))
+export const handleHostedFieldMessage = (validTarget, handleMessage, env) => {
+    window.addEventListener('message', generateiFrameWindowListener(validTarget, handleMessage, env))
 }
 
 export const errorTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:error'
