@@ -7,6 +7,7 @@ export const TOKEN = 'pt-token'
 export const BIN = 'pt-bin'
 export const READY = 'pt-ready'
 export const TRANSACTING = 'pt-transacting'
+export const IDEMPOTENCY = 'pt-idempotency'
 
 export const defaultStyles = {
     default: {},
@@ -32,6 +33,20 @@ export const fields = {
     CREDIT_CARD_STATE: 'pay-theory-credit-card-state',
     CREDIT_CARD_ZIP: 'pay-theory-credit-card-zip',
 }
+
+export const achFields = {
+    ACCOUNT_NUMBER: 'pay-theory-ach-account-number',
+    ACCOUNT_TYPE: 'pay-theory-ach-account-type',
+    ACCOUNT_NAME: 'pay-theory-ach-account-name',
+    BANK_CODE: 'pay-theory-ach-bank-code'
+}
+
+export const achFieldTypes = [
+    'account-name',
+    'account-type',
+    'account-number',
+    'bank-code'
+    ]
 
 export const fieldTypes = [
     'credit-card',
@@ -70,6 +85,7 @@ export const setTransactingElement = element => {
 export const removeTransactingElement = () => {
     return localStorage.removeItem(TRANSACTING)
 }
+
 export const getReady = () => {
     return localStorage.getItem(READY)
 }
@@ -118,6 +134,18 @@ export const removeToken = () => {
     return localStorage.removeItem(TOKEN)
 }
 
+export const getIdempotency = () => {
+    return JSON.parse(localStorage.getItem(IDEMPOTENCY))
+}
+
+export const setIdempotency = token => {
+    return localStorage.setItem(IDEMPOTENCY, JSON.stringify(token))
+}
+
+export const removeIdempotency = () => {
+    return localStorage.removeItem(IDEMPOTENCY)
+}
+
 export const getIdentity = () => {
     return JSON.parse(localStorage.getItem(IDENTITY))
 }
@@ -161,4 +189,5 @@ export const removeAll = () => {
     removeBuyer()
     removeBin()
     removeTransactingElement()
+    removeIdempotency()
 }

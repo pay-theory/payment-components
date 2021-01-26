@@ -18,6 +18,21 @@ export const postData = async(url, apiKey, data = {}) => {
     return await response.json()
 }
 
+export const getData = async(url, apiKey) => {
+    const options = {
+        method: 'GET',
+        mode: 'cors',
+        cache: 'no-cache',
+        headers: {
+            'x-api-key': apiKey,
+            'content-type': 'application/json',
+        }
+    }
+    /* global fetch */
+    const response = await fetch(url, options)
+    return await response.json()
+}
+
 const isValidTransaction = (tokenized) => {
 
     if (tokenized) {
@@ -53,6 +68,23 @@ export const transactionEndpoint = (() => {
     }
 })()
 
+export const hostedFieldsEndpoint = (() => {
+
+    switch (process.env.BUILD_ENV) {
+    case 'prod':
+        {
+            return `https://tags.static.paytheory.com`
+        }
+    case 'stage':
+        {
+            return `https://demo.tags.static.paytheorystudy.com`
+        }
+    default:
+        {
+            return `https://dev.tags.static.paytheorystudy.com`
+        }
+    }
+})()
 
 const generateInstrument = async(host, apiKey) => {
     const clientKey = data.getMerchant()
@@ -94,6 +126,30 @@ const generateToken = async(host, apiKey, fee_mode, message) => {
     )
 }
 
+const callIdempotency = async(host, apiKey, fee_mode, message) => {
+    const payment = message.tokenize ? message.tokenize : message.transact
+    payment.fee_mode = fee_mode
+    return await postData(
+        `${host}/pt-idempotency`,
+        apiKey,
+        payment
+    )
+}
+
+const callAuthorization = async(host, apiKey, fee_mode, message) => {
+
+    const payment = message.tokenize ? message.tokenize : message.transact
+    payment.fee_mode = fee_mode
+    const payload = {
+        payment
+    }
+    return await postData(
+        `${host}/token`,
+        apiKey,
+        payload,
+    )
+}
+
 const tokenize = async(host, apiKey, fee_mode, message) => {
     if (isValidTransaction(data.getToken())) {
 
@@ -118,16 +174,54 @@ const tokenize = async(host, apiKey, fee_mode, message) => {
 
 export const generateTokenize = (cb, host, apiKey, fee_mode) => {
     return async message => {
-        const token = await tokenize(host, apiKey, fee_mode, message)
+        let transacting = data.getTransactingElement()
+        let cbToken
 
-        cb({
-            "first_six": token.bin.first_six,
-            "brand": token.bin.brand,
-            "receipt_number": token.idempotency,
-            "amount": token.payment.amount,
-            "service_fee": token.payment.service_fee
-        })
+        if (transacting === 'pay-theory-ach-account-number-tag-frame') {
+            const token = await idempotency(host, apiKey, fee_mode, message)
+            cbToken = {
+                "last_four": token.bin.last_four,
+                "receipt_number": token.idempotency,
+                "amount": token.payment.amount,
+                "service_fee": token.payment.service_fee
+            }
+        }
+        else {
+            const token = await tokenize(host, apiKey, fee_mode, message)
+            cbToken = {
+                "first_six": token.bin.first_six,
+                "brand": token.bin.brand,
+                "receipt_number": token.idempotency,
+                "amount": token.payment.amount,
+                "service_fee": token.payment.service_fee
+            }
+        }
+
+        cb(cbToken)
     }
+}
+
+const idempotency = async(host, apiKey, fee_mode, message) => {
+    if (isValidTransaction(data.getToken())) {
+
+        data.setToken(true)
+        let token = await callIdempotency(host, apiKey, fee_mode, message)
+        //{"state":"error","reason":"service fee unavailable"}
+        // handle error when token fails
+
+        if (token.state === 'error') {
+            const transactionalId = data.getTransactingElement()
+            const transactionalElement = document.getElementById(transactionalId)
+            transactionalElement.error = token.reason
+        }
+        else {
+            data.setToken(token['payment-token'])
+            data.setMerchant(token.payment.merchant)
+            data.setIdempotency(token)
+        }
+        return token
+    }
+    return false
 }
 
 const processPayment = async(cb, host, apiKey, tags = {}) => {
@@ -170,10 +264,46 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
     })
 }
 
+const transfer = async(cb, host, apiKey, tags) => {
+    const idempotency = data.getIdempotency()
+    tags['pt-number'] = idempotency.idempotency
+
+    const token = data.getToken()
+    const payload = {
+        "payment-token": token,
+        tags
+    }
+
+    const transfer = await postData(
+        `${host}/transfer`,
+        apiKey,
+        payload,
+    )
+
+    data.removeAll()
+
+    cb({
+        receipt_number: idempotency.idempotency,
+        last_four: idempotency.bin.last_four,
+        created_at: transfer.created_at,
+        amount: transfer.amount,
+        service_fee: transfer.service_fee,
+        state: transfer.state === 'PENDING' ? 'APPROVED' : transfer.state === 'error' ? 'FAILURE' : transfer.state,
+        tags: transfer.tags,
+    })
+}
+
 export const generateCapture = (cb, host, apiKey, tags = {}) => {
     return async() => {
         isValidTransaction(data.getIdentity())
-        await processPayment(cb, host, apiKey, tags = {})
+        let transacting = data.getTransactingElement()
+
+        if (transacting === 'pay-theory-ach-account-number-tag-frame') {
+            await transfer(cb, host, apiKey, tags)
+        }
+        else {
+            await processPayment(cb, host, apiKey, tags = {})
+        }
     }
 }
 
@@ -193,16 +323,37 @@ export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
     return async message => {
         isValidTransaction(data.getToken())
 
-        await tokenize(host, apiKey, fee_mode, message)
+        let transacting = data.getTransactingElement()
 
-        await processPayment(cb, host, apiKey, tags)
+        if (transacting === 'pay-theory-ach-account-number-tag-frame') {
+            await idempotency(host, apiKey, fee_mode, message)
+
+            await transfer(cb, host, apiKey, tags)
+        }
+        else {
+            await tokenize(host, apiKey, fee_mode, message)
+
+            await processPayment(cb, host, apiKey, tags)
+        }
     }
 }
 
 export const generateInitialization = (handleInitialized) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
-            handleInitialized(amount, buyerOptions, confirmation)
+            await handleInitialized(amount, buyerOptions, confirmation)
+            const transacting = data.getTransactingElement()
+            if (transacting === 'pay-theory-ach-account-number-tag-frame') {
+                data.achFieldTypes.forEach(field => {
+                    document.getElementById(`${field}-iframe`).contentWindow.postMessage({
+                            type: "pt-static:transact",
+                            element: field,
+                            buyerOptions
+                        },
+                        hostedFieldsEndpoint,
+                    );
+                })
+            }
         }
         else {
             return message.handleError('amount must be a positive integer')

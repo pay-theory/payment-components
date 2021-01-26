@@ -5,14 +5,26 @@ import sinon from 'sinon';
 import * as common from './common'
 import '../src/components/credit-card'
 import createPaymentFields from '../src/field-set/payment-fields'
+import * as data from '../src/common/data'
 
 describe('credit-card', () => {
     let error;
 
     beforeEach(() => {
+        let stub = sinon.stub(window, 'fetch'); //add stub
+        stub.onCall(0).returns(common.jsonOk(common.MOCK_TOKEN));
+        stub.onCall(1).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(2).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(3).returns(common.jsonOk(common.MOCK_JSON));
+        stub.onCall(4).returns(common.jsonOk(common.MOCK_JSON));
 
         error = undefined;
         window.onerror = (e) => error = e;
+    });
+
+    afterEach(() => {
+        window.fetch.restore(); //remove stub
+        data.removeAll()
     });
 
     it('getters and setters work', async() => {

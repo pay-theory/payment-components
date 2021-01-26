@@ -56,3 +56,7 @@ export const MOCK_JSON_FAIL = {
     payment: {}
 
 };
+
+export const MOCK_TOKEN = {
+    'pt-token': 'token'
+}

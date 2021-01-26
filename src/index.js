@@ -8,6 +8,10 @@ import './components/credit-card-address-2'
 import './components/credit-card-city'
 import './components/credit-card-region'
 import './components/credit-card-zip'
+import './components/ach-account-name'
+import './components/ach-account-number'
+import './components/ach-account-type'
+import './components/ach-bank-code'
 import 'regenerator-runtime'
 import './style.css'
 
@@ -15,7 +19,10 @@ import createPaymentFieldsLegacy from './field-set/payment-fields'
 import { SURCHARGE, SERVICE_FEE } from './common/data'
 
 const create = (apiKey, styles, tags, feeMode, host) => createPaymentFieldsLegacy(apiKey, '', styles, tags, feeMode, host)
-const createPaymentFields = (apiKey, clientId, styles, tags, host) => createPaymentFieldsLegacy(apiKey, clientId, styles, tags, SERVICE_FEE, host)
+const createPaymentFields = (apiKey, clientId, styles, tags, host) => {
+    console.warn('createPaymentFields has been deprecated')
+    return createPaymentFieldsLegacy(apiKey, clientId, styles, tags, SERVICE_FEE, host)
+}
 window.paytheory = {
     createPaymentFields,
     create,

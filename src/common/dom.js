@@ -25,14 +25,48 @@ export const findExp = (element, cv) => {
         element
 }
 
+export const findAccountNumber = (element, cv) => {
+    return element === false ?
+        (cv.type === 'account-number') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findBankCode = (element, cv) => {
+    return element === false ?
+        (cv.type === 'bank-code') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findAccountType = (element, cv) => {
+    return element === false ?
+        (cv.type === 'account-type') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findAccountName = (element, cv) => {
+    return element === false ?
+        (cv.type === 'account-name') ?
+        cv.frame :
+        false :
+        element
+}
+
 export const addFrame = (
     container,
     element,
     styles,
     frameType = 'pay-theory-credit-card-tag-frame',
+    token
 ) => {
     const tagFrame = document.createElement(frameType)
     tagFrame.styles = styles
+    tagFrame.token = token
     tagFrame.setAttribute('ready', true)
     tagFrame.setAttribute('id', `${element}-tag-frame`)
     container.appendChild(tagFrame)
@@ -84,6 +118,41 @@ export const processElements = (elements, styles) => {
         }
     })
     return processed
+}
+
+export const processAchElements = (elements, styles, token) => {
+    let processed = []
+    data.achFieldTypes.forEach(type => {
+        let error = findElementError(elements, type)
+
+        const container = document.getElementById(elements[type])
+        if (container && error === false) {
+            error = processAchContainer(container, elements, processed, styles, type, token)
+        }
+        if (error) {
+            return message.handleError(error)
+        }
+    })
+    return processed
+}
+
+const processAchContainer = (container, elements, processed, styles, type, token) => {
+    let error = false
+    const contained = document.getElementById(`${elements[type]}-tag-frame`)
+    if (contained === null) {
+        const frame = addFrame(
+            container,
+            elements[type],
+            styles,
+            `pay-theory-ach-${type}-tag-frame`,
+            token)
+
+        processed.push({ type, frame })
+    }
+    else {
+        error = `${elements[type]} is already mounted`
+    }
+    return error
 }
 
 export const appendFinix = (formed, handleState, handleFormed) => {
@@ -188,4 +257,28 @@ export const stateMapping = (elementType, state) => {
         result = [stateType, stated, invalid]
     }
     return result
+}
+
+export const isHidden = element => {
+    if (element === false) return true
+
+    var style = window.getComputedStyle(element);
+    if (style.display === 'none') {
+        return true
+    }
+
+    var elem = element;
+    var parents = []
+
+    for (; elem && elem !== document; elem = elem.parentNode) {
+        parents.push(elem);
+    }
+
+    const displayNone = (hidden, cv) => {
+        var style = window.getComputedStyle(cv)
+        const result = style.display === 'none'
+        return hidden ? hidden : result
+    }
+
+    return parents.reduce(displayNone, false)
 }
