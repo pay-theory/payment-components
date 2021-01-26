@@ -420,5 +420,8 @@ export default async(
                 }
             }
         })
-    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { common.transactionEndpoint(env), apiKey, fee_mode }, tags)
+
+    const host = common.transactionEndpoint(env)
+
+    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, apiKey, fee_mode }, tags)
 }
