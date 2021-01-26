@@ -15,6 +15,7 @@ class PayTheoryHostedField extends HTMLElement {
     this.environment = process.env.STAGE
     this.fields = []
     this.wrappers = []
+    console.log('environment', process.env.STAGE)
   }
 
   setFields(fieldArray) {
