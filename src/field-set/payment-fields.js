@@ -93,7 +93,7 @@ export default async(
         }
 
         if (processedElements.reduce(common.findBankCode, false) === false) {
-            error = 'missing ACH bank code field required for payments'
+            error = 'missing ACH routing number field required for payments'
         }
 
         return error

@@ -18,10 +18,10 @@ import './style.css'
 import createPaymentFieldsLegacy from './field-set/payment-fields'
 import { SURCHARGE, SERVICE_FEE, fields, achFields } from './common/data'
 
-const create = (apiKey, styles, tags, feeMode) => createPaymentFieldsLegacy(apiKey, '', styles, tags, feeMode)
-const createPaymentFields = (apiKey, clientId, styles, tags) => {
+const create = (apiKey, styles, tags, feeMode, env) => createPaymentFieldsLegacy(apiKey, '', styles, tags, feeMode, env)
+const createPaymentFields = (apiKey, clientId, styles, tags, env) => {
     console.warn('createPaymentFields has been deprecated')
-    return createPaymentFieldsLegacy(apiKey, clientId, styles, tags, SERVICE_FEE)
+    return createPaymentFieldsLegacy(apiKey, clientId, styles, tags, SERVICE_FEE, env)
 }
 const ELEMENTS = {
     'credit-card': fields.CREDIT_CARD,
