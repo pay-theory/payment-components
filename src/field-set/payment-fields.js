@@ -8,6 +8,7 @@ export default async(
     fee_mode = common.defaultFeeMode,
     env = common.defaultEnvironment
 ) => {
+    const environment = env
     const validTypes = {
         'credit-card': false,
         'number': false,
@@ -24,7 +25,6 @@ export default async(
         'ach-name': false,
         'account-type': false
     }
-
     const isCallingType = type => Object.keys(validTypes).includes(type)
 
     const hasValidCard = types =>
@@ -136,6 +136,7 @@ export default async(
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
     const establishElements = (elements, env) => {
+        console.log('establishing elements for', env)
         return common.processElements(elements, styles, env)
     }
 
@@ -209,7 +210,7 @@ export default async(
             'routing-number': common.achFields.BANK_CODE,
             'account-type': common.achFields.ACCOUNT_TYPE,
         },
-        env = env
+        env = environment
     ) => {
         const achElements = {
             'account-number': elements['account-number'],

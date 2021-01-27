@@ -95,7 +95,6 @@ class PayTheoryHostedField extends HTMLElement {
   }
 
   attributeChangedCallback(attrName, oldValue, newValue) {
-
     if (newValue !== oldValue) {
       this[attrName.toString()] = this.hasAttribute(attrName)
     }
@@ -144,7 +143,7 @@ class PayTheoryHostedField extends HTMLElement {
 
 
   get env() {
-    return this.environment
+    return this.environment === undefined ? common.defaultEnvironment : this.environment
   }
 
   set env(_env) {
