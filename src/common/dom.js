@@ -68,7 +68,7 @@ export const addFrame = (
     const tagFrame = document.createElement(frameType)
     tagFrame.styles = styles
     tagFrame.token = token
-    tagFrame.env = env
+    tagFrame.setAttribute('env', env)
     tagFrame.setAttribute('ready', true)
     tagFrame.setAttribute('id', `${element}-tag-frame`)
     container.appendChild(tagFrame)
