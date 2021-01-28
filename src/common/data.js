@@ -38,15 +38,15 @@ export const achFields = {
     ACCOUNT_NUMBER: 'pay-theory-ach-account-number',
     ACCOUNT_TYPE: 'pay-theory-ach-account-type',
     ACCOUNT_NAME: 'pay-theory-ach-account-name',
-    BANK_CODE: 'pay-theory-ach-bank-code'
+    BANK_CODE: 'pay-theory-ach-routing-number'
 }
 
 export const achFieldTypes = [
     'account-name',
     'account-type',
     'account-number',
-    'bank-code'
-    ]
+    'routing-number'
+]
 
 export const fieldTypes = [
     'credit-card',
@@ -60,6 +60,17 @@ export const fieldTypes = [
     'state',
     'zip'
 ]
+
+export const findEnv = () => {
+    switch (process.env.BUILD_ENV) {
+    case 'prod':
+        return 'prod'
+    case 'stage':
+        return 'demo'
+    default:
+        return 'dev'
+    }
+}
 
 export const stateMap = {
     'credit-card': 'security_code|expiration_date|number',

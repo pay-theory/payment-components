@@ -2,7 +2,7 @@ import PayTheoryHostedField from '../pay-theory-hosted-field'
 const NAME = 'account-type'
 const FIELDS = [{ name: 'account-type', label: 'Account Type' }];
 
-class CreditCardNameFrame extends PayTheoryHostedField {
+class ACHAccountTypeFrame extends PayTheoryHostedField {
 
   constructor() {
     super()
@@ -12,4 +12,4 @@ class CreditCardNameFrame extends PayTheoryHostedField {
 
 }
 
-window.customElements.define('pay-theory-ach-account-type-tag-frame', CreditCardNameFrame);
+window.customElements.define('pay-theory-ach-account-type-tag-frame', ACHAccountTypeFrame);
