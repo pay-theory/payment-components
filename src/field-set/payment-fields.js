@@ -6,8 +6,9 @@ export default async(
     styles = common.defaultStyles,
     tags = common.defaultTags,
     fee_mode = common.defaultFeeMode,
-    host = common.transactionEndpoint
+    env = common.defaultEnvironment
 ) => {
+    const environment = env
     const validTypes = {
         'credit-card': false,
         'number': false,
@@ -20,11 +21,10 @@ export default async(
         'state': true,
         'zip': true,
         'account-number': false,
-        'bank-code': false,
+        'routing-number': false,
         'ach-name': false,
         'account-type': false
     }
-
     const isCallingType = type => Object.keys(validTypes).includes(type)
 
     const hasValidCard = types =>
@@ -40,7 +40,7 @@ export default async(
         (types['account-name'] && hasValidAddress(types))
 
     const hasValidAccount = types =>
-        (types['account-number'] && types['account-type'] && types['ach-name'] && types['bank-code'])
+        (types['account-number'] && types['account-type'] && types['ach-name'] && types['routing-number'])
 
     const findCardNumberError = processedElements => {
         let error = false
@@ -93,7 +93,7 @@ export default async(
         }
 
         if (processedElements.reduce(common.findBankCode, false) === false) {
-            error = 'missing ACH bank code field required for payments'
+            error = 'missing ACH routing number field required for payments'
         }
 
         return error
@@ -135,8 +135,9 @@ export default async(
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
-    const establishElements = (elements) => {
-        return common.processElements(elements, styles)
+    const establishElements = (elements, env) => {
+        console.log('establishing elements for', env)
+        return common.processElements(elements, styles, env)
     }
 
     const isValidFrame = invalidElement => typeof invalidElement === 'undefined' ?
@@ -168,7 +169,7 @@ export default async(
     }
 
     //fetches token for pt-hosted fields
-    const token = await common.getData(`${common.transactionEndpoint}/pt-token`, apiKey)
+    const token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
 
     //sends styles to hosted fields when they are set up
     const setupHandler = (message) => {
@@ -177,20 +178,20 @@ export default async(
                 type: "pt:setup",
                 style: styles.default ? styles : common.defaultStyles
             },
-            common.hostedFieldsEndpoint,
+            common.hostedFieldsEndpoint(env),
         );
     }
 
     //relays state to the hosted fields to tokenize the instrument
     const relayHandler = message => {
         document.getElementById(`account-number-iframe`).contentWindow.postMessage(message,
-            common.hostedFieldsEndpoint,
+            common.hostedFieldsEndpoint(env),
         );
     }
 
 
-    common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler)
-    common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler)
+    common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
+    common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler, env)
 
     const mount = async(
         elements = {
@@ -206,14 +207,15 @@ export default async(
             zip: common.fields.CREDIT_CARD_ZIP,
             'account-number': common.achFields.ACCOUNT_NUMBER,
             'ach-name': common.achFields.ACCOUNT_NAME,
-            'bank-code': common.achFields.BANK_CODE,
+            'routing-number': common.achFields.BANK_CODE,
             'account-type': common.achFields.ACCOUNT_TYPE,
         },
+        env = environment
     ) => {
         const achElements = {
             'account-number': elements['account-number'],
             'account-name': elements['ach-name'],
-            'bank-code': elements['bank-code'],
+            'routing-number': elements['routing-number'],
             'account-type': elements['account-type'],
         }
 
@@ -230,8 +232,8 @@ export default async(
             zip: elements.zip,
         }
 
-        processedCardElements = establishElements(cardElements)
-        processedACHElements = common.processAchElements(achElements, styles, token['pt-token'])
+        processedCardElements = establishElements(cardElements, env)
+        processedACHElements = common.processAchElements(achElements, styles, token['pt-token'], env)
         transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
         transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
 
@@ -301,7 +303,7 @@ export default async(
                         element = processedACHElements.reduce(common.findAccountType, false)
                         break
                     }
-                case 'bank-code':
+                case 'routing-number':
                     {
                         element = processedACHElements.reduce(common.findBankCode, false)
                         break
@@ -310,8 +312,8 @@ export default async(
                 element.state = message.state
             }
 
-            common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater)
-            common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler)
+            common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater, env)
+            common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler, env)
 
             if (ccInitialized || processedCardElements.length === 0) {
                 window.postMessage({
@@ -343,7 +345,7 @@ export default async(
         }
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized)
+    const initTransaction = common.generateInitialization(handleInitialized, env)
 
     const confirm = () => {
 
@@ -357,7 +359,7 @@ export default async(
         }
 
         transactor.capture = true
-}
+    }
 
     const cancel = () => {
         if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
@@ -420,5 +422,8 @@ export default async(
                 }
             }
         })
+
+    const host = common.transactionEndpoint(env)
+
     return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, apiKey, fee_mode }, tags)
 }
