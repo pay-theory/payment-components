@@ -178,24 +178,24 @@ export default async(
             },
             common.hostedFieldsEndpoint(env),
         );
-        if (message.element === 'card-number') {
-            document.getElementById(`card-number-iframe`)
-                .contentWindow.postMessage({
-                        type: `pt-static:elements`,
-                        elements: processedCardElements
-                    },
-                    common.hostedFieldsEndpoint(env)
-                );
-        }
-        else if (message.element === 'account-number') {
-            document.getElementById(`account-number-iframe`)
-                .contentWindow.postMessage({
-                        type: `pay-theory:elements`,
-                        elements: processedACHElements
-                    },
-                    common.hostedFieldsEndpoint(env)
-                );
-        }
+        // if (message.element === 'card-number') {
+        //     document.getElementById(`card-number-iframe`)
+        //         .contentWindow.postMessage({
+        //                 type: `pt-static:elements`,
+        //                 elements: processedCardElements
+        //             },
+        //             common.hostedFieldsEndpoint(env)
+        //         );
+        // }
+        // else if (message.element === 'account-number') {
+        //     document.getElementById(`account-number-iframe`)
+        //         .contentWindow.postMessage({
+        //                 type: `pt-static:elements`,
+        //                 elements: processedACHElements
+        //             },
+        //             common.hostedFieldsEndpoint(env)
+        //         );
+        // }
     }
 
     //relays state to the hosted fields to tokenize the instrument
@@ -522,6 +522,7 @@ export default async(
         message => {
             const type = message.type.split(':')[1]
             let validating = false
+            console.log(type, typeof validTypes[type])
 
 
 
