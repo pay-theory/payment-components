@@ -366,13 +366,15 @@ export const generateInitialization = (handleInitialized, env) => {
             }
             else {
                 data.fieldTypes.forEach(field => {
-                    document.getElementById(`${data.stateMap[field]}-iframe`).contentWindow.postMessage({
-                            type: "pt-static:transact",
-                            element: data.stateMap[field],
-                            buyerOptions
-                        },
-                        hostedFieldsEndpoint(env),
-                    );
+                    if (field !== 'credit-card') {
+                        document.getElementById(`${data.stateMap[field]}-iframe`).contentWindow.postMessage({
+                                type: "pt-static:transact",
+                                element: data.stateMap[field],
+                                buyerOptions
+                            },
+                            hostedFieldsEndpoint(env),
+                        );
+                    }
                 })
             }
         }
