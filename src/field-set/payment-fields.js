@@ -400,13 +400,13 @@ export default async(
                 processed.frame.form = true
             })
 
-            document.getElementById(`card-number-iframe`)
-                .contentWindow.postMessage({
-                        type: `pay-theory:elements`,
-                        elements: processedCardElements
-                    },
-                    common.hostedFieldsEndpoint(env)
-                );
+            // document.getElementById(`card-number-iframe`)
+            //     .contentWindow.postMessage({
+            //             type: `pay-theory:elements`,
+            //             elements: processedCardElements
+            //         },
+            //         common.hostedFieldsEndpoint(env)
+            //     );
 
             if (achInitialized || processedACHElements.length === 0) {
                 window.postMessage({
@@ -430,13 +430,13 @@ export default async(
                 processed.frame.form = true
             })
 
-            document.getElementById(`account-number-iframe`)
-                .contentWindow.postMessage({
-                        type: `pay-theory:elements`,
-                        elements: processedACHElements
-                    },
-                    common.hostedFieldsEndpoint(env)
-                );
+            // document.getElementById(`account-number-iframe`)
+            //     .contentWindow.postMessage({
+            //             type: `pay-theory:elements`,
+            //             elements: processedACHElements
+            //         },
+            //         common.hostedFieldsEndpoint(env)
+            //     );
 
             if (ccInitialized || processedCardElements.length === 0) {
                 window.postMessage({
