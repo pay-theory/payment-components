@@ -25,6 +25,14 @@ export const findExp = (element, cv) => {
         element
 }
 
+export const findCardName = (element, cv) => {
+    return element === false ?
+        (cv.type === 'name') ?
+        cv.frame :
+        false :
+        element
+}
+
 export const findAccountNumber = (element, cv) => {
     return element === false ?
         (cv.type === 'account-number') ?
