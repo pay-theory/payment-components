@@ -115,7 +115,7 @@ export const addFrame = (
     return tagFrame
 }
 
-const processContainer = (container, elements, processed, styles, type, env) => {
+const processContainer = (container, elements, processed, styles, type, token, env) => {
     let error = false
     const contained = document.getElementById(`${elements[type]}-tag-frame`)
     if (contained === null) {
@@ -126,7 +126,8 @@ const processContainer = (container, elements, processed, styles, type, env) => 
             type === 'credit-card' ?
             `pay-theory-credit-card-tag-frame` :
             `pay-theory-credit-card-${type}-tag-frame`,
-            env)
+            env,
+            token)
         processed.push({ type, frame })
     }
     else {
@@ -146,14 +147,14 @@ const findElementError = (elements, type) => {
     return error
 }
 
-export const processElements = (elements, styles, env) => {
+export const processElements = (elements, styles, token, env) => {
     let processed = []
     data.fieldTypes.forEach(type => {
         let error = findElementError(elements, type)
 
         const container = document.getElementById(elements[type])
         if (container && error === false) {
-            error = processContainer(container, elements, processed, styles, type, env)
+            error = processContainer(container, elements, processed, styles, type, token, env)
         }
         if (error) {
             return message.handleError(error)
