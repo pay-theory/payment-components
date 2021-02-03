@@ -366,8 +366,9 @@ export const generateInitialization = (handleInitialized, env) => {
             }
             else {
                 data.fieldTypes.forEach(field => {
-                    if (field !== 'credit-card') {
-                        document.getElementById(`${data.stateMap[field]}-iframe`).contentWindow.postMessage({
+                    let iframe = document.getElementById(`${data.stateMap[field]}-iframe`)
+                    if (iframe) {
+                        iframe.contentWindow.postMessage({
                                 type: "pt-static:transact",
                                 element: data.stateMap[field],
                                 buyerOptions
