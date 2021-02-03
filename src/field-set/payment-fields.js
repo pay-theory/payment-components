@@ -11,36 +11,36 @@ export default async(
     const environment = env
     const validTypes = {
         'credit-card': false,
-        'number': false,
-        'exp': false,
-        'cvv': false,
-        'account-name': true,
-        'address-1': true,
-        'address-2': true,
-        'city': true,
-        'state': true,
-        'zip': true,
+        'card-number': false,
+        'card-exp': false,
+        'card-cvv': false,
+        'card-name': true,
+        'billing-line1': true,
+        'billing-line2': true,
+        'billing-city': true,
+        'billing-state': true,
+        'billing-zip': true,
         'account-number': false,
         'routing-number': false,
-        'ach-name': false,
+        'account-name': false,
         'account-type': false
     }
     const isCallingType = type => Object.keys(validTypes).includes(type)
 
     const hasValidCard = types =>
-        (types['credit-card'] || (types.number && types.cvv && types.exp))
+        (types['credit-card'] || (types['card-number'] && types['card-cvv'] && types['card-exp']))
 
     const hasValidStreetAddress = types =>
-        (types['address-1'] && types['address-2'])
+        (types['billing-line1'] && types['billing-line2'])
 
     const hasValidAddress = types =>
-        (hasValidStreetAddress(types) && types.city && types.state && types.zip)
+        (hasValidStreetAddress(types) && types['billing-city'] && types['billing-state'] && types['billing-zip'])
 
     const hasValidDetails = types =>
-        (types['account-name'] && hasValidAddress(types))
+        (types['card-name'] && hasValidAddress(types))
 
     const hasValidAccount = types =>
-        (types['account-number'] && types['account-type'] && types['ach-name'] && types['routing-number'])
+        (types['account-number'] && types['account-type'] && types['account-name'] && types['routing-number'])
 
     const findCardNumberError = processedElements => {
         let error = false
@@ -183,11 +183,56 @@ export default async(
     }
 
     //relays state to the hosted fields to tokenize the instrument
-    const relayHandler = message => {
-        document.getElementById(`account-number-iframe`).contentWindow.postMessage(message,
-            common.hostedFieldsEndpoint(env),
-        );
-    }
+    const verifyRelay = (fields, message) => {
+        fields.forEach((field) => {
+            if (document.getElementById(field)) {
+                document
+                    .getElementById(field)
+                    .contentWindow.postMessage(
+                        message,
+                        "https://austin.tags.static.paytheorystudy.com"
+                    );
+            }
+        });
+    };
+
+    const relayHandler = (message) => {
+        if (message.element.startsWith("card")) {
+            if (message.element === "card-autofill") {
+                const cardFields = [
+          "card-name-iframe",
+          "card-cvv-iframe",
+          "card-exp-iframe"
+        ];
+                verifyRelay(cardFields, message);
+            }
+            else {
+                document
+                    .getElementById(`card-number-iframe`)
+                    .contentWindow.postMessage(
+                        message,
+                        "https://austin.tags.static.paytheorystudy.com"
+                    );
+            }
+        }
+        else if (message.element === "address-autofill") {
+            const addressFields = [
+        "billing-line2-iframe",
+        "billing-city-iframe",
+        "billing-state-iframe",
+        "billing-zip-iframe"
+      ];
+            verifyRelay(addressFields, message);
+        }
+        else {
+            document
+                .getElementById(`account-number-iframe`)
+                .contentWindow.postMessage(
+                    message,
+                    "https://austin.tags.static.paytheorystudy.com"
+                );
+        }
+    };
 
 
     common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
@@ -237,6 +282,96 @@ export default async(
         transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
         transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
 
+        const stateUpdater = (message) => {
+            let element
+            switch (message.element) {
+            case 'account-name':
+                {
+                    element = processedACHElements.reduce(common.findAccountName, false)
+                    break
+                }
+            case 'account-number':
+                {
+                    element = processedACHElements.reduce(common.findAccountNumber, false)
+                    break
+                }
+            case 'account-type':
+                {
+                    element = processedACHElements.reduce(common.findAccountType, false)
+                    break
+                }
+            case 'routing-number':
+                {
+                    element = processedACHElements.reduce(common.findBankCode, false)
+                    break
+                }
+            case 'card-number':
+                {
+                    element = processedCardElements.reduce(common.findTransactingElement, false)
+                    break
+                }
+            case 'card-cvv':
+                {
+                    let result = processedCardElements.reduce(common.findTransactingElement, false)
+                    if (result.field === 'credit-card') {
+                        element = result
+                    }
+                    else {
+                        element = processedCardElements.reduce(common.findCVV, false)
+                    }
+                    break
+                }
+            case 'card-exp':
+                {
+                    let result = processedCardElements.reduce(common.findTransactingElement, false)
+                    if (result.field === 'credit-card') {
+                        element = result
+                    }
+                    else {
+                        element = processedCardElements.reduce(common.findExp, false)
+                    }
+                    break
+                }
+            case 'card-name':
+                {
+                    element = processedCardElements.reduce(common.findAccountName, false)
+                    break
+                }
+            case 'billing-line1':
+                {
+                    element = processedCardElements.reduce(common.findLine1, false)
+                    break
+                }
+            case 'billing-line2':
+                {
+                    element = processedCardElements.reduce(common.findLine2, false)
+                    break
+                }
+            case 'billing-city':
+                {
+                    element = processedCardElements.reduce(common.findCity, false)
+                    break
+                }
+            case 'billing-state':
+                {
+                    element = processedCardElements.reduce(common.findState, false)
+                    break
+                }
+            case 'billing-zip':
+                {
+                    element = processedCardElements.reduce(common.findZip, false)
+                    break
+                }
+            }
+
+            let state = message.state
+            state.element = message.element
+            element.state = state
+
+        }
+
+        common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater, env)
+
         if (processedACHElements.length === 0 && processedCardElements.length === 0) {
             return common.handleError('There are no PayTheory fields')
         }
@@ -285,34 +420,6 @@ export default async(
                 transacting.ach.instrument = message.instrument
             }
 
-            const stateUpdater = (message) => {
-                let element
-                switch (message.element) {
-                case 'account-name':
-                    {
-                        element = processedACHElements.reduce(common.findAccountName, false)
-                        break
-                    }
-                case 'account-number':
-                    {
-                        element = processedACHElements.reduce(common.findAccountNumber, false)
-                        break
-                    }
-                case 'account-type':
-                    {
-                        element = processedACHElements.reduce(common.findAccountType, false)
-                        break
-                    }
-                case 'routing-number':
-                    {
-                        element = processedACHElements.reduce(common.findBankCode, false)
-                        break
-                    }
-                }
-                element.state = message.state
-            }
-
-            common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater, env)
             common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler, env)
 
             if (ccInitialized || processedCardElements.length === 0) {
@@ -397,9 +504,7 @@ export default async(
             return false
         },
         message => {
-            const field = message.type.split(':')[1]
-            const type = field === 'account-name' && message.hosted ? 'ach-name' : field
-
+            const type = message.type.split(':')[1]
             let validating = false
 
 

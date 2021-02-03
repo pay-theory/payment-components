@@ -1,8 +1,8 @@
-import PayTheory from '../pay-theory-finix'
+import PayTheoryHostedField from '../pay-theory-hosted-field'
 const NAME = 'cvv'
-const FIELDS = [{ name: 'security_code', label: 'CVV', validations: 'required', autoComplete: 'cc-csc' }];
+const FIELDS = [{ name: 'card-cvv', label: 'CVV', validations: 'required', autoComplete: 'cc-csc' }];
 
-class CreditCardCVVFrame extends PayTheory {
+class CreditCardCVVFrame extends PayTheoryHostedField {
 
   constructor() {
     super()

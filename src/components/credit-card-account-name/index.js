@@ -1,8 +1,8 @@
-import PayTheoryFinixFrame from '../pay-theory-finix'
+import PayTheoryHostedField from '../pay-theory-hosted-field'
 const NAME = 'account-name'
-const FIELDS = [{ name: 'name', label: 'Name on card', validations: null, autoComplete: 'cc-name' }];
+const FIELDS = [{ name: 'card-name', label: 'Name on card', validations: null, autoComplete: 'cc-name' }];
 
-class CreditCardNameFrame extends PayTheoryFinixFrame {
+class CreditCardNameFrame extends PayTheoryHostedField {
 
   constructor() {
     super()

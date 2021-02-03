@@ -219,8 +219,9 @@ class PayTheoryHostedField extends HTMLElement {
   set valid(isValid) {
     if (isValid !== this.validated) {
       this.validated = isValid
+      let type = this.stated.element ? this.stated.element : this.field
       window.postMessage({
-          type: `pt:${this.field}:valid`,
+          type: `pt:${type}:valid`,
           valid: isValid,
           hosted: true
         },

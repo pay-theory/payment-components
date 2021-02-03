@@ -1,8 +1,8 @@
-import PayTheory from '../pay-theory-finix'
+import PayTheoryHostedField from '../pay-theory-hosted-field'
 const NAME = 'zip'
-const FIELDS = [{ name: 'address.postal_code', label: 'Billing Zip', validations: null, autoComplete: 'postal-code' }];
+const FIELDS = [{ name: 'billing-zip', label: 'Billing Zip', validations: null, autoComplete: 'postal-code' }];
 
-class CreditCardBillingZipFrame extends PayTheory {
+class CreditCardBillingZipFrame extends PayTheoryHostedField {
 
   constructor() {
     super()
