@@ -137,7 +137,7 @@ export default async(
 
     const establishElements = (elements, env) => {
         console.log('establishing elements for', env)
-        return common.processElements(elements, styles, env)
+        return common.processElements(elements, styles, token['pt-token'], env)
     }
 
     const isValidFrame = invalidElement => typeof invalidElement === 'undefined' ?
