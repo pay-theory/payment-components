@@ -74,15 +74,15 @@ export const findEnv = () => {
 
 export const stateMap = {
     'credit-card': 'security_code|expiration_date|number',
-    'number': 'number',
-    'exp': 'expiration_date',
-    'cvv': 'security_code',
-    'account-name': 'name',
-    'address-1': 'address.address_line1',
-    'address-2': 'address.address_line2',
-    'city': 'address.city',
-    'state': 'address.region',
-    'zip': 'address.postal_code'
+    'number': 'card-number',
+    'exp': 'card-exp',
+    'cvv': 'card-cvv',
+    'account-name': 'card-name',
+    'address-1': 'billing-line1',
+    'address-2': 'billing-line2',
+    'city': 'billing-city',
+    'state': 'billing-state',
+    'zip': 'billing-zip'
 }
 
 export const getTransactingElement = () => {
