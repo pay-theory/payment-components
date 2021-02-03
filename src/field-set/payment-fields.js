@@ -334,7 +334,7 @@ export default async(
                 }
             case 'card-name':
                 {
-                    element = processedCardElements.reduce(common.findAccountName, false)
+                    element = processedCardElements.reduce(common.findCardName, false)
                     break
                 }
             case 'billing-line1':
