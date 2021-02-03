@@ -515,7 +515,7 @@ export default async(
         message => {
             if (typeof message.type === 'string') {
                 const validType = message.type.split(':')[1]
-                return message.type.endsWith(':valid') && (processedCardElements.map(element => element.type).includes(`${common.stateMap[validType]}`) || processedACHElements.map(element => element.type).includes(`${validType}`))
+                return message.type.endsWith(':valid') && (processedCardElements.map(element => common.stateMap[element.type]).includes(`${validType}`) || processedACHElements.map(element => element.type).includes(`${validType}`))
             }
             return false
         },
