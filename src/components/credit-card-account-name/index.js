@@ -1,5 +1,5 @@
 import PayTheoryHostedField from '../pay-theory-hosted-field'
-const NAME = 'account-name'
+const NAME = 'card-name'
 const FIELDS = [{ name: 'card-name', label: 'Name on card', validations: null, autoComplete: 'cc-name' }];
 
 class CreditCardNameFrame extends PayTheoryHostedField {
@@ -12,4 +12,4 @@ class CreditCardNameFrame extends PayTheoryHostedField {
 
 }
 
-window.customElements.define('pay-theory-credit-card-account-name-tag-frame', CreditCardNameFrame);
+window.customElements.define('pay-theory-credit-card-name-tag-frame', CreditCardNameFrame);
