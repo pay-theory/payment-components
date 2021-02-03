@@ -457,7 +457,8 @@ export default async(
         if (common.isHidden(transacting.card) === false && (isValid === 'card' || isValid === 'both')) {
             const framed = transacting.card.frame ? transacting.card.frame : transacting.card
             common.setTransactingElement(framed)
-            framed[action] = amount
+            framed.amount = amount
+            framed.action = action
         }
 
         if (common.isHidden(transacting.ach) === false && (isValid === 'ach' || isValid === 'both')) {
