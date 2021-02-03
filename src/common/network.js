@@ -368,7 +368,6 @@ export const generateInitialization = (handleInitialized, env) => {
                 data.fieldTypes.forEach(field => {
                     let iframe = document.getElementById(`${data.stateMap[field]}-iframe`)
                     if (iframe) {
-                        console.log(iframe, 'posted')
                         iframe.contentWindow.postMessage({
                                 type: "pt-static:transact",
                                 element: data.stateMap[field],

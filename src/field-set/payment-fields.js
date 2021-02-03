@@ -213,13 +213,13 @@ export default async(
     };
 
     const relayHandler = (message) => {
-        if (message.element.startsWith("card")) {
+        if (message.element.startsWith("card") || message.element.startsWith('billing')) {
             if (message.element === "card-autofill") {
                 const cardFields = [
-          "card-name-iframe",
-          "card-cvv-iframe",
-          "card-exp-iframe"
-        ];
+                                  "card-name-iframe",
+                                  "card-cvv-iframe",
+                                  "card-exp-iframe"
+                                ];
                 verifyRelay(cardFields, message);
             }
             else {
@@ -522,7 +522,6 @@ export default async(
         message => {
             const type = message.type.split(':')[1]
             let validating = false
-            console.log(type, typeof validTypes[type])
 
 
 
