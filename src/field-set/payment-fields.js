@@ -537,6 +537,8 @@ export default async(
 
                 validating = (validatingCard && validatingDetails && validAch) ? 'both' : (validatingCard && validatingDetails) ? 'card' : validAch ? 'ach' : false
 
+                console.log(validTypes)
+
                 if (isCallingType(type) && isValid !== validating) {
                     isValid = validating
                     cb(isValid)
