@@ -190,7 +190,7 @@ export default async(
                     .getElementById(field)
                     .contentWindow.postMessage(
                         message,
-                        "https://austin.tags.static.paytheorystudy.com"
+                        common.hostedFieldsEndpoint(env)
                     );
             }
         });
@@ -211,7 +211,7 @@ export default async(
                     .getElementById(`card-number-iframe`)
                     .contentWindow.postMessage(
                         message,
-                        "https://austin.tags.static.paytheorystudy.com"
+                        common.hostedFieldsEndpoint(env)
                     );
             }
         }
@@ -229,7 +229,7 @@ export default async(
                 .getElementById(`account-number-iframe`)
                 .contentWindow.postMessage(
                     message,
-                    "https://austin.tags.static.paytheorystudy.com"
+                    common.hostedFieldsEndpoint(env)
                 );
         }
     };
@@ -372,36 +372,51 @@ export default async(
 
         common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater, env)
 
+        const instrumentHandler = message => {
+            common.setInstrument(message.instrument)
+            if (message.field === 'card-number') {
+                transacting.card.instrument = message.instrument
+            }
+            else {
+                transacting.ach.instrument = message.instrument
+            }
+        }
+
+        common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler, env)
+
         if (processedACHElements.length === 0 && processedCardElements.length === 0) {
             return common.handleError('There are no PayTheory fields')
         }
 
         if (processedCardElements.length > 0) {
             ccInitialized = true
-            const handleState = stateHandler(processedCardElements)
-            const handleFormed = finalForm => {
-                let error = findCardError(transacting.card, processedCardElements)
-                if (error) {
-                    return common.handleError(error)
-                }
 
-                processedCardElements.forEach(processed => {
-                    processed.frame.form = finalForm
-                })
-
-                if (achInitialized || processedACHElements.length === 0) {
-                    window.postMessage({
-                            type: `pay-theory:ready`,
-                            ready: true
-                        },
-                        window.location.origin,
-                    )
-                }
+            let error = findCardError(transacting.card, processedCardElements)
+            if (error) {
+                return common.handleError(error)
             }
 
-            if (!formed) {
-                common.appendFinix(formed, handleState, handleFormed)
+            processedCardElements.forEach(processed => {
+                processed.frame.form = true
+            })
+
+            document.getElementById(`card-number-iframe`)
+                .contentWindow.postMessage({
+                        type: `pay-theory:elements`,
+                        elements: processedCardElements
+                    },
+                    common.hostedFieldsEndpoint(env)
+                );
+
+            if (achInitialized || processedACHElements.length === 0) {
+                window.postMessage({
+                        type: `pay-theory:ready`,
+                        ready: true
+                    },
+                    window.location.origin,
+                )
             }
+
         }
 
         if (processedACHElements.length > 0) {
@@ -415,12 +430,13 @@ export default async(
                 processed.frame.form = true
             })
 
-            const instrumentHandler = message => {
-                common.setInstrument(message.instrument)
-                transacting.ach.instrument = message.instrument
-            }
-
-            common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler, env)
+            document.getElementById(`account-number-iframe`)
+                .contentWindow.postMessage({
+                        type: `pay-theory:elements`,
+                        elements: processedACHElements
+                    },
+                    common.hostedFieldsEndpoint(env)
+                );
 
             if (ccInitialized || processedCardElements.length === 0) {
                 window.postMessage({
