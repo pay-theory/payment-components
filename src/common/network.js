@@ -366,7 +366,7 @@ export const generateInitialization = (handleInitialized, env) => {
             }
             else {
                 data.fieldTypes.forEach(field => {
-                    document.getElementById(`${field}-iframe`).contentWindow.postMessage({
+                    document.getElementById(`${data.stateMap[field]}-iframe`).contentWindow.postMessage({
                             type: "pt-static:transact",
                             element: data.stateMap[field],
                             buyerOptions
