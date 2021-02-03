@@ -10,7 +10,6 @@ export default async(
 ) => {
     const environment = env
     const validTypes = {
-        'credit-card': false,
         'card-number': false,
         'card-exp': false,
         'card-cvv': false,
@@ -28,7 +27,7 @@ export default async(
     const isCallingType = type => Object.keys(validTypes).includes(type)
 
     const hasValidCard = types =>
-        (types['credit-card'] || (types['card-number'] && types['card-cvv'] && types['card-exp']))
+        (types['card-number'] && types['card-cvv'] && types['card-exp'])
 
     const hasValidStreetAddress = types =>
         (types['billing-line1'] && types['billing-line2'])
@@ -173,13 +172,30 @@ export default async(
 
     //sends styles to hosted fields when they are set up
     const setupHandler = (message) => {
-        console.log(apiKey, 'api')
         document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
                 type: "pt:setup",
                 style: styles.default ? styles : common.defaultStyles
             },
             common.hostedFieldsEndpoint(env),
         );
+        if (message.element === 'card-number') {
+            document.getElementById(`card-number-iframe`)
+                .contentWindow.postMessage({
+                        type: `pt-static:elements`,
+                        elements: processedCardElements
+                    },
+                    common.hostedFieldsEndpoint(env)
+                );
+        }
+        else if (message.element === 'account-number') {
+            document.getElementById(`account-number-iframe`)
+                .contentWindow.postMessage({
+                        type: `pay-theory:elements`,
+                        elements: processedACHElements
+                    },
+                    common.hostedFieldsEndpoint(env)
+                );
+        }
     }
 
     //relays state to the hosted fields to tokenize the instrument
@@ -400,14 +416,6 @@ export default async(
                 processed.frame.form = true
             })
 
-            // document.getElementById(`card-number-iframe`)
-            //     .contentWindow.postMessage({
-            //             type: `pay-theory:elements`,
-            //             elements: processedCardElements
-            //         },
-            //         common.hostedFieldsEndpoint(env)
-            //     );
-
             if (achInitialized || processedACHElements.length === 0) {
                 window.postMessage({
                         type: `pay-theory:ready`,
@@ -429,15 +437,6 @@ export default async(
             processedACHElements.forEach(processed => {
                 processed.frame.form = true
             })
-
-            // document.getElementById(`account-number-iframe`)
-            //     .contentWindow.postMessage({
-            //             type: `pay-theory:elements`,
-            //             elements: processedACHElements
-            //         },
-            //         common.hostedFieldsEndpoint(env)
-            //     );
-
             if (ccInitialized || processedCardElements.length === 0) {
                 window.postMessage({
                         type: `pay-theory:ready`,
