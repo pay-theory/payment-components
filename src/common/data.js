@@ -77,7 +77,7 @@ export const stateMap = {
     'number': 'card-number',
     'exp': 'card-exp',
     'cvv': 'card-cvv',
-    'account-name': 'card-name',
+    'name': 'card-name',
     'address-1': 'billing-line1',
     'address-2': 'billing-line2',
     'city': 'billing-city',
