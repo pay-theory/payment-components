@@ -1,8 +1,8 @@
-import PayTheoryFinixTransactionalFrame from '../pay-theory-finix-transactional'
+import PayTheoryHostedFieldTransactional from '../pay-theory-hosted-field-transactional'
 const NAME = 'number'
-const FIELDS = [{ name: 'number', label: 'Card Number', validations: 'required', autoComplete: 'cc-number' }]
+const FIELDS = [{ name: 'card-number', label: 'Card Number', validations: 'required', autoComplete: 'cc-number' }]
 
-class CreditCardNumberFrame extends PayTheoryFinixTransactionalFrame {
+class CreditCardNumberFrame extends PayTheoryHostedFieldTransactional {
 
   constructor() {
     super()

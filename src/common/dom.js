@@ -57,6 +57,46 @@ export const findAccountName = (element, cv) => {
         element
 }
 
+export const findLine1 = (element, cv) => {
+    return element === false ?
+        (cv.type === 'address-1') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findLine2 = (element, cv) => {
+    return element === false ?
+        (cv.type === 'address-2') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findCity = (element, cv) => {
+    return element === false ?
+        (cv.type === 'city') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findState = (element, cv) => {
+    return element === false ?
+        (cv.type === 'state') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findZip = (element, cv) => {
+    return element === false ?
+        (cv.type === 'zip') ?
+        cv.frame :
+        false :
+        element
+}
+
 export const addFrame = (
     container,
     element,

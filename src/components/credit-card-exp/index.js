@@ -1,8 +1,8 @@
-import PayTheory from '../pay-theory-finix'
+import PayTheoryHostedField from '../pay-theory-hosted-field'
 const NAME = 'exp'
-const FIELDS = [{ name: 'expiration_date', label: 'MM/YY', validations: 'required', autoComplete: 'cc-exp' }];
+const FIELDS = [{ name: 'card-exp', label: 'MM/YY', validations: 'required', autoComplete: 'cc-exp' }];
 
-class CreditCardExpirationFrame extends PayTheory {
+class CreditCardExpirationFrame extends PayTheoryHostedField {
 
   constructor() {
     super()

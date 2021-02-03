@@ -1,8 +1,8 @@
-import PayTheory from '../pay-theory-finix'
+import PayTheoryHostedField from '../pay-theory-hosted-field'
 const NAME = 'state'
-const FIELDS = [{ name: 'address.region', label: 'Billing State', validations: null, autoComplete: 'region' }];
+const FIELDS = [{ name: 'billing-state', label: 'Billing State', validations: null, autoComplete: 'region' }];
 
-class CreditCardBillingStateFrame extends PayTheory {
+class CreditCardBillingStateFrame extends PayTheoryHostedField {
 
   constructor() {
     super()
