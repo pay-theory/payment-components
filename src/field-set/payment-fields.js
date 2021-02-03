@@ -269,7 +269,7 @@ export default async(
             'number': elements.number,
             'exp': elements.exp,
             'cvv': elements.cvv,
-            'card-name': elements['account-name'],
+            'name': elements['account-name'],
             'address-1': elements['address-1'],
             'address-2': elements['address-2'],
             city: elements.city,
