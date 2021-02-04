@@ -50,6 +50,9 @@ const isValidTransaction = (tokenized) => {
 
 export const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
 
+const CARD = "PAYMENT_CARD"
+const ACH = "BANK_ACCOUNT"
+
 export const defaultEnvironment = (() => {
 
     switch (process.env.BUILD_ENV) {
@@ -197,7 +200,7 @@ export const generateTokenize = (cb, host, apiKey, fee_mode) => {
             }
         }
         else {
-            const token = await tokenize(host, apiKey, fee_mode, message)
+            const token = await idempotency(host, apiKey, fee_mode, message)
             cbToken = {
                 "first_six": token.bin.first_six,
                 "brand": token.bin.brand,
@@ -274,14 +277,15 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
     })
 }
 
-const transfer = async(cb, host, apiKey, tags) => {
+const transfer = async(cb, host, apiKey, tags, type) => {
     const idempotency = data.getIdempotency()
     tags['pt-number'] = idempotency.idempotency
 
     const token = data.getToken()
     const payload = {
         "payment-token": token,
-        tags
+        tags,
+        type
     }
 
     const transfer = await postData(
@@ -309,10 +313,10 @@ export const generateCapture = (cb, host, apiKey, tags = {}) => {
         let transacting = data.getTransactingElement()
 
         if (transacting === 'pay-theory-ach-account-number-tag-frame') {
-            await transfer(cb, host, apiKey, tags)
+            await transfer(cb, host, apiKey, tags, ACH)
         }
         else {
-            await processPayment(cb, host, apiKey, tags = {})
+            await transfer(cb, host, apiKey, tags, CARD)
         }
     }
 }
@@ -338,12 +342,12 @@ export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
         if (transacting === 'pay-theory-ach-account-number-tag-frame') {
             await idempotency(host, apiKey, fee_mode, message)
 
-            await transfer(cb, host, apiKey, tags)
+            await transfer(cb, host, apiKey, tags, ACH)
         }
         else {
-            await tokenize(host, apiKey, fee_mode, message)
+            await idempotency(host, apiKey, fee_mode, message)
 
-            await processPayment(cb, host, apiKey, tags)
+            await transfer(cb, host, apiKey, tags, CARD)
         }
     }
 }
