@@ -39,16 +39,16 @@
 	align-items: center;
 }
 
-#field-wrapper-number {
+#field-wrapper-card-number {
 	min-width: 213px;
 	flex-grow: 1;
 }
 
-#field-wrapper-expiration_date {
+#field-wrapper-card-exp {
 	min-width: 75px;
 }
 
-#field-wrapper-security_code {
+#field-wrapper-card-cvv {
 	min-width: 75px;
 }
 
