@@ -212,21 +212,41 @@ class PayTheoryHostedField extends HTMLElement {
     }
   }
 
+
+
   get valid() {
     return this.validated;
   }
 
   set valid(isValid) {
-    if (isValid !== this.validated) {
-      this.validated = isValid
-      let type = this.stated.element ? this.stated.element : this.field
-      window.postMessage({
-          type: `pt:${type}:valid`,
-          valid: isValid,
-          hosted: true
-        },
-        window.location.origin,
-      )
+    if (this.field !== 'credit-card') {
+      if (isValid !== this.validated) {
+        this.validated = isValid
+        let type = this.stated.element ? this.stated.element : this.field
+        window.postMessage({
+            type: `pt:${type}:valid`,
+            valid: isValid,
+            hosted: true
+          },
+          window.location.origin,
+        )
+      }
+    }
+    else {
+      if (!this.validated) {
+        this.validated = {}
+      }
+      if (isValid !== this.validated[this.stated.element]) {
+        this.validated[this.stated.element] = isValid
+        let type = this.stated.element ? this.stated.element : this.field
+        window.postMessage({
+            type: `pt:${type}:valid`,
+            valid: isValid,
+            hosted: true
+          },
+          window.location.origin,
+        )
+      }
     }
   }
 }
