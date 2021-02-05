@@ -172,31 +172,31 @@ export default async(
 
     //sends styles to hosted fields when they are set up
     // const setupHandler = (message) => {
-            //     document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
-            //             type: "pt:setup",
-            //             style: styles.default ? styles : common.defaultStyles
-            //         },
-            //         common.hostedFieldsEndpoint(env),
-            //     );
-            //     if (message.element === 'card-number') {
-            //         document.getElementById(`card-number-iframe`)
-            //             .contentWindow.postMessage({
-            //                     type: `pt-static:elements`,
-            //                     elements: processedCardElements
-            //                 },
-            //                 common.hostedFieldsEndpoint(env)
-            //             );
-            //     }
-            //     else if (message.element === 'account-number') {
-            //         document.getElementById(`account-number-iframe`)
-            //             .contentWindow.postMessage({
-            //                     type: `pt-static:elements`,
-            //                     elements: processedACHElements
-            //                 },
-            //                 common.hostedFieldsEndpoint(env)
-            //             );
-            //     }
-            // }
+    //     document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
+    //             type: "pt:setup",
+    //             style: styles.default ? styles : common.defaultStyles
+    //         },
+    //         common.hostedFieldsEndpoint(env),
+    //     );
+    //     if (message.element === 'card-number') {
+    //         document.getElementById(`card-number-iframe`)
+    //             .contentWindow.postMessage({
+    //                     type: `pt-static:elements`,
+    //                     elements: processedCardElements
+    //                 },
+    //                 common.hostedFieldsEndpoint(env)
+    //             );
+    //     }
+    //     else if (message.element === 'account-number') {
+    //         document.getElementById(`account-number-iframe`)
+    //             .contentWindow.postMessage({
+    //                     type: `pt-static:elements`,
+    //                     elements: processedACHElements
+    //                 },
+    //                 common.hostedFieldsEndpoint(env)
+    //             );
+    //     }
+    // }
 
     //relays state to the hosted fields to tokenize the instrument
     const verifyRelay = (fields, message) => {
@@ -307,19 +307,19 @@ export default async(
                 common.hostedFieldsEndpoint(env),
             );
             if (message.element === 'card-number') {
-                document.getElementById(`card-number-iframe`)
+                document.getElementById(`${message.element}-iframe`)
                     .contentWindow.postMessage({
                             type: `pt-static:elements`,
-                            elements: processedCardElements
+                            elements: JSON.parse(JSON.stringify(processedCardElements))
                         },
                         common.hostedFieldsEndpoint(env)
                     );
             }
             else if (message.element === 'account-number') {
-                document.getElementById(`account-number-iframe`)
+                document.getElementById(`${message.element}-iframe`)
                     .contentWindow.postMessage({
                             type: `pt-static:elements`,
-                            elements: processedACHElements
+                            elements: JSON.parse(JSON.stringify(processedACHElements))
                         },
                         common.hostedFieldsEndpoint(env)
                     );
