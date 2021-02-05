@@ -233,6 +233,7 @@ class PayTheoryHostedField extends HTMLElement {
       }
     }
     else {
+      //by storing the valid state in object it allows us to track changes in the number, exp, and cvv for the credit-card
       if (!this.validated) {
         this.validated = {}
       }
