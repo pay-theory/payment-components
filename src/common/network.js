@@ -203,7 +203,7 @@ export const generateTokenize = (cb, host, apiKey, fee_mode) => {
             const token = await idempotency(host, apiKey, fee_mode, message)
             cbToken = {
                 "first_six": token.bin.first_six,
-                "brand": token.bin.brand,
+                "brand": token.bin.card_brand,
                 "receipt_number": token.idempotency,
                 "amount": token.payment.amount,
                 "service_fee": token.payment.service_fee
@@ -278,6 +278,7 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
 }
 
 const transfer = async(cb, host, apiKey, tags, type) => {
+    let transacting = data.getTransactingElement()
     const idempotency = data.getIdempotency()
     tags['pt-number'] = idempotency.idempotency
 
@@ -295,16 +296,29 @@ const transfer = async(cb, host, apiKey, tags, type) => {
     )
 
     data.removeAll()
-
-    cb({
-        receipt_number: idempotency.idempotency,
-        last_four: idempotency.bin.last_four,
-        created_at: transfer.created_at,
-        amount: transfer.amount,
-        service_fee: transfer.service_fee,
-        state: transfer.state === 'PENDING' ? 'APPROVED' : transfer.state === 'error' ? 'FAILURE' : transfer.state,
-        tags: transfer.tags,
-    })
+    if (transacting === 'pay-theory-ach-account-number-tag-frame') {
+        cb({
+            receipt_number: idempotency.idempotency,
+            last_four: idempotency.bin.last_four,
+            created_at: transfer.created_at,
+            amount: transfer.amount,
+            service_fee: transfer.service_fee,
+            state: transfer.state === 'PENDING' ? 'APPROVED' : transfer.state === 'error' ? 'FAILURE' : transfer.state,
+            tags: transfer.tags,
+        })
+    }
+    else {
+        cb({
+            receipt_number: idempotency.idempotency,
+            last_four: idempotency.bin.last_four,
+            brand: idempotency.bin.card_brand,
+            created_at: transfer.created_at,
+            amount: transfer.amount,
+            service_fee: transfer.service_fee,
+            state: transfer.state === 'PENDING' ? 'APPROVED' : transfer.state === 'error' ? 'FAILURE' : transfer.state,
+            tags: transfer.tags,
+        })
+    }
 }
 
 export const generateCapture = (cb, host, apiKey, tags = {}) => {
