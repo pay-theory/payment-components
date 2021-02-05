@@ -548,6 +548,7 @@ export default async(
                 let card = processedCardElements.reduce(common.findTransactingElement, false)
                 let transactingCard = card ? card.type : false
                 let creditCardTransacting = transactingCard === 'credit-card' ? ['card-exp', 'card-number', 'card-cvv'].includes(validType) : false
+                console.log(card, transactingCard, creditCardTransacting)
                 return message.type.endsWith(':valid') && (processedCardElements.map(element => common.stateMap[element.type]).includes(`${validType}`) || processedACHElements.map(element => element.type).includes(`${validType}`) || creditCardTransacting)
             }
             return false
