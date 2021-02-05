@@ -354,13 +354,11 @@ export default async(
             case 'card-number':
                 {
                     element = processedCardElements.reduce(common.findTransactingElement, false)
-                    console.log(element)
                     break
                 }
             case 'card-cvv':
                 {
                     let result = processedCardElements.reduce(common.findTransactingElement, false)
-                    console.log(result)
                     if (result.field === 'credit-card') {
                         element = result
                     }
@@ -372,7 +370,6 @@ export default async(
             case 'card-exp':
                 {
                     let result = processedCardElements.reduce(common.findTransactingElement, false)
-                    console.log(result)
                     if (result.field === 'credit-card') {
                         element = result
                     }
@@ -548,7 +545,10 @@ export default async(
         message => {
             if (typeof message.type === 'string') {
                 const validType = message.type.split(':')[1]
-                return message.type.endsWith(':valid') && (processedCardElements.map(element => common.stateMap[element.type]).includes(`${validType}`) || processedACHElements.map(element => element.type).includes(`${validType}`))
+                let card = processedCardElements.reduce(common.findTransactingElement, false)
+                let transactingCard = card ? card.type : false
+                let creditCardTransacting = transactingCard === 'credit-card' ? ['card-exp', 'card-number', 'card-cvv'].includes(validType) : false
+                return message.type.endsWith(':valid') && (processedCardElements.map(element => common.stateMap[element.type]).includes(`${validType}`) || processedACHElements.map(element => element.type).includes(`${validType}`) || creditCardTransacting)
             }
             return false
         },
