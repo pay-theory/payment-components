@@ -354,11 +354,13 @@ export default async(
             case 'card-number':
                 {
                     element = processedCardElements.reduce(common.findTransactingElement, false)
+                    console.log(element)
                     break
                 }
             case 'card-cvv':
                 {
                     let result = processedCardElements.reduce(common.findTransactingElement, false)
+                    console.log(result)
                     if (result.field === 'credit-card') {
                         element = result
                     }
@@ -370,6 +372,7 @@ export default async(
             case 'card-exp':
                 {
                     let result = processedCardElements.reduce(common.findTransactingElement, false)
+                    console.log(result)
                     if (result.field === 'credit-card') {
                         element = result
                     }
