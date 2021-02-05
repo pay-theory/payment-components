@@ -524,10 +524,10 @@ export default async(
         }
         else if (common.getTransactingElement()) {
             let transactor = transacting.card.frame ? transacting.card.frame : transacting.card
-            transactor['tokenize'] = false
             common.removeIdentity()
             common.removeToken()
             common.removeTransactingElement()
+            transactor.instrument = 'cancel'
         }
     }
 
