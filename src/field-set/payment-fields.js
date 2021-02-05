@@ -171,32 +171,32 @@ export default async(
     const token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
 
     //sends styles to hosted fields when they are set up
-    const setupHandler = (message) => {
-        document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
-                type: "pt:setup",
-                style: styles.default ? styles : common.defaultStyles
-            },
-            common.hostedFieldsEndpoint(env),
-        );
-        // if (message.element === 'card-number') {
-        //     document.getElementById(`card-number-iframe`)
-        //         .contentWindow.postMessage({
-        //                 type: `pt-static:elements`,
-        //                 elements: processedCardElements
-        //             },
-        //             common.hostedFieldsEndpoint(env)
-        //         );
-        // }
-        // else if (message.element === 'account-number') {
-        //     document.getElementById(`account-number-iframe`)
-        //         .contentWindow.postMessage({
-        //                 type: `pt-static:elements`,
-        //                 elements: processedACHElements
-        //             },
-        //             common.hostedFieldsEndpoint(env)
-        //         );
-        // }
-    }
+    // const setupHandler = (message) => {
+            //     document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
+            //             type: "pt:setup",
+            //             style: styles.default ? styles : common.defaultStyles
+            //         },
+            //         common.hostedFieldsEndpoint(env),
+            //     );
+            //     if (message.element === 'card-number') {
+            //         document.getElementById(`card-number-iframe`)
+            //             .contentWindow.postMessage({
+            //                     type: `pt-static:elements`,
+            //                     elements: processedCardElements
+            //                 },
+            //                 common.hostedFieldsEndpoint(env)
+            //             );
+            //     }
+            //     else if (message.element === 'account-number') {
+            //         document.getElementById(`account-number-iframe`)
+            //             .contentWindow.postMessage({
+            //                     type: `pt-static:elements`,
+            //                     elements: processedACHElements
+            //                 },
+            //                 common.hostedFieldsEndpoint(env)
+            //             );
+            //     }
+            // }
 
     //relays state to the hosted fields to tokenize the instrument
     const verifyRelay = (fields, message) => {
@@ -251,7 +251,7 @@ export default async(
     };
 
 
-    common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
+    // common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
     common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler, env)
 
     const mount = async(
@@ -297,6 +297,36 @@ export default async(
         processedACHElements = common.processAchElements(achElements, styles, token['pt-token'], env)
         transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
         transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
+
+        //sends styles to hosted fields when they are set up
+        const setupHandler = (message) => {
+            document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
+                    type: "pt:setup",
+                    style: styles.default ? styles : common.defaultStyles
+                },
+                common.hostedFieldsEndpoint(env),
+            );
+            if (message.element === 'card-number') {
+                document.getElementById(`card-number-iframe`)
+                    .contentWindow.postMessage({
+                            type: `pt-static:elements`,
+                            elements: processedCardElements
+                        },
+                        common.hostedFieldsEndpoint(env)
+                    );
+            }
+            else if (message.element === 'account-number') {
+                document.getElementById(`account-number-iframe`)
+                    .contentWindow.postMessage({
+                            type: `pt-static:elements`,
+                            elements: processedACHElements
+                        },
+                        common.hostedFieldsEndpoint(env)
+                    );
+            }
+        }
+
+        common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
 
         const stateUpdater = (message) => {
             let element
