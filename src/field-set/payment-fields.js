@@ -348,7 +348,7 @@ export default async(
                     common.hostedFieldsEndpoint(env),
                 );
             }
-            if (message.element !== 'card-number' || message.element !== 'account-number') {
+            if (message.element !== 'card-number' && message.element !== 'account-number') {
                 sendSetup(message.element)
             }
             if (verifyReady(processedACHElements)) {
