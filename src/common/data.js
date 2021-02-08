@@ -8,7 +8,7 @@ export const BIN = 'pt-bin'
 export const READY = 'pt-ready'
 export const TRANSACTING = 'pt-transacting'
 export const IDEMPOTENCY = 'pt-idempotency'
-
+export const ENVIRONMENT = 'pt-environment'
 export const defaultStyles = {
     default: {},
     success: {},
@@ -97,6 +97,13 @@ export const removeTransactingElement = () => {
     return localStorage.removeItem(TRANSACTING)
 }
 
+export const getEnvironment = () => {
+    return localStorage.getItem(ENVIRONMENT)
+}
+
+export const setEnvironment = ready => {
+    return localStorage.setItem(ENVIRONMENT, ready)
+}
 export const getReady = () => {
     return localStorage.getItem(READY)
 }

@@ -8,7 +8,7 @@ export default async(
     fee_mode = common.defaultFeeMode,
     env = common.defaultEnvironment
 ) => {
-    const environment = env
+    common.setEnvironment(env)
     const validTypes = {
         'card-number': false,
         'card-exp': false,
@@ -201,9 +201,9 @@ export default async(
     //relays state to the hosted fields to tokenize the instrument
     const verifyRelay = (fields, message) => {
         fields.forEach((field) => {
-            if (document.getElementById(field)) {
+            if (document.getElementsByName(field)) {
                 document
-                    .getElementById(field)
+                    .getElementsByName(field)[0]
                     .contentWindow.postMessage(
                         message,
                         common.hostedFieldsEndpoint(env)
@@ -216,15 +216,15 @@ export default async(
         if (message.element.startsWith("card") || message.element.startsWith('billing')) {
             if (message.element === "card-autofill") {
                 const cardFields = [
-                                  "card-name-iframe",
-                                  "card-cvv-iframe",
-                                  "card-exp-iframe"
-                                ];
+                    "card-name-iframe",
+                    "card-cvv-iframe",
+                    "card-exp-iframe"
+                ];
                 verifyRelay(cardFields, message);
             }
             else {
                 document
-                    .getElementById(`card-number-iframe`)
+                    .getElementsByName(`card-number-iframe`)[0]
                     .contentWindow.postMessage(
                         message,
                         common.hostedFieldsEndpoint(env)
@@ -233,16 +233,16 @@ export default async(
         }
         else if (message.element === "address-autofill") {
             const addressFields = [
-        "billing-line2-iframe",
-        "billing-city-iframe",
-        "billing-state-iframe",
-        "billing-zip-iframe"
-      ];
+                "billing-line2-iframe",
+                "billing-city-iframe",
+                "billing-state-iframe",
+                "billing-zip-iframe"
+            ];
             verifyRelay(addressFields, message);
         }
         else {
             document
-                .getElementById(`account-number-iframe`)
+                .getElementsByName(`account-number-iframe`)[0]
                 .contentWindow.postMessage(
                     message,
                     common.hostedFieldsEndpoint(env)
@@ -271,7 +271,7 @@ export default async(
             'routing-number': common.achFields.BANK_CODE,
             'account-type': common.achFields.ACCOUNT_TYPE,
         },
-        env = environment
+        env = common.getEnvironment()
     ) => {
         const achElements = {
             'account-number': elements['account-number'],
@@ -300,14 +300,14 @@ export default async(
 
         //sends styles to hosted fields when they are set up
         const setupHandler = (message) => {
-            document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
+            document.getElementsByName(`${message.element}-iframe`)[0].contentWindow.postMessage({
                     type: "pt:setup",
                     style: styles.default ? styles : common.defaultStyles
                 },
                 common.hostedFieldsEndpoint(env),
             );
             if (message.element === 'card-number') {
-                document.getElementById(`${message.element}-iframe`)
+                document.getElementsByName(`${message.element}-iframe`)[0]
                     .contentWindow.postMessage({
                             type: `pt-static:elements`,
                             elements: JSON.parse(JSON.stringify(processedCardElements))
@@ -316,7 +316,7 @@ export default async(
                     );
             }
             else if (message.element === 'account-number') {
-                document.getElementById(`${message.element}-iframe`)
+                document.getElementsByName(`${message.element}-iframe`)[0]
                     .contentWindow.postMessage({
                             type: `pt-static:elements`,
                             elements: JSON.parse(JSON.stringify(processedACHElements))
@@ -430,6 +430,19 @@ export default async(
 
         common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler, env)
 
+        const idempotencyHandler = message => {
+            common.setIdempotency(message.payment)
+            document.getElementById(common.getTransactingElement()).idempotent = message.payment
+        }
+
+        common.handleHostedFieldMessage(common.idempotencyTypeMessage, idempotencyHandler, env)
+
+        const transferCompleteHandler = message => {
+            document.getElementById(common.getTransactingElement()).transfer = message.transfer
+        }
+
+        common.handleHostedFieldMessage(common.transferCompleteTypeMessage, transferCompleteHandler, env)
+
         if (processedACHElements.length === 0 && processedCardElements.length === 0) {
             return common.handleError('There are no PayTheory fields')
         }
@@ -483,6 +496,8 @@ export default async(
         const action = confirmation ? 'tokenize' : 'transact'
         common.setBuyer(buyerOptions)
 
+
+
         if (common.isHidden(transacting.card) === false && (isValid === 'card' || isValid === 'both')) {
             const framed = transacting.card.frame ? transacting.card.frame : transacting.card
             common.setTransactingElement(framed)
@@ -498,7 +513,7 @@ export default async(
         }
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized, env)
+    const initTransaction = common.generateInitialization(handleInitialized, token.challengeOptions, env)
 
     const confirm = () => {
 
@@ -579,5 +594,16 @@ export default async(
 
     const host = common.transactionEndpoint(env)
 
-    return common.generateReturn(mount, initTransaction, confirm, cancel, readyObserver, validObserver, { host, apiKey, fee_mode }, tags)
+    return common.generateReturn(
+        mount,
+        initTransaction,
+        confirm,
+        cancel,
+        readyObserver,
+        validObserver, {
+            host,
+            apiKey,
+            fee_mode
+        },
+        tags)
 }

@@ -51,6 +51,15 @@ export const relayTypeMessage = message => typeof message.type === 'string' && m
 
 export const instrumentTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:instrument'
 
+//signals idempotecny has been set on transacting component
+export const idempotentTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:idempotent'
+
+//passes idempotency from hosted fields to SDK
+export const idempotencyTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:idempotency'
+
+//passes transfer-complete from hosted fields to SDK
+export const transferCompleteTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:transfer-complete'
+
 export const handleError = error => {
     window.postMessage({
             type: 'pt:error',
