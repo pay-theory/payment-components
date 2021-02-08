@@ -337,14 +337,13 @@ export default async(
 
         //sends styles to hosted fields when they are set up
         const setupHandler = (message) => {
-            updateReady(message.element)
             document.getElementsByName(`${message.element}-iframe`)[0].contentWindow.postMessage({
                     type: "pt:setup",
                     style: styles.default ? styles : common.defaultStyles
                 },
                 common.hostedFieldsEndpoint(env),
             );
-            if (verifyReady(achReady)) {
+            if (message.element === 'account-number') {
                 document.getElementsByName(`account-number-iframe`)[0]
                     .contentWindow.postMessage({
                             type: `pt-static:elements`,
@@ -353,7 +352,7 @@ export default async(
                         common.hostedFieldsEndpoint(env)
                     );
             }
-            if (verifyReady(cardReady)) {
+            else if (message.element === 'card-number') {
                 document.getElementsByName(`card-number-iframe`)[0]
                     .contentWindow.postMessage({
                             type: `pt-static:elements`,
@@ -365,6 +364,28 @@ export default async(
         }
 
         common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
+
+        const connectionHandler = message => {
+            updateReady(message.element)
+            if (verifyReady(achReady)) {
+                document.getElementsByName(`account-number-iframe`)[0]
+                    .contentWindow.postMessage({
+                            type: `pt-static:connected`,
+                        },
+                        common.hostedFieldsEndpoint(env)
+                    );
+            }
+            if (verifyReady(cardReady)) {
+                document.getElementsByName(`card-number-iframe`)[0]
+                    .contentWindow.postMessage({
+                            type: `pt-static:connected`,
+                        },
+                        common.hostedFieldsEndpoint(env)
+                    );
+            }
+        }
+
+        common.handleHostedFieldMessage(common.connectionTypeMessage, connectionHandler, env)
 
         const stateUpdater = (message) => {
             let element
