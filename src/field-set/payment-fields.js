@@ -503,7 +503,7 @@ export default async(
             }
 
             processedCardElements.forEach(processed => {
-                processed.frame.token = cardToken
+                processed.frame.token = cardToken['pt-token']
             })
 
             if (achInitialized || processedACHElements.length === 0) {
@@ -525,7 +525,7 @@ export default async(
             }
 
             processedACHElements.forEach(processed => {
-                processed.frame.token = achToken
+                processed.frame.token = achToken['pt-token']
             })
             if (ccInitialized || processedCardElements.length === 0) {
                 window.postMessage({
