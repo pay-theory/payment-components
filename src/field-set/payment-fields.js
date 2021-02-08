@@ -24,6 +24,7 @@ export default async(
         'account-name': false,
         'account-type': false
     }
+
     const isCallingType = type => Object.keys(validTypes).includes(type)
 
     const hasValidCard = types =>
@@ -116,16 +117,18 @@ export default async(
         return error
     }
 
-
-
-    let formed = false
-
     let isValid = false
 
     let processedCardElements = []
     let processedACHElements = []
 
     let transacting = {}
+
+    let cardToken;
+    let achToken;
+
+    let achReady = {}
+    let cardReady = {}
 
     let isReady = false
 
@@ -136,7 +139,7 @@ export default async(
 
     const establishElements = (elements, env) => {
         console.log('establishing elements for', env)
-        return common.processElements(elements, styles, token['pt-token'], env)
+        return common.processElements(elements, styles, env)
     }
 
     const isValidFrame = invalidElement => typeof invalidElement === 'undefined' ?
@@ -153,6 +156,39 @@ export default async(
         }
     }
 
+    //Sets the ready objects based on the processed fields 
+    const setReady = (array, type) => {
+        array.forEach(f => {
+            if (f.type === 'credit-card') {
+                cardReady['card-number'] = false
+                cardReady['card-exp'] = false
+                cardReady['card-cvv'] = false
+            }
+            else {
+                let field = common.stateMap[f.type] ? common.stateMap[f.type] : f.type
+                if (type === 'card') cardReady[field] = false
+                if (type === 'ach') achReady[field] = false
+            }
+        })
+    }
+
+    //Updates the fields to show when all have received ready messages
+    const updateReady = type => {
+        if (achReady[type]) achReady[type] = true
+        if (cardReady[type]) cardReady[type] = true
+    }
+
+    //Verifies that all fields are mounted on the dom
+    const verifyReady = obj => {
+        return Object.keys(obj).reduce((acc, val) => {
+            return acc ?
+                (obj[val] === false) ?
+                false :
+                true :
+                acc
+        }, true)
+    }
+
     const stateHandler = elements => state => {
         let errors = []
         elements.forEach(element => {
@@ -166,9 +202,6 @@ export default async(
 
         })
     }
-
-    //fetches token for pt-hosted fields
-    const token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
 
     //sends styles to hosted fields when they are set up
     // const setupHandler = (message) => {
@@ -294,32 +327,46 @@ export default async(
         }
 
         processedCardElements = establishElements(cardElements, env)
-        processedACHElements = common.processAchElements(achElements, styles, token['pt-token'], env)
+        processedACHElements = common.processAchElements(achElements, styles, env)
+
+        setReady(processedACHElements, 'ach')
+        setReady(processedCardElements, 'card')
+
         transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
         transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
 
         //sends styles to hosted fields when they are set up
         const setupHandler = (message) => {
-            document.getElementsByName(`${message.element}-iframe`)[0].contentWindow.postMessage({
-                    type: "pt:setup",
-                    style: styles.default ? styles : common.defaultStyles
-                },
-                common.hostedFieldsEndpoint(env),
-            );
-            if (message.element === 'card-number') {
-                document.getElementsByName(`${message.element}-iframe`)[0]
+            updateReady(message.element)
+
+            //
+            let sendSetup = type => {
+                document.getElementsByName(`${type}-iframe`)[0].contentWindow.postMessage({
+                        type: "pt:setup",
+                        style: styles.default ? styles : common.defaultStyles
+                    },
+                    common.hostedFieldsEndpoint(env),
+                );
+            }
+            if (message.element !== 'card-number' || message.element !== 'account-number') {
+                sendSetup(message.element)
+            }
+            if (verifyReady(processedACHElements)) {
+                sendSetup('account-number')
+                document.getElementsByName(`account-number-iframe`)[0]
                     .contentWindow.postMessage({
                             type: `pt-static:elements`,
-                            elements: JSON.parse(JSON.stringify(processedCardElements))
+                            elements: JSON.parse(JSON.stringify(processedACHElements))
                         },
                         common.hostedFieldsEndpoint(env)
                     );
             }
-            else if (message.element === 'account-number') {
-                document.getElementsByName(`${message.element}-iframe`)[0]
+            if (verifyReady(processedCardElements)) {
+                sendSetup('card-number')
+                document.getElementsByName(`card-number-iframe`)[0]
                     .contentWindow.postMessage({
                             type: `pt-static:elements`,
-                            elements: JSON.parse(JSON.stringify(processedACHElements))
+                            elements: JSON.parse(JSON.stringify(processedCardElements))
                         },
                         common.hostedFieldsEndpoint(env)
                     );
@@ -455,8 +502,10 @@ export default async(
                 return common.handleError(error)
             }
 
+            cardToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+
             processedCardElements.forEach(processed => {
-                processed.frame.form = true
+                processed.frame.token = cardToken
             })
 
             if (achInitialized || processedACHElements.length === 0) {
@@ -477,8 +526,10 @@ export default async(
                 return common.handleError(error)
             }
 
+            achToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+
             processedACHElements.forEach(processed => {
-                processed.frame.form = true
+                processed.frame.token = achToken
             })
             if (ccInitialized || processedCardElements.length === 0) {
                 window.postMessage({
@@ -513,7 +564,7 @@ export default async(
         }
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized, token.challengeOptions, env)
+    const initTransaction = common.generateInitialization(handleInitialized, cardToken ? cardToken.challengeOptions : achToken.challengeOptions, env)
 
     const confirm = () => {
 
