@@ -201,7 +201,7 @@ export default async(
     //relays state to the hosted fields to tokenize the instrument
     const verifyRelay = (fields, message) => {
         fields.forEach((field) => {
-            if (document.getElementsByName(field)) {
+            if (document.getElementsByName(field)[0]) {
                 document
                     .getElementsByName(field)[0]
                     .contentWindow.postMessage(
