@@ -174,6 +174,7 @@ export default async(
 
     //Updates the fields to show when all have received ready messages
     const updateReady = type => {
+        console.log(achReady, cardReady)
         if (achReady[type]) achReady[type] = true
         if (cardReady[type]) cardReady[type] = true
     }
