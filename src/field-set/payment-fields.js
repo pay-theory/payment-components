@@ -124,8 +124,8 @@ export default async(
 
     let transacting = {}
 
-    let cardToken;
-    let achToken;
+    let cardToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+    let achToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
 
     let achReady = {}
     let cardReady = {}
@@ -502,8 +502,6 @@ export default async(
                 return common.handleError(error)
             }
 
-            cardToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-
             processedCardElements.forEach(processed => {
                 processed.frame.token = cardToken
             })
@@ -525,8 +523,6 @@ export default async(
             if (error) {
                 return common.handleError(error)
             }
-
-            achToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
 
             processedACHElements.forEach(processed => {
                 processed.frame.token = achToken
