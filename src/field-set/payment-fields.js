@@ -174,7 +174,6 @@ export default async(
 
     //Updates the fields to show when all have received ready messages
     const updateReady = type => {
-        console.log(achReady, cardReady, type)
         if (typeof achReady[type] !== 'undefined') achReady[type] = true
         if (typeof cardReady[type] !== 'undefined') cardReady[type] = true
     }
@@ -339,19 +338,13 @@ export default async(
         //sends styles to hosted fields when they are set up
         const setupHandler = (message) => {
             updateReady(message.element)
-            const sendSetup = type => {
-                document.getElementsByName(`${type}-iframe`)[0].contentWindow.postMessage({
-                        type: "pt:setup",
-                        style: styles.default ? styles : common.defaultStyles
-                    },
-                    common.hostedFieldsEndpoint(env),
-                );
-            }
-            if (message.element !== 'card-number' && message.element !== 'account-number') {
-                sendSetup(message.element)
-            }
+            document.getElementsByName(`${message.element}-iframe`)[0].contentWindow.postMessage({
+                    type: "pt:setup",
+                    style: styles.default ? styles : common.defaultStyles
+                },
+                common.hostedFieldsEndpoint(env),
+            );
             if (verifyReady(achReady)) {
-                sendSetup('account-number')
                 document.getElementsByName(`account-number-iframe`)[0]
                     .contentWindow.postMessage({
                             type: `pt-static:elements`,
@@ -361,7 +354,6 @@ export default async(
                     );
             }
             if (verifyReady(cardReady)) {
-                sendSetup('card-number')
                 document.getElementsByName(`card-number-iframe`)[0]
                     .contentWindow.postMessage({
                             type: `pt-static:elements`,
