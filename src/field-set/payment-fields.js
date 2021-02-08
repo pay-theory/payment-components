@@ -338,9 +338,7 @@ export default async(
         //sends styles to hosted fields when they are set up
         const setupHandler = (message) => {
             updateReady(message.element)
-
-            //
-            let sendSetup = type => {
+            const sendSetup = type => {
                 document.getElementsByName(`${type}-iframe`)[0].contentWindow.postMessage({
                         type: "pt:setup",
                         style: styles.default ? styles : common.defaultStyles
@@ -351,7 +349,7 @@ export default async(
             if (message.element !== 'card-number' && message.element !== 'account-number') {
                 sendSetup(message.element)
             }
-            if (verifyReady(processedACHElements)) {
+            if (verifyReady(achReady)) {
                 sendSetup('account-number')
                 document.getElementsByName(`account-number-iframe`)[0]
                     .contentWindow.postMessage({
@@ -361,7 +359,7 @@ export default async(
                         common.hostedFieldsEndpoint(env)
                     );
             }
-            if (verifyReady(processedCardElements)) {
+            if (verifyReady(cardReady)) {
                 sendSetup('card-number')
                 document.getElementsByName(`card-number-iframe`)[0]
                     .contentWindow.postMessage({
