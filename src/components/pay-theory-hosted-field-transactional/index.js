@@ -18,6 +18,17 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     return amount % 1 === 0 && amount >= 1
   }
 
+  generateIdempotencyCallback(idempotent) {
+    const message = {
+      type: 'pt:idempotent',
+      idempotent: idempotent
+    }
+    window.postMessage(
+      message,
+      window.location.origin
+    )
+  }
+
   generateTokenizeCallback(amount, token) {
     const message = {
       type: 'pt:tokenize',
@@ -70,6 +81,22 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     )
   }
 
+  get idempotencyCallback() {
+    return this.idempotencyCB
+  }
+
+  set idempotencyCallback(_cb) {
+    this.idempotencyCB = _cb
+  }
+
+  get captureCallback() {
+    return this.captureCB
+  }
+
+  set captureCallback(_cb) {
+    this.captureCB = _cb
+  }
+
   get transact() {
     return this.transacting
   }
@@ -111,6 +138,37 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
     if (_instrumented === 'cancel') {
       this.instrumented = false
+    }
+  }
+
+  get idempotent() {
+    return this.idempotency
+  }
+
+  set idempotent(_idempotency) {
+    console.log(`idempotent ${JSON.stringify(_idempotency)}`)
+    if (!this.idempotency) {
+      this.idempotency = _idempotency
+      const cbToken = {
+        "last_four": _idempotency.bin.last_four,
+        "receipt_number": _idempotency.idempotency,
+        "amount": _idempotency.payment.amount,
+        "service_fee": _idempotency.payment.service_fee
+      }
+      console.log(`idempotent callback`)
+      this.idempotencyCB(cbToken)
+    }
+  }
+
+  get transfer() {
+    return this.transfered
+  }
+
+  set transfer(_transfered) {
+    console.log(`transfer ${JSON.stringify(_transfered)}`)
+    if (!this.transfered) {
+      this.transfered = _transfered
+      this.captureCB(_transfered)
     }
   }
 

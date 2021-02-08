@@ -1,3 +1,4 @@
+/* global navigator */
 import * as data from './data'
 import * as message from './message'
 export const postData = async(url, apiKey, data = {}) => {
@@ -139,15 +140,17 @@ const generateToken = async(host, apiKey, fee_mode, message) => {
     )
 }
 
-const callIdempotency = async(host, apiKey, fee_mode, message) => {
-    const payment = message.tokenize ? message.tokenize : message.transact
-    payment.fee_mode = fee_mode
-    return await postData(
-        `${host}/pt-idempotency`,
-        apiKey,
-        payment
-    )
-}
+// const callIdempotency = async(host, apiKey, fee_mode, message) => {
+//     const payment = message.tokenize ? message.tokenize : message.transact
+//     payment.fee_mode = fee_mode
+//     return await postData(
+//         `${host}/pt-idempotency`,
+//         apiKey,
+//         payment
+//     )
+// }
+
+
 
 const callAuthorization = async(host, apiKey, fee_mode, message) => {
 
@@ -188,53 +191,33 @@ const tokenize = async(host, apiKey, fee_mode, message) => {
 export const generateTokenize = (cb, host, apiKey, fee_mode) => {
     return async message => {
         let transacting = data.getTransactingElement()
-        let cbToken
-
-        if (transacting === 'pay-theory-ach-account-number-tag-frame') {
-            const token = await idempotency(host, apiKey, fee_mode, message)
-            cbToken = {
-                "last_four": token.bin.last_four,
-                "receipt_number": token.idempotency,
-                "amount": token.payment.amount,
-                "service_fee": token.payment.service_fee
-            }
-        }
-        else {
-            const token = await idempotency(host, apiKey, fee_mode, message)
-            cbToken = {
-                "first_six": token.bin.first_six,
-                "brand": token.bin.card_brand,
-                "receipt_number": token.idempotency,
-                "amount": token.payment.amount,
-                "service_fee": token.payment.service_fee
-            }
-        }
-
-        cb(cbToken)
+        document.getElementById(transacting).idempotencyCallback = cb
+        idempotency(apiKey, fee_mode, message)
     }
 }
 
-const idempotency = async(host, apiKey, fee_mode, message) => {
+const requestIdempotency = async(apiKey, fee_mode, message) => {
+    const payment = message.tokenize ? message.tokenize : message.transact
+    payment.fee_mode = fee_mode
+    const frameName = data.getTransactingElement().includes('credit-card') ?
+        'credit-card-number' :
+        'account-number'
+    console.log('requesting idempotency message posted')
+    document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
+            type: "pt-static:idempotency",
+            element: frameName,
+            apiKey,
+            payment
+        },
+        hostedFieldsEndpoint(data.getEnvironment()),
+    )
+}
+
+const idempotency = async(apiKey, fee_mode, message) => {
     if (isValidTransaction(data.getToken())) {
-
-        data.setToken(true)
-        let token = await callIdempotency(host, apiKey, fee_mode, message)
-        //{"state":"error","reason":"service fee unavailable"}
-        // handle error when token fails
-
-        if (token.state === 'error') {
-            const transactionalId = data.getTransactingElement()
-            const transactionalElement = document.getElementById(transactionalId)
-            transactionalElement.error = token.reason
-        }
-        else {
-            data.setToken(token['payment-token'])
-            data.setMerchant(token.payment.merchant)
-            data.setIdempotency(token)
-        }
-        return token
+        console.log('requesting idempotency')
+        requestIdempotency(apiKey, fee_mode, message)
     }
-    return false
 }
 
 const processPayment = async(cb, host, apiKey, tags = {}) => {
@@ -277,61 +260,68 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
     })
 }
 
-const transfer = async(cb, host, apiKey, tags, type) => {
-    let transacting = data.getTransactingElement()
-    const idempotency = data.getIdempotency()
-    tags['pt-number'] = idempotency.idempotency
 
-    const token = data.getToken()
-    const payload = {
-        "payment-token": token,
-        tags,
-        type
-    }
-
-    const transfer = await postData(
-        `${host}/transfer`,
-        apiKey,
-        payload,
+const transfer = (apiKey, tags, transfer) => {
+    const frameName = data.getTransactingElement().includes('credit-card') ?
+        'credit-card-number' :
+        'account-number'
+    console.log('requesting transfer message posted')
+    document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
+            type: "pt-static:transfer",
+            element: frameName,
+            transfer
+        },
+        hostedFieldsEndpoint(data.getEnvironment()),
     )
+    // let transacting = data.getTransactingElement()
+    // const idempotency = data.getIdempotency()
+    // tags['pt-number'] = idempotency.idempotency
 
-    data.removeAll()
-    if (transacting === 'pay-theory-ach-account-number-tag-frame') {
-        cb({
-            receipt_number: idempotency.idempotency,
-            last_four: idempotency.bin.last_four,
-            created_at: transfer.created_at,
-            amount: transfer.amount,
-            service_fee: transfer.service_fee,
-            state: transfer.state === 'PENDING' ? 'APPROVED' : transfer.state === 'error' ? 'FAILURE' : transfer.state,
-            tags: transfer.tags,
-        })
-    }
-    else {
-        cb({
-            receipt_number: idempotency.idempotency,
-            last_four: idempotency.bin.last_four,
-            brand: idempotency.bin.card_brand,
-            created_at: transfer.created_at,
-            amount: transfer.amount,
-            service_fee: transfer.service_fee,
-            state: transfer.state === 'PENDING' ? 'APPROVED' : transfer.state === 'error' ? 'FAILURE' : transfer.state,
-            tags: transfer.tags,
-        })
-    }
+    // const token = data.getToken()
+    // const payload = {
+    //     "payment-token": token,
+    //     tags,
+    //     type
+    // }
+
+    // const transfer = await postData(
+    //     `${host}/transfer`,
+    //     apiKey,
+    //     payload,
+    // )
+
+    // data.removeAll()
+    // if (transacting === 'pay-theory-ach-account-number-tag-frame') {
+    //     cb({
+    //         receipt_number: idempotency.idempotency,
+    //         last_four: idempotency.bin.last_four,
+    //         created_at: transfer.created_at,
+    //         amount: transfer.amount,
+    //         service_fee: transfer.service_fee,
+    //         state: transfer.state === 'PENDING' ? 'APPROVED' : transfer.state === 'error' ? 'FAILURE' : transfer.state,
+    //         tags: transfer.tags,
+    //     })
+    // }
+    // else {
+    //     cb({
+    //         receipt_number: idempotency.idempotency,
+    //         last_four: idempotency.bin.last_four,
+    //         brand: idempotency.bin.card_brand,
+    //         created_at: transfer.created_at,
+    //         amount: transfer.amount,
+    //         service_fee: transfer.service_fee,
+    //         state: transfer.state === 'PENDING' ? 'APPROVED' : transfer.state === 'error' ? 'FAILURE' : transfer.state,
+    //         tags: transfer.tags,
+    //     })
+    // }
 }
 
-export const generateCapture = (cb, host, apiKey, tags = {}) => {
+export const generateCapture = (cb, apiKey, tags = {}) => {
     return async() => {
         isValidTransaction(data.getIdentity())
-        let transacting = data.getTransactingElement()
-
-        if (transacting === 'pay-theory-ach-account-number-tag-frame') {
-            await transfer(cb, host, apiKey, tags, ACH)
-        }
-        else {
-            await transfer(cb, host, apiKey, tags, CARD)
-        }
+        let transacting = document.getElementById(data.getTransactingElement())
+        transacting.captureCallback = cb
+        setTimeout(() => transfer(apiKey, tags, transacting.idempotent), 100)
     }
 }
 
@@ -353,27 +343,45 @@ export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
 
         let transacting = data.getTransactingElement()
 
-        if (transacting === 'pay-theory-ach-account-number-tag-frame') {
-            await idempotency(host, apiKey, fee_mode, message)
+        document.getElementById(transacting).idempotencyCallback = cb
 
-            await transfer(cb, host, apiKey, tags, ACH)
-        }
-        else {
-            await idempotency(host, apiKey, fee_mode, message)
+        idempotency(apiKey, fee_mode, message)
 
-            await transfer(cb, host, apiKey, tags, CARD)
-        }
+        // if (transacting === 'pay-theory-ach-account-number-tag-frame') {
+
+
+        //     await transfer(cb, host, apiKey, tags, ACH)
+        // }
+        // else {
+        //     idempotency(apiKey, fee_mode, message)
+
+        //     await transfer(cb, host, apiKey, tags, CARD)
+        // }
     }
 }
 
-export const generateInitialization = (handleInitialized, env) => {
+export const generateInitialization = (handleInitialized, challengeOptions, env) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
+
+            console.log(JSON.stringify(challengeOptions))
+
+            challengeOptions.challenge = Uint8Array.from(
+                challengeOptions.challenge,
+                c => c.charCodeAt(0))
+
+            challengeOptions.user.id = Uint8Array.from(
+                challengeOptions.user.id,
+                c => c.charCodeAt(0))
+
+            await navigator.credentials.create({
+                publicKey: challengeOptions
+            })
             await handleInitialized(amount, buyerOptions, confirmation)
             const transacting = data.getTransactingElement()
             if (transacting === 'pay-theory-ach-account-number-tag-frame') {
                 data.achFieldTypes.forEach(field => {
-                    document.getElementById(`${field}-iframe`).contentWindow.postMessage({
+                    document.getElementsByName(`${field}-iframe`)[0].contentWindow.postMessage({
                             type: "pt-static:transact",
                             element: field,
                             buyerOptions
@@ -384,7 +392,7 @@ export const generateInitialization = (handleInitialized, env) => {
             }
             else {
                 data.fieldTypes.forEach(field => {
-                    let iframe = document.getElementById(`${data.stateMap[field]}-iframe`)
+                    let iframe = document.getElementsByName(`${data.stateMap[field]}-iframe`)[0]
                     if (iframe) {
                         iframe.contentWindow.postMessage({
                                 type: "pt-static:transact",

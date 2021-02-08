@@ -15,10 +15,10 @@ export const tokenizeObserver = (host, apiKey, fee_mode) =>
         network.generateTokenize(cb, host, apiKey, fee_mode))
 
 
-export const captureObserver = (host, apiKey, tags = {}) =>
+export const captureObserver = (apiKey, tags = {}) =>
     cb => messaging.handleMessage(
         messaging.captureTypeMessage,
-        network.generateCapture(cb, host, apiKey, tags))
+        network.generateCapture(cb, apiKey, tags))
 
 export const transactedObserver = (host, apiKey, fee_mode, tags = {}) =>
     cb => messaging.handleMessage(
