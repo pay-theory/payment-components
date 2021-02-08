@@ -175,8 +175,8 @@ export default async(
     //Updates the fields to show when all have received ready messages
     const updateReady = type => {
         console.log(achReady, cardReady, type)
-        if (achReady[type]) achReady[type] = true
-        if (cardReady[type]) cardReady[type] = true
+        if (typeof achReady[type] !== 'undefined') achReady[type] = true
+        if (typeof cardReady[type] !== 'undefined') cardReady[type] = true
     }
 
     //Verifies that all fields are mounted on the dom
