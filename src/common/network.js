@@ -343,10 +343,11 @@ export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
 
         let transacting = data.getTransactingElement()
 
-        document.getElementById(transacting).idempotencyCallback = cb
+        document.getElementById(transacting).captureCallback = cb
 
         idempotency(apiKey, fee_mode, message)
 
+        setTimeout(() => transfer(apiKey, tags, transacting.idempotent), 100)
         // if (transacting === 'pay-theory-ach-account-number-tag-frame') {
 
 
