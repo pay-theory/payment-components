@@ -344,6 +344,7 @@ export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
         let transacting = data.getTransactingElement()
 
         document.getElementById(transacting).captureCallback = cb
+        document.getElementById(transacting).idempotencyCallback = message => console.log(message)
 
         idempotency(apiKey, fee_mode, message)
 
