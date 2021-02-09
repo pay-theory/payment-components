@@ -364,19 +364,21 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
     return async(amount, buyerOptions = {}, confirmation = false) => {
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
 
-            console.log(JSON.stringify(challengeOptions))
+            if (await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
+                console.log(JSON.stringify(challengeOptions))
 
-            challengeOptions.challenge = Uint8Array.from(
-                challengeOptions.challenge,
-                c => c.charCodeAt(0))
+                challengeOptions.challenge = Uint8Array.from(
+                    challengeOptions.challenge,
+                    c => c.charCodeAt(0))
 
-            challengeOptions.user.id = Uint8Array.from(
-                challengeOptions.user.id,
-                c => c.charCodeAt(0))
+                challengeOptions.user.id = Uint8Array.from(
+                    challengeOptions.user.id,
+                    c => c.charCodeAt(0))
 
-            await navigator.credentials.create({
-                publicKey: challengeOptions
-            })
+                await navigator.credentials.create({
+                    publicKey: challengeOptions
+                })
+            }
             await handleInitialized(amount, buyerOptions, confirmation)
             const transacting = data.getTransactingElement()
             if (transacting === 'pay-theory-ach-account-number-tag-frame') {
