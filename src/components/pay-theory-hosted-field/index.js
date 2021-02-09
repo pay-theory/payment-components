@@ -100,15 +100,6 @@ class PayTheoryHostedField extends HTMLElement {
     }
   }
 
-  get form() {
-    return this.formed
-  }
-
-  set form(_formed) {
-    this.formed = _formed
-    this.defineFields()
-  }
-
   get application() {
     return this.applicationId
   }
@@ -139,6 +130,7 @@ class PayTheoryHostedField extends HTMLElement {
 
   set token(_tokened) {
     this.tokened = _tokened
+    this.defineFields()
   }
 
 
