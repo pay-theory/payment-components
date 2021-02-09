@@ -200,7 +200,7 @@ const requestIdempotency = async(apiKey, fee_mode, message) => {
     const payment = message.tokenize ? message.tokenize : message.transact
     payment.fee_mode = fee_mode
     const frameName = data.getTransactingElement().includes('credit-card') ?
-        'credit-card-number' :
+        'card-number' :
         'account-number'
     console.log('requesting idempotency message posted')
     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
