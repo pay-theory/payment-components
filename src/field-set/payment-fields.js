@@ -138,7 +138,6 @@ export default async(
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
     const establishElements = (elements, env) => {
-        console.log('establishing elements for', env)
         return common.processElements(elements, styles, env)
     }
 
