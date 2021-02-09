@@ -263,7 +263,7 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
 
 const transfer = (apiKey, tags, transfer) => {
     const frameName = data.getTransactingElement().includes('credit-card') ?
-        'credit-card-number' :
+        'card-number' :
         'account-number'
     console.log('requesting transfer message posted')
     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
