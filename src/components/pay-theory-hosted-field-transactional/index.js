@@ -152,7 +152,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       const cbToken = {
         "first_six": _idempotency.bin.first_six,
         "last_four": _idempotency.bin.last_four,
-        "brand": _idempotency.bin.brand,
+        "brand": _idempotency.bin.card_brand,
         "receipt_number": _idempotency.idempotency,
         "amount": _idempotency.payment.amount,
         "service_fee": _idempotency.payment.service_fee
@@ -170,7 +170,17 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     console.log(`transfer ${JSON.stringify(_transfered)}`)
     if (!this.transfered) {
       this.transfered = _transfered
-      this.captureCB(_transfered)
+      const cbToken = {
+        "receipt_number": this.idempotency.idempotency,
+        "last_four": _transfered.last_four,
+        "brand": _transfered.card_brand,
+        "created_at": _transfered.created_at,
+        "amount": _transfered.amount,
+        "service_fee": _transfered.service_fee,
+        "state": _transfered.state,
+        "tags": _transfered.tags
+      }
+      this.captureCB(cbToken)
     }
   }
 
