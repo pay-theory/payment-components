@@ -51,6 +51,8 @@ export const relayTypeMessage = message => typeof message.type === 'string' && m
 
 export const instrumentTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:instrument'
 
+export const connectionTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:connected'
+
 //signals idempotecny has been set on transacting component
 export const idempotentTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:idempotent'
 
