@@ -199,7 +199,9 @@ export const generateTokenize = (cb, host, apiKey, fee_mode) => {
 const requestIdempotency = async(apiKey, fee_mode, message) => {
     const payment = message.tokenize ? message.tokenize : message.transact
     payment.fee_mode = fee_mode
-    const frameName = data.getTransactingElement().includes('credit-card') ?
+    let transacting = data.getTransactingElement()
+    let action = document.getElementById(transacting).action
+    const frameName = transacting.includes('credit-card') ?
         'card-number' :
         'account-number'
 
@@ -207,7 +209,8 @@ const requestIdempotency = async(apiKey, fee_mode, message) => {
             type: "pt-static:idempotency",
             element: frameName,
             apiKey,
-            payment
+            payment,
+            action
         },
         hostedFieldsEndpoint(data.getEnvironment()),
     )
