@@ -200,9 +200,9 @@ const requestIdempotency = async(apiKey, fee_mode, message) => {
     const payment = message.tokenize ? message.tokenize : message.transact
     payment.fee_mode = fee_mode
     const frameName = data.getTransactingElement().includes('credit-card') ?
-        'credit-card-number' :
+        'card-number' :
         'account-number'
-    console.log('requesting idempotency message posted')
+
     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
             type: "pt-static:idempotency",
             element: frameName,
@@ -215,7 +215,7 @@ const requestIdempotency = async(apiKey, fee_mode, message) => {
 
 const idempotency = async(apiKey, fee_mode, message) => {
     if (isValidTransaction(data.getToken())) {
-        console.log('requesting idempotency')
+
         requestIdempotency(apiKey, fee_mode, message)
     }
 }
@@ -263,9 +263,9 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
 
 const transfer = (apiKey, tags, transfer) => {
     const frameName = data.getTransactingElement().includes('credit-card') ?
-        'credit-card-number' :
+        'card-number' :
         'account-number'
-    console.log('requesting transfer message posted')
+
     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
             type: "pt-static:transfer",
             element: frameName,
@@ -342,21 +342,13 @@ export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
         isValidTransaction(data.getToken())
 
         let transacting = data.getTransactingElement()
-
-        document.getElementById(transacting).idempotencyCallback = cb
+        const transactingElement = document.getElementById(transacting)
+        transactingElement.idempotencyCallback = (token) => {
+            transactingElement.captureCallback = cb
+            setTimeout(() => transfer(apiKey, tags, transactingElement.idempotent), 100)
+        }
 
         idempotency(apiKey, fee_mode, message)
-
-        // if (transacting === 'pay-theory-ach-account-number-tag-frame') {
-
-
-        //     await transfer(cb, host, apiKey, tags, ACH)
-        // }
-        // else {
-        //     idempotency(apiKey, fee_mode, message)
-
-        //     await transfer(cb, host, apiKey, tags, CARD)
-        // }
     }
 }
 
@@ -365,7 +357,6 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
 
             if (await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
-                console.log(JSON.stringify(challengeOptions))
 
                 challengeOptions.challenge = Uint8Array.from(
                     challengeOptions.challenge,

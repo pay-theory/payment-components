@@ -146,7 +146,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set idempotent(_idempotency) {
-    console.log(`idempotent ${JSON.stringify(_idempotency)}`)
     if (!this.idempotency) {
       this.idempotency = _idempotency
       const cbToken = {
@@ -155,7 +154,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         "amount": _idempotency.payment.amount,
         "service_fee": _idempotency.payment.service_fee
       }
-      console.log(`idempotent callback`)
       this.idempotencyCB(cbToken)
     }
   }
@@ -165,7 +163,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set transfer(_transfered) {
-    console.log(`transfer ${JSON.stringify(_transfered)}`)
     if (!this.transfered) {
       this.transfered = _transfered
       this.captureCB(_transfered)
