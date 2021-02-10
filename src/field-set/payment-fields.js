@@ -366,7 +366,7 @@ export default async(
 
         const connectionHandler = message => {
             updateReady(message.element)
-            if (verifyReady(achReady)) {
+            if (verifyReady(achReady) && processedACHElements.length > 0) {
                 document.getElementsByName(`account-number-iframe`)[0]
                     .contentWindow.postMessage({
                             type: `pt-static:connected`,
@@ -374,7 +374,7 @@ export default async(
                         common.hostedFieldsEndpoint(env)
                     );
             }
-            if (verifyReady(cardReady)) {
+            if (verifyReady(cardReady) && processedCardElements.length > 0) {
                 document.getElementsByName(`card-number-iframe`)[0]
                     .contentWindow.postMessage({
                             type: `pt-static:connected`,
