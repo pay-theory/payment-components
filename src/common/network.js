@@ -205,6 +205,7 @@ const requestIdempotency = async(apiKey, fee_mode, message) => {
         'card-number' :
         'account-number'
 
+    console.log('idempotency message sent')
     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
             type: "pt-static:idempotency",
             element: frameName,
