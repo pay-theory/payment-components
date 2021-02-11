@@ -587,18 +587,35 @@ export default async(
         transactor.capture = true
     }
 
-    const cancel = () => {
+    const cancel = async() => {
         if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
             let transactor = transacting.ach.frame ? transacting.ach.frame : transacting.ach
             common.removeIdentity()
             common.removeToken()
             transactor.instrument = 'cancel'
+            let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+            document.getElementsByName(`account-number-iframe`)[0]
+                .contentWindow.postMessage({
+                        type: `pt-static:cancel`,
+                        token: token['pt-token']
+                    },
+                    common.hostedFieldsEndpoint(env)
+                );
+
         }
         else if (common.getTransactingElement()) {
             let transactor = transacting.card.frame ? transacting.card.frame : transacting.card
             common.removeIdentity()
             common.removeToken()
             transactor.instrument = 'cancel'
+            let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+            document.getElementsByName(`card-number-iframe`)[0]
+                .contentWindow.postMessage({
+                        type: `pt-static:cancel`,
+                        token: token['pt-token']
+                    },
+                    common.hostedFieldsEndpoint(env)
+                );
         }
     }
 
