@@ -121,7 +121,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set instrument(_instrumented) {
-    if (this.instrumented !== _instrumented && _instrumented !== 'cancel') {
+    if (!this.instrumented) {
       this.instrumented = _instrumented
       switch (this.actioned) {
       case ('tokenize'):
