@@ -592,14 +592,12 @@ export default async(
             let transactor = transacting.ach.frame ? transacting.ach.frame : transacting.ach
             common.removeIdentity()
             common.removeToken()
-            common.removeTransactingElement()
             transactor.instrument = 'cancel'
         }
         else if (common.getTransactingElement()) {
             let transactor = transacting.card.frame ? transacting.card.frame : transacting.card
             common.removeIdentity()
             common.removeToken()
-            common.removeTransactingElement()
             transactor.instrument = 'cancel'
         }
     }
