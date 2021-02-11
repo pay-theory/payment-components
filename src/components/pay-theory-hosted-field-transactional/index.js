@@ -121,10 +121,9 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set instrument(_instrumented) {
-    if (!this.instrumented) {
-      this.instrumented = {}
-    }
-    if (this.instrumented['pt-instrument'] !== _instrumented['pt-instrument']) {
+    let oldInstrument = this.instrumented ? this.instrumented : {}
+    console.log(_instrumented, 'test instrument', oldInstrument)
+    if (oldInstrument['pt-instrument'] !== _instrumented['pt-instrument']) {
       this.instrumented = _instrumented
       switch (this.actioned) {
       case ('tokenize'):
