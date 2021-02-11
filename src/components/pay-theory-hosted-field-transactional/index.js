@@ -34,7 +34,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       type: 'pt:tokenize',
       tokenize: { amount, currency: 'USD', "pt-instrument": token }
     }
-    console.log('token callback run')
     window.postMessage(
       message,
       window.location.origin
@@ -122,8 +121,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set instrument(_instrumented) {
-    if (this.instrumented !== _instrumented) {
-      console.log('new instrument set')
+    if (this.instrumented !== _instrumented && _instrumented !== 'cancel') {
       this.instrumented = _instrumented
       switch (this.actioned) {
       case ('tokenize'):
