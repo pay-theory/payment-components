@@ -146,7 +146,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set idempotent(_idempotency) {
-    if (!this.idempotency) {
+    let oldIdempotency = this.idempotency ? this.idempotency : {}
+    if (oldIdempotency.idempotency !== _idempotency.idempotency) {
       this.idempotency = _idempotency
       const cbToken = {
         "first_six": _idempotency.bin.first_six,
