@@ -244,46 +244,6 @@ export default async(
         });
     };
 
-    const relayHandler = (message) => {
-        if (message.element.startsWith("card") || message.element.startsWith('billing')) {
-            if (message.element === "card-autofill") {
-                const cardFields = [
-                    "card-name-iframe",
-                    "card-cvv-iframe",
-                    "card-exp-iframe"
-                ];
-                verifyRelay(cardFields, message);
-            }
-            else {
-                document
-                    .getElementsByName(`card-number-iframe`)[0]
-                    .contentWindow.postMessage(
-                        message,
-                        common.hostedFieldsEndpoint(env)
-                    );
-            }
-        }
-        else if (message.element === "address-autofill") {
-            const addressFields = [
-                "billing-line2-iframe",
-                "billing-city-iframe",
-                "billing-state-iframe",
-                "billing-zip-iframe"
-            ];
-            verifyRelay(addressFields, message);
-        }
-        else {
-            document
-                .getElementsByName(`account-number-iframe`)[0]
-                .contentWindow.postMessage(
-                    message,
-                    common.hostedFieldsEndpoint(env)
-                );
-        }
-    };
-
-    const removeRelay = common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler, env)
-
     const mount = async(
         elements = {
             'credit-card': common.fields.CREDIT_CARD,
@@ -331,6 +291,46 @@ export default async(
 
         transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
         transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
+
+        const relayHandler = (message) => {
+            if (message.element.startsWith("card") || message.element.startsWith('billing')) {
+                if (message.element === "card-autofill") {
+                    const cardFields = [
+                    "card-name-iframe",
+                    "card-cvv-iframe",
+                    "card-exp-iframe"
+                ];
+                    verifyRelay(cardFields, message);
+                }
+                else {
+                    document
+                        .getElementsByName(`card-number-iframe`)[0]
+                        .contentWindow.postMessage(
+                            message,
+                            common.hostedFieldsEndpoint(env)
+                        );
+                }
+            }
+            else if (message.element === "address-autofill") {
+                const addressFields = [
+                "billing-line2-iframe",
+                "billing-city-iframe",
+                "billing-state-iframe",
+                "billing-zip-iframe"
+            ];
+                verifyRelay(addressFields, message);
+            }
+            else {
+                document
+                    .getElementsByName(`account-number-iframe`)[0]
+                    .contentWindow.postMessage(
+                        message,
+                        common.hostedFieldsEndpoint(env)
+                    );
+            }
+        };
+
+        const removeRelay = common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler, env)
 
         //sends styles to hosted fields when they are set up
         const setupHandler = (message) => {
