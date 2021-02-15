@@ -124,9 +124,6 @@ export default async(
 
     let transacting = {}
 
-    let cardToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-    let achToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-
     let achReady = {}
     let cardReady = {}
 
@@ -134,6 +131,9 @@ export default async(
 
     let achInitialized = false
     let ccInitialized = false
+
+    let cardToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+    let achToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
@@ -282,9 +282,7 @@ export default async(
         }
     };
 
-
-    // common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
-    common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler, env)
+    const removeRelay = common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler, env)
 
     const mount = async(
         elements = {
@@ -362,7 +360,7 @@ export default async(
             }
         }
 
-        common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
+        const removeSetup = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
 
         const connectionHandler = message => {
             updateReady(message.element)
@@ -384,7 +382,7 @@ export default async(
             }
         }
 
-        common.handleHostedFieldMessage(common.connectionTypeMessage, connectionHandler, env)
+        const removeConnection = common.handleHostedFieldMessage(common.connectionTypeMessage, connectionHandler, env)
 
         const stateUpdater = (message) => {
             let element
@@ -474,7 +472,7 @@ export default async(
 
         }
 
-        common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater, env)
+        const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater, env)
 
         const instrumentHandler = message => {
             common.setInstrument(message.instrument)
@@ -486,20 +484,20 @@ export default async(
             }
         }
 
-        common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler, env)
+        const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler, env)
 
         const idempotencyHandler = message => {
             common.setIdempotency(message.payment)
             document.getElementById(common.getTransactingElement()).idempotent = message.payment
         }
 
-        common.handleHostedFieldMessage(common.idempotencyTypeMessage, idempotencyHandler, env)
+        const removeIdempotency = common.handleHostedFieldMessage(common.idempotencyTypeMessage, idempotencyHandler, env)
 
         const transferCompleteHandler = message => {
             document.getElementById(common.getTransactingElement()).transfer = message.transfer
         }
 
-        common.handleHostedFieldMessage(common.transferCompleteTypeMessage, transferCompleteHandler, env)
+        const removeTransferComplete = common.handleHostedFieldMessage(common.transferCompleteTypeMessage, transferCompleteHandler, env)
 
         if (processedACHElements.length === 0 && processedCardElements.length === 0) {
             return common.handleError('There are no PayTheory fields')
@@ -546,6 +544,16 @@ export default async(
                     window.location.origin,
                 )
             }
+        }
+
+        return () => {
+            removeRelay()
+            removeSetup()
+            removeConnection()
+            removeState()
+            removeInstrument()
+            removeIdempotency()
+            removeTransferComplete()
         }
     }
 

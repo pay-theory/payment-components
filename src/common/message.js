@@ -22,11 +22,15 @@ const generateiFrameWindowListener = (validTarget, handleMessage, env) => {
 }
 
 export const handleMessage = (validTarget, handleMessage) => {
-    window.addEventListener('message', generateWindowListener(validTarget, handleMessage))
+    const func = generateWindowListener(validTarget, handleMessage)
+    window.addEventListener('message', func)
+    return () => { window.removeEventListener('message', func) }
 }
 
 export const handleHostedFieldMessage = (validTarget, handleMessage, env) => {
-    window.addEventListener('message', generateiFrameWindowListener(validTarget, handleMessage, env))
+    const func = generateiFrameWindowListener(validTarget, handleMessage, env)
+    window.addEventListener('message', func)
+    return () => { window.removeEventListener('message', func) }
 }
 
 export const errorTypeMessage = message => typeof message.type === 'string' && message.type === 'pt:error'
