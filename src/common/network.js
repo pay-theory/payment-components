@@ -100,95 +100,7 @@ export const hostedFieldsEndpoint = (env) => {
     }
 }
 
-const generateInstrument = async(host, apiKey) => {
-    const clientKey = data.getMerchant()
-    const identityToken = data.getIdentity()['tags-token']
-    const identity = { identityToken }
-    return await postData(
-        `${host}/${clientKey}/instrument`,
-        apiKey,
-        identity,
-    )
-}
-
-const generateIdentity = async(host, apiKey, identity) => {
-    const clientKey = data.getMerchant()
-    const paymentToken = data.getToken()
-    const idToken = {
-        paymentToken,
-        identity
-    }
-    return await postData(
-        `${host}/${clientKey}/identity`,
-        apiKey,
-        idToken
-    )
-}
-
-const generateToken = async(host, apiKey, fee_mode, message) => {
-    const bin = data.getBin()
-    const payment = message.tokenize ? message.tokenize : message.transact
-    payment.fee_mode = fee_mode
-    const payload = {
-        payment,
-        bin
-    }
-    return await postData(
-        `${host}/token`,
-        apiKey,
-        payload,
-    )
-}
-
-// const callIdempotency = async(host, apiKey, fee_mode, message) => {
-//     const payment = message.tokenize ? message.tokenize : message.transact
-//     payment.fee_mode = fee_mode
-//     return await postData(
-//         `${host}/pt-idempotency`,
-//         apiKey,
-//         payment
-//     )
-// }
-
-
-
-const callAuthorization = async(host, apiKey, fee_mode, message) => {
-
-    const payment = message.tokenize ? message.tokenize : message.transact
-    payment.fee_mode = fee_mode
-    const payload = {
-        payment
-    }
-    return await postData(
-        `${host}/token`,
-        apiKey,
-        payload,
-    )
-}
-
-const tokenize = async(host, apiKey, fee_mode, message) => {
-    if (isValidTransaction(data.getToken())) {
-
-        data.setToken(true)
-        let token = await generateToken(host, apiKey, fee_mode, message)
-        //{"state":"error","reason":"service fee unavailable"}
-        // handle error when token fails
-
-        if (token.state === 'error') {
-            const transactionalId = data.getTransactingElement()
-            const transactionalElement = document.getElementById(transactionalId)
-            transactionalElement.error = token.reason
-        }
-        else {
-            data.setToken(token.paymentToken)
-            data.setMerchant(token.payment.merchant)
-        }
-        return token
-    }
-    return false
-}
-
-export const generateTokenize = (cb, host, apiKey, fee_mode) => {
+export const generateTokenize = (cb, apiKey, fee_mode) => {
     return async message => {
         let transacting = data.getTransactingElement()
         document.getElementById(transacting).idempotencyCallback = cb
@@ -223,48 +135,10 @@ const idempotency = async(apiKey, fee_mode, message) => {
     }
 }
 
-const processPayment = async(cb, host, apiKey, tags = {}) => {
-
-    const clientKey = data.getMerchant()
-
-    data.setIdentity(true)
-
-    const identity = await generateIdentity(host, apiKey, data.getBuyer())
-
-    data.setIdentity(identity)
-
-    tags['pt-number'] = identity.idempotencyId
-
-    const instrumental = await generateInstrument(host, apiKey)
-
-    const auth = {
-        instrumentToken: instrumental['tags-token'],
-        tags
-    }
-
-    const payment = await postData(
-        `${host}/${clientKey}/authorize`,
-        apiKey,
-        auth
-    )
-
-    data.removeAll()
-
-    cb({
-        receipt_number: identity.idempotencyId,
-        last_four: instrumental.last_four,
-        brand: instrumental.brand,
-        type: payment.state === 'error' ? payment.reason : payment.type,
-        created_at: payment.created_at,
-        amount: payment.amount,
-        service_fee: payment.service_fee,
-        state: payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state,
-        tags: payment.tags,
-    })
-}
 
 
-const transfer = (apiKey, tags, transfer) => {
+
+const transfer = (tags, transfer) => {
     const frameName = data.getTransactingElement().includes('credit-card') ?
         'card-number' :
         'account-number'
@@ -272,75 +146,23 @@ const transfer = (apiKey, tags, transfer) => {
     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
             type: "pt-static:transfer",
             element: frameName,
-            transfer
+            transfer,
+            tags
         },
         hostedFieldsEndpoint(data.getEnvironment()),
     )
-    // let transacting = data.getTransactingElement()
-    // const idempotency = data.getIdempotency()
-    // tags['pt-number'] = idempotency.idempotency
-
-    // const token = data.getToken()
-    // const payload = {
-    //     "payment-token": token,
-    //     tags,
-    //     type
-    // }
-
-    // const transfer = await postData(
-    //     `${host}/transfer`,
-    //     apiKey,
-    //     payload,
-    // )
-
-    // data.removeAll()
-    // if (transacting === 'pay-theory-ach-account-number-tag-frame') {
-    //     cb({
-    //         receipt_number: idempotency.idempotency,
-    //         last_four: idempotency.bin.last_four,
-    //         created_at: transfer.created_at,
-    //         amount: transfer.amount,
-    //         service_fee: transfer.service_fee,
-    //         state: transfer.state === 'PENDING' ? 'APPROVED' : transfer.state === 'error' ? 'FAILURE' : transfer.state,
-    //         tags: transfer.tags,
-    //     })
-    // }
-    // else {
-    //     cb({
-    //         receipt_number: idempotency.idempotency,
-    //         last_four: idempotency.bin.last_four,
-    //         brand: idempotency.bin.card_brand,
-    //         created_at: transfer.created_at,
-    //         amount: transfer.amount,
-    //         service_fee: transfer.service_fee,
-    //         state: transfer.state === 'PENDING' ? 'APPROVED' : transfer.state === 'error' ? 'FAILURE' : transfer.state,
-    //         tags: transfer.tags,
-    //     })
-    // }
 }
 
-export const generateCapture = (cb, apiKey, tags = {}) => {
+export const generateCapture = (cb, tags = {}) => {
     return async() => {
         isValidTransaction(data.getIdentity())
         let transacting = document.getElementById(data.getTransactingElement())
         transacting.captureCallback = cb
-        setTimeout(() => transfer(apiKey, tags, transacting.idempotent), 100)
+        setTimeout(() => transfer(tags, transacting.idempotent), 100)
     }
 }
 
-const processToken = token => {
-    if (token.state === 'error') {
-        token = {
-            type: token.reason,
-            state: 'FAILURE'
-        }
-    }
-    else {
-        data.setToken(token.paymentToken)
-    }
-}
-
-export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
+export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
     return async message => {
         isValidTransaction(data.getToken())
 
@@ -348,7 +170,7 @@ export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
         const transactingElement = document.getElementById(transacting)
         transactingElement.idempotencyCallback = (token) => {
             transactingElement.captureCallback = cb
-            setTimeout(() => transfer(apiKey, tags, transactingElement.idempotent), 100)
+            setTimeout(() => transfer(tags, transactingElement.idempotent), 100)
         }
 
         idempotency(apiKey, fee_mode, message)

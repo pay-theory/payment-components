@@ -27,6 +27,7 @@ export default async(
 
     const isCallingType = type => Object.keys(validTypes).includes(type)
 
+    //Lets the alid observer check that all fields are set to valid before sending a message
     const hasValidCard = types =>
         (types['card-number'] && types['card-cvv'] && types['card-exp'])
 
@@ -42,6 +43,8 @@ export default async(
     const hasValidAccount = types =>
         (types['account-number'] && types['account-type'] && types['account-name'] && types['routing-number'])
 
+
+    //Checkes the dom for elements and returns errors if there are missing elements or conflicting elements
     const findCardNumberError = processedElements => {
         let error = false
         if (processedElements.reduce(common.findExp, false) === false) {
@@ -117,6 +120,7 @@ export default async(
         return error
     }
 
+
     let isValid = false
 
     let processedCardElements = []
@@ -139,20 +143,6 @@ export default async(
 
     const establishElements = (elements, env) => {
         return common.processElements(elements, styles, env)
-    }
-
-    const isValidFrame = invalidElement => typeof invalidElement === 'undefined' ?
-        invalidElement :
-        !invalidElement
-
-    const handleElement = (element, errors, invalidElement, stated) => {
-        if (invalidElement) {
-            errors.push(stated.errorMessages[0])
-            element.frame.error = stated.errorMessages[0]
-        }
-        else {
-            element.frame.error = false
-        }
     }
 
     //Sets the ready objects based on the processed fields 
@@ -187,48 +177,6 @@ export default async(
                 acc
         }, true)
     }
-
-    const stateHandler = elements => state => {
-        let errors = []
-        elements.forEach(element => {
-            const [, stated, invalidElement] = common.stateMapping(element.type, state)
-
-            if (stated.isDirty) {
-                element.frame.valid = isValidFrame(invalidElement)
-
-                handleElement(element, errors, invalidElement, stated)
-            }
-
-        })
-    }
-
-    //sends styles to hosted fields when they are set up
-    // const setupHandler = (message) => {
-    //     document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
-    //             type: "pt:setup",
-    //             style: styles.default ? styles : common.defaultStyles
-    //         },
-    //         common.hostedFieldsEndpoint(env),
-    //     );
-    //     if (message.element === 'card-number') {
-    //         document.getElementById(`card-number-iframe`)
-    //             .contentWindow.postMessage({
-    //                     type: `pt-static:elements`,
-    //                     elements: processedCardElements
-    //                 },
-    //                 common.hostedFieldsEndpoint(env)
-    //             );
-    //     }
-    //     else if (message.element === 'account-number') {
-    //         document.getElementById(`account-number-iframe`)
-    //             .contentWindow.postMessage({
-    //                     type: `pt-static:elements`,
-    //                     elements: processedACHElements
-    //                 },
-    //                 common.hostedFieldsEndpoint(env)
-    //             );
-    //     }
-    // }
 
     //relays state to the hosted fields to tokenize the instrument
     const verifyRelay = (fields, message) => {
@@ -292,6 +240,7 @@ export default async(
         transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
         transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
 
+        //Relays messages from hosted fields to the transacting element for autofill and transacting
         const relayHandler = (message) => {
             if (message.element.startsWith("card") || message.element.startsWith('billing')) {
                 if (message.element === "card-autofill") {
@@ -362,6 +311,7 @@ export default async(
 
         const removeSetup = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
 
+        //Sends a message to the transacting element letting it know that all other fields have connected to the websocket so that it can fetch the host token
         const connectionHandler = message => {
             updateReady(message.element)
             if (verifyReady(achReady) && processedACHElements.length > 0) {
@@ -384,6 +334,7 @@ export default async(
 
         const removeConnection = common.handleHostedFieldMessage(common.connectionTypeMessage, connectionHandler, env)
 
+        //Handles state messages and sets state on the web components 
         const stateUpdater = (message) => {
             let element
             switch (message.element) {
@@ -474,6 +425,7 @@ export default async(
 
         const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater, env)
 
+        //Recieves a pt-instrument and assigns it to the proper transacting element
         const instrumentHandler = message => {
             common.setInstrument(message.instrument)
             if (message.field === 'card-number') {
@@ -486,6 +438,7 @@ export default async(
 
         const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler, env)
 
+        //Recieves an idempotency and assigns it to the transacting element
         const idempotencyHandler = message => {
             common.setIdempotency(message.payment)
             document.getElementById(common.getTransactingElement()).idempotent = message.payment
@@ -493,6 +446,7 @@ export default async(
 
         const removeIdempotency = common.handleHostedFieldMessage(common.idempotencyTypeMessage, idempotencyHandler, env)
 
+        //Recieves a transfer and assigns it to the transacting element
         const transferCompleteHandler = message => {
             document.getElementById(common.getTransactingElement()).transfer = message.transfer
         }
@@ -503,6 +457,7 @@ export default async(
             return common.handleError('There are no PayTheory fields')
         }
 
+        //Initializes Card elements if they are found on the dom
         if (processedCardElements.length > 0) {
             ccInitialized = true
 
@@ -526,6 +481,7 @@ export default async(
 
         }
 
+        //Initializes ACH elements if they are found on the dom
         if (processedACHElements.length > 0) {
             achInitialized = true
             let error = findAchError(processedACHElements)
@@ -546,6 +502,7 @@ export default async(
             }
         }
 
+        //returns a funciton that removes any event handlers that were put on the window during the mount function
         return () => {
             removeRelay()
             removeSetup()

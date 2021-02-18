@@ -1,5 +1,4 @@
 import * as data from './data'
-import * as network from './network'
 import * as message from './message'
 export const findTransactingElement = (element, cv) => {
     return element === false ?
@@ -201,110 +200,6 @@ const processAchContainer = (container, elements, processed, styles, type, env) 
         error = `${elements[type]} is already mounted`
     }
     return error
-}
-
-export const appendFinix = (formed, handleState, handleFormed) => {
-    const script = document.createElement('script')
-    // eslint-disable-next-line scanjs-rules/assign_to_src
-    script.src = 'https://forms.finixpymnts.com/finix.js'
-    script.addEventListener('load', () => {
-
-        formed = window.PaymentForm.card((state, binInformation) => {
-            if (binInformation) {
-                data.setBin({ first_six: binInformation.bin, brand: binInformation.cardBrand })
-                const badge = binInformation.cardBrand
-                const badger = document.createElement('div')
-                const branded = `pay-theory-card-badge pay-theory-card-${badge}`
-                badger.setAttribute('class', branded)
-                const badged = document.getElementById('pay-theory-badge-wrapper')
-                if (badged !== null) {
-                    badged.innerHTML = ''
-                    badged.appendChild(badger)
-                }
-            }
-
-            if (state) {
-                handleState(state)
-            }
-        })
-        handleFormed(formed)
-    })
-    document.getElementsByTagName('head')[0].appendChild(script)
-}
-
-const determineStateType = (elementType) =>
-    data.stateMap[elementType] ?
-    data.stateMap[elementType] :
-    elementType
-
-const generateStateReducer = state => {
-    return ([cValid, cInvalid, cUndefined], typed) => {
-        const stated = state[typed]
-
-        // validate finix state
-        const invalid = network.invalidate(stated)
-
-        if (invalid === true) {
-            cInvalid.push(stated)
-        }
-        else if (invalid === false) {
-            cValid.push(stated)
-        }
-        else {
-            cUndefined.push(stated)
-        }
-
-        return [cValid, cInvalid, cUndefined]
-    }
-}
-
-
-
-const findStateResult = (cValid, cInvalid, cUndefined, splitLength, stateType) => {
-    let result
-    if (cValid.length === splitLength) {
-        result = [stateType, cValid[0], false]
-    }
-    else if (cInvalid.length > 0) {
-        result = [stateType, cInvalid[0], true]
-    }
-    else {
-        result = [stateType, cUndefined[0], ]
-    }
-    return result
-}
-
-export const stateMapping = (elementType, state) => {
-    // find the finix data element (number,security_code etc)
-    const stateType = determineStateType(elementType)
-
-    // extract the finix state for state type
-    // use reduce in case there are combined elements
-    const splitLength = stateType.split('|').length
-
-
-
-    let result
-    if (splitLength > 1) {
-        const [cValid, cInvalid, cUndefined] = stateType.split('|').reduce(generateStateReducer(state), [
-            [],
-            [],
-            []
-        ])
-
-        result = findStateResult(cValid, cInvalid, cUndefined, splitLength, stateType)
-    }
-    else {
-
-        const stated = state[stateType]
-
-        // validate finix state
-        const invalid = network.invalidate(stated)
-
-        // return the finix data element, state for that element, and validation
-        result = [stateType, stated, invalid]
-    }
-    return result
 }
 
 export const isHidden = element => {
