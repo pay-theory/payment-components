@@ -66,6 +66,9 @@ export const idempotencyTypeMessage = message => typeof message.type === 'string
 //passes transfer-complete from hosted fields to SDK
 export const transferCompleteTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:transfer-complete'
 
+//passes socket error from the hosted fields to SDK
+export const socketErrorTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:error'
+
 export const handleError = error => {
     window.postMessage({
             type: 'pt:error',

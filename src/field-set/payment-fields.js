@@ -139,6 +139,30 @@ export default async(
     let cardToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
     let achToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
 
+    const resetHostToken = async() => {
+        if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
+            let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+            document.getElementsByName(`account-number-iframe`)[0]
+                .contentWindow.postMessage({
+                        type: `pt-static:cancel`,
+                        token: token['pt-token']
+                    },
+                    common.hostedFieldsEndpoint(env)
+                );
+
+        }
+        else if (common.getTransactingElement()) {
+            let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+            document.getElementsByName(`card-number-iframe`)[0]
+                .contentWindow.postMessage({
+                        type: `pt-static:cancel`,
+                        token: token['pt-token']
+                    },
+                    common.hostedFieldsEndpoint(env)
+                );
+        }
+    }
+
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
     const establishElements = (elements, env) => {
@@ -438,6 +462,14 @@ export default async(
 
         const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler, env)
 
+        const hostedErrorHandler = message => {
+            common.removeInitialize()
+            common.handleError(message.error)
+            resetHostToken()
+        }
+
+        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, hostedErrorHandler, env)
+
         //Recieves an idempotency and assigns it to the transacting element
         const idempotencyHandler = message => {
             common.setIdempotency(message.payment)
@@ -511,6 +543,7 @@ export default async(
             removeInstrument()
             removeIdempotency()
             removeTransferComplete()
+            removeHostedError()
         }
     }
 
@@ -526,6 +559,7 @@ export default async(
             common.setTransactingElement(framed)
             framed.amount = amount
             framed.action = action
+            framed.resetToken = resetHostToken
         }
 
         if (common.isHidden(transacting.ach) === false && (isValid === 'ach' || isValid === 'both')) {
@@ -533,6 +567,7 @@ export default async(
             common.setTransactingElement(framed)
             framed.amount = amount
             framed.action = action
+            framed.resetToken = resetHostToken
         }
     }
 
@@ -557,30 +592,15 @@ export default async(
             let transactor = transacting.ach.frame ? transacting.ach.frame : transacting.ach
             common.removeIdentity()
             common.removeToken()
+            common.removeInitialize()
             transactor.instrument = 'cancel'
-            let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-            document.getElementsByName(`account-number-iframe`)[0]
-                .contentWindow.postMessage({
-                        type: `pt-static:cancel`,
-                        token: token['pt-token']
-                    },
-                    common.hostedFieldsEndpoint(env)
-                );
-
         }
         else if (common.getTransactingElement()) {
             let transactor = transacting.card.frame ? transacting.card.frame : transacting.card
             common.removeIdentity()
             common.removeToken()
+            common.removeInitialize()
             transactor.instrument = 'cancel'
-            let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-            document.getElementsByName(`card-number-iframe`)[0]
-                .contentWindow.postMessage({
-                        type: `pt-static:cancel`,
-                        token: token['pt-token']
-                    },
-                    common.hostedFieldsEndpoint(env)
-                );
         }
     }
 

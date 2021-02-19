@@ -1,6 +1,6 @@
 /* global HTMLElement */
 import PayTheoryHostedField from '../pay-theory-hosted-field'
-import { handleError } from '../../common/message'
+import * as common from '../../common'
 const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
 
 
@@ -60,7 +60,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       this.tokenizing = false
     }
     else if (!this.isValidAmount(amount)) {
-      return handleError('amount must be a positive integer')
+      return common.handleError('amount must be a positive integer')
     }
     else if (this.tokenizing !== _tokenizing) {
       this.tokenizing = _tokenizing
@@ -108,7 +108,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       this.transacting = false
     }
     if (!valid_amount) {
-      return handleError('amount must be a positive integer')
+      return common.handleError('amount must be a positive integer')
     }
     if (this.transacting !== _transacting) {
       this.transacting = _transacting
@@ -149,6 +149,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     let oldIdempotency = this.idempotency ? this.idempotency : {}
     if (oldIdempotency.idempotency !== _idempotency.idempotency) {
       this.idempotency = _idempotency
+      if (this.reset) this.reset()
       const cbToken = {
         "first_six": _idempotency.bin.first_six,
         "last_four": _idempotency.bin.last_four,
@@ -167,6 +168,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   set transfer(_transfered) {
     if (!this.transfered) {
+      common.removeInitialize()
       this.transfered = _transfered
       const cbToken = {
         "receipt_number": this.idempotency.idempotency,
@@ -192,6 +194,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   get amount() {
     return this.amounting
+  }
+
+  get resetToken() {
+    return this.amounting
+  }
+
+  set resetToken(_resetToken) {
+    this.reset = _resetToken
   }
 
   set amount(_amounting) {

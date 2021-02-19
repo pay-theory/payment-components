@@ -9,6 +9,7 @@ export const READY = 'pt-ready'
 export const TRANSACTING = 'pt-transacting'
 export const IDEMPOTENCY = 'pt-idempotency'
 export const ENVIRONMENT = 'pt-environment'
+export const INITIALIZE = 'pt-initialize'
 export const defaultStyles = {
     default: {},
     success: {},
@@ -200,6 +201,18 @@ export const removeMerchant = () => {
     return localStorage.removeItem(MERCHANT)
 }
 
+export const getInitialize = () => {
+    return localStorage.getItem(INITIALIZE)
+}
+
+export const setInitialize = init => {
+    return localStorage.setItem(INITIALIZE, init)
+}
+
+export const removeInitialize = () => {
+    return localStorage.removeItem(INITIALIZE)
+}
+
 export const removeAll = () => {
     removeMerchant()
     removeIdentity()
@@ -208,4 +221,5 @@ export const removeAll = () => {
     removeBin()
     removeTransactingElement()
     removeIdempotency()
+    removeInitialize()
 }
