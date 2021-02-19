@@ -170,6 +170,7 @@ export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
         const transactingElement = document.getElementById(transacting)
         transactingElement.idempotencyCallback = (token) => {
             transactingElement.captureCallback = cb
+            data.removeInitialize()
             setTimeout(() => transfer(tags, transactingElement.idempotent), 100)
         }
 
