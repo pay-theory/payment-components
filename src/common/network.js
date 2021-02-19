@@ -136,8 +136,6 @@ const idempotency = async(apiKey, fee_mode, message) => {
 }
 
 
-
-
 const transfer = (tags, transfer) => {
     const frameName = data.getTransactingElement().includes('credit-card') ?
         'card-number' :
@@ -181,6 +179,7 @@ export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
 export const generateInitialization = (handleInitialized, challengeOptions, env) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         let initialize = data.getInitialize()
+        console.log(initialize, 'initialize')
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0 && initialize !== true) {
             data.setInitialize(true)
             // if (await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
