@@ -180,8 +180,8 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
     return async(amount, buyerOptions = {}, confirmation = false) => {
         let initialize = data.getInitialize()
         console.log(typeof initialize, 'initialize')
-        if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0 && initialize !== true) {
-            data.setInitialize(true)
+        if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0 && initialize !== 'init') {
+            data.setInitialize('init')
             // if (await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
 
             //     challengeOptions.challenge = Uint8Array.from(
@@ -224,7 +224,7 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
                 })
             }
         }
-        else if (initialize !== true) {
+        else if (initialize !== 'init') {
             return message.handleError('amount must be a positive integer')
         }
     }

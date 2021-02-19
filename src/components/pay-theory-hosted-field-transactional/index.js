@@ -169,8 +169,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   set transfer(_transfered) {
     if (!this.transfered) {
       this.transfered = _transfered
-      const cbToken = {
-        "receipt_number": this.idempotency.idempotency,
+      const successToken = {
+        "receipt_number": _transfered.receipt_number,
         "last_four": _transfered.last_four,
         "brand": _transfered.card_brand,
         "created_at": _transfered.created_at,
@@ -179,6 +179,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         "state": _transfered.state,
         "tags": _transfered.tags
       }
+      const failureToken = {
+        "receipt_number": _transfered.receipt_number,
+        "last_four": _transfered.last_four,
+        "brand": _transfered.brand,
+        "state": _transfered.state,
+        "type": _transfered.type
+      }
+      const cbToken = _transfered.state === "FAILURE" ? failureToken : successToken
       this.captureCB(cbToken)
     }
   }
