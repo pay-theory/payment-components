@@ -155,7 +155,11 @@ export const generateCapture = (cb, tags = {}) => {
     return async() => {
         isValidTransaction(data.getIdentity())
         let transacting = document.getElementById(data.getTransactingElement())
-        transacting.captureCallback = cb
+        let updatedCb = val => {
+            data.removeAll()
+            cb(val)
+        }
+        transacting.captureCallback = updatedCb
         setTimeout(() => transfer(tags, transacting.idempotent), 100)
     }
 }
@@ -167,7 +171,11 @@ export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
         let transacting = data.getTransactingElement()
         const transactingElement = document.getElementById(transacting)
         transactingElement.idempotencyCallback = (token) => {
-            transactingElement.captureCallback = cb
+            let updatedCb = val => {
+                data.removeAll()
+                cb(val)
+            }
+            transactingElement.captureCallback = updatedCb
             data.removeInitialize()
             setTimeout(() => transfer(tags, transactingElement.idempotent), 100)
         }
