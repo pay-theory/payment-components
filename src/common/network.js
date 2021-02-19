@@ -179,7 +179,7 @@ export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
 export const generateInitialization = (handleInitialized, challengeOptions, env) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         let initialize = data.getInitialize()
-        console.log(initialize, 'initialize')
+        console.log(typeof initialize, 'initialize')
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0 && initialize !== true) {
             data.setInitialize(true)
             // if (await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
