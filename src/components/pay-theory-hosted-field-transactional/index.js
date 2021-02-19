@@ -168,7 +168,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   set transfer(_transfered) {
     if (!this.transfered) {
-      common.removeInitialize()
       this.transfered = _transfered
       const cbToken = {
         "receipt_number": this.idempotency.idempotency,
