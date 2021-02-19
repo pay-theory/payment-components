@@ -179,8 +179,9 @@ export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
 
 export const generateInitialization = (handleInitialized, challengeOptions, env) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
-        if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0) {
-
+        let initialize = data.getInitialize()
+        if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0 && initialize === false) {
+            data.setInitialize(true)
             // if (await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
 
             //     challengeOptions.challenge = Uint8Array.from(
@@ -223,7 +224,7 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
                 })
             }
         }
-        else {
+        else if (initialize === false) {
             return message.handleError('amount must be a positive integer')
         }
     }
