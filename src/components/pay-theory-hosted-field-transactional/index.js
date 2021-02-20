@@ -168,7 +168,9 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   set transfer(_transfered) {
     if (!this.transfered) {
-      this.transfered = _transfered
+      if (_transfered.state !== "FAILURE") {
+        this.transfered = _transfered
+      }
       const successToken = {
         "receipt_number": _transfered.receipt_number,
         "last_four": _transfered.last_four,
