@@ -10,6 +10,26 @@ export default async(
 ) => {
     common.removeAll()
     common.setEnvironment(env)
+
+    if (typeof apiKey !== 'string') {
+        console.error('Api key should be a string beginning with pt-')
+    }
+    else if (!apiKey.startsWith('pt-')) {
+        console.error('Api key should be a string beginning with pt-')
+    }
+
+    if (typeof fee_mode !== 'string') {
+        console.error(`Fee Mode should be either 'surcharge' or 'service_fee' which are also available as constants at window.paytheory.SURCHARGE and window.paytheory.SERVICE_FEE`)
+    }
+
+    if (typeof tags !== 'object') {
+        console.error(`Tags should be a JSON Object`)
+    }
+
+    if (typeof styles !== 'object') {
+        console.error(`Styles should be a JSON Object. An example of the object is at https://github.com/pay-theory/payment-components`)
+    }
+
     const validTypes = {
         'card-number': false,
         'card-exp': false,
