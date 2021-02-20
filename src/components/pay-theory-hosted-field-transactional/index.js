@@ -168,8 +168,11 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   set transfer(_transfered) {
     if (!this.transfered) {
+      //Logic that allows another transfer to be run if the state is a failure
       if (_transfered.state !== "FAILURE") {
         this.transfered = _transfered
+      }
+      else {
         this.instrumented = false
       }
       const successToken = {
