@@ -176,7 +176,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this.instrumented = false
       }
       const successToken = {
-        "receipt_number": _transfered.receipt_number,
+        "receipt_number": this.idempotency.idempotency,
         "last_four": _transfered.last_four,
         "brand": _transfered.card_brand,
         "created_at": _transfered.created_at,

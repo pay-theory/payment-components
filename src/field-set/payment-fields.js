@@ -8,6 +8,7 @@ export default async(
     fee_mode = common.defaultFeeMode,
     env = common.defaultEnvironment
 ) => {
+    common.removeAll()
     common.setEnvironment(env)
     const validTypes = {
         'card-number': false,
