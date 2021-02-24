@@ -1,5 +1,5 @@
 import PayTheoryHostedField from '../pay-theory-hosted-field'
-const NAME = 'city'
+const NAME = 'billing-city'
 const FIELDS = [{ name: 'billing-city', label: 'Billing City', validations: null, autoComplete: 'locality' }];
 
 class CreditCardBillingCityFrame extends PayTheoryHostedField {
@@ -12,4 +12,4 @@ class CreditCardBillingCityFrame extends PayTheoryHostedField {
 
 }
 
-window.customElements.define('pay-theory-credit-card-city-tag-frame', CreditCardBillingCityFrame);
+window.customElements.define('pay-theory-credit-card-billing-city-tag-frame', CreditCardBillingCityFrame);

@@ -1,5 +1,5 @@
 import PayTheoryHostedField from '../pay-theory-hosted-field'
-const NAME = 'cvv'
+const NAME = 'card-cvv'
 const FIELDS = [{ name: 'card-cvv', label: 'CVV', validations: 'required', autoComplete: 'cc-csc' }];
 
 class CreditCardCVVFrame extends PayTheoryHostedField {
@@ -12,4 +12,4 @@ class CreditCardCVVFrame extends PayTheoryHostedField {
 
 }
 
-window.customElements.define('pay-theory-credit-card-cvv-tag-frame', CreditCardCVVFrame);
+window.customElements.define('pay-theory-credit-card-card-cvv-tag-frame', CreditCardCVVFrame);
