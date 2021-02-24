@@ -63,15 +63,15 @@ export const cashFieldTypes = [
 
 export const fieldTypes = [
     'credit-card',
-    'number',
-    'cvv',
-    'exp',
-    'name',
-    'address-1',
-    'address-2',
-    'city',
-    'state',
-    'zip'
+    'card-number',
+    'card-cvv',
+    'card-exp',
+    'card-name',
+    'billing-line1',
+    'billing-line2',
+    'billing-city',
+    'billing-state',
+    'billing-zip'
 ]
 
 export const findEnv = () => {
@@ -87,15 +87,15 @@ export const findEnv = () => {
 
 export const stateMap = {
     'credit-card': 'security_code|expiration_date|number',
-    'number': 'card-number',
-    'exp': 'card-exp',
-    'cvv': 'card-cvv',
-    'name': 'card-name',
-    'address-1': 'billing-line1',
-    'address-2': 'billing-line2',
-    'city': 'billing-city',
-    'state': 'billing-state',
-    'zip': 'billing-zip'
+    'card-number': 'number',
+    'card-exp': 'exp',
+    'card-cvv': 'cvv',
+    'card-name': 'name',
+    'billing-line1': 'address-1',
+    'billing-line1': 'address-2',
+    'billing-city': 'city',
+    'billing-state': 'state',
+    'billing-zip': 'zip'
 }
 
 export const getTransactingElement = () => {

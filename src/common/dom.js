@@ -104,6 +104,38 @@ export const findZip = (element, cv) => {
         element
 }
 
+export const findField = (type) => (element, cv) => {
+    return element === false ?
+        (cv.type === type) ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findCashName = (element, cv) => {
+    return element === false ?
+        (cv.type === 'cash-name') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findCashContact = (element, cv) => {
+    return element === false ?
+        (cv.type === 'cash-contact') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findCashZip = (element, cv) => {
+    return element === false ?
+        (cv.type === 'cash-zip') ?
+        cv.frame :
+        false :
+        element
+}
+
 export const addFrame = (
     container,
     element,

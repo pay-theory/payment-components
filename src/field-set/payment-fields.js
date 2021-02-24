@@ -146,6 +146,7 @@ export default async(
 
     let processedCardElements = []
     let processedACHElements = []
+    let processedCashElements = []
 
     let transacting = {}
 
@@ -195,9 +196,8 @@ export default async(
                 cardReady['card-cvv'] = false
             }
             else {
-                let field = common.stateMap[f.type] ? common.stateMap[f.type] : f.type
-                if (type === 'card') cardReady[field] = false
-                if (type === 'ach') achReady[field] = false
+                if (type === 'card') cardReady[f.type] = false
+                if (type === 'ach') achReady[f.type] = false
             }
         })
     }
@@ -249,6 +249,9 @@ export default async(
             'ach-name': common.achFields.ACCOUNT_NAME,
             'routing-number': common.achFields.BANK_CODE,
             'account-type': common.achFields.ACCOUNT_TYPE,
+            'cash-name': common.cashFields.NAME,
+            'cash-contact': common.cashFields.CONTACT,
+            'cash-zip': common.cashFields.ZIP,
         },
         env = common.getEnvironment()
     ) => {
@@ -261,19 +264,26 @@ export default async(
 
         const cardElements = {
             'credit-card': elements['credit-card'],
-            'number': elements.number,
-            'exp': elements.exp,
-            'cvv': elements.cvv,
-            'name': elements['account-name'],
-            'address-1': elements['address-1'],
-            'address-2': elements['address-2'],
-            city: elements.city,
-            state: elements.state,
-            zip: elements.zip,
+            'card-number': elements.number,
+            'card-exp': elements.exp,
+            'card-cvv': elements.cvv,
+            'card-name': elements['account-name'],
+            'billing-line1': elements['address-1'],
+            'billing-line2': elements['address-2'],
+            'billing-city': elements.city,
+            'billing-state': elements.state,
+            'billing-zip': elements.zip,
+        }
+
+        const cashElements = {
+            'cash-name': elements['cash-name'],
+            'cash-contact': elements['cash-contact'],
+            'cash-zip': elements['cash-zip']
         }
 
         processedCardElements = common.processElements(cardElements, styles, env, common.fieldTypes, 'credit-card')
         processedACHElements = common.processElements(achElements, styles, env, common.achFieldTypes, 'ach')
+        processedCashElements = common.processElements(cashElements, styles, env, common.cashFieldTypes)
 
         setReady(processedACHElements, 'ach')
         setReady(processedCardElements, 'card')
@@ -309,6 +319,14 @@ export default async(
                 "billing-zip-iframe"
             ];
                 verifyRelay(addressFields, message);
+            }
+            else if (message.element.startsWith('cash')) {
+                document
+                    .getElementsByName(`cash-name-iframe`)[0]
+                    .contentWindow.postMessage(
+                        message,
+                        common.hostedFieldsEndpoint(env)
+                    );
             }
             else {
                 document
@@ -348,6 +366,15 @@ export default async(
                         common.hostedFieldsEndpoint(env)
                     );
             }
+            else if (message.element === 'cash-name') {
+                document.getElementsByName(`cash-name-iframe`)[0]
+                    .contentWindow.postMessage({
+                            type: `pt-static:elements`,
+                            elements: JSON.parse(JSON.stringify(processedCardElements))
+                        },
+                        common.hostedFieldsEndpoint(env)
+                    );
+            }
         }
 
         const removeSetup = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
@@ -368,7 +395,7 @@ export default async(
             if (message.field === 'card-number') {
                 processedCardElements.forEach(field => {
                     if (field.type !== 'credit-card') {
-                        sendConnectedMessage(message, common.stateMap[field.type])
+                        sendConnectedMessage(message, field.type)
                     }
                     else {
                         sendConnectedMessage(message, 'card-cvv')
@@ -379,6 +406,11 @@ export default async(
             }
             else if (message.field === 'account-number') {
                 processedACHElements.forEach(field => {
+                    sendConnectedMessage(message, field.type)
+                })
+            }
+            else if (message.field === 'cash-name') {
+                processedCashElements.forEach(field => {
                     sendConnectedMessage(message, field.type)
                 })
             }
@@ -465,6 +497,21 @@ export default async(
             case 'billing-zip':
                 {
                     element = processedCardElements.reduce(common.findZip, false)
+                    break
+                }
+            case 'cash-name':
+                {
+                    element = processedCashElements.reduce(common.findCashName, false)
+                    break
+                }
+            case 'cash-contact':
+                {
+                    element = processedCashElements.reduce(common.findCash, false)
+                    break
+                }
+            case 'cash-zip':
+                {
+                    element = processedCashElements.reduce(common.findZip, false)
                     break
                 }
             }
@@ -653,7 +700,7 @@ export default async(
                 let card = processedCardElements.reduce(common.findTransactingElement, false)
                 let transactingCard = card ? card.field : false
                 let creditCardTransacting = transactingCard === 'credit-card' ? ['card-exp', 'card-number', 'card-cvv'].includes(`${validType}`) : false
-                return message.type.endsWith(':valid') && (processedCardElements.map(element => common.stateMap[element.type]).includes(`${validType}`) || processedACHElements.map(element => element.type).includes(`${validType}`) || creditCardTransacting)
+                return message.type.endsWith(':valid') && (processedCardElements.map(element => element.type).includes(`${validType}`) || processedACHElements.map(element => element.type).includes(`${validType}`) || creditCardTransacting)
             }
             return false
         },
