@@ -1,5 +1,5 @@
 import PayTheoryHostedField from '../pay-theory-hosted-field'
-const NAME = 'exp'
+const NAME = 'card-exp'
 const FIELDS = [{ name: 'card-exp', label: 'MM/YY', validations: 'required', autoComplete: 'cc-exp' }];
 
 class CreditCardExpirationFrame extends PayTheoryHostedField {
@@ -12,4 +12,4 @@ class CreditCardExpirationFrame extends PayTheoryHostedField {
 
 }
 
-window.customElements.define('pay-theory-credit-card-exp-tag-frame', CreditCardExpirationFrame);
+window.customElements.define('pay-theory-credit-card-card-exp-tag-frame', CreditCardExpirationFrame);
