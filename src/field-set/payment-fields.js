@@ -422,26 +422,6 @@ export default async(
         const stateUpdater = (message) => {
             let element
             switch (message.element) {
-            case 'account-name':
-                {
-                    element = processedACHElements.reduce(common.findAccountName, false)
-                    break
-                }
-            case 'account-number':
-                {
-                    element = processedACHElements.reduce(common.findAccountNumber, false)
-                    break
-                }
-            case 'account-type':
-                {
-                    element = processedACHElements.reduce(common.findAccountType, false)
-                    break
-                }
-            case 'routing-number':
-                {
-                    element = processedACHElements.reduce(common.findBankCode, false)
-                    break
-                }
             case 'card-number':
                 {
                     element = processedCardElements.reduce(common.findTransactingElement, false)
@@ -469,51 +449,14 @@ export default async(
                     }
                     break
                 }
-            case 'card-name':
+            default:
                 {
-                    element = processedCardElements.reduce(common.findCardName, false)
-                    break
+                    let ach = processedACHElements.reduce(common.findField(message.element), false)
+                    let card = processedCardElements.reduce(common.findField(message.element), false)
+                    let cash = processedCashElements.reduce(common.findField(message.element), false)
+                    element = ach ? ach : card ? card : cash
                 }
-            case 'billing-line1':
-                {
-                    element = processedCardElements.reduce(common.findLine1, false)
-                    break
-                }
-            case 'billing-line2':
-                {
-                    element = processedCardElements.reduce(common.findLine2, false)
-                    break
-                }
-            case 'billing-city':
-                {
-                    element = processedCardElements.reduce(common.findCity, false)
-                    break
-                }
-            case 'billing-state':
-                {
-                    element = processedCardElements.reduce(common.findState, false)
-                    break
-                }
-            case 'billing-zip':
-                {
-                    element = processedCardElements.reduce(common.findZip, false)
-                    break
-                }
-            case 'cash-name':
-                {
-                    element = processedCashElements.reduce(common.findCashName, false)
-                    break
-                }
-            case 'cash-contact':
-                {
-                    element = processedCashElements.reduce(common.findCash, false)
-                    break
-                }
-            case 'cash-zip':
-                {
-                    element = processedCashElements.reduce(common.findZip, false)
-                    break
-                }
+
             }
 
             let state = message.state
