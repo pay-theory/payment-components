@@ -356,30 +356,34 @@ export default async(
 
         const removeSetup = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
 
+        const sendConnectedMessage = (message, field) => {
+            document.getElementsByName(`${field}-iframe`)[0]
+                .contentWindow.postMessage({
+                        type: `pt-static:connected`,
+                        hostToken: message.hostToken,
+                        sessionKey: message.sessionKey
+                    },
+                    common.hostedFieldsEndpoint(env)
+                );
+        }
+
         //Sends a message to the transacting element letting it know that all other fields have connected to the websocket so that it can fetch the host token
         const siblingHandler = message => {
             if (message.field === 'card-number') {
                 processedCardElements.forEach(field => {
-                    document.getElementsByName(`${common.stateMap[field.type]}-iframe`)[0]
-                        .contentWindow.postMessage({
-                                type: `pt-static:connected`,
-                                hostToken: message.hostToken,
-                                sessionKey: message.sessionKey
-                            },
-                            common.hostedFieldsEndpoint(env)
-                        );
+                    if (field.type !== 'credit-card') {
+                        sendConnectedMessage(message, common.stateMap[field.type])
+                    }
+                    else {
+                        sendConnectedMessage(message, 'card-cvv')
+                        sendConnectedMessage(message, 'card-exp')
+                    }
+
                 })
             }
             else if (message.field === 'account-number') {
                 processedACHElements.forEach(field => {
-                    document.getElementsByName(`${field.type}-iframe`)[0]
-                        .contentWindow.postMessage({
-                                type: `pt-static:connected`,
-                                hostToken: message.hostToken,
-                                sessionKey: message.sessionKey
-                            },
-                            common.hostedFieldsEndpoint(env)
-                        );
+                    sendConnectedMessage(message, field.type)
                 })
             }
         }
