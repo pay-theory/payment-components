@@ -1,6 +1,6 @@
 {
     "name": "@paytheory/payment-components",
-    "version": "1.2.129-0",
+    "version": "1.2.130-0",
     "description": "Pay Theory SDK",
     "main": "dist/index.js",
     "author": "Aron Price",
@@ -55,7 +55,6 @@
         "test:prune-snapshots": "karma start --prune-snapshots"
     },
     "prettier": "@open-wc/prettier-config",
-    "dependencies": {},
     "devDependencies": {
         "@babel/cli": "^7.12.10",
         "@babel/core": "^7.12.10",
