@@ -10,7 +10,7 @@ export const findTransactingElement = (element, cv) => {
 
 export const findCVV = (element, cv) => {
     return element === false ?
-        (cv.type === 'cvv') ?
+        (cv.type === 'card-cvv') ?
         cv.frame :
         false :
         element
@@ -18,7 +18,7 @@ export const findCVV = (element, cv) => {
 
 export const findExp = (element, cv) => {
     return element === false ?
-        (cv.type === 'exp') ?
+        (cv.type === 'card-exp') ?
         cv.frame :
         false :
         element
@@ -26,7 +26,7 @@ export const findExp = (element, cv) => {
 
 export const findCardName = (element, cv) => {
     return element === false ?
-        (cv.type === 'name') ?
+        (cv.type === 'card-name') ?
         cv.frame :
         false :
         element
@@ -66,7 +66,7 @@ export const findAccountName = (element, cv) => {
 
 export const findLine1 = (element, cv) => {
     return element === false ?
-        (cv.type === 'address-1') ?
+        (cv.type === 'billing-line1') ?
         cv.frame :
         false :
         element
@@ -74,7 +74,7 @@ export const findLine1 = (element, cv) => {
 
 export const findLine2 = (element, cv) => {
     return element === false ?
-        (cv.type === 'address-2') ?
+        (cv.type === 'billing-line2') ?
         cv.frame :
         false :
         element
@@ -82,7 +82,7 @@ export const findLine2 = (element, cv) => {
 
 export const findCity = (element, cv) => {
     return element === false ?
-        (cv.type === 'city') ?
+        (cv.type === 'billing-city') ?
         cv.frame :
         false :
         element
@@ -90,7 +90,7 @@ export const findCity = (element, cv) => {
 
 export const findState = (element, cv) => {
     return element === false ?
-        (cv.type === 'state') ?
+        (cv.type === 'billing-state') ?
         cv.frame :
         false :
         element
@@ -98,15 +98,7 @@ export const findState = (element, cv) => {
 
 export const findZip = (element, cv) => {
     return element === false ?
-        (cv.type === 'zip') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findField = (type) => (element, cv) => {
-    return element === false ?
-        (cv.type === type) ?
+        (cv.type === 'billing-zip') ?
         cv.frame :
         false :
         element
@@ -131,6 +123,14 @@ export const findCashContact = (element, cv) => {
 export const findCashZip = (element, cv) => {
     return element === false ?
         (cv.type === 'cash-zip') ?
+        cv.frame :
+        false :
+        element
+}
+
+export const findField = (type) => (element, cv) => {
+    return element === false ?
+        (cv.type === type) ?
         cv.frame :
         false :
         element
