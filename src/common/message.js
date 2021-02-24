@@ -69,6 +69,9 @@ export const transferCompleteTypeMessage = message => typeof message.type === 's
 //passes socket error from the hosted fields to SDK
 export const socketErrorTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:error'
 
+//passes session info to sibling fields
+export const siblingTypeMessage = message => typeof message.type === 'string' && message.type === `pt-static:siblings`
+
 export const handleError = error => {
     window.postMessage({
             type: 'pt:error',
