@@ -42,11 +42,23 @@ export const achFields = {
     BANK_CODE: 'pay-theory-ach-routing-number'
 }
 
+export const cashFields = {
+    NAME: 'pay-theory-cash-name',
+    CONTACT: 'pay-theory-cash-contact',
+    ZIP: 'pay-theory-cash-zip'
+}
+
 export const achFieldTypes = [
     'account-name',
     'account-type',
     'account-number',
     'routing-number'
+]
+
+export const cashFieldTypes = [
+    'cash-name',
+    'cash-contact',
+    'cash-zip'
 ]
 
 export const fieldTypes = [
