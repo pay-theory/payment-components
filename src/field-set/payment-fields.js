@@ -520,9 +520,9 @@ export default async(
             }
 
             processedCardElements.forEach(processed => {
-                const json = JSON.stringify({ token: cardToken['pt-token'], origin: cardToken.origin })
-                const encodedJson = window.btoa(json)
-                processed.frame.token = encodeURI(encodedJson)
+                const cardJson = JSON.stringify({ token: cardToken['pt-token'], origin: cardToken.origin })
+                const encodedCardJson = window.btoa(cardJson)
+                processed.frame.token = encodeURI(encodedCardJson)
             })
 
             if (achInitialized || processedACHElements.length === 0) {
@@ -545,9 +545,9 @@ export default async(
             }
 
             processedACHElements.forEach(processed => {
-                const json = JSON.stringify({ token: achToken['pt-token'], origin: achToken.origin })
-                const encodedJson = window.btoa(json)
-                processed.frame.token = encodeURI(encodedJson)
+                const achJson = JSON.stringify({ token: achToken['pt-token'], origin: achToken.origin })
+                const encodedAchJson = window.btoa(achJson)
+                processed.frame.token = encodeURI(encodedAchJson)
             })
             if (ccInitialized || processedCardElements.length === 0) {
                 window.postMessage({
