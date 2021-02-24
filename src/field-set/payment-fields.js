@@ -356,28 +356,28 @@ export default async(
 
         const removeSetup = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
 
-        //Sends a message to the transacting element letting it know that all other fields have connected to the websocket so that it can fetch the host token
-        const connectionHandler = message => {
-            updateReady(message.element)
-            if (verifyReady(achReady) && processedACHElements.length > 0) {
-                document.getElementsByName(`account-number-iframe`)[0]
-                    .contentWindow.postMessage({
-                            type: `pt-static:connected`,
-                        },
-                        common.hostedFieldsEndpoint(env)
-                    );
-            }
-            if (verifyReady(cardReady) && processedCardElements.length > 0) {
-                document.getElementsByName(`card-number-iframe`)[0]
-                    .contentWindow.postMessage({
-                            type: `pt-static:connected`,
-                        },
-                        common.hostedFieldsEndpoint(env)
-                    );
-            }
-        }
+        // //Sends a message to the transacting element letting it know that all other fields have connected to the websocket so that it can fetch the host token
+        // const connectionHandler = message => {
+        //     updateReady(message.element)
+        //     if (verifyReady(achReady) && processedACHElements.length > 0) {
+        //         document.getElementsByName(`account-number-iframe`)[0]
+        //             .contentWindow.postMessage({
+        //                     type: `pt-static:connected`,
+        //                 },
+        //                 common.hostedFieldsEndpoint(env)
+        //             );
+        //     }
+        //     if (verifyReady(cardReady) && processedCardElements.length > 0) {
+        //         document.getElementsByName(`card-number-iframe`)[0]
+        //             .contentWindow.postMessage({
+        //                     type: `pt-static:connected`,
+        //                 },
+        //                 common.hostedFieldsEndpoint(env)
+        //             );
+        //     }
+        // }
 
-        const removeConnection = common.handleHostedFieldMessage(common.connectionTypeMessage, connectionHandler, env)
+        // const removeConnection = common.handleHostedFieldMessage(common.connectionTypeMessage, connectionHandler, env)
 
         //Handles state messages and sets state on the web components 
         const stateUpdater = (message) => {
@@ -520,7 +520,8 @@ export default async(
             }
 
             processedCardElements.forEach(processed => {
-                processed.frame.token = cardToken['pt-token']
+                const json = JSON.stringify({ token: cardToken['pt-token'], origin: cardToken.origin })
+                processed.frame.token = encodeURI(json)
             })
 
             if (achInitialized || processedACHElements.length === 0) {
@@ -543,7 +544,8 @@ export default async(
             }
 
             processedACHElements.forEach(processed => {
-                processed.frame.token = achToken['pt-token']
+                const json = JSON.stringify({ token: achToken['pt-token'], origin: achToken.origin })
+                processed.frame.token = encodeURI(json)
             })
             if (ccInitialized || processedCardElements.length === 0) {
                 window.postMessage({
@@ -559,7 +561,7 @@ export default async(
         return () => {
             removeRelay()
             removeSetup()
-            removeConnection()
+            // removeConnection()
             removeState()
             removeInstrument()
             removeIdempotency()
