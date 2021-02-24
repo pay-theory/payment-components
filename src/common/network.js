@@ -218,11 +218,11 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
             }
             else {
                 data.fieldTypes.forEach(field => {
-                    let iframe = document.getElementsByName(`${data.stateMap[field]}-iframe`)[0]
+                    let iframe = document.getElementsByName(`${field}-iframe`)[0]
                     if (iframe) {
                         iframe.contentWindow.postMessage({
                                 type: "pt-static:transact",
-                                element: data.stateMap[field],
+                                element: field,
                                 buyerOptions
                             },
                             hostedFieldsEndpoint(env),
