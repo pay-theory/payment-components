@@ -186,10 +186,6 @@ export default async(
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
-    const establishElements = (elements, env) => {
-        return common.processElements(elements, styles, env)
-    }
-
     //Sets the ready objects based on the processed fields 
     const setReady = (array, type) => {
         array.forEach(f => {
@@ -276,8 +272,8 @@ export default async(
             zip: elements.zip,
         }
 
-        processedCardElements = establishElements(cardElements, env)
-        processedACHElements = common.processAchElements(achElements, styles, env)
+        processedCardElements = common.processElements(elements, styles, env, common.fieldTypes, 'credit-card')
+        processedACHElements = common.processElements(achElements, styles, env, common.achFieldTypes, 'ach')
 
         setReady(processedACHElements, 'ach')
         setReady(processedCardElements, 'card')
