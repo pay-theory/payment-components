@@ -272,7 +272,7 @@ export default async(
             zip: elements.zip,
         }
 
-        processedCardElements = common.processElements(elements, styles, env, common.fieldTypes, 'credit-card')
+        processedCardElements = common.processElements(cardElements, styles, env, common.fieldTypes, 'credit-card')
         processedACHElements = common.processElements(achElements, styles, env, common.achFieldTypes, 'ach')
 
         setReady(processedACHElements, 'ach')
