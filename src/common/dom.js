@@ -8,126 +8,6 @@ export const findTransactingElement = (element, cv) => {
         element
 }
 
-export const findCVV = (element, cv) => {
-    return element === false ?
-        (cv.type === 'card-cvv') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findExp = (element, cv) => {
-    return element === false ?
-        (cv.type === 'card-exp') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findCardName = (element, cv) => {
-    return element === false ?
-        (cv.type === 'card-name') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findAccountNumber = (element, cv) => {
-    return element === false ?
-        (cv.type === 'account-number') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findBankCode = (element, cv) => {
-    return element === false ?
-        (cv.type === 'routing-number') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findAccountType = (element, cv) => {
-    return element === false ?
-        (cv.type === 'account-type') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findAccountName = (element, cv) => {
-    return element === false ?
-        (cv.type === 'account-name') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findLine1 = (element, cv) => {
-    return element === false ?
-        (cv.type === 'billing-line1') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findLine2 = (element, cv) => {
-    return element === false ?
-        (cv.type === 'billing-line2') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findCity = (element, cv) => {
-    return element === false ?
-        (cv.type === 'billing-city') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findState = (element, cv) => {
-    return element === false ?
-        (cv.type === 'billing-state') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findZip = (element, cv) => {
-    return element === false ?
-        (cv.type === 'billing-zip') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findCashName = (element, cv) => {
-    return element === false ?
-        (cv.type === 'cash-name') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findCashContact = (element, cv) => {
-    return element === false ?
-        (cv.type === 'cash-contact') ?
-        cv.frame :
-        false :
-        element
-}
-
-export const findCashZip = (element, cv) => {
-    return element === false ?
-        (cv.type === 'cash-zip') ?
-        cv.frame :
-        false :
-        element
-}
-
 export const findField = (type) => (element, cv) => {
     return element === false ?
         (cv.type === type) ?
@@ -135,6 +15,22 @@ export const findField = (type) => (element, cv) => {
         false :
         element
 }
+
+export const findCVV = findField('card-cvv')
+export const findExp = findField('card-exp')
+export const findCardName = findField('card-name')
+export const findAccountNumber = findField('account-number')
+export const findBankCode = findField('routing-number')
+export const findAccountType = findField('account-type')
+export const findAccountName = findField('account-name')
+export const findLine1 = findField('billing-line1')
+export const findLine2 = findField('billing-line2')
+export const findCity = findField('billing-city')
+export const findState = findField('billing-state')
+export const findZip = findField('billing-zip')
+export const findCashName = findField('cash-name')
+export const findCashContact = findField('cash-contact')
+export const findCashZip = findField('cash-zip')
 
 export const addFrame = (
     container,
@@ -197,41 +93,6 @@ export const processElements = (elements, styles, env, fieldTypes, tagType) => {
         }
     })
     return processed
-}
-
-export const processAchElements = (elements, styles, env) => {
-    let processed = []
-    data.achFieldTypes.forEach(type => {
-        let error = findElementError(elements, type)
-
-        const container = document.getElementById(elements[type])
-        if (container && error === false) {
-            error = processAchContainer(container, elements, processed, styles, type, env)
-        }
-        if (error) {
-            return message.handleError(error)
-        }
-    })
-    return processed
-}
-
-const processAchContainer = (container, elements, processed, styles, type, env) => {
-    let error = false
-    const contained = document.getElementById(`${elements[type]}-tag-frame`)
-    if (contained === null) {
-        const frame = addFrame(
-            container,
-            elements[type],
-            styles,
-            `pay-theory-ach-${type}-tag-frame`,
-            env)
-
-        processed.push({ type, frame })
-    }
-    else {
-        error = `${elements[type]} is already mounted`
-    }
-    return error
 }
 
 export const isHidden = element => {
