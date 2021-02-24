@@ -356,28 +356,35 @@ export default async(
 
         const removeSetup = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
 
-        // //Sends a message to the transacting element letting it know that all other fields have connected to the websocket so that it can fetch the host token
-        // const connectionHandler = message => {
-        //     updateReady(message.element)
-        //     if (verifyReady(achReady) && processedACHElements.length > 0) {
-        //         document.getElementsByName(`account-number-iframe`)[0]
-        //             .contentWindow.postMessage({
-        //                     type: `pt-static:connected`,
-        //                 },
-        //                 common.hostedFieldsEndpoint(env)
-        //             );
-        //     }
-        //     if (verifyReady(cardReady) && processedCardElements.length > 0) {
-        //         document.getElementsByName(`card-number-iframe`)[0]
-        //             .contentWindow.postMessage({
-        //                     type: `pt-static:connected`,
-        //                 },
-        //                 common.hostedFieldsEndpoint(env)
-        //             );
-        //     }
-        // }
+        //Sends a message to the transacting element letting it know that all other fields have connected to the websocket so that it can fetch the host token
+        const siblingHandler = message => {
+            if (message.field === 'card-number') {
+                processedCardElements.forEach(field => {
+                    document.getElementsByName(`${common.stateMap[field.type]}-iframe`)[0]
+                        .contentWindow.postMessage({
+                                type: `pt-static:connected`,
+                                hostToken: message.hostToken,
+                                sessionKey: message.sessionKey
+                            },
+                            common.hostedFieldsEndpoint(env)
+                        );
+                })
+            }
+            else if (message.field === 'account-number') {
+                processedACHElements.forEach(field => {
+                    document.getElementsByName(`${field.type}-iframe`)[0]
+                        .contentWindow.postMessage({
+                                type: `pt-static:connected`,
+                                hostToken: message.hostToken,
+                                sessionKey: message.sessionKey
+                            },
+                            common.hostedFieldsEndpoint(env)
+                        );
+                })
+            }
+        }
 
-        // const removeConnection = common.handleHostedFieldMessage(common.connectionTypeMessage, connectionHandler, env)
+        const removeSibling = common.handleHostedFieldMessage(common.siblingTypeMessage, siblingHandler, env)
 
         //Handles state messages and sets state on the web components 
         const stateUpdater = (message) => {
@@ -563,7 +570,7 @@ export default async(
         return () => {
             removeRelay()
             removeSetup()
-            // removeConnection()
+            removeSibling()
             removeState()
             removeInstrument()
             removeIdempotency()
