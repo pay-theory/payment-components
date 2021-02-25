@@ -64,6 +64,9 @@ export default async(
     const hasValidAccount = types =>
         (types['account-number'] && types['account-type'] && types['account-name'] && types['routing-number'])
 
+    const hasValidCash = types =>
+        (types['cash-name'] && types['cash-contact'])
+
 
     //Checkes the dom for elements and returns errors if there are missing elements or conflicting elements
     const findCardNumberError = processedElements => {
@@ -123,7 +126,7 @@ export default async(
         return error
     }
 
-    const findCardError = (transacting, processedElements) => {
+    const findCardError = (processedElements) => {
         let error = false
         if (processedElements.length === 0) {
             return error
@@ -138,6 +141,23 @@ export default async(
         else {
             error = findCombinedCardError(processedElements)
         }
+        return error
+    }
+
+    const findCashError = (processedElements) => {
+        let error = false
+        if (processedElements.length === 0) {
+            return error
+        }
+
+        if (processedElements.reduce(common.findAccountName, false) === false) {
+            error = 'missing ACH account name field required for payments'
+        }
+
+        if (processedElements.reduce(common.findField('cash-contact'), false) === false) {
+            error = 'missing ACH account number field required for payments'
+        }
+
         return error
     }
 
@@ -157,31 +177,33 @@ export default async(
 
     let achInitialized = false
     let ccInitialized = false
+    let cashInitialied = false
 
     let cardToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
     let achToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+    let cashToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
 
     const resetHostToken = async() => {
         if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
             let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-            document.getElementsByName(`account-number-iframe`)[0]
-                .contentWindow.postMessage({
-                        type: `pt-static:cancel`,
-                        token: token['pt-token']
-                    },
-                    common.hostedFieldsEndpoint(env)
-                );
-
+            common.postMessageToHostedField(`account-number-iframe`, env, {
+                type: `pt-static:cancel`,
+                token: token['pt-token']
+            })
+        }
+        else if (common.getTransactingElement() === 'pay-theory-cash-name-tag-frame') {
+            let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+            common.postMessageToHostedField(`cash-name-iframe`, env, {
+                type: `pt-static:cancel`,
+                token: token['pt-token']
+            })
         }
         else if (common.getTransactingElement()) {
             let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-            document.getElementsByName(`card-number-iframe`)[0]
-                .contentWindow.postMessage({
-                        type: `pt-static:cancel`,
-                        token: token['pt-token']
-                    },
-                    common.hostedFieldsEndpoint(env)
-                );
+            common.postMessageToHostedField(`card-number-iframe`, env, {
+                type: `pt-static:cancel`,
+                token: token['pt-token']
+            })
         }
     }
 
@@ -223,12 +245,7 @@ export default async(
     const verifyRelay = (fields, message) => {
         fields.forEach((field) => {
             if (document.getElementsByName(field)[0]) {
-                document
-                    .getElementsByName(field)[0]
-                    .contentWindow.postMessage(
-                        message,
-                        common.hostedFieldsEndpoint(env)
-                    );
+                common.postMessageToHostedField(field, env, message)
             }
         });
     };
@@ -290,6 +307,7 @@ export default async(
 
         transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
         transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
+        transacting.cash = processedCashElements.reduce(common.findField('cash-name'), false)
 
         //Relays messages from hosted fields to the transacting element for autofill and transacting
         const relayHandler = (message) => {
@@ -303,12 +321,7 @@ export default async(
                     verifyRelay(cardFields, message);
                 }
                 else {
-                    document
-                        .getElementsByName(`card-number-iframe`)[0]
-                        .contentWindow.postMessage(
-                            message,
-                            common.hostedFieldsEndpoint(env)
-                        );
+                    common.postMessageToHostedField(`card-number-iframe`, env, message)
                 }
             }
             else if (message.element === "address-autofill") {
@@ -321,20 +334,10 @@ export default async(
                 verifyRelay(addressFields, message);
             }
             else if (message.element.startsWith('cash')) {
-                document
-                    .getElementsByName(`cash-name-iframe`)[0]
-                    .contentWindow.postMessage(
-                        message,
-                        common.hostedFieldsEndpoint(env)
-                    );
+                common.postMessageToHostedField(`cash-name-iframe`, env, message)
             }
             else {
-                document
-                    .getElementsByName(`account-number-iframe`)[0]
-                    .contentWindow.postMessage(
-                        message,
-                        common.hostedFieldsEndpoint(env)
-                    );
+                common.postMessageToHostedField(`account-number-iframe`, env, message)
             }
         };
 
@@ -342,55 +345,41 @@ export default async(
 
         //sends styles to hosted fields when they are set up
         const setupHandler = (message) => {
-            document.getElementsByName(`${message.element}-iframe`)[0].contentWindow.postMessage({
-                    type: "pt:setup",
-                    style: styles.default ? styles : common.defaultStyles
-                },
-                common.hostedFieldsEndpoint(env),
-            );
+            common.postMessageToHostedField(`${message.element}-iframe`, env, {
+                type: "pt:setup",
+                style: styles.default ? styles : common.defaultStyles
+            })
             if (message.element === 'account-number') {
-                document.getElementsByName(`account-number-iframe`)[0]
-                    .contentWindow.postMessage({
-                            type: `pt-static:elements`,
-                            elements: JSON.parse(JSON.stringify(processedACHElements))
-                        },
-                        common.hostedFieldsEndpoint(env)
-                    );
+                common.postMessageToHostedField(`account-number-iframe`, env, {
+                    type: `pt-static:elements`,
+                    elements: JSON.parse(JSON.stringify(processedACHElements))
+                })
             }
             else if (message.element === 'card-number') {
-                document.getElementsByName(`card-number-iframe`)[0]
-                    .contentWindow.postMessage({
-                            type: `pt-static:elements`,
-                            elements: JSON.parse(JSON.stringify(processedCardElements))
-                        },
-                        common.hostedFieldsEndpoint(env)
-                    );
+                common.postMessageToHostedField(`card-number-iframe`, env, {
+                    type: `pt-static:elements`,
+                    elements: JSON.parse(JSON.stringify(processedCardElements))
+                })
             }
             else if (message.element === 'cash-name') {
-                document.getElementsByName(`cash-name-iframe`)[0]
-                    .contentWindow.postMessage({
-                            type: `pt-static:elements`,
-                            elements: JSON.parse(JSON.stringify(processedCardElements))
-                        },
-                        common.hostedFieldsEndpoint(env)
-                    );
+                common.postMessageToHostedField(`cash-name-iframe`, env, {
+                    type: `pt-static:elements`,
+                    elements: JSON.parse(JSON.stringify(processedCardElements))
+                })
             }
         }
 
         const removeSetup = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
 
         const sendConnectedMessage = (message, field) => {
-            document.getElementsByName(`${field}-iframe`)[0]
-                .contentWindow.postMessage({
-                        type: `pt-static:connected`,
-                        hostToken: message.hostToken,
-                        sessionKey: message.sessionKey
-                    },
-                    common.hostedFieldsEndpoint(env)
-                );
+            common.postMessageToHostedField(`${field}-iframe`, env, {
+                type: `pt-static:connected`,
+                hostToken: message.hostToken,
+                sessionKey: message.sessionKey
+            })
         }
 
-        //Sends a message to the transacting element letting it know that all other fields have connected to the websocket so that it can fetch the host token
+        //Sends a message to the sibling fields letting them know that the transactional field has fetched the the host-token
         const siblingHandler = message => {
             if (message.field === 'card-number') {
                 processedCardElements.forEach(field => {
@@ -473,8 +462,11 @@ export default async(
             if (message.field === 'card-number') {
                 transacting.card.instrument = message.instrument
             }
-            else {
+            else if (message.field === 'account-number') {
                 transacting.ach.instrument = message.instrument
+            }
+            else {
+                transacting.cash.instrument = message.instrument
             }
         }
 
@@ -503,7 +495,7 @@ export default async(
 
         const removeTransferComplete = common.handleHostedFieldMessage(common.transferCompleteTypeMessage, transferCompleteHandler, env)
 
-        if (processedACHElements.length === 0 && processedCardElements.length === 0) {
+        if (processedACHElements.length === 0 && processedCardElements.length === 0 && processedCashElements.length === 0) {
             return common.handleError('There are no PayTheory fields')
         }
 
@@ -522,7 +514,7 @@ export default async(
                 processed.frame.token = encodeURI(encodedCardJson)
             })
 
-            if (achInitialized || processedACHElements.length === 0) {
+            if ((cashInitialied || processedCashElements.length === 0) && (achInitialized || processedACHElements.length === 0)) {
                 window.postMessage({
                         type: `pay-theory:ready`,
                         ready: true
@@ -546,7 +538,30 @@ export default async(
                 const encodedAchJson = window.btoa(achJson)
                 processed.frame.token = encodeURI(encodedAchJson)
             })
-            if (ccInitialized || processedCardElements.length === 0) {
+            if ((ccInitialized || processedCardElements.length === 0) && (cashInitialied || processedCashElements.length === 0)) {
+                window.postMessage({
+                        type: `pay-theory:ready`,
+                        ready: true
+                    },
+                    window.location.origin,
+                )
+            }
+        }
+
+        //Initializes Cash elements if they are found on the dom
+        if (processedCashElements.length > 0) {
+            cashInitialied = true
+            let error = findCardError(processedCashElements)
+            if (error) {
+                return common.handleError(error)
+            }
+
+            processedCashElements.forEach(processed => {
+                const cashJson = JSON.stringify({ token: cashToken['pt-token'], origin: cashToken.origin })
+                const encodedCashJson = window.btoa(cashJson)
+                processed.frame.token = encodeURI(encodedCashJson)
+            })
+            if ((ccInitialized || processedCardElements.length === 0) && (achInitialized || processedACHElements.length === 0)) {
                 window.postMessage({
                         type: `pay-theory:ready`,
                         ready: true
