@@ -150,12 +150,12 @@ export default async(
             return error
         }
 
-        if (processedElements.reduce(common.findAccountName, false) === false) {
-            error = 'missing ACH account name field required for payments'
+        if (processedElements.reduce(common.findField('cash-name'), false) === false) {
+            error = 'missing Cash name field required for payments'
         }
 
         if (processedElements.reduce(common.findField('cash-contact'), false) === false) {
-            error = 'missing ACH account number field required for payments'
+            error = 'missing Cash Contact info field required for payments'
         }
 
         return error
