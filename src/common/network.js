@@ -234,7 +234,9 @@ const idempotency = async(host, apiKey, fee_mode, message) => {
     return false
 }
 
-const processPayment = async(cb, host, apiKey, tags = {}) => {
+const processPayment = async(cb, host, apiKey, tags = {}, action) => {
+    let transacting = data.getTransactingElement()
+    let transactingElement = document.getElementsByName(transacting)[0]
 
     const clientKey = data.getMerchant()
 
@@ -242,11 +244,29 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
 
     const identity = await generateIdentity(host, apiKey, data.getBuyer())
 
+    if (identity.state === 'error') {
+        cb({
+            state: 'FAILURE',
+            type: identity.reason
+        })
+        transactingElement[action] = false
+        return
+    }
+
     data.setIdentity(identity)
 
     tags['pt-number'] = identity.idempotencyId
 
     const instrumental = await generateInstrument(host, apiKey)
+
+    if (identity.state === 'error') {
+        cb({
+            state: 'FAILURE',
+            type: instrumental.reason
+        })
+        transactingElement[action] = false
+        return
+    }
 
     const auth = {
         instrumentToken: instrumental['tags-token'],
@@ -258,6 +278,10 @@ const processPayment = async(cb, host, apiKey, tags = {}) => {
         apiKey,
         auth
     )
+
+    if (payment.state === 'error') {
+        transactingElement[action] = false
+    }
 
     data.removeAll()
 
@@ -312,7 +336,7 @@ export const generateCapture = (cb, host, apiKey, tags = {}) => {
             await transfer(cb, host, apiKey, tags)
         }
         else {
-            await processPayment(cb, host, apiKey, tags = {})
+            await processPayment(cb, host, apiKey, tags = {}, 'tokenize')
         }
     }
 }
@@ -343,7 +367,7 @@ export const generateTransacted = (cb, host, apiKey, fee_mode, tags = {}) => {
         else {
             await tokenize(host, apiKey, fee_mode, message)
 
-            await processPayment(cb, host, apiKey, tags)
+            await processPayment(cb, host, apiKey, tags, 'transact')
         }
     }
 }
