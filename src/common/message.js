@@ -72,6 +72,11 @@ export const socketErrorTypeMessage = message => typeof message.type === 'string
 //passes session info to sibling fields
 export const siblingTypeMessage = message => typeof message.type === 'string' && message.type === `pt-static:siblings`
 
+export const postMessageToHostedField = (id, env, message) => {
+    document.getElementsByName(id)[0]
+        .contentWindow.postMessage(message, hostedFieldsEndpoint(env));
+}
+
 export const handleError = error => {
     window.postMessage({
             type: 'pt:error',
