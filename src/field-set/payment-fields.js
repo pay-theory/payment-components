@@ -551,7 +551,7 @@ export default async(
         //Initializes Cash elements if they are found on the dom
         if (processedCashElements.length > 0) {
             cashInitialied = true
-            let error = findCardError(processedCashElements)
+            let error = findCashError(processedCashElements)
             if (error) {
                 return common.handleError(error)
             }
