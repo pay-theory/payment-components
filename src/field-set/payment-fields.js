@@ -126,7 +126,7 @@ export default async(
         return error
     }
 
-    const findCardError = (processedElements) => {
+    const findCardError = (transacting, processedElements) => {
         let error = false
         if (processedElements.length === 0) {
             return error
