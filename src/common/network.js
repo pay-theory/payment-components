@@ -205,31 +205,17 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
             // }
             await handleInitialized(amount, buyerOptions, confirmation)
             const transacting = data.getTransactingElement()
-            if (transacting === 'pay-theory-ach-account-number-tag-frame') {
-                data.achFieldTypes.forEach(field => {
-                    document.getElementsByName(`${field}-iframe`)[0].contentWindow.postMessage({
-                            type: "pt-static:transact",
-                            element: field,
-                            buyerOptions
-                        },
-                        hostedFieldsEndpoint(env),
-                    );
-                })
-            }
-            else {
-                data.fieldTypes.forEach(field => {
-                    let iframe = document.getElementsByName(`${field}-iframe`)[0]
-                    if (iframe) {
-                        iframe.contentWindow.postMessage({
-                                type: "pt-static:transact",
-                                element: field,
-                                buyerOptions
-                            },
-                            hostedFieldsEndpoint(env),
-                        );
-                    }
-                })
-            }
+            const types = transacting.includes('-card-') ? data.fieldTypes : transacting.includes('-ach-') ? data.achFieldTypes : data.cashFieldTypes
+            types.forEach(field => {
+                let iframe = document.getElementsByName(`${field}-iframe`)[0]
+                if (iframe) {
+                    message.postMessageToHostedField(`${field}-iframe`, env, {
+                        type: "pt-static:transact",
+                        element: field,
+                        buyerOptions
+                    })
+                }
+            })
         }
         else if (initialize !== 'init') {
             return message.handleError('amount must be a positive integer')

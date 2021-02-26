@@ -43,7 +43,10 @@ export default async(
         'account-number': false,
         'routing-number': false,
         'account-name': false,
-        'account-type': false
+        'account-type': false,
+        'cash-name': true,
+        'cash-zip': true,
+        'cash-contact': true
     }
 
     const isCallingType = type => Object.keys(validTypes).includes(type)
@@ -589,23 +592,23 @@ export default async(
         const action = confirmation ? 'tokenize' : 'transact'
         common.setBuyer(buyerOptions)
 
-
-
-        if (common.isHidden(transacting.card) === false && (isValid === 'card' || isValid === 'both')) {
-            const framed = transacting.card.frame ? transacting.card.frame : transacting.card
+        let initializeActions = framed => {
             common.setTransactingElement(framed)
-            framed.amount = amount
-            framed.action = action
-            framed.resetToken = resetHostToken
+            if (framed.id.includes('cash')) {
+                framed.resetToken = resetHostToken
+                framed.cash = { amount, buyerOptions }
+            }
+            else {
+                framed.amount = amount
+                framed.action = action
+                framed.resetToken = resetHostToken
+            }
         }
 
-        if (common.isHidden(transacting.ach) === false && (isValid === 'ach' || isValid === 'both')) {
-            const framed = transacting.ach.frame ? transacting.ach.frame : transacting.ach
-            common.setTransactingElement(framed)
-            framed.amount = amount
-            framed.action = action
-            framed.resetToken = resetHostToken
-        }
+        if (common.isHidden(transacting.card) === false && isValid.includes('card')) initializeActions(transacting.card)
+        if (common.isHidden(transacting.ach) === false && isValid.includes('ach')) initializeActions(transacting.ach)
+        if (common.isHidden(transacting.cash) === false && isValid.includes('cash')) initializeActions(transacting.cash)
+
     }
 
     const initTransaction = common.generateInitialization(handleInitialized, cardToken ? cardToken.challengeOptions : achToken.challengeOptions, env)
@@ -615,10 +618,10 @@ export default async(
         let transactor = {}
 
         if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
-            transactor = transacting.ach.frame ? transacting.ach.frame : transacting.ach
+            transactor = transacting.ach
         }
         else if (common.getTransactingElement()) {
-            transactor = transacting.card.frame ? transacting.card.frame : transacting.card
+            transactor = transacting.card
         }
 
         transactor.capture = true
@@ -678,7 +681,13 @@ export default async(
 
                 const validAch = hasValidAccount(validTypes)
 
-                validating = (validatingCard && validatingDetails && validAch) ? 'both' : (validatingCard && validatingDetails) ? 'card' : validAch ? 'ach' : false
+                const validCash = hasValidCash(validTypes)
+
+                let validFields = []
+                if (validatingCard && validatingDetails) validFields.push('card')
+                if (validCash) validFields.push('cash')
+                if (validAch) validFields.push('ach')
+                if (validFields.length > 0) validating = validFields.join('-')
 
                 if (isCallingType(type) && isValid !== validating) {
                     isValid = validating
