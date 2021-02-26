@@ -367,7 +367,7 @@ export default async(
             else if (message.element === 'cash-name') {
                 common.postMessageToHostedField(`cash-name-iframe`, env, {
                     type: `pt-static:elements`,
-                    elements: JSON.parse(JSON.stringify(processedCardElements))
+                    elements: JSON.parse(JSON.stringify(processedCashElements))
                 })
             }
         }
