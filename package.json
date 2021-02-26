@@ -42,6 +42,7 @@
         "dev-cdn-latest": "aws s3 cp dist s3://payment-components-dev --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "dev-cdn-version": "aws s3 cp dist s3://payment-components-dev/$npm_package_version --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "stage-cdn-latest": "aws s3 cp dist s3://payment-components-stage --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
+        "stage-cdn-hotfix": "aws s3 cp dist s3://payment-components-stage/hotfix --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "stage-cdn-version": "aws s3 cp dist s3://payment-components-stage/$npm_package_version --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "prod-cdn-latest": "aws s3 cp dist s3://payment-components-prod --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "prod-cdn-version": "aws s3 cp dist s3://payment-components-prod/$npm_package_version --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
