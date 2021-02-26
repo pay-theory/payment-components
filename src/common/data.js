@@ -88,11 +88,9 @@ export const stateMap = {
 export const getTransactingElement = () => {
     return localStorage.getItem(TRANSACTING)
 }
-
 export const setTransactingElement = element => {
     return localStorage.setItem(TRANSACTING, element.id)
 }
-
 export const removeTransactingElement = () => {
     return localStorage.removeItem(TRANSACTING)
 }
@@ -100,11 +98,9 @@ export const removeTransactingElement = () => {
 export const getReady = () => {
     return localStorage.getItem(READY)
 }
-
 export const setReady = ready => {
     return localStorage.setItem(READY, ready)
 }
-
 export const removeReady = () => {
     return localStorage.removeItem(READY)
 }
@@ -112,11 +108,9 @@ export const removeReady = () => {
 export const getBuyer = () => {
     return JSON.parse(localStorage.getItem(BUYER))
 }
-
 export const setBuyer = buyer => {
     return localStorage.setItem(BUYER, JSON.stringify(buyer))
 }
-
 export const removeBuyer = () => {
     return localStorage.removeItem(BUYER)
 }
@@ -124,11 +118,9 @@ export const removeBuyer = () => {
 export const getBin = () => {
     return JSON.parse(localStorage.getItem(BIN))
 }
-
 export const setBin = bin => {
     return localStorage.setItem(BIN, JSON.stringify(bin))
 }
-
 export const removeBin = () => {
     return localStorage.removeItem(BIN)
 }
@@ -136,11 +128,9 @@ export const removeBin = () => {
 export const getToken = () => {
     return JSON.parse(localStorage.getItem(TOKEN))
 }
-
 export const setToken = token => {
     return localStorage.setItem(TOKEN, JSON.stringify(token))
 }
-
 export const removeToken = () => {
     return localStorage.removeItem(TOKEN)
 }
@@ -148,11 +138,9 @@ export const removeToken = () => {
 export const getIdempotency = () => {
     return JSON.parse(localStorage.getItem(IDEMPOTENCY))
 }
-
 export const setIdempotency = token => {
     return localStorage.setItem(IDEMPOTENCY, JSON.stringify(token))
 }
-
 export const removeIdempotency = () => {
     return localStorage.removeItem(IDEMPOTENCY)
 }
@@ -160,11 +148,9 @@ export const removeIdempotency = () => {
 export const getIdentity = () => {
     return JSON.parse(localStorage.getItem(IDENTITY))
 }
-
 export const setIdentity = identity => {
     return localStorage.setItem(IDENTITY, JSON.stringify(identity))
 }
-
 export const removeIdentity = () => {
     return localStorage.removeItem(IDENTITY)
 }
@@ -172,11 +158,9 @@ export const removeIdentity = () => {
 export const getInstrument = () => {
     return JSON.parse(localStorage.getItem(INSTRUMENT))
 }
-
 export const setInstrument = instrument => {
     return localStorage.setItem(INSTRUMENT, JSON.stringify(instrument))
 }
-
 export const removeInstrument = () => {
     return localStorage.removeItem(INSTRUMENT)
 }
@@ -184,18 +168,27 @@ export const removeInstrument = () => {
 export const getMerchant = () => {
     return JSON.parse(localStorage.getItem(MERCHANT))
 }
-
 export const setMerchant = merchant => {
     return localStorage.setItem(MERCHANT, JSON.stringify(merchant))
 }
-
 export const removeMerchant = () => {
     return localStorage.removeItem(MERCHANT)
+}
+
+export const resetPayment = () => {
+    removeMerchant()
+    removeIdentity()
+    removeInstrument()
+    removeToken()
+    removeBuyer()
+    removeTransactingElement()
+    removeIdempotency()
 }
 
 export const removeAll = () => {
     removeMerchant()
     removeIdentity()
+    removeInstrument()
     removeToken()
     removeBuyer()
     removeBin()
