@@ -209,6 +209,12 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     return this.amounting
   }
 
+  set amount(_amounting) {
+    if (this.amounting !== _amounting) {
+      this.amounting = _amounting
+    }
+  }
+
   get resetToken() {
     return this.amounting
   }
@@ -217,9 +223,19 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     this.reset = _resetToken
   }
 
-  set amount(_amounting) {
-    if (this.amounting !== _amounting) {
-      this.amounting = _amounting
+  get cash() {
+    return this.cashed
+  }
+
+  set cash(_cash) {
+    if (this.cashed !== _cash) {
+      this.cashed = _cash
+      if (_cash) {
+        common.postMessageToHostedField('cash-name-iframe', this.environment, {
+          action: 'pt-static:cash-detail',
+          data: _cash
+        })
+      }
     }
   }
 }
