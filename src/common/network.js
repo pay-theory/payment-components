@@ -193,7 +193,8 @@ export const generateTokenize = (cb, host, apiKey, fee_mode) => {
                 "last_four": token.bin.last_four,
                 "receipt_number": token.idempotency,
                 "amount": token.payment.amount,
-                "service_fee": token.payment.service_fee
+                "service_fee": token.payment.service_fee,
+                "convenience_fee": token.payment.service_fee
             }
         }
         else {
@@ -204,7 +205,8 @@ export const generateTokenize = (cb, host, apiKey, fee_mode) => {
                 "brand": token.bin.brand,
                 "receipt_number": token.idempotency,
                 "amount": token.payment.amount,
-                "service_fee": token.payment.service_fee
+                "service_fee": token.payment.service_fee,
+                "convenience_fee": token.payment.service_fee
             }
         }
 
@@ -299,6 +301,7 @@ const processPayment = async(cb, host, apiKey, tags = {}, action) => {
         created_at: payment.created_at,
         amount: payment.amount,
         service_fee: payment.service_fee,
+        convenience_fee: payment.service_fee,
         state: payment.state === 'PENDING' ? 'APPROVED' : payment.state === 'error' ? 'FAILURE' : payment.state,
         tags: payment.tags,
     })
@@ -328,6 +331,7 @@ const transfer = async(cb, host, apiKey, tags) => {
         created_at: transfer.created_at,
         amount: transfer.amount,
         service_fee: transfer.service_fee,
+        convenience_fee: transfer.service_fee,
         state: transfer.state === 'PENDING' ? 'APPROVED' : transfer.state === 'error' ? 'FAILURE' : transfer.state,
         tags: transfer.tags,
     })
