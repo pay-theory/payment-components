@@ -44,9 +44,9 @@ export default async(
         'routing-number': false,
         'account-name': false,
         'account-type': false,
-        'cash-name': true,
+        'cash-name': false,
         'cash-zip': true,
-        'cash-contact': true
+        'cash-contact': false
     }
 
     const isCallingType = type => Object.keys(validTypes).includes(type)
@@ -596,7 +596,7 @@ export default async(
             common.setTransactingElement(framed)
             if (framed.id.includes('cash')) {
                 framed.resetToken = resetHostToken
-                framed.cash = { amount, buyerOptions }
+                framed.cash = { amount, buyerOptions, tags }
             }
             else {
                 framed.amount = amount
@@ -660,8 +660,9 @@ export default async(
                 const validType = message.type.split(':')[1]
                 let card = processedCardElements.reduce(common.findTransactingElement, false)
                 let transactingCard = card ? card.field : false
+                const includedType = elements => elements.map(element => element.type).includes(`${validType}`)
                 let creditCardTransacting = transactingCard === 'credit-card' ? ['card-exp', 'card-number', 'card-cvv'].includes(`${validType}`) : false
-                return message.type.endsWith(':valid') && (processedCardElements.map(element => element.type).includes(`${validType}`) || processedACHElements.map(element => element.type).includes(`${validType}`) || creditCardTransacting)
+                return message.type.endsWith(':valid') && (includedType(processedCardElements) || includedType(processedACHElements) || includedType(processedCashElements) || creditCardTransacting)
             }
             return false
         },
@@ -696,6 +697,13 @@ export default async(
             }
         })
 
+    const cashObserver = cb => common.handleHostedFieldMessage(common.cashCompleteTypeMessage, message => {
+        cb(message.data)
+        if (message.status === 'FAILURE') {
+            document.getElementById(common.getTransactingElement()).cash = false
+        }
+    }, env)
+
     const host = common.transactionEndpoint(env)
 
     return common.generateReturn(
@@ -704,7 +712,8 @@ export default async(
         confirm,
         cancel,
         readyObserver,
-        validObserver, {
+        validObserver,
+        cashObserver, {
             host,
             apiKey,
             fee_mode

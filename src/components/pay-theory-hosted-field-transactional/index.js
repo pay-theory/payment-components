@@ -1,6 +1,6 @@
 /* global HTMLElement */
 import PayTheoryHostedField from '../pay-theory-hosted-field'
-import * as common from '../../common'
+import common from '../../common'
 const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
 
 
@@ -48,6 +48,11 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       },
       window.location.origin,
     )
+  }
+
+  postMessageToHostedField(id, env, message) {
+    document.getElementsByName(id)[0]
+      .contentWindow.postMessage(message, `${common.hostedFieldsEndpoint(env)}`);
   }
 
   get tokenize() {
@@ -232,7 +237,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       this.cashed = _cash
       if (_cash) {
         common.postMessageToHostedField('cash-name-iframe', this.environment, {
-          action: 'pt-static:cash-detail',
+          type: 'pt-static:cash-detail',
           data: _cash
         })
       }

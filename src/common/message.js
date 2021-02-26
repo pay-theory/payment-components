@@ -72,6 +72,9 @@ export const socketErrorTypeMessage = message => typeof message.type === 'string
 //passes session info to sibling fields
 export const siblingTypeMessage = message => typeof message.type === 'string' && message.type === `pt-static:siblings`
 
+//Message sent from hosted-fields with data when a cash barcode is sent back
+export const cashCompleteTypeMessage = message => typeof message.type === 'string' && message.type === `pt-static:cash-complete`
+
 export const postMessageToHostedField = (id, env, message) => {
     document.getElementsByName(id)[0]
         .contentWindow.postMessage(message, hostedFieldsEndpoint(env));
