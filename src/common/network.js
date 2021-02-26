@@ -198,6 +198,7 @@ export const generateTokenize = (cb, host, apiKey, fee_mode) => {
         }
         else {
             const token = await tokenize(host, apiKey, fee_mode, message)
+            console.log('tokenized', token)
             cbToken = {
                 "first_six": token.bin.first_six,
                 "brand": token.bin.brand,
@@ -236,7 +237,7 @@ const idempotency = async(host, apiKey, fee_mode, message) => {
 
 const processPayment = async(cb, host, apiKey, tags = {}, action) => {
     let transacting = data.getTransactingElement()
-    let transactingElement = document.getElementsByName(transacting)[0]
+    let transactingElement = document.getElementById(transacting)
 
     const clientKey = data.getMerchant()
 
@@ -245,8 +246,12 @@ const processPayment = async(cb, host, apiKey, tags = {}, action) => {
     const identity = await generateIdentity(host, apiKey, data.getBuyer())
 
     if (identity.state === 'error') {
+        data.resetPayment()
+        const bin = data.getBin()
         cb({
             state: 'FAILURE',
+            first_six: bin.first_six,
+            brand: bin.brand,
             type: identity.reason
         })
         transactingElement[action] = false
@@ -260,6 +265,7 @@ const processPayment = async(cb, host, apiKey, tags = {}, action) => {
     const instrumental = await generateInstrument(host, apiKey)
 
     if (identity.state === 'error') {
+        data.removeAll()
         cb({
             state: 'FAILURE',
             type: instrumental.reason
@@ -336,13 +342,14 @@ export const generateCapture = (cb, host, apiKey, tags = {}) => {
             await transfer(cb, host, apiKey, tags)
         }
         else {
-            await processPayment(cb, host, apiKey, tags = {}, 'tokenize')
+            await processPayment(cb, host, apiKey, tags, 'tokenize')
         }
     }
 }
 
 const processToken = token => {
     if (token.state === 'error') {
+        data.removeAll()
         token = {
             type: token.reason,
             state: 'FAILURE'
