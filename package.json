@@ -21,7 +21,7 @@
     "scripts": {
         "build-dev": "env BUILD_ENV=dev APP_ID=APrPDbJxbZuiRuwN3NjfajpH webpack",
         "build-stage": "env BUILD_ENV=stage APP_ID=APpSQimXFrjSU8bzNzhXLLFH webpack",
-        "build-prod": "env BUILD_ENV=prod APP_ID=APcT6PQC1XiuCpPMUUXEZZ2y webpack && npm run test",
+        "build-prod": "env BUILD_ENV=prod APP_ID=APcT6PQC1XiuCpPMUUXEZZ2y webpack",
         "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
         "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore",
         "lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
