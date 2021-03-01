@@ -161,7 +161,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         "brand": _idempotency.bin.card_brand,
         "receipt_number": _idempotency.idempotency,
         "amount": _idempotency.payment.amount,
-        "service_fee": _idempotency.payment.service_fee
+        "service_fee": _idempotency.payment.service_fee,
+        "convenience_fee": _idempotency.payment.service_fee
       }
       this.idempotencyCB(cbToken)
     }
@@ -187,6 +188,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         "created_at": _transfered.created_at,
         "amount": _transfered.amount,
         "service_fee": _transfered.service_fee,
+        "convenience_fee": _transfered.service_fee,
         "state": _transfered.state,
         "tags": _transfered.tags
       }
