@@ -136,7 +136,6 @@ export default async(
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
     const establishElements = (elements, env) => {
-        console.log('establishing elements for', env)
         return common.processElements(elements, styles, env)
     }
 
@@ -173,7 +172,6 @@ export default async(
 
     //sends styles to hosted fields when they are set up
     const setupHandler = (message) => {
-        console.log(apiKey, 'api')
         document.getElementById(`${message.element}-iframe`).contentWindow.postMessage({
                 type: "pt:setup",
                 style: styles.default ? styles : common.defaultStyles
