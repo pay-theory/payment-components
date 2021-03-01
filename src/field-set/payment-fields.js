@@ -182,9 +182,7 @@ export default async(
     let ccInitialized = false
     let cashInitialied = false
 
-    let cardToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-    let achToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-    let cashToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+    let ptToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
 
     const resetHostToken = async() => {
         if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
@@ -512,7 +510,7 @@ export default async(
             }
 
             processedCardElements.forEach(processed => {
-                const cardJson = JSON.stringify({ token: cardToken['pt-token'], origin: cardToken.origin })
+                const cardJson = JSON.stringify({ token: ptToken['pt-token'], origin: ptToken.origin })
                 const encodedCardJson = window.btoa(cardJson)
                 processed.frame.token = encodeURI(encodedCardJson)
             })
@@ -531,6 +529,7 @@ export default async(
         //Initializes ACH elements if they are found on the dom
         if (processedACHElements.length > 0) {
             achInitialized = true
+            let achToken = processedCardElements.length === 0 ? ptToken : await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
             let error = findAchError(processedACHElements)
             if (error) {
                 return common.handleError(error)
@@ -554,6 +553,9 @@ export default async(
         //Initializes Cash elements if they are found on the dom
         if (processedCashElements.length > 0) {
             cashInitialied = true
+
+            let cashToken = processedCardElements.length === 0 && processedACHElements.length === 0 ? ptToken : await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+
             let error = findCashError(processedCashElements)
             if (error) {
                 return common.handleError(error)
@@ -611,7 +613,7 @@ export default async(
 
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized, cardToken ? cardToken.challengeOptions : achToken.challengeOptions, env)
+    const initTransaction = common.generateInitialization(handleInitialized, ptToken.challengeOptions, env)
 
     const confirm = () => {
 
