@@ -1,6 +1,6 @@
 {
     "name": "@paytheory/payment-components",
-    "version": "1.3.5-0",
+    "version": "1.3.7-0",
     "description": "Pay Theory SDK",
     "main": "dist/index.js",
     "author": "Aron Price",
@@ -21,7 +21,7 @@
     "scripts": {
         "build-dev": "env BUILD_ENV=dev APP_ID=APrPDbJxbZuiRuwN3NjfajpH webpack",
         "build-stage": "env BUILD_ENV=stage APP_ID=APpSQimXFrjSU8bzNzhXLLFH webpack",
-        "build-prod": "env BUILD_ENV=prod APP_ID=APcT6PQC1XiuCpPMUUXEZZ2y webpack && npm run test",
+        "build-prod": "env BUILD_ENV=prod APP_ID=APcT6PQC1XiuCpPMUUXEZZ2y webpack",
         "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
         "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore",
         "lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
@@ -48,7 +48,7 @@
         "prod-cdn-version": "aws s3 cp dist s3://payment-components-prod/$npm_package_version --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "publish-dev": "npm run publish-dev-npm && npm run publish-dev-cdn",
         "publish-stage": "npm run publish-stage-npm && npm run publish-stage-cdn",
-        "publish-prod": "npm run post-commit && npm run publish-prod-npm && npm run publish-prod-cdn",
+        "publish-prod": "npm run publish-prod-npm && npm run publish-prod-cdn",
         "post-commit": "npm run test && npm run test-report",
         "test": "karma start",
         "test:watch": "karma start --auto-watch=true --single-run=false",
