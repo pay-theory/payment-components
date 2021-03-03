@@ -267,7 +267,7 @@ const processPayment = async(cb, host, apiKey, tags = {}, action) => {
     const instrumental = await generateInstrument(host, apiKey)
 
     if (identity.state === 'error') {
-        data.removeAll()
+        data.resetPayment()
         cb({
             state: 'FAILURE',
             type: instrumental.reason
@@ -291,7 +291,7 @@ const processPayment = async(cb, host, apiKey, tags = {}, action) => {
         transactingElement[action] = false
     }
 
-    data.removeAll()
+    data.resetPayment()
 
     cb({
         receipt_number: identity.idempotencyId,
@@ -323,7 +323,7 @@ const transfer = async(cb, host, apiKey, tags) => {
         payload,
     )
 
-    data.removeAll()
+    data.resetPayment()
 
     cb({
         receipt_number: idempotency.idempotency,
@@ -353,7 +353,7 @@ export const generateCapture = (cb, host, apiKey, tags = {}) => {
 
 const processToken = token => {
     if (token.state === 'error') {
-        data.removeAll()
+        data.resetPayment()
         token = {
             type: token.reason,
             state: 'FAILURE'
