@@ -2,7 +2,7 @@ import * as data from './data'
 import * as message from './message'
 export const findTransactingElement = (element, cv) => {
     return element === false ?
-        (cv.type === 'credit-card' || cv.type === 'number') ?
+        (cv.type === 'credit-card' || cv.type === 'card-number') ?
         cv.frame :
         false :
         element
