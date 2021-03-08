@@ -21,7 +21,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   generateIdempotencyCallback(idempotent) {
     const message = {
       type: 'pt:idempotent',
-      idempotent: idempotent
+      idempotent
     }
     window.postMessage(
       message,

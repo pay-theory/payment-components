@@ -27,22 +27,7 @@ const createPaymentFields = (apiKey, clientId, styles, tags, env) => {
     console.warn('createPaymentFields has been deprecated')
     return createPaymentFieldsLegacy(apiKey, clientId, styles, tags, SERVICE_FEE, env)
 }
-const ELEMENTS = {
-    'credit-card': fields.CREDIT_CARD,
-    'number': fields.CREDIT_CARD_NUMBER,
-    'exp': fields.CREDIT_CARD_EXP,
-    'cvv': fields.CREDIT_CARD_CVV,
-    'account-name': fields.CREDIT_CARD_NAME,
-    'address-1': fields.CREDIT_CARD_ADDRESS1,
-    'address-2': fields.CREDIT_CARD_ADDRESS2,
-    city: fields.CREDIT_CARD_CITY,
-    state: fields.CREDIT_CARD_STATE,
-    zip: fields.CREDIT_CARD_ZIP,
-    'account-number': achFields.ACCOUNT_NUMBER,
-    'ach-name': achFields.ACCOUNT_NAME,
-    'routing-number': achFields.BANK_CODE,
-    'account-type': achFields.ACCOUNT_TYPE,
-}
+
 window.paytheory = {
     createPaymentFields,
     create,
