@@ -92,7 +92,7 @@ export const stateMap = {
     'card-cvv': 'cvv',
     'card-name': 'name',
     'billing-line1': 'address-1',
-    'billing-line1': 'address-2',
+    'billing-line2': 'address-2',
     'billing-city': 'city',
     'billing-state': 'state',
     'billing-zip': 'zip'

@@ -1,3 +1,4 @@
+/* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import './polyfill'
 import './components/credit-card'
 import './components/credit-card-number'
@@ -20,7 +21,7 @@ import 'regenerator-runtime'
 import './style.css'
 
 import createPaymentFieldsLegacy from './field-set/payment-fields'
-import { SURCHARGE, SERVICE_FEE, fields, achFields } from './common/data'
+import { SURCHARGE, SERVICE_FEE } from './common/data'
 
 const create = (apiKey, styles, tags, feeMode, env) => createPaymentFieldsLegacy(apiKey, '', styles, tags, feeMode, env)
 const createPaymentFields = (apiKey, clientId, styles, tags, env) => {
