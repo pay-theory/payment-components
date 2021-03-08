@@ -1,4 +1,3 @@
-/* global HTMLElement */
 import PayTheoryHostedField from '../pay-theory-hosted-field'
 import common from '../../common'
 const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'

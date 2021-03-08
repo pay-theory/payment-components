@@ -97,14 +97,6 @@ export const hostedFieldsEndpoint = (env) => {
     }
 }
 
-export const generateTokenize = (cb, apiKey, fee_mode) => {
-    return async message => {
-        let transacting = data.getTransactingElement()
-        document.getElementById(transacting).idempotencyCallback = cb
-        idempotency(apiKey, fee_mode, message)
-    }
-}
-
 const requestIdempotency = async(apiKey, fee_mode, message) => {
     const payment = message.tokenize ? message.tokenize : message.transact
     payment.fee_mode = fee_mode
@@ -127,8 +119,15 @@ const requestIdempotency = async(apiKey, fee_mode, message) => {
 
 const idempotency = async(apiKey, fee_mode, message) => {
     if (isValidTransaction(data.getToken())) {
-
         requestIdempotency(apiKey, fee_mode, message)
+    }
+}
+
+export const generateTokenize = (cb, apiKey, fee_mode) => {
+    return async message => {
+        let transacting = data.getTransactingElement()
+        document.getElementById(transacting).idempotencyCallback = cb
+        idempotency(apiKey, fee_mode, message)
     }
 }
 
@@ -167,7 +166,7 @@ export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
 
         let transacting = data.getTransactingElement()
         const transactingElement = document.getElementById(transacting)
-        transactingElement.idempotencyCallback = (token) => {
+        transactingElement.idempotencyCallback = () => {
             let updatedCb = val => {
                 data.removeAll()
                 cb(val)
