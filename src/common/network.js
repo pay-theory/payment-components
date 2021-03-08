@@ -51,9 +51,6 @@ const isValidTransaction = (tokenized) => {
 
 export const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
 
-const CARD = "PAYMENT_CARD"
-const ACH = "BANK_ACCOUNT"
-
 export const defaultEnvironment = (() => {
 
     switch (process.env.BUILD_ENV) {

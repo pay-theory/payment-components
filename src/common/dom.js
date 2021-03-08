@@ -1,4 +1,3 @@
-import * as data from './data'
 import * as message from './message'
 export const findTransactingElement = (element, cv) => {
     return element === false ?

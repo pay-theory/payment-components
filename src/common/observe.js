@@ -1,6 +1,5 @@
 import * as messaging from './message'
 import * as network from './network'
-import * as data from './data'
 
 export const errorObserver = cb => messaging.handleMessage(messaging.errorTypeMessage, message => {
     cb(message.error)
