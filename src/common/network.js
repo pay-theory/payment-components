@@ -184,25 +184,47 @@ export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
     }
 }
 
+const attestBrowser = async(challengeOptions) => {
+    if (navigator.credentials && navigator.credentials.preventSilentAccess) {
+        try {
+            // need to check for autofill and bypass if it has been triggered
+            const isAvailable = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+            if (isAvailable) {
+
+                challengeOptions.challenge = Uint8Array.from(
+                    challengeOptions.challenge,
+                    c => c.charCodeAt(0))
+
+                challengeOptions.user.id = Uint8Array.from(
+                    challengeOptions.user.id,
+                    c => c.charCodeAt(0))
+                return await navigator.credentials.create({
+                    publicKey: challengeOptions
+                })
+            }
+
+            return {
+                type: "unavailable"
+            }
+        }
+        catch {
+            return {
+                type: "prevented"
+            }
+        }
+    }
+}
+
 export const generateInitialization = (handleInitialized, challengeOptions, env) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         let initialize = data.getInitialize()
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0 && initialize !== 'init') {
             data.setInitialize('init')
-            // if (await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
 
-            //     challengeOptions.challenge = Uint8Array.from(
-            //         challengeOptions.challenge,
-            //         c => c.charCodeAt(0))
+            const attestation = await attestBrowser(challengeOptions)
 
-            //     challengeOptions.user.id = Uint8Array.from(
-            //         challengeOptions.user.id,
-            //         c => c.charCodeAt(0))
+            // TODO: post this attestation to transacting hosted field for posting to sockets
 
-            //     await navigator.credentials.create({
-            //         publicKey: challengeOptions
-            //     })
-            // }
             await handleInitialized(amount, buyerOptions, confirmation)
             const transacting = data.getTransactingElement()
             const types = transacting.includes('-card-') ? data.fieldTypes : transacting.includes('-ach-') ? data.achFieldTypes : data.cashFieldTypes
