@@ -105,27 +105,33 @@ export default async(
         return error
     }
 
+    const achCheck = [
+        {
+            check: common.findAccountName,
+            error: 'missing ACH account name field required for payments'
+        }, {
+            check: common.findAccountNumber,
+            error: 'missing ACH account number field required for payments'
+        }, {
+            check: common.findAccountType,
+            error: 'missing ACH account type field required for payments'
+        }, {
+            check: common.findBankCode,
+            error: 'missing ACH routing number field required for payments'
+        },
+        ]
+
     const findAchError = (processedElements) => {
         let error = false
         if (processedElements.length === 0) {
             return error
         }
 
-        if (processedElements.reduce(common.findAccountName, false) === false) {
-            error = 'missing ACH account name field required for payments'
-        }
-
-        if (processedElements.reduce(common.findAccountNumber, false) === false) {
-            error = 'missing ACH account number field required for payments'
-        }
-
-        if (processedElements.reduce(common.findAccountType, false) === false) {
-            error = 'missing ACH account type field required for payments'
-        }
-
-        if (processedElements.reduce(common.findBankCode, false) === false) {
-            error = 'missing ACH routing number field required for payments'
-        }
+        achCheck.forEach(obj => {
+            if (processedElements.reduce(obj.check, false) === false) {
+                return obj.error
+            }
+        })
 
         return error
     }
@@ -311,20 +317,14 @@ export default async(
         transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
         transacting.cash = processedCashElements.reduce(common.findField('cash-name'), false)
 
-        //Relays messages from hosted fields to the transacting element for autofill and transacting
-        const relayHandler = (message) => {
-            if (message.element.startsWith("card") || message.element.startsWith('billing')) {
-                if (message.element === "card-autofill") {
-                    const cardFields = [
+        const autofillHandler = (message) => {
+            if (message.element === "card-autofill") {
+                const cardFields = [
                     "card-name-iframe",
                     "card-cvv-iframe",
                     "card-exp-iframe"
                 ];
-                    verifyRelay(cardFields, message);
-                }
-                else {
-                    common.postMessageToHostedField(`card-number-iframe`, env, message)
-                }
+                verifyRelay(cardFields, message);
             }
             else if (message.element === "address-autofill") {
                 const addressFields = [
@@ -334,6 +334,16 @@ export default async(
                 "billing-zip-iframe"
             ];
                 verifyRelay(addressFields, message);
+            }
+        }
+
+        //Relays messages from hosted fields to the transacting element for autofill and transacting
+        const relayHandler = (message) => {
+            if (message.element.endsWith("autofill")) {
+                autofillHandler(message)
+            }
+            else if (message.element.startsWith("card") || message.element.startsWith('billing')) {
+                common.postMessageToHostedField(`card-number-iframe`, env, message)
             }
             else if (message.element.startsWith('cash')) {
                 common.postMessageToHostedField(`cash-name-iframe`, env, message)
@@ -351,22 +361,17 @@ export default async(
                 type: "pt:setup",
                 style: styles.default ? styles : common.defaultStyles
             })
-            if (message.element === 'account-number') {
-                common.postMessageToHostedField(`account-number-iframe`, env, {
-                    type: `pt-static:elements`,
-                    elements: JSON.parse(JSON.stringify(processedACHElements))
-                })
+
+            const setupTransacting = {
+                'account-number': processedACHElements,
+                'card-number': processedCardElements,
+                'cash-name': processedCashElements
             }
-            else if (message.element === 'card-number') {
-                common.postMessageToHostedField(`card-number-iframe`, env, {
+
+            if (setupTransacting[message.element]) {
+                common.postMessageToHostedField(`${message.element}-iframe`, env, {
                     type: `pt-static:elements`,
-                    elements: JSON.parse(JSON.stringify(processedCardElements))
-                })
-            }
-            else if (message.element === 'cash-name') {
-                common.postMessageToHostedField(`cash-name-iframe`, env, {
-                    type: `pt-static:elements`,
-                    elements: JSON.parse(JSON.stringify(processedCashElements))
+                    elements: JSON.parse(JSON.stringify(setupTransacting[message.element]))
                 })
             }
         }
@@ -617,32 +622,31 @@ export default async(
     const initTransaction = common.generateInitialization(handleInitialized, ptToken.challengeOptions, env)
 
     const confirm = () => {
-
-        let transactor = {}
-
-        if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
-            transactor = transacting.ach
+        if (common.getTransactingElement()) {
+            window.postMessage({
+                    type: 'pt:capture',
+                    capture: true
+                },
+                window.location.origin,
+            )
         }
-        else if (common.getTransactingElement()) {
-            transactor = transacting.card
-        }
-
-        transactor.capture = true
     }
 
     const cancel = async() => {
         if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
-            let transactor = transacting.ach.frame ? transacting.ach.frame : transacting.ach
+            let transactor = transacting.ach
             common.removeIdentity()
             common.removeToken()
             common.removeInitialize()
+            common.removeTransactingElement()
             transactor.instrument = 'cancel'
         }
         else if (common.getTransactingElement()) {
-            let transactor = transacting.card.frame ? transacting.card.frame : transacting.card
+            let transactor = transacting.card
             common.removeIdentity()
             common.removeToken()
             common.removeInitialize()
+            common.removeTransactingElement()
             transactor.instrument = 'cancel'
         }
     }

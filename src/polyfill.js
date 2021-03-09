@@ -1,3 +1,4 @@
+/*eslint no-extend-native: ["error", { "exceptions": ["String", "Array"] }]*/
 //https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
 if (!String.prototype.endsWith) {
     String.prototype.endsWith = function (searchString, position) {
