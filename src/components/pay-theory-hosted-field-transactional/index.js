@@ -54,6 +54,21 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       .contentWindow.postMessage(message, `${common.hostedFieldsEndpoint(env)}`);
   }
 
+  instrumentResponse(action, amount, instrument) {
+    switch (action) {
+    case ('tokenize'):
+      {
+        this.generateTokenizeCallback(amount, instrument)
+        break
+      }
+    case ('transact'):
+      {
+        this.generateTransactCallback(amount, instrument)
+        break
+      }
+    }
+  }
+
   get tokenize() {
     return this.tokenizing
   }
@@ -114,18 +129,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   set instrument(_instrumented) {
     if (!this.instrumented) {
       this.instrumented = _instrumented
-      switch (this.actioned) {
-      case ('tokenize'):
-        {
-          this.generateTokenizeCallback(this.amounting, _instrumented)
-          break
-        }
-      case ('transact'):
-        {
-          this.generateTransactCallback(this.amounting, _instrumented)
-          break
-        }
-      }
+      this.instrumentResponse(this.actioned, this.amounting, _instrumented)
     }
     if (_instrumented === 'cancel') {
       this.instrumented = false
