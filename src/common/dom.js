@@ -97,16 +97,11 @@ export const processElements = (elements, styles, env, fieldTypes, tagType) => {
 export const isHidden = element => {
     if (element === false) return true
 
-    var style = window.getComputedStyle(element);
-    if (style.display === 'none') {
-        return true
-    }
-
     var elem = element;
-    var parents = []
+    var elements = [elem]
 
     for (; elem && elem !== document; elem = elem.parentNode) {
-        parents.push(elem);
+        elements.push(elem);
     }
 
     const displayNone = (hidden, cv) => {
@@ -115,5 +110,5 @@ export const isHidden = element => {
         return hidden ? hidden : result
     }
 
-    return parents.reduce(displayNone, false)
+    return elements.reduce(displayNone, false)
 }

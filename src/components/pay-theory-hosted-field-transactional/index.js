@@ -72,19 +72,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
   }
 
-  get capture() {
-    return this.capturing
-  }
-
-  set capture(_capturing) {
-    window.postMessage({
-        type: 'pt:capture',
-        capture: true
-      },
-      window.location.origin,
-    )
-  }
-
   get idempotencyCallback() {
     return this.idempotencyCB
   }
