@@ -14,6 +14,7 @@ class PayTheoryHostedField extends HTMLElement {
     this.application = process.env.APP_ID
     this.fields = []
     this.wrappers = []
+    this.validated = {}
   }
 
   setFields(fieldArray) {
@@ -211,36 +212,19 @@ class PayTheoryHostedField extends HTMLElement {
   }
 
   set valid(isValid) {
-    if (this.field !== 'credit-card') {
-      if (isValid !== this.validated) {
-        this.validated = isValid
-        let type = this.stated.element ? this.stated.element : this.field
-        window.postMessage({
-            type: `pt:${type}:valid`,
-            valid: isValid,
-            hosted: true
-          },
-          window.location.origin,
-        )
-      }
+    //by storing the valid state in object it allows us to track changes in the number, exp, and cvv for the credit-card
+    if (isValid !== this.validated[this.stated.element]) {
+      let type = this.stated.element
+      this.validated[type] = isValid
+      window.postMessage({
+          type: `pt:${type}:valid`,
+          valid: isValid,
+          hosted: true
+        },
+        window.location.origin,
+      )
     }
-    else {
-      //by storing the valid state in object it allows us to track changes in the number, exp, and cvv for the credit-card
-      if (!this.validated) {
-        this.validated = {}
-      }
-      if (isValid !== this.validated[this.stated.element]) {
-        this.validated[this.stated.element] = isValid
-        let type = this.stated.element ? this.stated.element : this.field
-        window.postMessage({
-            type: `pt:${type}:valid`,
-            valid: isValid,
-            hosted: true
-          },
-          window.location.origin,
-        )
-      }
-    }
+
   }
 }
 

@@ -211,29 +211,32 @@ const attestBrowser = async(challengeOptions) => {
     }
 }
 
+const sendTransactingMessage = (buyerOptions, env) => {
+    const transacting = data.getTransactingElement()
+    const types = transacting.includes('-card-') ? data.fieldTypes : transacting.includes('-ach-') ? data.achFieldTypes : data.cashFieldTypes
+    types.forEach(field => {
+        let iframe = document.getElementsByName(`${field}-iframe`)[0]
+        if (iframe) {
+            message.postMessageToHostedField(`${field}-iframe`, env, {
+                type: "pt-static:transact",
+                element: field,
+                buyerOptions
+            })
+        }
+    })
+}
+
 export const generateInitialization = (handleInitialized, challengeOptions, env) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         let initialize = data.getInitialize()
         if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0 && initialize !== 'init') {
             data.setInitialize('init')
-
             const attestation = await attestBrowser(challengeOptions)
 
             // TODO: post this attestation to transacting hosted field for posting to sockets
 
             await handleInitialized(amount, buyerOptions, confirmation)
-            const transacting = data.getTransactingElement()
-            const types = transacting.includes('-card-') ? data.fieldTypes : transacting.includes('-ach-') ? data.achFieldTypes : data.cashFieldTypes
-            types.forEach(field => {
-                let iframe = document.getElementsByName(`${field}-iframe`)[0]
-                if (iframe) {
-                    message.postMessageToHostedField(`${field}-iframe`, env, {
-                        type: "pt-static:transact",
-                        element: field,
-                        buyerOptions
-                    })
-                }
-            })
+            sendTransactingMessage(buyerOptions, env)
         }
         else if (initialize !== 'init') {
             return message.handleError('amount must be a positive integer')
