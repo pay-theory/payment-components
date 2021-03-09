@@ -108,15 +108,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set transact(_transacting) {
-    const valid_amount = this.isValidAmount(_transacting)
     const amount = _transacting
     if (amount === false) {
       this.transacting = false
     }
-    if (!valid_amount) {
+    else if (!this.isValidAmount(_transacting)) {
       return common.handleError('amount must be a positive integer')
     }
-    if (this.transacting !== _transacting) {
+    else if (this.transacting !== _transacting) {
       this.transacting = _transacting
       this.form.submit(FINIX_ENV, this.application, this.generateTransactCallback(amount))
     }
