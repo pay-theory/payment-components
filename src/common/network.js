@@ -229,7 +229,7 @@ const sendTransactingMessage = (buyerOptions, env) => {
 export const generateInitialization = (handleInitialized, challengeOptions, env) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         let initialize = data.getInitialize()
-        if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0 && initialize !== 'init') {
+        if (Number.isInteger(amount) && amount > 0 && initialize !== 'init') {
             data.setInitialize('init')
             const attestation = await attestBrowser(challengeOptions)
 

@@ -1,5 +1,6 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import common from '../common'
+import * as valid from './validation'
 
 export default async(
     apiKey,
@@ -12,24 +13,7 @@ export default async(
     common.removeAll()
     common.setEnvironment(env)
 
-    if (typeof apiKey !== 'string') {
-        console.error('Api key should be a string beginning with pt-')
-    }
-    else if (!apiKey.startsWith('pt-')) {
-        console.error('Api key should be a string beginning with pt-')
-    }
-
-    if (typeof fee_mode !== 'string') {
-        console.error(`Fee Mode should be either 'surcharge' or 'service_fee' which are also available as constants at window.paytheory.SURCHARGE and window.paytheory.SERVICE_FEE`)
-    }
-
-    if (typeof tags !== 'object') {
-        console.error(`Tags should be a JSON Object`)
-    }
-
-    if (typeof styles !== 'object') {
-        console.error(`Styles should be a JSON Object. An example of the object is at https://github.com/pay-theory/payment-components`)
-    }
+    valid.checkCreateParams(apiKey, fee_mode, tags, styles)
 
     const validTypes = {
         'card-number': false,
@@ -52,27 +36,6 @@ export default async(
 
     const isCallingType = type => Object.keys(validTypes).includes(type)
 
-    //Lets the alid observer check that all fields are set to valid before sending a message
-    const hasValidCard = types =>
-        (types['card-number'] && types['card-cvv'] && types['card-exp'])
-
-    const hasValidStreetAddress = types =>
-        (types['billing-line1'] && types['billing-line2'])
-
-    const hasValidAddress = types =>
-        (hasValidStreetAddress(types) && types['billing-city'] && types['billing-state'] && types['billing-zip'])
-
-    const hasValidDetails = types =>
-        (types['card-name'] && hasValidAddress(types))
-
-    const hasValidAccount = types =>
-        (types['account-number'] && types['account-type'] && types['account-name'] && types['routing-number'])
-
-    const hasValidCash = types =>
-        (types['cash-name'] && types['cash-contact'])
-
-
-    //Checkes the dom for elements and returns errors if there are missing elements or conflicting elements
     const findCardNumberError = processedElements => {
         let error = false
         if (processedElements.reduce(common.findExp, false) === false) {
@@ -171,7 +134,6 @@ export default async(
         return error
     }
 
-
     let isValid = false
 
     let processedCardElements = []
@@ -191,28 +153,20 @@ export default async(
 
     let ptToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
 
+    const hostedFieldMap = {
+        'pay-theory-ach-account-number-tag-frame': 'account-number-iframe',
+        'pay-theory-cash-name-tag-frame': 'cash-name-iframe',
+        'pay-theory-credit-card-tag-frame': 'card-number-iframe',
+        'pay-theory-credit-card-card-number-tag-frame': 'card-number-iframe'
+    }
+
     const resetHostToken = async() => {
-        if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
-            let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-            common.postMessageToHostedField(`account-number-iframe`, env, {
-                type: `pt-static:cancel`,
-                token: token['pt-token']
-            })
-        }
-        else if (common.getTransactingElement() === 'pay-theory-cash-name-tag-frame') {
-            let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-            common.postMessageToHostedField(`cash-name-iframe`, env, {
-                type: `pt-static:cancel`,
-                token: token['pt-token']
-            })
-        }
-        else if (common.getTransactingElement()) {
-            let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-            common.postMessageToHostedField(`card-number-iframe`, env, {
-                type: `pt-static:cancel`,
-                token: token['pt-token']
-            })
-        }
+        let transacting = common.getTransactingElement()
+        let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+        common.postMessageToHostedField(hostedFieldMap[transacting], env, {
+            type: `pt-static:cancel`,
+            token: token['pt-token']
+        })
     }
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
@@ -595,28 +549,30 @@ export default async(
         }
     }
 
+    let initializeActions = (amount, action, buyerOptions, framed) => {
+        common.setTransactingElement(framed)
+        if (framed.id.includes('cash')) {
+            framed.resetToken = resetHostToken
+            framed.cash = { amount, buyerOptions, tags }
+        }
+        else {
+            framed.amount = amount
+            framed.action = action
+            framed.resetToken = resetHostToken
+        }
+    }
+
     const handleInitialized = (amount, buyerOptions, confirmation) => {
 
         const action = confirmation ? 'tokenize' : 'transact'
         common.setBuyer(buyerOptions)
+        const options = ['card', 'cash', 'ach']
 
-        let initializeActions = framed => {
-            common.setTransactingElement(framed)
-            if (framed.id.includes('cash')) {
-                framed.resetToken = resetHostToken
-                framed.cash = { amount, buyerOptions, tags }
+        options.forEach(option => {
+            if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
+                initializeActions(amount, action, buyerOptions, transacting[option])
             }
-            else {
-                framed.amount = amount
-                framed.action = action
-                framed.resetToken = resetHostToken
-            }
-        }
-
-        if (common.isHidden(transacting.card) === false && isValid.includes('card')) initializeActions(transacting.card)
-        if (common.isHidden(transacting.ach) === false && isValid.includes('ach')) initializeActions(transacting.ach)
-        if (common.isHidden(transacting.cash) === false && isValid.includes('cash')) initializeActions(transacting.cash)
-
+        })
     }
 
     const initTransaction = common.generateInitialization(handleInitialized, ptToken.challengeOptions, env)
@@ -683,13 +639,13 @@ export default async(
 
                 validTypes[type] = message.valid
 
-                const validatingCard = hasValidCard(validTypes)
+                const validatingCard = valid.hasValidCard(validTypes)
 
-                const validatingDetails = hasValidDetails(validTypes)
+                const validatingDetails = valid.hasValidDetails(validTypes)
 
-                const validAch = hasValidAccount(validTypes)
+                const validAch = valid.hasValidAccount(validTypes)
 
-                const validCash = hasValidCash(validTypes)
+                const validCash = valid.hasValidCash(validTypes)
 
                 let validFields = []
                 if (validatingCard && validatingDetails) validFields.push('card')
