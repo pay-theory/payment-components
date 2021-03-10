@@ -74,6 +74,37 @@ export const fieldTypes = [
     'billing-zip'
 ]
 
+export const ACH_IFRAME = 'account-number-iframe'
+export const CARD_IFRAME = 'card-number-iframe'
+export const CASH_IFRAME = 'cash-name-iframe'
+
+export const hostedFieldMap = {
+    'pay-theory-ach-account-number-tag-frame': ACH_IFRAME,
+    'pay-theory-cash-name-tag-frame': CASH_IFRAME,
+    'pay-theory-credit-card-tag-frame': CARD_IFRAME,
+    'pay-theory-credit-card-card-number-tag-frame': CARD_IFRAME,
+    'cash': CASH_IFRAME,
+    'card': CARD_IFRAME,
+    'ach': ACH_IFRAME
+}
+
+const isCardField = string => string.startsWith("card") || string.startsWith('billing')
+const isCashField = string => string.startsWith("cash")
+const isACHField = string => string.startsWith("account") || string.startsWith('routing')
+
+const isFieldType = type => {
+    if (isCardField(type)) return 'card'
+    if (isCashField(type)) return 'cash'
+    if (isACHField(type)) return 'ach'
+}
+
+export {
+    isCardField,
+    isACHField,
+    isCashField,
+    isFieldType
+}
+
 export const findEnv = () => {
     switch (process.env.BUILD_ENV) {
     case 'prod':

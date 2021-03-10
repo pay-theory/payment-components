@@ -9,7 +9,6 @@ class PayTheoryHostedField extends HTMLElement {
     this.isValidFrame = this.isValidFrame.bind(this)
     this.appendElement = this.appendElement.bind(this)
     this.setFields = this.setFields.bind(this)
-    this.eventful = this.eventful.bind(this)
     this.defaultStyles = { default: {}, success: {}, error: {} }
     this.application = process.env.APP_ID
     this.fields = []
@@ -52,30 +51,8 @@ class PayTheoryHostedField extends HTMLElement {
     return typeof event.data === 'object' ? event.data : { type: 'unknown' }
   }
 
-  eventful(event) {
-    if ([window.location.origin].includes(event.origin)) {
-      const message = this.findEventMessage(event)
-      if (typeof message.type === 'string' && message.type.startsWith(this.field) && message.type.endsWith(':ready')) {
-        this.ready = event.data.ready
-      }
-    }
-  }
 
   connectedCallback() {
-    if (!this.loaded) {
-      this.loaded = true
-
-      window.postMessage({
-          type: `pt:${this.field}:ready`,
-          ready: true,
-        },
-        window.location.origin,
-      );
-      this.ready = true
-    }
-
-    window.addEventListener('message', this.eventful)
-
     this.innerHTML = `<div class="framed">
             <div id="pay-theory-${this.field}-hosted-field-container" class="pay-theory-field">
             </div>
@@ -92,7 +69,6 @@ class PayTheoryHostedField extends HTMLElement {
 
   disconnectedCallback() {
 
-    return document.removeEventListener('message', this.eventful)
   }
 
   attributeChangedCallback(attrName, oldValue, newValue) {
