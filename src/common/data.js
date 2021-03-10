@@ -96,13 +96,17 @@ const isFieldType = type => {
     if (isCardField(type)) return 'card'
     if (isCashField(type)) return 'cash'
     if (isACHField(type)) return 'ach'
+    return false
 }
+
+const combinedCardTypes = ['card-number', 'card-cvv', 'card-exp']
 
 export {
     isCardField,
     isACHField,
     isCashField,
-    isFieldType
+    isFieldType,
+    combinedCardTypes
 }
 
 export const findEnv = () => {

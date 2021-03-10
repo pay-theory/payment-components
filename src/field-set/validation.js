@@ -1,5 +1,5 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
-import * as common from '../common'
+import common from '../common'
 
 const checkApiKey = key => {
     if (typeof key !== 'string') {
@@ -119,7 +119,7 @@ const findAchError = (processedElements) => {
     return error
 }
 
-const findCardError = (transacting, processedElements) => {
+const findCardError = (processedElements, transacting) => {
     let error = false
     if (processedElements.length === 0) {
         return error
@@ -154,6 +154,25 @@ const findCashError = (processedElements) => {
     return error
 }
 
+const validTypeMessage = elements => message => {
+    if (typeof message.type === 'string') {
+        const validType = message.type.split(':')[1]
+        let types = []
+        elements.card.forEach(element => {
+            if (element.type === 'credit-card') {
+                types = types.concat(common.combinedCardTypes)
+            }
+            else {
+                types.push(element.type)
+            }
+        })
+        types = types.concat(elements.ach.map(element => element.type))
+        types = types.concat(elements.cash.map(element => element.type))
+        return message.type.endsWith(':valid') && types.includes(`${validType}`)
+    }
+    return false
+}
+
 export {
     checkCreateParams,
     hasValidCard,
@@ -164,5 +183,6 @@ export {
     findCombinedCardError,
     findAchError,
     findCardError,
-    findCashError
+    findCashError,
+    validTypeMessage
 }

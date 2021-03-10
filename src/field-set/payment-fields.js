@@ -1,6 +1,7 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import common from '../common'
 import * as valid from './validation'
+import * as handler from './handler'
 
 export default async(
     apiKey,
@@ -34,124 +35,37 @@ export default async(
         'cash-contact': false
     }
 
-    const isCallingType = type => Object.keys(validTypes).includes(type)
-
-    const findCardNumberError = processedElements => {
-        let error = false
-        if (processedElements.reduce(common.findExp, false) === false) {
-            error = 'missing credit card expiration field required for payments'
-        }
-
-        if (processedElements.reduce(common.findCVV, false) === false) {
-            error = 'missing credit card CVV field required for payments'
-        }
-
-        if (document.getElementById(`pay-theory-credit-card`)) {
-            error = 'credit card element is not allowed when using credit card number'
-        }
-        return error
-    }
-
-    const findCombinedCardError = processedElements => {
-        let error = false
-        if (processedElements.reduce(common.findExp, false)) {
-            error = 'expiration is not allowed when using combined credit card'
-        }
-
-        if (processedElements.reduce(common.findCVV, false)) {
-            error = 'cvv is not allowed when using combined credit card'
-        }
-
-        if (document.getElementById(`pay-theory-credit-card-number`)) {
-            error = 'credit card number is not allowed when using combined credit card'
-        }
-        return error
-    }
-
-    const achCheck = [
-        {
-            check: common.findAccountName,
-            error: 'missing ACH account name field required for payments'
-        }, {
-            check: common.findAccountNumber,
-            error: 'missing ACH account number field required for payments'
-        }, {
-            check: common.findAccountType,
-            error: 'missing ACH account type field required for payments'
-        }, {
-            check: common.findBankCode,
-            error: 'missing ACH routing number field required for payments'
-        },
-        ]
-
-    const findAchError = (processedElements) => {
-        let error = false
-        if (processedElements.length === 0) {
-            return error
-        }
-
-        achCheck.forEach(obj => {
-            if (processedElements.reduce(obj.check, false) === false) {
-                return obj.error
-            }
-        })
-
-        return error
-    }
-
-    const findCardError = (processedElements, transacting) => {
-        let error = false
-        if (processedElements.length === 0) {
-            return error
-        }
-
-        if (transacting === false) {
-            error = 'missing credit card entry field required for payments'
-        }
-        else if (transacting.id === 'pay-theory-credit-card-number-tag-frame') {
-            error = findCardNumberError(processedElements)
-        }
-        else {
-            error = findCombinedCardError(processedElements)
-        }
-        return error
-    }
-
-    const findCashError = (processedElements) => {
-        let error = false
-        if (processedElements.length === 0) {
-            return error
-        }
-
-        if (processedElements.reduce(common.findField('cash-name'), false) === false) {
-            error = 'missing Cash name field required for payments'
-        }
-
-        if (processedElements.reduce(common.findField('cash-contact'), false) === false) {
-            error = 'missing Cash Contact info field required for payments'
-        }
-
-        return error
+    const defaultElementIds = {
+        'credit-card': common.fields.CREDIT_CARD,
+        'number': common.fields.CREDIT_CARD_NUMBER,
+        'exp': common.fields.CREDIT_CARD_EXP,
+        'cvv': common.fields.CREDIT_CARD_CVV,
+        'account-name': common.fields.CREDIT_CARD_NAME,
+        'address-1': common.fields.CREDIT_CARD_ADDRESS1,
+        'address-2': common.fields.CREDIT_CARD_ADDRESS2,
+        city: common.fields.CREDIT_CARD_CITY,
+        state: common.fields.CREDIT_CARD_STATE,
+        zip: common.fields.CREDIT_CARD_ZIP,
+        'account-number': common.achFields.ACCOUNT_NUMBER,
+        'ach-name': common.achFields.ACCOUNT_NAME,
+        'routing-number': common.achFields.BANK_CODE,
+        'account-type': common.achFields.ACCOUNT_TYPE,
+        'cash-name': common.cashFields.NAME,
+        'cash-contact': common.cashFields.CONTACT,
+        'cash-zip': common.cashFields.ZIP,
     }
 
     let isValid = false
 
-    let processedCardElements = []
-    let processedACHElements = []
-    let processedCashElements = []
+    const processedElements = {
+        card: [],
+        ach: [],
+        cash: []
+    }
 
     let transacting = {}
 
-    let achReady = {}
-    let cardReady = {}
-
     let isReady = false
-
-    let achInitialized = false
-    let ccInitialized = false
-    let cashInitialied = false
-
-    const combinedCardTypes = ['card-number', 'card-cvv', 'card-exp']
 
     const fetchPtToken = async() => {
         return await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
@@ -163,7 +77,7 @@ export default async(
 
     const resetHostToken = async() => {
         let transacting = common.getTransactingElement()
-        let token = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+        let token = await fetchPtToken()
         common.postMessageToHostedField(common.hostedFieldMap[transacting], env, {
             type: `pt-static:cancel`,
             token: token['pt-token']
@@ -171,30 +85,6 @@ export default async(
     }
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
-
-    //Sets the ready objects based on the processed fields 
-    const setReady = (array, type) => {
-        array.forEach(f => {
-            if (f.type === 'credit-card') {
-                cardReady['card-number'] = false
-                cardReady['card-exp'] = false
-                cardReady['card-cvv'] = false
-            }
-            else {
-                if (type === 'card') cardReady[f.type] = false
-                if (type === 'ach') achReady[f.type] = false
-            }
-        })
-    }
-
-    //relays state to the hosted fields to tokenize the instrument
-    const verifyRelay = (fields, message) => {
-        fields.forEach((field) => {
-            if (document.getElementsByName(field)[0]) {
-                common.postMessageToHostedField(field, env, message)
-            }
-        });
-    };
 
     const mountProcessedElements = async(processedArray) => {
         processedArray.forEach(async(processed) => {
@@ -229,25 +119,7 @@ export default async(
     }
 
     const mount = async(
-        elements = {
-            'credit-card': common.fields.CREDIT_CARD,
-            'number': common.fields.CREDIT_CARD_NUMBER,
-            'exp': common.fields.CREDIT_CARD_EXP,
-            'cvv': common.fields.CREDIT_CARD_CVV,
-            'account-name': common.fields.CREDIT_CARD_NAME,
-            'address-1': common.fields.CREDIT_CARD_ADDRESS1,
-            'address-2': common.fields.CREDIT_CARD_ADDRESS2,
-            city: common.fields.CREDIT_CARD_CITY,
-            state: common.fields.CREDIT_CARD_STATE,
-            zip: common.fields.CREDIT_CARD_ZIP,
-            'account-number': common.achFields.ACCOUNT_NUMBER,
-            'ach-name': common.achFields.ACCOUNT_NAME,
-            'routing-number': common.achFields.BANK_CODE,
-            'account-type': common.achFields.ACCOUNT_TYPE,
-            'cash-name': common.cashFields.NAME,
-            'cash-contact': common.cashFields.CONTACT,
-            'cash-zip': common.cashFields.ZIP,
-        },
+        elements = defaultElementIds,
         env = common.getEnvironment()
     ) => {
         const achElements = {
@@ -276,195 +148,53 @@ export default async(
             'cash-zip': elements['cash-zip']
         }
 
-        processedCardElements = common.processElements(cardElements, styles, env, common.fieldTypes, 'credit-card')
-        processedACHElements = common.processElements(achElements, styles, env, common.achFieldTypes, 'ach')
-        processedCashElements = common.processElements(cashElements, styles, env, common.cashFieldTypes)
+        processedElements.card = common.processElements(cardElements, styles, env, common.fieldTypes, 'credit-card')
+        processedElements.ach = common.processElements(achElements, styles, env, common.achFieldTypes, 'ach')
+        processedElements.cash = common.processElements(cashElements, styles, env, common.cashFieldTypes)
 
-        setReady(processedACHElements, 'ach')
-        setReady(processedCardElements, 'card')
+        transacting.card = processedElements.card.reduce(common.findTransactingElement, false)
+        transacting.ach = processedElements.ach.reduce(common.findAccountNumber, false)
+        transacting.cash = processedElements.cash.reduce(common.findField('cash-name'), false)
 
-        transacting.card = processedCardElements.reduce(common.findTransactingElement, false)
-        transacting.ach = processedACHElements.reduce(common.findAccountNumber, false)
-        transacting.cash = processedCashElements.reduce(common.findField('cash-name'), false)
+        const removeRelay = common.handleHostedFieldMessage(common.relayTypeMessage, handler.relayHandler(env), env)
 
-        const autofillHandler = (message) => {
-            if (message.element === "card-autofill") {
-                const cardFields = [
-                    "card-name-iframe",
-                    "card-cvv-iframe",
-                    "card-exp-iframe"
-                ];
-                verifyRelay(cardFields, message);
-            }
-            else if (message.element === "address-autofill") {
-                const addressFields = [
-                "billing-line2-iframe",
-                "billing-city-iframe",
-                "billing-state-iframe",
-                "billing-zip-iframe"
-            ];
-                verifyRelay(addressFields, message);
-            }
+        const setupTransacting = {
+            'account-number': processedElements.ach,
+            'card-number': processedElements.card,
+            'cash-name': processedElements.cash
         }
 
-        //Relays messages from hosted fields to the transacting element for autofill and transacting
-        const relayHandler = (message) => {
-            if (message.element.endsWith("autofill")) {
-                autofillHandler(message)
-            }
-            else {
-                const fieldType = common.isFieldType(message.element)
-                common.postMessageToHostedField(common.hostedFieldMap[fieldType], env, message)
-            }
-        };
+        const removeSetup = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, handler.setupHandler(env, styles, setupTransacting), env)
 
-        const removeRelay = common.handleHostedFieldMessage(common.relayTypeMessage, relayHandler, env)
+        const removeSibling = common.handleHostedFieldMessage(common.siblingTypeMessage, handler.siblingHandler(env, processedElements), env)
 
-        //sends styles to hosted fields when they are set up
-        const setupHandler = (message) => {
-            common.postMessageToHostedField(`${message.element}-iframe`, env, {
-                type: "pt:setup",
-                style: styles.default ? styles : common.defaultStyles
-            })
+        const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, handler.stateUpdater(processedElements), env)
 
-            const setupTransacting = {
-                'account-number': processedACHElements,
-                'card-number': processedCardElements,
-                'cash-name': processedCashElements
-            }
+        const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, handler.instrumentHandler(transacting), env)
 
-            if (setupTransacting[message.element]) {
-                common.postMessageToHostedField(`${message.element}-iframe`, env, {
-                    type: `pt-static:elements`,
-                    elements: JSON.parse(JSON.stringify(setupTransacting[message.element]))
-                })
-            }
-        }
+        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(resetHostToken), env)
 
-        const removeSetup = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, setupHandler, env)
+        const removeIdempotency = common.handleHostedFieldMessage(common.idempotencyTypeMessage, handler.idempotencyHandler, env)
 
-        const sendConnectedMessage = (message, field) => {
-            common.postMessageToHostedField(`${field}-iframe`, env, {
-                type: `pt-static:connected`,
-                hostToken: message.hostToken,
-                sessionKey: message.sessionKey
-            })
-        }
+        const removeTransferComplete = common.handleHostedFieldMessage(common.transferCompleteTypeMessage, handler.transferCompleteHandler, env)
 
-        //Sends a message to the sibling fields letting them know that the transactional field has fetched the the host-token
-        const siblingHandler = message => {
-            if (message.field === 'card-number') {
-                processedCardElements.forEach(field => {
-                    if (field.type !== 'credit-card') {
-                        sendConnectedMessage(message, field.type)
-                    }
-                    else {
-                        sendConnectedMessage(message, 'card-cvv')
-                        sendConnectedMessage(message, 'card-exp')
-                    }
-
-                })
-            }
-            else if (message.field === 'account-number') {
-                processedACHElements.forEach(field => {
-                    sendConnectedMessage(message, field.type)
-                })
-            }
-            else if (message.field === 'cash-name') {
-                processedCashElements.forEach(field => {
-                    sendConnectedMessage(message, field.type)
-                })
-            }
-        }
-
-        const removeSibling = common.handleHostedFieldMessage(common.siblingTypeMessage, siblingHandler, env)
-
-        const combinedCardStateUpdater = element => {
-            let result = processedCardElements.reduce(common.findTransactingElement, false)
-            if (result.field === 'credit-card') {
-                return result
-            }
-            else {
-                return processedCardElements.reduce(common.findField(element), false)
-            }
-        }
-
-        //Handles state messages and sets state on the web components 
-        const stateUpdater = (message) => {
-            let element = {}
-            if (combinedCardTypes.includes(message.element)) {
-                element = combinedCardStateUpdater(message.element)
-            }
-            else {
-                let ach = processedACHElements.reduce(common.findField(message.element), false)
-                let card = processedCardElements.reduce(common.findField(message.element), false)
-                let cash = processedCashElements.reduce(common.findField(message.element), false)
-                element = ach ? ach : card ? card : cash
-            }
-
-            let state = message.state
-            state.element = message.element
-            element.state = state
-        }
-
-        const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, stateUpdater, env)
-
-        //Recieves a pt-instrument and assigns it to the proper transacting element
-        const instrumentHandler = message => {
-            common.setInstrument(message.instrument)
-            if (message.field === 'card-number') {
-                transacting.card.instrument = message.instrument
-            }
-            else if (message.field === 'account-number') {
-                transacting.ach.instrument = message.instrument
-            }
-            else {
-                transacting.cash.instrument = message.instrument
-            }
-        }
-
-        const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, instrumentHandler, env)
-
-        const hostedErrorHandler = message => {
-            common.removeInitialize()
-            common.handleError(message.error)
-            resetHostToken()
-        }
-
-        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, hostedErrorHandler, env)
-
-        //Recieves an idempotency and assigns it to the transacting element
-        const idempotencyHandler = message => {
-            common.setIdempotency(message.payment)
-            document.getElementById(common.getTransactingElement()).idempotent = message.payment
-        }
-
-        const removeIdempotency = common.handleHostedFieldMessage(common.idempotencyTypeMessage, idempotencyHandler, env)
-
-        //Recieves a transfer and assigns it to the transacting element
-        const transferCompleteHandler = message => {
-            document.getElementById(common.getTransactingElement()).transfer = message.transfer
-        }
-
-        const removeTransferComplete = common.handleHostedFieldMessage(common.transferCompleteTypeMessage, transferCompleteHandler, env)
-
-        if (processedACHElements.length === 0 && processedCardElements.length === 0 && processedCashElements.length === 0) {
+        if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
             return common.handleError('There are no PayTheory fields')
         }
 
         let processed = [
             {
                 type: 'card',
-                elements: processedCardElements,
-                errorCheck: findCardError
+                elements: processedElements.card,
+                errorCheck: valid.findCardError
             }, {
                 type: 'ach',
-                elements: processedACHElements,
-                errorCheck: findAchError
+                elements: processedElements.ach,
+                errorCheck: valid.findAchError
             }, {
                 type: 'cash',
-                elements: processedCashElements,
-                errorCheck: findCashError
+                elements: processedElements.cash,
+                errorCheck: valid.findCashError
             }]
 
         mountProcessedElements(processed)
@@ -522,22 +252,11 @@ export default async(
     }
 
     const cancel = async() => {
-        if (common.getTransactingElement() === 'pay-theory-ach-account-number-tag-frame') {
-            let transactor = transacting.ach
-            common.removeIdentity()
-            common.removeToken()
-            common.removeInitialize()
-            common.removeTransactingElement()
-            transactor.instrument = 'cancel'
-        }
-        else if (common.getTransactingElement()) {
-            let transactor = transacting.card
-            common.removeIdentity()
-            common.removeToken()
-            common.removeInitialize()
-            common.removeTransactingElement()
-            transactor.instrument = 'cancel'
-        }
+        common.removeIdentity()
+        common.removeToken()
+        common.removeInitialize()
+        document.getElementById(common.getTransactingElement()).instrument = 'cancel'
+        common.removeTransactingElement()
     }
 
     const readyObserver = cb => common.handleMessage(
@@ -551,17 +270,7 @@ export default async(
         })
 
     const validObserver = cb => common.handleMessage(
-        message => {
-            if (typeof message.type === 'string') {
-                const validType = message.type.split(':')[1]
-                let card = processedCardElements.reduce(common.findTransactingElement, false)
-                let transactingCard = card ? card.field : false
-                const includedType = elements => elements.map(element => element.type).includes(`${validType}`)
-                let creditCardTransacting = transactingCard === 'credit-card' ? combinedCardTypes.includes(`${validType}`) : false
-                return message.type.endsWith(':valid') && (includedType(processedCardElements) || includedType(processedACHElements) || includedType(processedCashElements) || creditCardTransacting)
-            }
-            return false
-        },
+        valid.validTypeMessage(processedElements),
         message => {
             const type = message.type.split(':')[1]
             let validating = false
@@ -580,13 +289,26 @@ export default async(
 
                 const validCash = valid.hasValidCash(validTypes)
 
-                let validFields = []
-                if (validatingCard && validatingDetails) validFields.push('card')
-                if (validCash) validFields.push('cash')
-                if (validAch) validFields.push('ach')
-                if (validFields.length > 0) validating = validFields.join('-')
+                const validObjects = [
+                    {
+                        isValid: validatingCard && validatingDetails,
+                        name: 'card'
+                    }, {
+                        isValid: validCash,
+                        name: 'cash'
+                    }, {
+                        isValid: validAch,
+                        name: 'ach'
+                    }
+                    ]
 
-                if (isCallingType(type) && isValid !== validating) {
+                let validFields = []
+                validObjects.forEach(obj => {
+                    if (obj.isValid) validFields.push(obj.name)
+                })
+                validating = validFields.join('-') ? validFields.join('-') : false
+
+                if (isValid !== validating) {
                     isValid = validating
                     cb(isValid)
                 }
