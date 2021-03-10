@@ -180,28 +180,32 @@ export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
     }
 }
 
+const createCredentials = async(available, options) => {
+    if (available) {
+
+        options.challenge = Uint8Array.from(
+            options.challenge,
+            c => c.charCodeAt(0))
+
+        options.user.id = Uint8Array.from(
+            options.user.id,
+            c => c.charCodeAt(0))
+        return await navigator.credentials.create({
+            publicKey: options
+        })
+    }
+
+    return {
+        type: "unavailable"
+    }
+}
+
 const attestBrowser = async(challengeOptions) => {
     if (navigator.credentials && navigator.credentials.preventSilentAccess) {
         try {
             // need to check for autofill and bypass if it has been triggered
             const isAvailable = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
-            if (isAvailable) {
-
-                challengeOptions.challenge = Uint8Array.from(
-                    challengeOptions.challenge,
-                    c => c.charCodeAt(0))
-
-                challengeOptions.user.id = Uint8Array.from(
-                    challengeOptions.user.id,
-                    c => c.charCodeAt(0))
-                return await navigator.credentials.create({
-                    publicKey: challengeOptions
-                })
-            }
-
-            return {
-                type: "unavailable"
-            }
+            return await createCredentials(isAvailable, challengeOptions)
         }
         catch {
             return {
@@ -229,7 +233,11 @@ const sendTransactingMessage = (buyerOptions, env) => {
 export const generateInitialization = (handleInitialized, challengeOptions, env) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         let initialize = data.getInitialize()
-        if (Number.isInteger(amount) && amount > 0 && initialize !== 'init') {
+        if (initialize !== 'init') {
+            if (!Number.isInteger(amount) && amount < 1) {
+                return message.handleError('amount must be a positive integer')
+            }
+
             data.setInitialize('init')
             const attestation = await attestBrowser(challengeOptions)
 
@@ -237,9 +245,6 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
 
             await handleInitialized(amount, buyerOptions, confirmation)
             sendTransactingMessage(buyerOptions, env)
-        }
-        else if (initialize !== 'init') {
-            return message.handleError('amount must be a positive integer')
         }
     }
 }
