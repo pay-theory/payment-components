@@ -99,7 +99,7 @@ export default async(
         return error
     }
 
-    const findCardError = (transacting, processedElements) => {
+    const findCardError = (processedElements, transacting) => {
         let error = false
         if (processedElements.length === 0) {
             return error
@@ -153,7 +153,13 @@ export default async(
 
     const combinedCardTypes = ['card-number', 'card-cvv', 'card-exp']
 
-    let ptToken = await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+    const fetchPtToken = async() => {
+        return await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+    }
+
+    let ptToken = {}
+    ptToken.token = await fetchPtToken()
+    ptToken.isUsed = false
 
     const resetHostToken = async() => {
         let transacting = common.getTransactingElement()
@@ -189,6 +195,38 @@ export default async(
             }
         });
     };
+
+    const mountProcessedElements = async(processedArray) => {
+        processedArray.forEach(async(processed) => {
+            if (processed.elements.length > 0) {
+                let error = processed.errorCheck(processed.elements, transacting[processed.type])
+                if (error) {
+                    return common.handleError(error)
+                }
+                let token;
+                if (ptToken.isUsed) {
+                    token = await fetchPtToken()
+                }
+                else {
+                    ptToken.isUsed = true
+                    token = ptToken.token
+                }
+
+                processed.elements.forEach(element => {
+                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin })
+                    const encodedJson = window.btoa(json)
+                    element.frame.token = encodeURI(encodedJson)
+                })
+            }
+        })
+
+        window.postMessage({
+                type: `pay-theory:ready`,
+                ready: true
+            },
+            window.location.origin,
+        )
+    }
 
     const mount = async(
         elements = {
@@ -414,81 +452,22 @@ export default async(
             return common.handleError('There are no PayTheory fields')
         }
 
-        //Initializes Card elements if they are found on the dom
-        if (processedCardElements.length > 0) {
-            ccInitialized = true
+        let processed = [
+            {
+                type: 'card',
+                elements: processedCardElements,
+                errorCheck: findCardError
+            }, {
+                type: 'ach',
+                elements: processedACHElements,
+                errorCheck: findAchError
+            }, {
+                type: 'cash',
+                elements: processedCashElements,
+                errorCheck: findCashError
+            }]
 
-            let error = findCardError(transacting.card, processedCardElements)
-            if (error) {
-                return common.handleError(error)
-            }
-
-            processedCardElements.forEach(processed => {
-                const cardJson = JSON.stringify({ token: ptToken['pt-token'], origin: ptToken.origin })
-                const encodedCardJson = window.btoa(cardJson)
-                processed.frame.token = encodeURI(encodedCardJson)
-            })
-
-            if ((cashInitialied || processedCashElements.length === 0) && (achInitialized || processedACHElements.length === 0)) {
-                window.postMessage({
-                        type: `pay-theory:ready`,
-                        ready: true
-                    },
-                    window.location.origin,
-                )
-            }
-
-        }
-
-        //Initializes ACH elements if they are found on the dom
-        if (processedACHElements.length > 0) {
-            achInitialized = true
-            let achToken = processedCardElements.length === 0 ? ptToken : await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-            let error = findAchError(processedACHElements)
-            if (error) {
-                return common.handleError(error)
-            }
-
-            processedACHElements.forEach(processed => {
-                const achJson = JSON.stringify({ token: achToken['pt-token'], origin: achToken.origin })
-                const encodedAchJson = window.btoa(achJson)
-                processed.frame.token = encodeURI(encodedAchJson)
-            })
-            if ((ccInitialized || processedCardElements.length === 0) && (cashInitialied || processedCashElements.length === 0)) {
-                window.postMessage({
-                        type: `pay-theory:ready`,
-                        ready: true
-                    },
-                    window.location.origin,
-                )
-            }
-        }
-
-        //Initializes Cash elements if they are found on the dom
-        if (processedCashElements.length > 0) {
-            cashInitialied = true
-
-            let cashToken = processedCardElements.length === 0 && processedACHElements.length === 0 ? ptToken : await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
-
-            let error = findCashError(processedCashElements)
-            if (error) {
-                return common.handleError(error)
-            }
-
-            processedCashElements.forEach(processed => {
-                const cashJson = JSON.stringify({ token: cashToken['pt-token'], origin: cashToken.origin })
-                const encodedCashJson = window.btoa(cashJson)
-                processed.frame.token = encodeURI(encodedCashJson)
-            })
-            if ((ccInitialized || processedCardElements.length === 0) && (achInitialized || processedACHElements.length === 0)) {
-                window.postMessage({
-                        type: `pay-theory:ready`,
-                        ready: true
-                    },
-                    window.location.origin,
-                )
-            }
-        }
+        mountProcessedElements(processed)
 
         //returns a funciton that removes any event handlers that were put on the window during the mount function
         return () => {
@@ -529,7 +508,7 @@ export default async(
         })
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized, ptToken.challengeOptions, env)
+    const initTransaction = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions, env)
 
     const confirm = () => {
         if (common.getTransactingElement()) {
