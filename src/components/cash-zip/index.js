@@ -2,7 +2,7 @@ import PayTheoryHostedField from '../pay-theory-hosted-field'
 const NAME = 'cash-zip'
 const FIELDS = [{ name: 'cash-zip', label: 'Zip Code', validations: null, autoComplete: 'postal-code' }];
 
-class CreditCardBillingZipFrame extends PayTheoryHostedField {
+class CashZipFrame extends PayTheoryHostedField {
 
   constructor() {
     super()
@@ -12,4 +12,4 @@ class CreditCardBillingZipFrame extends PayTheoryHostedField {
 
 }
 
-window.customElements.define('pay-theory-cash-zip-tag-frame', CreditCardBillingZipFrame);
+window.customElements.define('pay-theory-cash-zip-tag-frame', CashZipFrame);
