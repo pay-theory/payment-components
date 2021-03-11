@@ -79,7 +79,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       this.tokenizing = false
     }
     else if (!this.isValidAmount(amount)) {
-      return common.handleError('amount must be a positive integer')
+      common.handleError('amount must be a positive integer')
     }
     else if (this.tokenizing !== _tokenizing) {
       this.tokenizing = _tokenizing
