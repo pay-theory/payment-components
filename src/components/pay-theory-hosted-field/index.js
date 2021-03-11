@@ -1,6 +1,6 @@
 /* global HTMLElement */
 import common from '../../common'
-
+import DOMPurify from 'dompurify'
 class PayTheoryHostedField extends HTMLElement {
 
   constructor() {
@@ -53,10 +53,10 @@ class PayTheoryHostedField extends HTMLElement {
 
 
   connectedCallback() {
-    this.innerHTML = `<div class="framed">
+    this.innerHTML = DOMPurify.sanitize(`<div class="framed">
             <div id="pay-theory-${this.field}-hosted-field-container" class="pay-theory-field">
             </div>
-        </div>`
+        </div>`)
 
 
   }
