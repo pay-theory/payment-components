@@ -1,4 +1,4 @@
-/* global Blob globalThis */
+/* global Blob globalThis global */
 /*eslint no-extend-native: ["error", { "exceptions": ["String", "Array"] }]*/
 //https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
 const endsIWithIsValid = (subjectString, position) => typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length
@@ -20,20 +20,21 @@ var global =
     (typeof window.self !== 'undefined' && window.self) ||
     (typeof global !== 'undefined' && global)
 
+const canBlob = () => {
+    try {
+        return new Blob()
+    }
+    catch (e) {
+        return false
+    }
+}
+
 var support = {
     searchParams: 'URLSearchParams' in global,
     iterable: 'Symbol' in global && 'iterator' in Symbol,
     blob: 'FileReader' in global &&
         'Blob' in global &&
-        (function () {
-            try {
-                new Blob()
-                return true
-            }
-            catch (e) {
-                return false
-            }
-        })(),
+        canBlob(),
     formData: 'FormData' in global,
     arrayBuffer: 'ArrayBuffer' in global
 }
@@ -84,7 +85,8 @@ function iteratorFor(items) {
     var iterator = {
         next: function () {
             var value = items.shift()
-            return { done: value === undefined, value: value }
+
+            return { done: typeof value === 'undefined', value }
         }
     }
 
