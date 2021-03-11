@@ -68,14 +68,8 @@ const processContainer = (container, elements, processed, styles, type, env, tag
 }
 
 const findElementError = (elements, type) => {
-    let error = false
-    if (elements[type] && typeof elements[type] !== 'string') {
-        error = 'invalid element'
-    }
-    else if (typeof elements[type] === 'undefined') {
-        error = `'unknown type ${type}`
-    }
-    return error
+    let element = elements[type]
+    return typeof element === 'undefined' ? `unknown type ${type}` : typeof element !== 'string' ? 'invalid element' : false
 }
 
 export const processElements = (elements, styles, env, fieldTypes, tagType) => {
