@@ -53,6 +53,7 @@ class PayTheoryHostedField extends HTMLElement {
 
 
   connectedCallback() {
+    /* eslint-disable eslint-plugin-no-unsanitized no-unsanitized */
     this.innerHTML = DOMPurify.sanitize(`<div class="framed">
             <div id="pay-theory-${this.field}-hosted-field-container" class="pay-theory-field">
             </div>
