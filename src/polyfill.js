@@ -1,3 +1,4 @@
+/* global Blob globalThis */
 /*eslint no-extend-native: ["error", { "exceptions": ["String", "Array"] }]*/
 //https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
 const endsIWithIsValid = (subjectString, position) => typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length
@@ -16,7 +17,7 @@ if (!String.prototype.endsWith) {
 
 var global =
     (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof self !== 'undefined' && self) ||
+    (typeof window.self !== 'undefined' && window.self) ||
     (typeof global !== 'undefined' && global)
 
 var support = {
@@ -229,6 +230,62 @@ function bufferClone(buf) {
     }
 }
 
+
+const buildBodyBlob = (base, body) => {
+    if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+        base._bodyBlob = body
+    }
+}
+
+const buildBodyFormData = (base, body) => {
+    if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+        base._bodyFormData = body
+    }
+}
+
+const buildBodyArrayBuffer = (base, body) => {
+    if (support.arrayBuffer && support.blob && isDataView(body)) {
+        this._bodyArrayBuffer = bufferClone(body.buffer)
+        // IE 10-11 can't handle a DataView body.
+        this._bodyInit = new Blob([this._bodyArrayBuffer])
+    }
+    else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
+        this._bodyArrayBuffer = bufferClone(body)
+    }
+}
+
+
+const buildBody = (base, body) => {
+    buildBodyBlob(base, body)
+    buildBodyFormData(base, body)
+    buildBodyArrayBuffer(base, body)
+
+    if (!body) {
+        base._bodyText = ''
+    }
+    else if (typeof body === 'string') {
+        base._bodyText = body
+    }
+    else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+        base._bodyText = body.toString()
+    }
+    else
+        base._bodyText = body = Object.prototype.toString.call(body)
+}
+}
+
+const buildHeaders => (base, body) => {
+    if (typeof body === 'string') {
+        base.headers.set('content-type', 'text/plain;charset=UTF-8')
+    }
+    else if (base._bodyBlob && base._bodyBlob.type) {
+        base.headers.set('content-type', base._bodyBlob.type)
+    }
+    else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+        base.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8')
+    }
+}
+
 function Body() {
     this.bodyUsed = false
 
@@ -245,43 +302,10 @@ function Body() {
         */
         this.bodyUsed = this.bodyUsed
         this._bodyInit = body
-        if (!body) {
-            this._bodyText = ''
-        }
-        else if (typeof body === 'string') {
-            this._bodyText = body
-        }
-        else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
-            this._bodyBlob = body
-        }
-        else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
-            this._bodyFormData = body
-        }
-        else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-            this._bodyText = body.toString()
-        }
-        else if (support.arrayBuffer && support.blob && isDataView(body)) {
-            this._bodyArrayBuffer = bufferClone(body.buffer)
-            // IE 10-11 can't handle a DataView body.
-            this._bodyInit = new Blob([this._bodyArrayBuffer])
-        }
-        else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
-            this._bodyArrayBuffer = bufferClone(body)
-        }
-        else {
-            this._bodyText = body = Object.prototype.toString.call(body)
-        }
+        buildBody(this, body)
 
         if (!this.headers.get('content-type')) {
-            if (typeof body === 'string') {
-                this.headers.set('content-type', 'text/plain;charset=UTF-8')
-            }
-            else if (this._bodyBlob && this._bodyBlob.type) {
-                this.headers.set('content-type', this._bodyBlob.type)
-            }
-            else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-                this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8')
-            }
+            buildHeaders(this, body)
         }
     }
 
