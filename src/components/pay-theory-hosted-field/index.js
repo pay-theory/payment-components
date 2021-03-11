@@ -112,7 +112,7 @@ class PayTheoryHostedField extends HTMLElement {
 
 
   get env() {
-    return this.environment === undefined ? common.defaultEnvironment : this.environment
+    return typeof this.environment === 'undefined' ? common.defaultEnvironment : this.environment
   }
 
   set env(_env) {

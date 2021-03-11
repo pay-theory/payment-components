@@ -82,7 +82,7 @@ export const hostedFieldMap = {
     'pay-theory-ach-account-number-tag-frame': ACH_IFRAME,
     'pay-theory-cash-name-tag-frame': CASH_IFRAME,
     'pay-theory-credit-card-tag-frame': CARD_IFRAME,
-    'pay-theory-credit-card-card-number-tag-frame': CARD_IFRAME,
+    'pay-theory-credit-card-number-tag-frame': CARD_IFRAME,
     'cash': CASH_IFRAME,
     'card': CARD_IFRAME,
     'ach': ACH_IFRAME
