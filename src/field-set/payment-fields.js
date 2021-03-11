@@ -182,20 +182,19 @@ export default async(
             return common.handleError('There are no PayTheory fields')
         }
 
-        let processed = [
-            {
-                type: 'card',
-                elements: processedElements.card,
-                errorCheck: valid.findCardError
-            }, {
-                type: 'ach',
-                elements: processedElements.ach,
-                errorCheck: valid.findAchError
-            }, {
-                type: 'cash',
-                elements: processedElements.cash,
-                errorCheck: valid.findCashError
-            }]
+        let processed = [{
+            type: 'card',
+            elements: processedElements.card,
+            errorCheck: valid.findCardError
+        }, {
+            type: 'ach',
+            elements: processedElements.ach,
+            errorCheck: valid.findAchError
+        }, {
+            type: 'cash',
+            elements: processedElements.cash,
+            errorCheck: valid.findCashError
+        }]
 
         mountProcessedElements(processed)
 
@@ -275,43 +274,37 @@ export default async(
             const type = message.type.split(':')[1]
             let validating = false
 
+            if (typeof validTypes[type] === 'undefined') return
 
 
-            if (typeof validTypes[type] !== 'undefined') {
+            validTypes[type] = message.valid
 
-                validTypes[type] = message.valid
+            const validCard = valid.hasValidCard(validTypes)
 
-                const validatingCard = valid.hasValidCard(validTypes)
+            const validAch = valid.hasValidAccount(validTypes)
 
-                const validatingDetails = valid.hasValidDetails(validTypes)
+            const validCash = valid.hasValidCash(validTypes)
 
-                const validAch = valid.hasValidAccount(validTypes)
+            const validObjects = [{
+                isValid: validCard,
+                name: 'card'
+            }, {
+                isValid: validCash,
+                name: 'cash'
+            }, {
+                isValid: validAch,
+                name: 'ach'
+            }]
 
-                const validCash = valid.hasValidCash(validTypes)
+            let validFields = validObjects.reduce((areValid, obj) => {
+                if (!obj.isValid) areValid.push(obj.name)
+                return areValid
+            }, [])
+            validating = validFields.join('-')
 
-                const validObjects = [
-                    {
-                        isValid: validatingCard && validatingDetails,
-                        name: 'card'
-                    }, {
-                        isValid: validCash,
-                        name: 'cash'
-                    }, {
-                        isValid: validAch,
-                        name: 'ach'
-                    }
-                    ]
-
-                let validFields = []
-                validObjects.forEach(obj => {
-                    if (obj.isValid) validFields.push(obj.name)
-                })
-                validating = validFields.join('-') ? validFields.join('-') : false
-
-                if (isValid !== validating) {
-                    isValid = validating
-                    cb(isValid)
-                }
+            if (isValid !== validating) {
+                isValid = validating
+                cb(isValid)
             }
         })
 

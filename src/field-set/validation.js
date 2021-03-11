@@ -37,16 +37,13 @@ const checkCreateParams = (key, mode, tags, styles) => {
 
 //Lets the alid observer check that all fields are set to valid before sending a message
 const hasValidCard = types =>
-    (types['card-number'] && types['card-cvv'] && types['card-exp'])
+    (types['card-number'] && types['card-cvv'] && types['card-exp'] && types['card-name'] && hasValidAddress(types))
 
 const hasValidStreetAddress = types =>
     (types['billing-line1'] && types['billing-line2'])
 
 const hasValidAddress = types =>
     (hasValidStreetAddress(types) && types['billing-city'] && types['billing-state'] && types['billing-zip'])
-
-const hasValidDetails = types =>
-    (types['card-name'] && hasValidAddress(types))
 
 const hasValidAccount = types =>
     (types['account-number'] && types['account-type'] && types['account-name'] && types['routing-number'])
@@ -88,21 +85,19 @@ const findCombinedCardError = processedElements => {
     return error
 }
 
-const achCheck = [
-    {
-        check: common.findAccountName,
-        error: 'missing ACH account name field required for payments'
-        }, {
-        check: common.findAccountNumber,
-        error: 'missing ACH account number field required for payments'
-        }, {
-        check: common.findAccountType,
-        error: 'missing ACH account type field required for payments'
-        }, {
-        check: common.findBankCode,
-        error: 'missing ACH routing number field required for payments'
-        },
-        ]
+const achCheck = [{
+    check: common.findAccountName,
+    error: 'missing ACH account name field required for payments'
+}, {
+    check: common.findAccountNumber,
+    error: 'missing ACH account number field required for payments'
+}, {
+    check: common.findAccountType,
+    error: 'missing ACH account type field required for payments'
+}, {
+    check: common.findBankCode,
+    error: 'missing ACH routing number field required for payments'
+}, ]
 
 const findAchError = (processedElements) => {
     let error = false
