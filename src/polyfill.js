@@ -1,7 +1,7 @@
 /*eslint no-extend-native: ["error", { "exceptions": ["String", "Array"] }]*/
 //https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
-const endsIWithIsValid = (subjectString, position) => (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length)
-const endsWithResult = (lastIndex, position) => (lastIndex !== -1 && lastIndex === position)
+const endsIWithIsValid = (subjectString, position) => typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length
+const endsWithResult = (lastIndex, position) => lastIndex !== -1 && lastIndex === position
 if (!String.prototype.endsWith) {
     String.prototype.endsWith = function (searchString, position) {
         var subjectString = this.toString();
