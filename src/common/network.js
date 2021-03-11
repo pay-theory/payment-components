@@ -156,7 +156,7 @@ export const generateCapture = (cb, tags = {}) => {
             cb(val)
         }
         transacting.captureCallback = updatedCb
-        setTimeout(() => transfer(tags, transacting.idempotent), 100)
+        transfer(tags, transacting.idempotent)
     }
 }
 
@@ -173,7 +173,7 @@ export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
             }
             transactingElement.captureCallback = updatedCb
             data.removeInitialize()
-            setTimeout(() => transfer(tags, transactingElement.idempotent), 100)
+            transfer(tags, transactingElement.idempotent)
         }
 
         idempotency(apiKey, fee_mode, message)
@@ -204,7 +204,7 @@ const attestBrowser = async(challengeOptions) => {
     if (navigator.credentials && navigator.credentials.preventSilentAccess) {
         try {
             // need to check for autofill and bypass if it has been triggered
-            const isAvailable = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+            const isAvailable = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
             return await createCredentials(isAvailable, challengeOptions)
         }
         catch {
