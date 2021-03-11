@@ -25,7 +25,17 @@ export const transactedObserver = (apiKey, fee_mode, tags = {}) =>
         messaging.transactedTypeMessage,
         network.generateTransacted(cb, apiKey, fee_mode, tags))
 
-export const generateReturn = (mount, initTransaction, confirm, cancel, readyObserver, validObserver, cashObserver, sdk, tags = {}) => Object.create({
+export const generateReturn = ({
+        mount,
+        initTransaction,
+        confirm,
+        cancel,
+        readyObserver,
+        validObserver,
+        cashObserver,
+        sdk
+    }
+    tags = {}) => Object.create({
     mount,
     initTransaction,
     confirm,
