@@ -261,7 +261,7 @@ export default async(
     const readyObserver = cb => common.handleMessage(
         common.readyTypeMessage,
         message => {
-            if (message.type === 'pay-theory:ready' & !isReady && common.getReady() === null) {
+            if (message.type === 'pay-theory:ready' && (!isReady) && common.getReady() === null) {
                 common.setReady(true)
                 isReady = message.ready
                 cb(message.ready)
@@ -316,18 +316,20 @@ export default async(
     }, env)
 
     const host = common.transactionEndpoint(env)
-
-    return common.generateReturn(
-        mount,
-        initTransaction,
-        confirm,
-        cancel,
-        readyObserver,
-        validObserver,
-        cashObserver, {
-            host,
-            apiKey,
-            fee_mode
+    const sdk = {
+        host,
+        apiKey,
+        fee_mode
+    }
+    return common.generateReturn({
+            mount,
+            initTransaction,
+            confirm,
+            cancel,
+            readyObserver,
+            validObserver,
+            cashObserver,
+            sdk
         },
         tags)
 }
