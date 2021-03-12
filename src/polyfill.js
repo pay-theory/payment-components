@@ -506,21 +506,22 @@ function parseHeaders(rawHeaders) {
 
 Body.call(Request.prototype)
 
-export function Response(bodyInit, options) {
-    if (!(this instanceof Response)) {
-        throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.')
+const findOptionStatus = (options) => typeof options.status === 'undefined' ? 200 : options.status
+const findOptionStatusText = (options) => typeof options.statusText === 'undefined' ? '' : '' + options.statusText
+const findOptionOk = (base) => base.status >= 200 && base.status < 300
+const findOptionUrl = (options) => options.url || ''
+export function Response(bodyInit, options = {}) {
+    if (this instanceof Response) {
+        this.type = 'default'
+        this.status = findOptionStatus(options)
+        this.ok = findOptionOk(this)
+        this.statusText = findOptionStatusText(options)
+        this.headers = new Headers(options.headers)
+        this.url = findOptionUrl(options)
+        this._initBody(bodyInit)
+        return
     }
-    if (!options) {
-        options = {}
-    }
-
-    this.type = 'default'
-    this.status = options.status === undefined ? 200 : options.status
-    this.ok = this.status >= 200 && this.status < 300
-    this.statusText = options.statusText === undefined ? '' : '' + options.statusText
-    this.headers = new Headers(options.headers)
-    this.url = options.url || ''
-    this._initBody(bodyInit)
+    throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.')
 }
 
 Body.call(Response.prototype)
@@ -546,13 +547,13 @@ Response.redirect = function (url, status) {
     if (redirectStatuses.indexOf(status) === -1) {
         throw new RangeError('Invalid status code')
     }
-
-    return new Response(null, { status: status, headers: { location: url } })
+    const headers = { location: url }
+    return new Response(null, { status, headers })
 }
 
 export var DOMException = global.DOMException
 try {
-    new DOMException()
+    const hasDomException = new DOMException()
 }
 catch (err) {
     DOMException = function (message, name) {
@@ -598,9 +599,9 @@ const xhrBuildOnAbort = (reject) => () => {
         reject(new DOMException('Aborted', 'AbortError'))
     }, 0)
 }
-const xhrBuildOnReadyStateChange = (request, abortXhr, xhr) => () {
+const xhrBuildOnReadyStateChange = (request, abortXhr, readyState) => () {
     // DONE (success or failure)
-    if (xhr.readyState === 4) {
+    if (readyState === 4) {
         request.signal.removeEventListener('abort', abortXhr)
     }
 }
@@ -684,7 +685,7 @@ export function fetch(input, init) {
         if (request.signal) {
             request.signal.addEventListener('abort', abortXhr)
 
-            xhr.onreadystatechange = xhrBuildOnReadyStateChange(request, abortXhr, xhr)
+            xhr.onreadystatechange = xhrBuildOnReadyStateChange(request, abortXhr, xhr.readyState)
         }
 
         xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
