@@ -36,11 +36,11 @@ const checkCreateParams = (key, mode, tags, styles) => {
 }
 
 //Lets the alid observer check that all fields are set to valid before sending a message
-const hasValidAddress = types =>
-    (hasValidStreetAddress(types) && types['billing-city'] && types['billing-state'] && types['billing-zip'])
-
 const hasValidStreetAddress = types =>
     (types['billing-line1'] && types['billing-line2'])
+
+const hasValidAddress = types =>
+    (hasValidStreetAddress(types) && types['billing-city'] && types['billing-state'] && types['billing-zip'])
 
 const hasValidCardNumber = types =>
     (types['card-number'] && types['card-cvv'] && types['card-exp'])
