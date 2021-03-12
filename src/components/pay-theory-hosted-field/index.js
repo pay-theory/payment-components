@@ -61,8 +61,6 @@ class PayTheoryHostedField extends HTMLElement {
 
   }
 
-
-
   adoptedCallback() {
 
   }

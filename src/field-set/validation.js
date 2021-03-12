@@ -36,14 +36,14 @@ const checkCreateParams = (key, mode, tags, styles) => {
 }
 
 //Lets the alid observer check that all fields are set to valid before sending a message
-const hasValidCard = types =>
-    (types['card-number'] && types['card-cvv'] && types['card-exp'] && types['card-name'] && hasValidAddress(types))
+const hasValidAddress = types =>
+    (hasValidStreetAddress(types) && types['billing-city'] && types['billing-state'] && types['billing-zip'])
 
 const hasValidStreetAddress = types =>
     (types['billing-line1'] && types['billing-line2'])
 
-const hasValidAddress = types =>
-    (hasValidStreetAddress(types) && types['billing-city'] && types['billing-state'] && types['billing-zip'])
+const hasValidCard = types =>
+    (types['card-number'] && types['card-cvv'] && types['card-exp'] && types['card-name'] && hasValidAddress(types))
 
 const hasValidAccount = types =>
     (types['account-number'] && types['account-type'] && types['account-name'] && types['routing-number'])
@@ -171,7 +171,6 @@ const validTypeMessage = elements => message => {
 export {
     checkCreateParams,
     hasValidCard,
-    hasValidDetails,
     hasValidAccount,
     hasValidCash,
     findCardNumberError,

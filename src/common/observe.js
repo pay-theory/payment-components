@@ -34,7 +34,7 @@ export const generateReturn = ({
         validObserver,
         cashObserver,
         sdk
-    }
+    },
     tags = {}) => Object.create({
     mount,
     initTransaction,
