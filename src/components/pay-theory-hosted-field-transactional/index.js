@@ -113,7 +113,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       this.transacting = false
     }
     else if (!this.isValidAmount(_transacting)) {
-      return common.handleError('amount must be a positive integer')
+      common.handleError('amount must be a positive integer')
     }
     else if (this.transacting !== _transacting) {
       this.transacting = _transacting
