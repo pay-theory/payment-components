@@ -1,6 +1,6 @@
 import { hostedFieldsEndpoint } from './network'
 
-const windowListenerHandler = (validTarget, event) => {
+const windowListenerHandler = (validTarget, handleMessage, event) => {
     const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
     if (validTarget(message)) {
         handleMessage(message)
@@ -10,7 +10,7 @@ const windowListenerHandler = (validTarget, event) => {
 const generateWindowListener = (validTarget, handleMessage) => {
     return event => {
         if ([window.location.origin].includes(event.origin)) {
-            windowListenerHandler(validTarget, event)
+            windowListenerHandler(validTarget, handleMessage, event)
         }
     }
 }
@@ -18,7 +18,7 @@ const generateWindowListener = (validTarget, handleMessage) => {
 const generateiFrameWindowListener = (validTarget, handleMessage, env) => {
     return event => {
         if (event.origin === hostedFieldsEndpoint(env)) {
-            windowListenerHandler(validTarget, event)
+            windowListenerHandler(validTarget, handleMessage, event)
         }
     }
 }
