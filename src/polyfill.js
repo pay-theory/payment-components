@@ -289,106 +289,108 @@ const buildHeaders = (base, body) => {
     }
 }
 
-function Body() {
-    this.bodyUsed = false
+const blobFunc =
 
-    this._initBody = function (body) {
-        /*
-          fetch-mock wraps the Response object in an ES6 Proxy to
-          provide useful test harness features such as flush. However, on
-          ES5 browsers without fetch or Proxy support pollyfills must be used;
-          the proxy-pollyfill is unable to proxy an attribute unless it exists
-          on the object before the Proxy is created. This change ensures
-          Response.bodyUsed exists on the instance, while maintaining the
-          semantic of setting Request.bodyUsed in the constructor before
-          _initBody is called.
-        */
-        this.bodyUsed = this.bodyUsed
-        this._bodyInit = body
-        buildBody(this, body)
+    function Body() {
+        this.bodyUsed = false
 
-        if (!this.headers.get('content-type')) {
-            buildHeaders(this, body)
+        this._initBody = function (body) {
+            /*
+              fetch-mock wraps the Response object in an ES6 Proxy to
+              provide useful test harness features such as flush. However, on
+              ES5 browsers without fetch or Proxy support pollyfills must be used;
+              the proxy-pollyfill is unable to proxy an attribute unless it exists
+              on the object before the Proxy is created. This change ensures
+              Response.bodyUsed exists on the instance, while maintaining the
+              semantic of setting Request.bodyUsed in the constructor before
+              _initBody is called.
+            */
+            this.bodyUsed = this.bodyUsed
+            this._bodyInit = body
+            buildBody(this, body)
+
+            if (!this.headers.get('content-type')) {
+                buildHeaders(this, body)
+            }
         }
-    }
 
-    if (support.blob) {
-        this.blob = function () {
+        if (support.blob) {
+            this.blob = function () {
+                var rejected = consumed(this)
+                if (rejected) {
+                    return rejected
+                }
+
+                if (this._bodyBlob) {
+                    return Promise.resolve(this._bodyBlob)
+                }
+                else if (this._bodyArrayBuffer) {
+                    return Promise.resolve(new Blob([this._bodyArrayBuffer]))
+                }
+                else if (this._bodyFormData) {
+                    throw new Error('could not read FormData body as blob')
+                }
+                else {
+                    return Promise.resolve(new Blob([this._bodyText]))
+                }
+            }
+
+            this.arrayBuffer = function () {
+                if (this._bodyArrayBuffer) {
+                    var isConsumed = consumed(this)
+                    if (isConsumed) {
+                        return isConsumed
+                    }
+                    if (ArrayBuffer.isView(this._bodyArrayBuffer)) {
+                        return Promise.resolve(
+                            this._bodyArrayBuffer.buffer.slice(
+                                this._bodyArrayBuffer.byteOffset,
+                                this._bodyArrayBuffer.byteOffset + this._bodyArrayBuffer.byteLength
+                            )
+                        )
+                    }
+                    else {
+                        return Promise.resolve(this._bodyArrayBuffer)
+                    }
+                }
+                else {
+                    return this.blob().then(readBlobAsArrayBuffer)
+                }
+            }
+        }
+
+        this.text = function () {
             var rejected = consumed(this)
             if (rejected) {
                 return rejected
             }
 
             if (this._bodyBlob) {
-                return Promise.resolve(this._bodyBlob)
+                return readBlobAsText(this._bodyBlob)
             }
             else if (this._bodyArrayBuffer) {
-                return Promise.resolve(new Blob([this._bodyArrayBuffer]))
+                return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
             }
             else if (this._bodyFormData) {
-                throw new Error('could not read FormData body as blob')
+                throw new Error('could not read FormData body as text')
             }
             else {
-                return Promise.resolve(new Blob([this._bodyText]))
+                return Promise.resolve(this._bodyText)
             }
         }
 
-        this.arrayBuffer = function () {
-            if (this._bodyArrayBuffer) {
-                var isConsumed = consumed(this)
-                if (isConsumed) {
-                    return isConsumed
-                }
-                if (ArrayBuffer.isView(this._bodyArrayBuffer)) {
-                    return Promise.resolve(
-                        this._bodyArrayBuffer.buffer.slice(
-                            this._bodyArrayBuffer.byteOffset,
-                            this._bodyArrayBuffer.byteOffset + this._bodyArrayBuffer.byteLength
-                        )
-                    )
-                }
-                else {
-                    return Promise.resolve(this._bodyArrayBuffer)
-                }
-            }
-            else {
-                return this.blob().then(readBlobAsArrayBuffer)
+        if (support.formData) {
+            this.formData = function () {
+                return this.text().then(decode)
             }
         }
+
+        this.json = function () {
+            return this.text().then(JSON.parse)
+        }
+
+        return this
     }
-
-    this.text = function () {
-        var rejected = consumed(this)
-        if (rejected) {
-            return rejected
-        }
-
-        if (this._bodyBlob) {
-            return readBlobAsText(this._bodyBlob)
-        }
-        else if (this._bodyArrayBuffer) {
-            return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
-        }
-        else if (this._bodyFormData) {
-            throw new Error('could not read FormData body as text')
-        }
-        else {
-            return Promise.resolve(this._bodyText)
-        }
-    }
-
-    if (support.formData) {
-        this.formData = function () {
-            return this.text().then(decode)
-        }
-    }
-
-    this.json = function () {
-        return this.text().then(JSON.parse)
-    }
-
-    return this
-}
 
 // HTTP methods whose capitalization should be normalized
 var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
