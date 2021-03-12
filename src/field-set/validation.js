@@ -42,8 +42,11 @@ const hasValidAddress = types =>
 const hasValidStreetAddress = types =>
     (types['billing-line1'] && types['billing-line2'])
 
+const hasValidCardNumber = types =>
+    (types['card-number'] && types['card-cvv'] && types['card-exp'])
+
 const hasValidCard = types =>
-    (types['card-number'] && types['card-cvv'] && types['card-exp'] && types['card-name'] && hasValidAddress(types))
+    (hasValidCardNumber(types) && types['card-name'] && hasValidAddress(types))
 
 const hasValidAccount = types =>
     (types['account-number'] && types['account-type'] && types['account-name'] && types['routing-number'])
