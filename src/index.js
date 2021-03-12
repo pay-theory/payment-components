@@ -1,4 +1,5 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
+import './polyfill'
 import './components/credit-card'
 import './components/credit-card-number'
 import './components/credit-card-cvv'

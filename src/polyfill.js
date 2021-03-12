@@ -274,7 +274,7 @@ const buildBody = (base, body) => {
     else
         base._bodyText = body = Object.prototype.toString.call(body)
 }
-}
+
 
 const buildHeaders => (base, body) => {
     if (typeof body === 'string') {
