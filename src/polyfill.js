@@ -570,7 +570,7 @@ export function fetch(input, init) {
         var request = new Request(input, init)
 
         if (request.signal && request.signal.aborted) {
-            return reject(new DOMException('Aborted', 'AbortError'))
+            reject(new DOMException('Aborted', 'AbortError'))
         }
 
         var xhr = new XMLHttpRequest()
