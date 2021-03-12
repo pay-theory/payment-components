@@ -271,12 +271,13 @@ const buildBody = (base, body) => {
     else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
         base._bodyText = body.toString()
     }
-    else
+    else {
         base._bodyText = body = Object.prototype.toString.call(body)
+    }
 }
 
 
-const buildHeaders => (base, body) => {
+const buildHeaders = (base, body) => {
     if (typeof body === 'string') {
         base.headers.set('content-type', 'text/plain;charset=UTF-8')
     }
