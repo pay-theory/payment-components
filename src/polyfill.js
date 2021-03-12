@@ -400,7 +400,7 @@ function normalizeMethod(method) {
     return methods.indexOf(upcased) > -1 ? upcased : method
 }
 
-const buildRequestHeaders = () => {
+const buildRequestHeaders = (options, input) => {
     if (!options.headers) {
         return new Headers(input.headers)
     }
@@ -432,6 +432,40 @@ const isInputRequest = (base, options, input) => {
     }
 }
 
+const buildRequestCredentials = (base, options) => options.credentials || base.credentials || 'same-origin'
+
+const buildRequestMethod = (base, options) => normalizeMethod(options.method || base.method || 'GET')
+
+const buildRequestMode = (base, options) => options.mode || base.mode || null
+
+const buildRequestSignal = (base, options) => options.signal || base.signal
+
+const checkForIllegalBody = (base, body) => {
+    if ((base.method === 'GET' || base.method === 'HEAD') && body) {
+        throw new TypeError('Body not allowed for GET or HEAD requests')
+    }
+}
+
+const buildBodylessOptionsUrl = (base) => {
+    let reParamSearch = /([?&])_=[^&]*/
+    let reQueryString = /\?/
+    return reParamSearch.test(base.url) ?
+        base.url.replace(reParamSearch, '$1_=' + new Date().getTime()) :
+        `${base.url}${(reQueryString.test(base.url) ? '&' : '?') + '_=' + new Date().getTime()}`
+}
+
+const processBodylessOptions = (base, options) => {
+    if (options.cache === 'no-store' || options.cache === 'no-cache') {
+        base.url = buildBodylessOptionsUrl(base)
+    }
+}
+
+const handleBodyless = (base) => {
+    if (base.method === 'GET' || base.method === 'HEAD') {
+        processBodylessOptions(base, options)
+    }
+}
+
 export function Request(input, options) {
     if (!(this instanceof Request)) {
         throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.')
@@ -440,37 +474,20 @@ export function Request(input, options) {
     options = options || {}
     var body = options.body
 
+    isInputRequest(this, options, input)
 
-
-    this.credentials = options.credentials || this.credentials || 'same-origin'
-    if (options.headers || !this.headers) {
-        this.headers = new Headers(options.headers)
-    }
-    this.method = normalizeMethod(options.method || this.method || 'GET')
-    this.mode = options.mode || this.mode || null
-    this.signal = options.signal || this.signal
+    this.credentials = buildRequestCredentials(this, options)
+    this.headers = buildRequestHeaders(options, input)
+    this.method = buildRequestMethod(this, options)
+    this.mode = buildRequestMode(this, options)
+    this.signal = buildRequestSignal(this, options)
     this.referrer = null
 
-    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
-        throw new TypeError('Body not allowed for GET or HEAD requests')
-    }
+    checkForIllegalBody(this, body)
+
     this._initBody(body)
 
-    if (this.method === 'GET' || this.method === 'HEAD') {
-        if (options.cache === 'no-store' || options.cache === 'no-cache') {
-            // Search for a '_' parameter in the query string
-            var reParamSearch = /([?&])_=[^&]*/
-            if (reParamSearch.test(this.url)) {
-                // If it already exists then set the value with the current time
-                this.url = this.url.replace(reParamSearch, '$1_=' + new Date().getTime())
-            }
-            else {
-                // Otherwise add a new '_' parameter to the end with the current time
-                var reQueryString = /\?/
-                this.url += (reQueryString.test(this.url) ? '&' : '?') + '_=' + new Date().getTime()
-            }
-        }
-    }
+    handleBodyless(this)
 }
 
 Request.prototype.clone = function () {
