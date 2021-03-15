@@ -98,14 +98,17 @@ export const hostedFieldsEndpoint = (env) => {
 }
 
 const requestIdempotency = async(apiKey, fee_mode, message) => {
+    console.log('requesting idempotency')
     const payment = message.tokenize ? message.tokenize : message.transact
     payment.fee_mode = fee_mode
     let transacting = data.getTransactingElement()
+    console.log('requesting idempotency', 'transacting', transacting)
     let action = document.getElementById(transacting).action
+    console.log('requesting idempotency', 'action', action)
     const frameName = transacting.includes('credit-card') ?
         'card-number' :
         'account-number'
-
+    console.log('requesting idempotency', 'frameName', frameName)
     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
             type: "pt-static:idempotency",
             element: frameName,
@@ -133,10 +136,10 @@ export const generateTokenize = (cb, apiKey, fee_mode) => {
 
 
 const transfer = (tags, transfer) => {
+    console.log('requesting transfer', `${frameName}-iframe`)
     const frameName = data.getTransactingElement().includes('credit-card') ?
         'card-number' :
         'account-number'
-
     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
             type: "pt-static:transfer",
             element: frameName,
@@ -201,9 +204,12 @@ const createCredentials = async(available, options) => {
 }
 
 const attestBrowser = async(challengeOptions) => {
+    if (data.isAutofill()) return { type: "autofill" }
+
+    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) return { type: "safari-bypass" }
+
     if (navigator.credentials && navigator.credentials.preventSilentAccess) {
         try {
-            // need to check for autofill and bypass if it has been triggered
             const isAvailable = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
             return await createCredentials(isAvailable, challengeOptions)
         }
@@ -241,7 +247,13 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
             data.setInitialize('init')
             const attestation = await attestBrowser(challengeOptions)
 
-            // TODO: post this attestation to transacting hosted field for posting to sockets
+            //transacting is null here, how do we fix that?
+            // const transacting = data.getTransactingElement()
+
+            // message.postMessageToHostedField(data.hostedFieldMap[transacting], env, {
+            //     type: `pt-static:attestation`,
+            //     attestation
+            // })
 
             await handleInitialized(amount, buyerOptions, confirmation)
             sendTransactingMessage(buyerOptions, env)

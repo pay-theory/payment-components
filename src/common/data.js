@@ -1,4 +1,5 @@
 /* global localStorage */
+export const AUTOFILL = 'pt-autofill'
 export const MERCHANT = 'pt-merchant'
 export const IDENTITY = 'pt-identity'
 export const INSTRUMENT = 'pt-instrument'
@@ -133,6 +134,15 @@ export const stateMap = {
     'billing-zip': 'zip'
 }
 
+export const isAutofill = () => {
+    return localStorage.getItem(AUTOFILL)
+}
+export const setAutofill = isAutofill => {
+    return localStorage.setItem(AUTOFILL, isAutofill)
+}
+export const removeAutofill = () => {
+    return localStorage.removeItem(AUTOFILL)
+}
 export const getTransactingElement = () => {
     return localStorage.getItem(TRANSACTING)
 }
@@ -243,6 +253,7 @@ export const removeInitialize = () => {
 }
 
 export const removeAll = () => {
+    removeAutofill()
     removeMerchant()
     removeIdentity()
     removeInstrument()
