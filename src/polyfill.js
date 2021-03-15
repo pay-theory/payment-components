@@ -629,7 +629,7 @@ const xhrBuildOnAbort = (reject) => () => {
         reject(new DOMException('Aborted', 'AbortError'))
     }, 0)
 }
-const xhrBuildOnReadyStateChange = (request, abortXhr, readyState) => () {
+const xhrBuildOnReadyStateChange = (request, abortXhr, readyState) => () => {
     // DONE (success or failure)
     if (readyState === 4) {
         request.signal.removeEventListener('abort', abortXhr)

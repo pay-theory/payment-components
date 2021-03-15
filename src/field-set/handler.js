@@ -12,19 +12,19 @@ const verifyRelay = (fields, message, env) => {
 const autofillHandler = (message, env) => {
     if (message.element === "card-autofill") {
         const cardFields = [
-                    "card-name-iframe",
-                    "card-cvv-iframe",
-                    "card-exp-iframe"
-                ];
+            "card-name-iframe",
+            "card-cvv-iframe",
+            "card-exp-iframe"
+        ];
         verifyRelay(cardFields, message, env);
     }
     else if (message.element === "address-autofill") {
         const addressFields = [
-                "billing-line2-iframe",
-                "billing-city-iframe",
-                "billing-state-iframe",
-                "billing-zip-iframe"
-            ];
+            "billing-line2-iframe",
+            "billing-city-iframe",
+            "billing-state-iframe",
+            "billing-zip-iframe"
+        ];
         verifyRelay(addressFields, message, env);
     }
 }
@@ -32,6 +32,7 @@ const autofillHandler = (message, env) => {
 //Relays messages from hosted fields to the transacting element for autofill and transacting
 export const relayHandler = env => message => {
     if (message.element.endsWith("autofill")) {
+        common.setAutofill(true)
         autofillHandler(message, env)
     }
     else {
@@ -101,7 +102,7 @@ const combinedCardStateUpdater = (element, elementArray) => {
     }
 }
 
-//Handles state messages and sets state on the web components 
+//Handles state messages and sets state on the web components
 export const stateUpdater = elements => (message) => {
     let element = {}
     if (common.combinedCardTypes.includes(message.element)) {
