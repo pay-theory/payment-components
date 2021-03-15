@@ -247,15 +247,14 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
             data.setInitialize('init')
             const attestation = await attestBrowser(challengeOptions)
 
-            //transacting is null here, how do we fix that?
-            // const transacting = data.getTransactingElement()
-
-            // message.postMessageToHostedField(data.hostedFieldMap[transacting], env, {
-            //     type: `pt-static:attestation`,
-            //     attestation
-            // })
-
             await handleInitialized(amount, buyerOptions, confirmation)
+
+            const transacting = data.getTransactingElement()
+            message.postMessageToHostedField(data.hostedFieldMap[transacting], env, {
+                type: `pt-static:attestation`,
+                attestation
+            })
+
             sendTransactingMessage(buyerOptions, env)
         }
     }
