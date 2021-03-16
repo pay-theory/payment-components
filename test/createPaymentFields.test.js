@@ -10,6 +10,7 @@ import * as data from '../src/common/data'
 describe('createPaymentFields', () => {
     let error;
 
+
     beforeEach(() => {
         let stub = sinon.stub(window, 'fetch'); //add stub
         stub.onCall(0).returns(common.jsonOk(common.MOCK_TOKEN));
