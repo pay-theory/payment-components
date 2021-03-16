@@ -1,4 +1,5 @@
 /* global localStorage */
+export const AUTOFILL = 'pt-autofill'
 export const MERCHANT = 'pt-merchant'
 export const IDENTITY = 'pt-identity'
 export const INSTRUMENT = 'pt-instrument'
@@ -74,6 +75,41 @@ export const fieldTypes = [
     'billing-zip'
 ]
 
+export const ACH_IFRAME = 'account-number-iframe'
+export const CARD_IFRAME = 'card-number-iframe'
+export const CASH_IFRAME = 'cash-name-iframe'
+
+export const hostedFieldMap = {
+    'pay-theory-ach-account-number-tag-frame': ACH_IFRAME,
+    'pay-theory-cash-name-tag-frame': CASH_IFRAME,
+    'pay-theory-credit-card-tag-frame': CARD_IFRAME,
+    'pay-theory-credit-card-number-tag-frame': CARD_IFRAME,
+    'cash': CASH_IFRAME,
+    'card': CARD_IFRAME,
+    'ach': ACH_IFRAME
+}
+
+const isCardField = string => string.startsWith("card") || string.startsWith('billing')
+const isCashField = string => string.startsWith("cash")
+const isACHField = string => string.startsWith("account") || string.startsWith('routing')
+
+const isFieldType = type => {
+    if (isCardField(type)) return 'card'
+    if (isCashField(type)) return 'cash'
+    if (isACHField(type)) return 'ach'
+    return false
+}
+
+const combinedCardTypes = ['card-number', 'card-cvv', 'card-exp']
+
+export {
+    isCardField,
+    isACHField,
+    isCashField,
+    isFieldType,
+    combinedCardTypes
+}
+
 export const findEnv = () => {
     switch (process.env.BUILD_ENV) {
     case 'prod':
@@ -92,12 +128,21 @@ export const stateMap = {
     'card-cvv': 'cvv',
     'card-name': 'name',
     'billing-line1': 'address-1',
-    'billing-line1': 'address-2',
+    'billing-line2': 'address-2',
     'billing-city': 'city',
     'billing-state': 'state',
     'billing-zip': 'zip'
 }
 
+export const isAutofill = () => {
+    return localStorage.getItem(AUTOFILL)
+}
+export const setAutofill = isAutofill => {
+    return localStorage.setItem(AUTOFILL, isAutofill)
+}
+export const removeAutofill = () => {
+    return localStorage.removeItem(AUTOFILL)
+}
 export const getTransactingElement = () => {
     return localStorage.getItem(TRANSACTING)
 }
@@ -208,6 +253,7 @@ export const removeInitialize = () => {
 }
 
 export const removeAll = () => {
+    removeAutofill()
     removeMerchant()
     removeIdentity()
     removeInstrument()

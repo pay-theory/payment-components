@@ -1,6 +1,5 @@
 import * as messaging from './message'
 import * as network from './network'
-import * as data from './data'
 
 export const errorObserver = cb => messaging.handleMessage(messaging.errorTypeMessage, message => {
     cb(message.error)
@@ -26,7 +25,17 @@ export const transactedObserver = (apiKey, fee_mode, tags = {}) =>
         messaging.transactedTypeMessage,
         network.generateTransacted(cb, apiKey, fee_mode, tags))
 
-export const generateReturn = (mount, initTransaction, confirm, cancel, readyObserver, validObserver, cashObserver, sdk, tags = {}) => Object.create({
+export const generateReturn = ({
+        mount,
+        initTransaction,
+        confirm,
+        cancel,
+        readyObserver,
+        validObserver,
+        cashObserver,
+        sdk
+    },
+    tags = {}) => Object.create({
     mount,
     initTransaction,
     confirm,

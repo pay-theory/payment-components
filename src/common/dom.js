@@ -1,4 +1,3 @@
-import * as data from './data'
 import * as message from './message'
 export const findTransactingElement = (element, cv) => {
     return element === false ?
@@ -69,14 +68,8 @@ const processContainer = (container, elements, processed, styles, type, env, tag
 }
 
 const findElementError = (elements, type) => {
-    let error = false
-    if (elements[type] && typeof elements[type] !== 'string') {
-        error = 'invalid element'
-    }
-    else if (typeof elements[type] === 'undefined') {
-        error = `'unknown type ${type}`
-    }
-    return error
+    let element = elements[type]
+    return typeof element === 'undefined' ? `unknown type ${type}` : typeof element !== 'string' ? 'invalid element' : false
 }
 
 export const processElements = (elements, styles, env, fieldTypes, tagType) => {
@@ -98,16 +91,11 @@ export const processElements = (elements, styles, env, fieldTypes, tagType) => {
 export const isHidden = element => {
     if (element === false) return true
 
-    var style = window.getComputedStyle(element);
-    if (style.display === 'none') {
-        return true
-    }
-
     var elem = element;
-    var parents = []
+    var elements = [elem]
 
     for (; elem && elem !== document; elem = elem.parentNode) {
-        parents.push(elem);
+        elements.push(elem);
     }
 
     const displayNone = (hidden, cv) => {
@@ -116,5 +104,5 @@ export const isHidden = element => {
         return hidden ? hidden : result
     }
 
-    return parents.reduce(displayNone, false)
+    return elements.reduce(displayNone, false)
 }

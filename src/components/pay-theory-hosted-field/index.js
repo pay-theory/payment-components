@@ -1,6 +1,6 @@
 /* global HTMLElement */
 import common from '../../common'
-
+import DOMPurify from 'dompurify'
 class PayTheoryHostedField extends HTMLElement {
 
   constructor() {
@@ -9,11 +9,11 @@ class PayTheoryHostedField extends HTMLElement {
     this.isValidFrame = this.isValidFrame.bind(this)
     this.appendElement = this.appendElement.bind(this)
     this.setFields = this.setFields.bind(this)
-    this.eventful = this.eventful.bind(this)
     this.defaultStyles = { default: {}, success: {}, error: {} }
     this.application = process.env.APP_ID
     this.fields = []
     this.wrappers = []
+    this.validated = {}
   }
 
   setFields(fieldArray) {
@@ -51,39 +51,15 @@ class PayTheoryHostedField extends HTMLElement {
     return typeof event.data === 'object' ? event.data : { type: 'unknown' }
   }
 
-  eventful(event) {
-    if ([window.location.origin].includes(event.origin)) {
-      const message = this.findEventMessage(event)
-      if (typeof message.type === 'string' && message.type.startsWith(this.field) && message.type.endsWith(':ready')) {
-        this.ready = event.data.ready
-      }
-    }
-  }
 
   connectedCallback() {
-    if (!this.loaded) {
-      this.loaded = true
-
-      window.postMessage({
-          type: `pt:${this.field}:ready`,
-          ready: true,
-        },
-        window.location.origin,
-      );
-      this.ready = true
-    }
-
-    window.addEventListener('message', this.eventful)
-
-    this.innerHTML = `<div class="framed">
+    this.innerHTML = DOMPurify.sanitize(`<div class="framed">
             <div id="pay-theory-${this.field}-hosted-field-container" class="pay-theory-field">
             </div>
-        </div>`
+        </div>`)
 
 
   }
-
-
 
   adoptedCallback() {
 
@@ -91,7 +67,6 @@ class PayTheoryHostedField extends HTMLElement {
 
   disconnectedCallback() {
 
-    return document.removeEventListener('message', this.eventful)
   }
 
   attributeChangedCallback(attrName, oldValue, newValue) {
@@ -135,7 +110,7 @@ class PayTheoryHostedField extends HTMLElement {
 
 
   get env() {
-    return this.environment === undefined ? common.defaultEnvironment : this.environment
+    return typeof this.environment === 'undefined' ? common.defaultEnvironment : this.environment
   }
 
   set env(_env) {
@@ -211,36 +186,19 @@ class PayTheoryHostedField extends HTMLElement {
   }
 
   set valid(isValid) {
-    if (this.field !== 'credit-card') {
-      if (isValid !== this.validated) {
-        this.validated = isValid
-        let type = this.stated.element ? this.stated.element : this.field
-        window.postMessage({
-            type: `pt:${type}:valid`,
-            valid: isValid,
-            hosted: true
-          },
-          window.location.origin,
-        )
-      }
+    //by storing the valid state in object it allows us to track changes in the number, exp, and cvv for the credit-card
+    if (isValid !== this.validated[this.stated.element]) {
+      let type = this.stated.element
+      this.validated[type] = isValid
+      window.postMessage({
+          type: `pt:${type}:valid`,
+          valid: isValid,
+          hosted: true
+        },
+        window.location.origin,
+      )
     }
-    else {
-      //by storing the valid state in object it allows us to track changes in the number, exp, and cvv for the credit-card
-      if (!this.validated) {
-        this.validated = {}
-      }
-      if (isValid !== this.validated[this.stated.element]) {
-        this.validated[this.stated.element] = isValid
-        let type = this.stated.element ? this.stated.element : this.field
-        window.postMessage({
-            type: `pt:${type}:valid`,
-            valid: isValid,
-            hosted: true
-          },
-          window.location.origin,
-        )
-      }
-    }
+
   }
 }
 

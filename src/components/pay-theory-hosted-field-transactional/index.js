@@ -1,4 +1,3 @@
-/* global HTMLElement */
 import PayTheoryHostedField from '../pay-theory-hosted-field'
 import common from '../../common'
 const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
@@ -21,7 +20,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   generateIdempotencyCallback(idempotent) {
     const message = {
       type: 'pt:idempotent',
-      idempotent: idempotent
+      idempotent
     }
     window.postMessage(
       message,
@@ -55,6 +54,21 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       .contentWindow.postMessage(message, `${common.hostedFieldsEndpoint(env)}`);
   }
 
+  instrumentResponse(action, amount, instrument) {
+    switch (action) {
+    case ('tokenize'):
+      {
+        this.generateTokenizeCallback(amount, instrument)
+        break
+      }
+    case ('transact'):
+      {
+        this.generateTransactCallback(amount, instrument)
+        break
+      }
+    }
+  }
+
   get tokenize() {
     return this.tokenizing
   }
@@ -65,25 +79,12 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       this.tokenizing = false
     }
     else if (!this.isValidAmount(amount)) {
-      return common.handleError('amount must be a positive integer')
+      common.handleError('amount must be a positive integer')
     }
     else if (this.tokenizing !== _tokenizing) {
       this.tokenizing = _tokenizing
       this.form.submit(FINIX_ENV, this.application, this.generateTokenizeCallback(amount))
     }
-  }
-
-  get capture() {
-    return this.capturing
-  }
-
-  set capture(_capturing) {
-    window.postMessage({
-        type: 'pt:capture',
-        capture: true
-      },
-      window.location.origin,
-    )
   }
 
   get idempotencyCallback() {
@@ -107,15 +108,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set transact(_transacting) {
-    const valid_amount = this.isValidAmount(_transacting)
     const amount = _transacting
     if (amount === false) {
       this.transacting = false
     }
-    if (!valid_amount) {
-      return common.handleError('amount must be a positive integer')
+    else if (!this.isValidAmount(_transacting)) {
+      common.handleError('amount must be a positive integer')
     }
-    if (this.transacting !== _transacting) {
+    else if (this.transacting !== _transacting) {
       this.transacting = _transacting
       this.form.submit(FINIX_ENV, this.application, this.generateTransactCallback(amount))
     }
@@ -128,18 +128,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   set instrument(_instrumented) {
     if (!this.instrumented) {
       this.instrumented = _instrumented
-      switch (this.actioned) {
-      case ('tokenize'):
-        {
-          this.generateTokenizeCallback(this.amounting, _instrumented)
-          break
-        }
-      case ('transact'):
-        {
-          this.generateTransactCallback(this.amounting, _instrumented)
-          break
-        }
-      }
+      this.instrumentResponse(this.actioned, this.amounting, _instrumented)
     }
     if (_instrumented === 'cancel') {
       this.instrumented = false

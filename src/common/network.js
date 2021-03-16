@@ -51,9 +51,6 @@ const isValidTransaction = (tokenized) => {
 
 export const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
 
-const CARD = "PAYMENT_CARD"
-const ACH = "BANK_ACCOUNT"
-
 export const defaultEnvironment = (() => {
 
     switch (process.env.BUILD_ENV) {
@@ -100,23 +97,18 @@ export const hostedFieldsEndpoint = (env) => {
     }
 }
 
-export const generateTokenize = (cb, apiKey, fee_mode) => {
-    return async message => {
-        let transacting = data.getTransactingElement()
-        document.getElementById(transacting).idempotencyCallback = cb
-        idempotency(apiKey, fee_mode, message)
-    }
-}
-
 const requestIdempotency = async(apiKey, fee_mode, message) => {
+    console.log('requesting idempotency')
     const payment = message.tokenize ? message.tokenize : message.transact
     payment.fee_mode = fee_mode
     let transacting = data.getTransactingElement()
+    console.log('requesting idempotency', 'transacting', transacting)
     let action = document.getElementById(transacting).action
+    console.log('requesting idempotency', 'action', action)
     const frameName = transacting.includes('credit-card') ?
         'card-number' :
         'account-number'
-
+    console.log('requesting idempotency', 'frameName', frameName)
     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
             type: "pt-static:idempotency",
             element: frameName,
@@ -130,17 +122,24 @@ const requestIdempotency = async(apiKey, fee_mode, message) => {
 
 const idempotency = async(apiKey, fee_mode, message) => {
     if (isValidTransaction(data.getToken())) {
-
         requestIdempotency(apiKey, fee_mode, message)
+    }
+}
+
+export const generateTokenize = (cb, apiKey, fee_mode) => {
+    return async message => {
+        let transacting = data.getTransactingElement()
+        document.getElementById(transacting).idempotencyCallback = cb
+        idempotency(apiKey, fee_mode, message)
     }
 }
 
 
 const transfer = (tags, transfer) => {
+    console.log('requesting transfer', `${frameName}-iframe`)
     const frameName = data.getTransactingElement().includes('credit-card') ?
         'card-number' :
         'account-number'
-
     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
             type: "pt-static:transfer",
             element: frameName,
@@ -160,7 +159,7 @@ export const generateCapture = (cb, tags = {}) => {
             cb(val)
         }
         transacting.captureCallback = updatedCb
-        setTimeout(() => transfer(tags, transacting.idempotent), 100)
+        transfer(tags, transacting.idempotent)
     }
 }
 
@@ -170,55 +169,93 @@ export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
 
         let transacting = data.getTransactingElement()
         const transactingElement = document.getElementById(transacting)
-        transactingElement.idempotencyCallback = (token) => {
+        transactingElement.idempotencyCallback = () => {
             let updatedCb = val => {
                 data.removeAll()
                 cb(val)
             }
             transactingElement.captureCallback = updatedCb
             data.removeInitialize()
-            setTimeout(() => transfer(tags, transactingElement.idempotent), 100)
+            transfer(tags, transactingElement.idempotent)
         }
 
         idempotency(apiKey, fee_mode, message)
     }
 }
 
+const createCredentials = async(available, options) => {
+    if (available) {
+
+        options.challenge = Uint8Array.from(
+            options.challenge,
+            c => c.charCodeAt(0))
+
+        options.user.id = Uint8Array.from(
+            options.user.id,
+            c => c.charCodeAt(0))
+        return await navigator.credentials.create({
+            publicKey: options
+        })
+    }
+
+    return {
+        type: "unavailable"
+    }
+}
+
+const attestBrowser = async(challengeOptions) => {
+    if (data.isAutofill()) return { type: "autofill" }
+
+    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) return { type: "safari-bypass" }
+
+    if (navigator.credentials && navigator.credentials.preventSilentAccess) {
+        try {
+            const isAvailable = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+            return await createCredentials(isAvailable, challengeOptions)
+        }
+        catch {
+            return {
+                type: "prevented"
+            }
+        }
+    }
+}
+
+const sendTransactingMessage = (buyerOptions, env) => {
+    const transacting = data.getTransactingElement()
+    const types = transacting.includes('-card-') ? data.fieldTypes : transacting.includes('-ach-') ? data.achFieldTypes : data.cashFieldTypes
+    types.forEach(field => {
+        let iframe = document.getElementsByName(`${field}-iframe`)[0]
+        if (iframe) {
+            message.postMessageToHostedField(`${field}-iframe`, env, {
+                type: "pt-static:transact",
+                element: field,
+                buyerOptions
+            })
+        }
+    })
+}
+
 export const generateInitialization = (handleInitialized, challengeOptions, env) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         let initialize = data.getInitialize()
-        if (typeof amount === 'number' && Number.isInteger(amount) && amount > 0 && initialize !== 'init') {
+        if (initialize !== 'init') {
+            if (!Number.isInteger(amount) && amount < 1) {
+                return message.handleError('amount must be a positive integer')
+            }
+
             data.setInitialize('init')
-            // if (await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
+            const attestation = await attestBrowser(challengeOptions)
 
-            //     challengeOptions.challenge = Uint8Array.from(
-            //         challengeOptions.challenge,
-            //         c => c.charCodeAt(0))
-
-            //     challengeOptions.user.id = Uint8Array.from(
-            //         challengeOptions.user.id,
-            //         c => c.charCodeAt(0))
-
-            //     await navigator.credentials.create({
-            //         publicKey: challengeOptions
-            //     })
-            // }
             await handleInitialized(amount, buyerOptions, confirmation)
+
             const transacting = data.getTransactingElement()
-            const types = transacting.includes('-card-') ? data.fieldTypes : transacting.includes('-ach-') ? data.achFieldTypes : data.cashFieldTypes
-            types.forEach(field => {
-                let iframe = document.getElementsByName(`${field}-iframe`)[0]
-                if (iframe) {
-                    message.postMessageToHostedField(`${field}-iframe`, env, {
-                        type: "pt-static:transact",
-                        element: field,
-                        buyerOptions
-                    })
-                }
+            message.postMessageToHostedField(data.hostedFieldMap[transacting], env, {
+                type: `pt-static:attestation`,
+                attestation
             })
-        }
-        else if (initialize !== 'init') {
-            return message.handleError('amount must be a positive integer')
+
+            sendTransactingMessage(buyerOptions, env)
         }
     }
 }
