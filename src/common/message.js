@@ -82,10 +82,10 @@ export const postMessageToHostedField = (id, env, message) => {
         .contentWindow.postMessage(message, hostedFieldsEndpoint(env));
 }
 
-export const handleError = error => {
+export const handleError = (error, throws) => {
     window.postMessage({
             type: 'pt:error',
-            throws: true,
+            throws,
             error,
         },
         window.location.origin,

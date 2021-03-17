@@ -50,7 +50,7 @@
         "publish-stage": "npm run publish-stage-npm && npm run publish-stage-cdn",
         "publish-prod": "npm run publish-prod-npm && npm run publish-prod-cdn",
         "post-commit": "npm run test && npm run test-report",
-        "test": "karma start",
+        "test": "web-test-runner --coverage",
         "test:watch": "karma start --auto-watch=true --single-run=false",
         "test:update-snapshots": "karma start --update-snapshots",
         "test:prune-snapshots": "karma start --prune-snapshots"
@@ -62,12 +62,11 @@
         "@babel/plugin-transform-modules-commonjs": "^7.13.8",
         "@babel/preset-env": "^7.13.10",
         "@open-wc/eslint-config": "^4.2.0",
-        "@open-wc/karma-esm": "^4.0.0",
         "@open-wc/prettier-config": "^1.1.0",
         "@open-wc/testing": "^2.5.32",
-        "@open-wc/testing-karma": "^4.0.9",
+        "@web/test-runner": "^0.12.17",
         "babel-loader": "^8.2.2",
-        "babel-minify": "^0.5.1",
+        "babel-minify": "^0.1.12",
         "babel-preset-minify": "^0.5.1",
         "core-js": "^3.9.1",
         "css-loader": "^5.1.2",
@@ -87,10 +86,6 @@
         "eslint-plugin-scanjs-rules": "^0.2.1",
         "eslint-plugin-security": "^1.4.0",
         "eslint-plugin-standard": "^5.0.0",
-        "karma": "^6.2.0",
-        "karma-sourcemap-loader": "^0.3.8",
-        "karma-threshold-reporter": "^0.1.15",
-        "karma-webpack": "^5.0.0",
         "prettier": "^2.2.1",
         "puppeteer": "^8.0.0",
         "regenerator-runtime": "^0.13.7",
@@ -101,6 +96,8 @@
         "webpack-cli": "^4.5.0"
     },
     "dependencies": {
+        "@rollup/plugin-babel": "^5.3.0",
+        "@web/dev-server-rollup": "^0.3.2",
         "dompurify": "^2.2.6"
     },
     "engines": {

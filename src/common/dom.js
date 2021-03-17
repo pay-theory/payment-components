@@ -82,7 +82,7 @@ export const processElements = (elements, styles, env, fieldTypes, tagType) => {
             error = processContainer(container, elements, processed, styles, type, env, tagType)
         }
         if (error) {
-            return message.handleError(error)
+            return message.handleError(error, true)
         }
     })
     return processed
