@@ -87,9 +87,7 @@ export default async(
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
     const mountProcessedElements = async(processedArray) => {
-        console.log('processedArray', processedArray)
         processedArray.forEach(async(processed) => {
-            console.log('processed', processed)
             if (processed.elements.length > 0) {
                 let error = processed.errorCheck(processed.elements, transacting[processed.type])
                 if (error) {
@@ -105,14 +103,12 @@ export default async(
                 }
 
                 processed.elements.forEach(element => {
-                    console.log('element', element)
                     const json = JSON.stringify({ token: token['pt-token'], origin: token.origin })
                     const encodedJson = window.btoa(json)
                     element.frame.token = encodeURI(encodedJson)
                 })
             }
         })
-        console.log('post ready', true)
 
         window.postMessage({
                 type: `pay-theory:ready`,
@@ -235,7 +231,6 @@ export default async(
         const options = ['card', 'cash', 'ach']
 
         options.forEach(option => {
-            console.log('handleInitialized', option, common.isHidden(transacting[option]), isValid.includes(option))
             if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
                 initializeActions(amount, action, buyerOptions, transacting[option])
             }
@@ -273,11 +268,9 @@ export default async(
     const readyObserver = cb => common.handleMessage(
         common.readyTypeMessage,
         message => {
-            console.log('readyObserver', message, isReady, common.getReady())
             if (message.type === 'pay-theory:ready' && (!isReady) && isReadyStale()) {
                 common.setReady(Math.round(Date.now()))
                 isReady = message.ready
-                console.log('readyCallback', message.ready)
                 cb(message.ready)
             }
         })
