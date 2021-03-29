@@ -98,17 +98,13 @@ export const hostedFieldsEndpoint = (env) => {
 }
 
 const requestIdempotency = async(apiKey, fee_mode, message) => {
-    console.log('requesting idempotency')
     const payment = message.tokenize ? message.tokenize : message.transact
     payment.fee_mode = fee_mode
     let transacting = data.getTransactingElement()
-    console.log('requesting idempotency', 'transacting', transacting)
     let action = document.getElementById(transacting).action
-    console.log('requesting idempotency', 'action', action)
     const frameName = transacting.includes('credit-card') ?
         'card-number' :
         'account-number'
-    console.log('requesting idempotency', 'frameName', frameName)
     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
             type: "pt-static:idempotency",
             element: frameName,
@@ -136,7 +132,6 @@ export const generateTokenize = (cb, apiKey, fee_mode) => {
 
 
 const transfer = (tags, transfer) => {
-    console.log('requesting transfer', `${frameName}-iframe`)
     const frameName = data.getTransactingElement().includes('credit-card') ?
         'card-number' :
         'account-number'
