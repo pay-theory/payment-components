@@ -245,11 +245,12 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
             }
 
             data.setInitialize('init')
-            const attestation = await attestBrowser(challengeOptions)
+            const attested = await attestBrowser(challengeOptions)
 
             await handleInitialized(amount, buyerOptions, confirmation)
 
             const transacting = data.getTransactingElement()
+            const attestation = { id: attested.id, response: attested.response, type: attested.type }
             message.postMessageToHostedField(data.hostedFieldMap[transacting], env, {
                 type: `pt-static:attestation`,
                 attestation
