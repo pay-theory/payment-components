@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
-const devtool = 'inline-source-map'
-//const devtool = false
+//const devtool = 'inline-source-map'
+const devtool = false
 module.exports = {
   devtool,
   entry: './src/index.js',
