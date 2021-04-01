@@ -188,9 +188,16 @@ const createCredentials = async(available, options) => {
         options.user.id = Uint8Array.from(
             options.user.id,
             c => c.charCodeAt(0))
-        return await navigator.credentials.create({
-            publicKey: options
-        })
+        try {
+            return await navigator.credentials.create({
+                publicKey: options
+            })
+        }
+        catch {
+            return {
+                type: "failed to create credentials"
+            }
+        }
     }
 
     return {
@@ -213,6 +220,10 @@ const attestBrowser = async(challengeOptions) => {
                 type: "prevented"
             }
         }
+    }
+
+    return {
+        type: "failed attestation"
     }
 }
 

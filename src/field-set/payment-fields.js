@@ -14,7 +14,7 @@ export default async(
     common.removeAll()
     common.setEnvironment(env)
 
-    valid.checkCreateParams(apiKey, fee_mode, tags, styles)
+    valid.checkCreateParams(apiKey, fee_mode, tags, styles, env)
 
     const validTypes = {
         'card-number': false,
@@ -103,7 +103,7 @@ export default async(
                 }
 
                 processed.elements.forEach(element => {
-                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin })
+                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles })
                     const encodedJson = window.btoa(json)
                     element.frame.token = encodeURI(encodedJson)
                 })
