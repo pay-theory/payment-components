@@ -11,8 +11,10 @@ export default async(
     fee_mode = common.defaultFeeMode,
     env = common.defaultEnvironment
 ) => {
+
+    const environment = apiKey ? apiKey.split('-')[2] : env
     common.removeAll()
-    common.setEnvironment(env)
+    common.setEnvironment(environment)
 
     valid.checkCreateParams(apiKey, fee_mode, tags, styles)
 
