@@ -64,7 +64,7 @@ export const defaultEnvironment = (() => {
         }
     default:
         {
-            return 'dev'
+            return typeof data.getEnvironment() === 'string' ? data.getEnvironment() : 'dev'
         }
     }
 })()
