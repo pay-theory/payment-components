@@ -164,7 +164,7 @@ A container is required for each component:
 
 ## Card and ACH components on the same page
 
-To display both Card and ACH on the same page make sure only one is visible at a time and the other is wrapped by a parent element whose css is set to ``` display:none ```
+To display both Card and ACH on the same page make sure only one is visible at a time and the other is wrapped by a parent element whose CSS is set to ``` display:none ```
 
 ## Styling the container
 

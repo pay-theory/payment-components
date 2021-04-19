@@ -28,11 +28,18 @@ const checkStyles = styles => {
     }
 }
 
-const checkCreateParams = (key, mode, tags, styles) => {
+const checkEnv = env => {
+    if (typeof env !== 'string') {
+        throw Error(`Environment variable should be a string`)
+    }
+}
+
+const checkCreateParams = (key, mode, tags, styles, env) => {
     checkApiKey(key)
     checkFeeMode(mode)
     checkTags(tags)
     checkStyles(styles)
+    checkEnv(env)
 }
 
 //Lets the alid observer check that all fields are set to valid before sending a message

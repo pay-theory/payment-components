@@ -61,7 +61,8 @@ const sendConnectedMessage = (message, field, env) => {
     common.postMessageToHostedField(`${field}-iframe`, env, {
         type: `pt-static:connected`,
         hostToken: message.hostToken,
-        sessionKey: message.sessionKey
+        sessionKey: message.sessionKey,
+        publicKey: message.publicKey
     })
 }
 

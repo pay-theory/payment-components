@@ -188,9 +188,16 @@ const createCredentials = async(available, options) => {
         options.user.id = Uint8Array.from(
             options.user.id,
             c => c.charCodeAt(0))
-        return await navigator.credentials.create({
-            publicKey: options
-        })
+        try {
+            return await navigator.credentials.create({
+                publicKey: options
+            })
+        }
+        catch {
+            return {
+                type: "failed to create credentials"
+            }
+        }
     }
 
     return {
@@ -213,6 +220,10 @@ const attestBrowser = async(challengeOptions) => {
                 type: "prevented"
             }
         }
+    }
+
+    return {
+        type: "failed attestation"
     }
 }
 
@@ -240,15 +251,19 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
             }
 
             data.setInitialize('init')
-            const attestation = await attestBrowser(challengeOptions)
+            const attested = await attestBrowser(challengeOptions)
 
             await handleInitialized(amount, buyerOptions, confirmation)
 
-            const transacting = data.getTransactingElement()
-            message.postMessageToHostedField(data.hostedFieldMap[transacting], env, {
-                type: `pt-static:attestation`,
-                attestation
-            })
+            if (attested.response) {
+                const transacting = data.getTransactingElement()
+                const response = { clientDataJSON: attested.response.clientDataJSON, attestationObject: attested.response.attestationObject }
+                const attestation = { response, id: attested.id, type: attested.type }
+                message.postMessageToHostedField(data.hostedFieldMap[transacting], env, {
+                    type: `pt-static:attestation`,
+                    attestation
+                })
+            }
 
             sendTransactingMessage(buyerOptions, env)
         }
