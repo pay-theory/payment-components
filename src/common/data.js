@@ -157,8 +157,8 @@ export const getEnvironment = () => {
     return localStorage.getItem(ENVIRONMENT)
 }
 
-export const setEnvironment = ready => {
-    return localStorage.setItem(ENVIRONMENT, ready)
+export const setEnvironment = environment => {
+    return localStorage.setItem(ENVIRONMENT, environment)
 }
 export const getReady = () => {
     return localStorage.getItem(READY)

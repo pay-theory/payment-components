@@ -12,7 +12,7 @@ export default async(
     env = common.defaultEnvironment
 ) => {
 
-    const environment = apiKey ? apiKey.split('-')[2] : env
+    const environment = apiKey.split('-')[2]
     common.removeAll()
     common.setEnvironment(environment)
 
