@@ -1,6 +1,6 @@
 {
     "name": "@paytheory/payment-components",
-    "version": "1.3.23-0",
+    "version": "1.3.24-0",
     "description": "Pay Theory SDK",
     "main": "dist/index.js",
     "author": "Aron Price",
@@ -19,6 +19,8 @@
         ]
     },
     "scripts": {
+        "build-env": "env BUILD_ENV=$ENV APP_ID=APrPDbJxbZuiRuwN3NjfajpH webpack",
+        "build-aron": "env BUILD_ENV=aron APP_ID=APrPDbJxbZuiRuwN3NjfajpH webpack",
         "build-dev": "env BUILD_ENV=dev APP_ID=APrPDbJxbZuiRuwN3NjfajpH webpack",
         "build-stage": "env BUILD_ENV=stage APP_ID=APpSQimXFrjSU8bzNzhXLLFH webpack",
         "build-prod": "env BUILD_ENV=prod APP_ID=APcT6PQC1XiuCpPMUUXEZZ2y webpack && npm run test",
@@ -36,10 +38,15 @@
         "codacy-download": "curl -Ls https://coverage.codacy.com/get.sh > get.sh && chmod +x get.sh",
         "codacy-coverage": "bash get.sh report -r coverage/lcov.info",
         "test-report": "npm run codacy-download && npm run codacy-coverage",
+        "publish-env-cdn": "npm run build-env && npm run dev-cdn-env",
+        "publish-aron-cdn": "npm run build-aron && npm run dev-cdn-aron",
         "publish-dev-cdn": "npm run build-dev && npm run dev-cdn-latest && npm run dev-cdn-version",
         "publish-stage-cdn": "npm run build-stage && npm run stage-cdn-latest && npm run stage-cdn-version",
         "publish-prod-cdn": "npm run build-prod && npm run prod-cdn-latest && npm run prod-cdn-version",
+        "dev-cdn-env": "aws s3 cp dist s3://payment-components-dev/$ENV --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
+        "dev-cdn-aron": "aws s3 cp dist s3://payment-components-dev/aron --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "dev-cdn-latest": "aws s3 cp dist s3://payment-components-dev --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
+        "dev-cdn-finix": "aws s3 cp dist s3://payment-components-dev/finix --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "dev-cdn-version": "aws s3 cp dist s3://payment-components-dev/$npm_package_version --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "stage-cdn-latest": "aws s3 cp dist s3://payment-components-stage --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "stage-cdn-hotfix": "aws s3 cp dist s3://payment-components-stage/hotfix --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
