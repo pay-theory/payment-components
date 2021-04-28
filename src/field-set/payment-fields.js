@@ -11,8 +11,12 @@ export default async(
     fee_mode = common.defaultFeeMode,
     env = common.defaultEnvironment
 ) => {
+
+    const environment = apiKey.split('-')[2]
     common.removeAll()
-    common.setEnvironment(env)
+    common.setEnvironment(environment)
+
+    console.log('environment set', environment)
 
     valid.checkCreateParams(apiKey, fee_mode, tags, styles, env)
 
@@ -68,7 +72,7 @@ export default async(
     let isReady = false
 
     const fetchPtToken = async() => {
-        return await common.getData(`${common.transactionEndpoint(env)}/pt-token`, apiKey)
+        return await common.getData(`${common.transactionEndpoint(environment)}/pt-token`, apiKey)
     }
 
     let ptToken = {}
@@ -78,7 +82,7 @@ export default async(
     const resetHostToken = async() => {
         let transacting = common.getTransactingElement()
         let token = await fetchPtToken()
-        common.postMessageToHostedField(common.hostedFieldMap[transacting], env, {
+        common.postMessageToHostedField(common.hostedFieldMap[transacting], environment, {
             type: `pt-static:cancel`,
             token: token['pt-token']
         })
@@ -122,6 +126,7 @@ export default async(
         elements = defaultElementIds,
         env = common.getEnvironment()
     ) => {
+        console.log('mounting', env)
         const achElements = {
             'account-number': elements['account-number'],
             'account-name': elements['ach-name'],
