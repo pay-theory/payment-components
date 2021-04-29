@@ -74,11 +74,11 @@ export const transactionEndpoint = (env) => {
     switch (env) {
     case 'prod':
         {
-            return `https://tags.api.paytheory.com`
+            return `token.service.paytheory.com`
         }
     default:
         {
-            return `https://${env}.tags.api.paytheorystudy.com`
+            return `https://${env}.token.service.paytheorystudy.com`
         }
     }
 }
