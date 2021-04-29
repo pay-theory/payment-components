@@ -18,7 +18,7 @@ export default async(
 
     console.log('environment set', environment)
 
-    valid.checkCreateParams(apiKey, fee_mode, tags, styles)
+    valid.checkCreateParams(apiKey, fee_mode, tags, styles, env)
 
     const validTypes = {
         'card-number': false,
@@ -72,7 +72,7 @@ export default async(
     let isReady = false
 
     const fetchPtToken = async() => {
-        return await common.getData(`${common.transactionEndpoint(environment)}/pt-token`, apiKey)
+        return await common.getData(`${common.transactionEndpoint(environment)}/token`, apiKey)
     }
 
     let ptToken = {}
@@ -107,7 +107,7 @@ export default async(
                 }
 
                 processed.elements.forEach(element => {
-                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin })
+                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles })
                     const encodedJson = window.btoa(json)
                     element.frame.token = encodeURI(encodedJson)
                 })
