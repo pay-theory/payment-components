@@ -10,6 +10,7 @@ export const READY = 'pt-ready'
 export const TRANSACTING = 'pt-transacting'
 export const IDEMPOTENCY = 'pt-idempotency'
 export const ENVIRONMENT = 'pt-environment'
+export const STAGE = 'pt-stage'
 export const INITIALIZE = 'pt-initialize'
 export const defaultStyles = {
     default: {},
@@ -152,13 +153,17 @@ export const setTransactingElement = element => {
 export const removeTransactingElement = () => {
     return localStorage.removeItem(TRANSACTING)
 }
-
 export const getEnvironment = () => {
     return localStorage.getItem(ENVIRONMENT)
 }
-
 export const setEnvironment = environment => {
     return localStorage.setItem(ENVIRONMENT, environment)
+}
+export const getStage = () => {
+    return localStorage.getItem(STAGE)
+}
+export const setStage = stage => {
+    return localStorage.setItem(STAGE, stage)
 }
 export const getReady = () => {
     return localStorage.getItem(READY)

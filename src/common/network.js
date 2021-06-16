@@ -70,31 +70,13 @@ export const defaultEnvironment = (() => {
 })()
 
 export const transactionEndpoint = (env) => {
-
-    switch (env) {
-    case 'prod':
-        {
-            return `https://tags.api.paytheory.com`
-        }
-    default:
-        {
-            return `https://${env}.tags.api.paytheorystudy.com`
-        }
-    }
+    var stage = data.getStage()
+    return `https://${env}.tags.api.${stage}.com`
 }
 
 export const hostedFieldsEndpoint = (env) => {
-
-    switch (env) {
-    case 'prod':
-        {
-            return `https://tags.static.paytheory.com`
-        }
-    default:
-        {
-            return `https://${env}.tags.static.paytheorystudy.com`
-        }
-    }
+    var stage = data.getStage()
+    return `https://${env}.tags.static.${stage}.com`
 }
 
 const requestIdempotency = async(apiKey, fee_mode, message) => {
