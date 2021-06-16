@@ -71,7 +71,7 @@ export const defaultEnvironment = (() => {
 
 export const transactionEndpoint = (env) => {
     var stage = data.getStage()
-    return `https://${env}.tags.api.${stage}.com`
+    return `https://${env}.token.service.${stage}.com/${env}`
 }
 
 export const hostedFieldsEndpoint = (env) => {
