@@ -1,6 +1,5 @@
 import PayTheoryHostedField from '../pay-theory-hosted-field'
 import common from '../../common'
-const FINIX_ENV = process.env.BUILD_ENV === 'prod' ? 'live' : 'sandbox'
 
 
 
@@ -49,9 +48,9 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     )
   }
 
-  postMessageToHostedField(id, env, message) {
+  postMessageToHostedField(id, message) {
     document.getElementsByName(id)[0]
-      .contentWindow.postMessage(message, `${common.hostedFieldsEndpoint(env)}`);
+      .contentWindow.postMessage(message, `${common.hostedFieldsEndpoint()}`);
   }
 
   instrumentResponse(action, amount, instrument) {
@@ -83,7 +82,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
     else if (this.tokenizing !== _tokenizing) {
       this.tokenizing = _tokenizing
-      this.form.submit(FINIX_ENV, this.application, this.generateTokenizeCallback(amount))
+      this.form.submit(common.getFinixEnv(), this.application, this.generateTokenizeCallback(amount))
     }
   }
 
@@ -117,7 +116,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
     else if (this.transacting !== _transacting) {
       this.transacting = _transacting
-      this.form.submit(FINIX_ENV, this.application, this.generateTransactCallback(amount))
+      this.form.submit(common.getFinixEnv(), this.application, this.generateTransactCallback(amount))
     }
   }
 
