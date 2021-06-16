@@ -1,22 +1,22 @@
 import common from '../common'
 
 //relays state to the hosted fields to tokenize the instrument
-const verifyRelay = (fields, message, env) => {
+const verifyRelay = (fields, message) => {
     fields.forEach((field) => {
         if (document.getElementsByName(field)[0]) {
-            common.postMessageToHostedField(field, env, message)
+            common.postMessageToHostedField(field, message)
         }
     });
 };
 
-const autofillHandler = (message, env) => {
+const autofillHandler = (message) => {
     if (message.element === "card-autofill") {
         const cardFields = [
             "card-name-iframe",
             "card-cvv-iframe",
             "card-exp-iframe"
         ];
-        verifyRelay(cardFields, message, env);
+        verifyRelay(cardFields, message);
     }
     else if (message.element === "address-autofill") {
         const addressFields = [
@@ -25,40 +25,40 @@ const autofillHandler = (message, env) => {
             "billing-state-iframe",
             "billing-zip-iframe"
         ];
-        verifyRelay(addressFields, message, env);
+        verifyRelay(addressFields, message);
     }
 }
 
 //Relays messages from hosted fields to the transacting element for autofill and transacting
-export const relayHandler = env => message => {
+export const relayHandler = () => message => {
     if (message.element.endsWith("autofill")) {
         common.setAutofill(true)
-        autofillHandler(message, env)
+        autofillHandler(message)
     }
     else {
         const fieldType = common.isFieldType(message.element)
-        common.postMessageToHostedField(common.hostedFieldMap[fieldType], env, message)
+        common.postMessageToHostedField(common.hostedFieldMap[fieldType], message)
     }
 };
 
 
 //sends styles to hosted fields when they are set up
-export const setupHandler = (env, styles, setupTransacting) => (message) => {
-    common.postMessageToHostedField(`${message.element}-iframe`, env, {
+export const setupHandler = (styles, setupTransacting) => (message) => {
+    common.postMessageToHostedField(`${message.element}-iframe`, {
         type: "pt:setup",
         style: styles.default ? styles : common.defaultStyles
     })
 
     if (setupTransacting[message.element]) {
-        common.postMessageToHostedField(`${message.element}-iframe`, env, {
+        common.postMessageToHostedField(`${message.element}-iframe`, {
             type: `pt-static:elements`,
             elements: JSON.parse(JSON.stringify(setupTransacting[message.element]))
         })
     }
 }
 
-const sendConnectedMessage = (message, field, env) => {
-    common.postMessageToHostedField(`${field}-iframe`, env, {
+const sendConnectedMessage = (message, field) => {
+    common.postMessageToHostedField(`${field}-iframe`, {
         type: `pt-static:connected`,
         hostToken: message.hostToken,
         sessionKey: message.sessionKey,
@@ -67,27 +67,27 @@ const sendConnectedMessage = (message, field, env) => {
 }
 
 //Sends a message to the sibling fields letting them know that the transactional field has fetched the the host-token
-export const siblingHandler = (env, elements) => message => {
+export const siblingHandler = (elements) => message => {
     if (message.field === 'card-number') {
         elements.card.forEach(field => {
             if (field.type !== 'credit-card') {
-                sendConnectedMessage(message, field.type, env)
+                sendConnectedMessage(message, field.type)
             }
             else {
-                sendConnectedMessage(message, 'card-cvv', env)
-                sendConnectedMessage(message, 'card-exp', env)
+                sendConnectedMessage(message, 'card-cvv')
+                sendConnectedMessage(message, 'card-exp')
             }
 
         })
     }
     else if (message.field === 'account-number') {
         elements.ach.forEach(field => {
-            sendConnectedMessage(message, field.type, env)
+            sendConnectedMessage(message, field.type)
         })
     }
     else if (message.field === 'cash-name') {
         elements.cash.forEach(field => {
-            sendConnectedMessage(message, field.type, env)
+            sendConnectedMessage(message, field.type)
         })
     }
 }

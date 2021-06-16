@@ -32,17 +32,24 @@ const checkStyles = styles => {
 }
 
 const checkEnv = env => {
-    if (typeof env !== 'string') {
-        throw Error(`Environment variable should be a string`)
+    if (typeof env !== 'string' || env.length <= 1) {
+        throw Error(`Environment not found in api key`)
+    }
+}
+const VALID_STAGES = ['paytheory','paytheorylab','paytheorystudy']
+const checkStage = stage => {
+    if (!VALID_STAGES.includes(stage)) {
+        throw Error(`Stage variable not found in api key`)
     }
 }
 
-const checkCreateParams = (key, mode, tags, styles, env) => {
+const checkCreateParams = (key, mode, tags, styles, env, stage) => {
     checkApiKey(key)
     checkFeeMode(mode)
     checkTags(tags)
     checkStyles(styles)
     checkEnv(env)
+    checkStage(stage)
 }
 
 //Lets the alid observer check that all fields are set to valid before sending a message
