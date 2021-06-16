@@ -3,10 +3,13 @@ import common from '../common'
 
 const checkApiKey = key => {
     if (typeof key !== 'string') {
-        throw Error('Api key should be a string beginning with pt-')
+        throw Error('Api key should be a string')
     }
-    else if (!key.startsWith('pt-')) {
-        throw Error('Api key should be a string beginning with pt-')
+    else if (key.split("-").length !== 3) {
+        throw Error('Api key should be a string formatted [partner]-[paytheorystage]-[number]')
+    }
+    else if (!key.split("-")[1].includes("paytheory")) {
+        throw Error('Api key should be a string formatted [partner]-[paytheorystage]-[number]')
     }
 }
 

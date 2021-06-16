@@ -12,13 +12,15 @@ export default async(
     env = common.defaultEnvironment
 ) => {
 
-    const environment = apiKey.split('-')[2]
+    var keyParts = apiKey.split("-")
+    valid.checkCreateParams(apiKey, fee_mode, tags, styles, env)
+
+    var environment = keyParts[0]
+    var stage = keyParts[1]
+
     common.removeAll()
     common.setEnvironment(environment)
-
-    console.log('environment set', environment)
-
-    valid.checkCreateParams(apiKey, fee_mode, tags, styles, env)
+    common.setStage(stage)
 
     const validTypes = {
         'card-number': false,
@@ -327,7 +329,7 @@ export default async(
         }
     }, env)
 
-    const host = common.transactionEndpoint(env)
+    const host = common.transactionEndpoint(environment)
     const sdk = {
         host,
         apiKey,
