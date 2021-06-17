@@ -15,9 +15,9 @@ const generateWindowListener = (validTarget, handleMessage) => {
     }
 }
 
-const generateiFrameWindowListener = (validTarget, handleMessage, env) => {
+const generateiFrameWindowListener = (validTarget, handleMessage) => {
     return event => {
-        if (event.origin === hostedFieldsEndpoint(env)) {
+        if (event.origin === hostedFieldsEndpoint()) {
             windowListenerHandler(validTarget, handleMessage, event)
         }
     }
@@ -29,8 +29,8 @@ export const handleMessage = (validTarget, handleMessage) => {
     return () => { window.removeEventListener('message', func) }
 }
 
-export const handleHostedFieldMessage = (validTarget, handleMessage, env) => {
-    const func = generateiFrameWindowListener(validTarget, handleMessage, env)
+export const handleHostedFieldMessage = (validTarget, handleMessage) => {
+    const func = generateiFrameWindowListener(validTarget, handleMessage)
     window.addEventListener('message', func)
     return () => { window.removeEventListener('message', func) }
 }
@@ -77,9 +77,9 @@ export const siblingTypeMessage = message => typeof message.type === 'string' &&
 //Message sent from hosted-fields with data when a cash barcode is sent back
 export const cashCompleteTypeMessage = message => typeof message.type === 'string' && message.type === `pt-static:cash-complete`
 
-export const postMessageToHostedField = (id, env, message) => {
+export const postMessageToHostedField = (id, message) => {
     document.getElementsByName(id)[0]
-        .contentWindow.postMessage(message, hostedFieldsEndpoint(env));
+        .contentWindow.postMessage(message, hostedFieldsEndpoint());
 }
 
 export const handleError = error => {
