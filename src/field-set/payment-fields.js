@@ -125,11 +125,11 @@ export default async(
     const mount = async(
         elements = defaultElementIds
     ) => {
-        
+
         const env = common.getEnvironment()
         const stage = common.getStage()
         console.log("mounted", env, stage)
-       
+
         const achElements = {
             'account-number': elements['account-number'],
             'account-name': elements['ach-name'],
@@ -263,6 +263,7 @@ export default async(
         common.removeToken()
         common.removeInitialize()
         document.getElementById(common.getTransactingElement()).instrument = 'cancel'
+        document.getElementById(common.getTransactingElement()).tokenize = false
         common.removeTransactingElement()
     }
 
