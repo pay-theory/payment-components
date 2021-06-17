@@ -8,15 +8,13 @@ export default async(
     legacy, // this used to be client id, left in place to preserve backwards compatibility
     styles = common.defaultStyles,
     tags = common.defaultTags,
-    fee_mode = common.defaultFeeMode,
-    env = common.defaultEnvironment
+    fee_mode = common.defaultFeeMode
 ) => {
 
     var keyParts = apiKey.split("-")
-    valid.checkCreateParams(apiKey, fee_mode, tags, styles, env)
-
     var environment = keyParts[0]
     var stage = keyParts[1]
+    valid.checkCreateParams(apiKey, fee_mode, tags, styles, environment, stage)
 
     common.removeAll()
     common.setEnvironment(environment)
@@ -74,7 +72,7 @@ export default async(
     let isReady = false
 
     const fetchPtToken = async() => {
-        return await common.getData(`${common.transactionEndpoint(environment)}/pt-token`, apiKey)
+        return await common.getData(`${common.transactionEndpoint()}/token`, apiKey)
     }
 
     let ptToken = {}
@@ -125,10 +123,13 @@ export default async(
     }
 
     const mount = async(
-        elements = defaultElementIds,
-        env = common.getEnvironment()
+        elements = defaultElementIds
     ) => {
-        console.log('mounting', env)
+        
+        const env = common.getEnvironment()
+        const stage = common.getStage()
+        console.log("mounted", env, stage)
+       
         const achElements = {
             'account-number': elements['account-number'],
             'account-name': elements['ach-name'],
@@ -155,15 +156,15 @@ export default async(
             'cash-zip': elements['cash-zip']
         }
 
-        processedElements.card = common.processElements(cardElements, styles, env, common.fieldTypes, 'credit-card')
-        processedElements.ach = common.processElements(achElements, styles, env, common.achFieldTypes, 'ach')
-        processedElements.cash = common.processElements(cashElements, styles, env, common.cashFieldTypes)
+        processedElements.card = common.processElements(cardElements, styles, common.fieldTypes, 'credit-card')
+        processedElements.ach = common.processElements(achElements, styles, common.achFieldTypes, 'ach')
+        processedElements.cash = common.processElements(cashElements, styles, common.cashFieldTypes)
 
         transacting.card = processedElements.card.reduce(common.findTransactingElement, false)
         transacting.ach = processedElements.ach.reduce(common.findAccountNumber, false)
         transacting.cash = processedElements.cash.reduce(common.findField('cash-name'), false)
 
-        const removeRelay = common.handleHostedFieldMessage(common.relayTypeMessage, handler.relayHandler(env), env)
+        const removeRelay = common.handleHostedFieldMessage(common.relayTypeMessage, handler.relayHandler())
 
         const setupTransacting = {
             'account-number': processedElements.ach,
@@ -171,19 +172,19 @@ export default async(
             'cash-name': processedElements.cash
         }
 
-        const removeSetup = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, handler.setupHandler(env, styles, setupTransacting), env)
+        const removeSetup = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, handler.setupHandler(styles, setupTransacting))
 
-        const removeSibling = common.handleHostedFieldMessage(common.siblingTypeMessage, handler.siblingHandler(env, processedElements), env)
+        const removeSibling = common.handleHostedFieldMessage(common.siblingTypeMessage, handler.siblingHandler(processedElements))
 
-        const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, handler.stateUpdater(processedElements), env)
+        const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, handler.stateUpdater(processedElements))
 
-        const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, handler.instrumentHandler(transacting), env)
+        const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, handler.instrumentHandler(transacting))
 
-        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(resetHostToken), env)
+        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(resetHostToken))
 
-        const removeIdempotency = common.handleHostedFieldMessage(common.idempotencyTypeMessage, handler.idempotencyHandler, env)
+        const removeIdempotency = common.handleHostedFieldMessage(common.idempotencyTypeMessage, handler.idempotencyHandler)
 
-        const removeTransferComplete = common.handleHostedFieldMessage(common.transferCompleteTypeMessage, handler.transferCompleteHandler, env)
+        const removeTransferComplete = common.handleHostedFieldMessage(common.transferCompleteTypeMessage, handler.transferCompleteHandler)
 
         if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
             return common.handleError('There are no PayTheory fields')
@@ -244,7 +245,7 @@ export default async(
         })
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions, env)
+    const initTransaction = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
 
     const confirm = () => {
         if (common.getTransactingElement()) {
@@ -327,9 +328,9 @@ export default async(
         if (message.status === 'FAILURE') {
             document.getElementById(common.getTransactingElement()).cash = false
         }
-    }, env)
+    })
 
-    const host = common.transactionEndpoint(environment)
+    const host = common.transactionEndpoint()
     const sdk = {
         host,
         apiKey,

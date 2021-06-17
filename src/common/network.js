@@ -51,6 +51,7 @@ const isValidTransaction = (tokenized) => {
 
 export const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
 
+// deprecated environment is always derived from API key
 export const defaultEnvironment = (() => {
 
     switch (process.env.BUILD_ENV) {
@@ -69,14 +70,12 @@ export const defaultEnvironment = (() => {
     }
 })()
 
-export const transactionEndpoint = (env) => {
-    var stage = data.getStage()
-    return `https://${env}.tags.api.${stage}.com`
+export const transactionEndpoint = () => {
+    return `https://${data.getEnvironment()}.token.service.${data.getStage()}.com/${data.getEnvironment()}`
 }
 
-export const hostedFieldsEndpoint = (env) => {
-    var stage = data.getStage()
-    return `https://${env}.tags.static.${stage}.com`
+export const hostedFieldsEndpoint = () => {
+    return `https://${data.getEnvironment()}.tags.static.${data.getStage()}.com`
 }
 
 const requestIdempotency = async(apiKey, fee_mode, message) => {
@@ -209,13 +208,13 @@ const attestBrowser = async(challengeOptions) => {
     }
 }
 
-const sendTransactingMessage = (buyerOptions, env) => {
+const sendTransactingMessage = (buyerOptions) => {
     const transacting = data.getTransactingElement()
     const types = transacting.includes('-card-') ? data.fieldTypes : transacting.includes('-ach-') ? data.achFieldTypes : data.cashFieldTypes
     types.forEach(field => {
         let iframe = document.getElementsByName(`${field}-iframe`)[0]
         if (iframe) {
-            message.postMessageToHostedField(`${field}-iframe`, env, {
+            message.postMessageToHostedField(`${field}-iframe`, {
                 type: "pt-static:transact",
                 element: field,
                 buyerOptions
@@ -224,7 +223,7 @@ const sendTransactingMessage = (buyerOptions, env) => {
     })
 }
 
-export const generateInitialization = (handleInitialized, challengeOptions, env) => {
+export const generateInitialization = (handleInitialized, challengeOptions) => {
     return async(amount, buyerOptions = {}, confirmation = false) => {
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
@@ -241,13 +240,13 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
                 const transacting = data.getTransactingElement()
                 const response = { clientDataJSON: attested.response.clientDataJSON, attestationObject: attested.response.attestationObject }
                 const attestation = { response, id: attested.id, type: attested.type }
-                message.postMessageToHostedField(data.hostedFieldMap[transacting], env, {
+                message.postMessageToHostedField(data.hostedFieldMap[transacting], {
                     type: `pt-static:attestation`,
                     attestation
                 })
             }
 
-            sendTransactingMessage(buyerOptions, env)
+            sendTransactingMessage(buyerOptions)
         }
     }
 }

@@ -162,6 +162,12 @@ export const setEnvironment = environment => {
 export const getStage = () => {
     return localStorage.getItem(STAGE)
 }
+
+export const getFinixEnv = () => {
+    return localStorage.getItem(STAGE) === 'paytheory' ? 'live' : 'sandbox'
+}
+
+
 export const setStage = stage => {
     return localStorage.setItem(STAGE, stage)
 }
