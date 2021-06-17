@@ -259,12 +259,13 @@ export default async(
     }
 
     const cancel = async() => {
+        document.getElementById(common.getTransactingElement()).instrument = 'cancel'
+        document.getElementById(common.getTransactingElement()).tokenize = false
         common.removeIdentity()
         common.removeToken()
         common.removeInitialize()
-        document.getElementById(common.getTransactingElement()).instrument = 'cancel'
-        document.getElementById(common.getTransactingElement()).tokenize = false
         common.removeTransactingElement()
+        resetHostToken()
     }
 
     const isReadyStale = () => {
