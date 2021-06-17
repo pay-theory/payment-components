@@ -228,7 +228,7 @@ export const generateInitialization = (handleInitialized, challengeOptions, env)
     return async(amount, buyerOptions = {}, confirmation = false) => {
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
-            if (!Number.isInteger(amount) && amount < 1) {
+            if (!Number.isInteger(amount) || amount < 1) {
                 return message.handleError('amount must be a positive integer')
             }
 

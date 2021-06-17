@@ -12,4 +12,4 @@ class CreditCardNameFrame extends PayTheoryHostedField {
 
 }
 
-window.customElements.define('pay-theory-credit-card-name-tag-frame', CreditCardNameFrame);
+window.customElements.define('pay-theory-credit-card-card-name-tag-frame', CreditCardNameFrame);
