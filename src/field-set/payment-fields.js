@@ -259,7 +259,6 @@ export default async(
     }
 
     const cancel = async() => {
-        resetHostToken()
         document.getElementById(common.getTransactingElement()).instrument = 'cancel'
         document.getElementById(common.getTransactingElement()).tokenize = false
         common.removeIdentity()
