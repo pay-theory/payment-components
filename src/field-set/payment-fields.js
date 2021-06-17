@@ -82,7 +82,7 @@ export default async(
     const resetHostToken = async() => {
         let transacting = common.getTransactingElement()
         let token = await fetchPtToken()
-        common.postMessageToHostedField(common.hostedFieldMap[transacting], environment, {
+        common.postMessageToHostedField(common.hostedFieldMap[transacting], {
             type: `pt-static:cancel`,
             token: token['pt-token']
         })
