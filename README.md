@@ -28,6 +28,8 @@ import '@paytheory/payment-components'
 
 or
 
+[test]
+
 ```html
 <script src=[test]></script>
 ```
