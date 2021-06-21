@@ -28,9 +28,6 @@ or
 ```html
 <script src="https://sdk.paytheory.com"></script>
 ```
-[random value]
-
-[random value]: variable value
 
 ## Sandbox Import
 
