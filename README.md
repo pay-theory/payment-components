@@ -1,8 +1,10 @@
+[partner]: michigancity
+[stage]: paytheorylab
 # Pay Theory Web SDK
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d446eeab0c444274bfa00aceca3f0875)](https://www.codacy.com/gh/pay-theory/payment-components?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pay-theory/payment-components&amp;utm_campaign=Badge_Grade) 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d446eeab0c444274bfa00aceca3f0875)](https://www.codacy.com/gh/pay-theory/payment-components?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pay-theory/payment-components&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/d446eeab0c444274bfa00aceca3f0875)](https://www.codacy.com/gh/pay-theory/payment-components/dashboard?utm_source=github.com&utm_medium=referral&utm_content=pay-theory/payment-components&utm_campaign=Badge_Coverage)
-[![Known Vulnerabilities](https://snyk.io/test/github/pay-theory/payment-components/badge.svg?targetFile=package.json)](https://snyk.io/test/github/pay-theory/payment-components?targetFile=package.json) 
+[![Known Vulnerabilities](https://snyk.io/test/github/pay-theory/payment-components/badge.svg?targetFile=package.json)](https://snyk.io/test/github/pay-theory/payment-components?targetFile=package.json)
 [![NPM](https://img.shields.io/npm/v/@paytheory/payment-components.svg)](https://www.npmjs.com/package/@paytheory/payment-components)
 
 ## Live Install
@@ -26,7 +28,7 @@ import '@paytheory/payment-components'
 or
 
 ```html
-<script src="https://sdk.paytheory.com"></script>
+<script src="https://[stage].sdk.[stage].com"></script>
 ```
 
 ## Sandbox Import
@@ -214,9 +216,9 @@ const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
 * optionally set the fee mode
 * by default SURCHARGE mode is used
 * SERVICE_FEE mode is available only when enabled by Pay Theory
-* SURCHARGE mode applies a fee of 2.9% + $0.30 
+* SURCHARGE mode applies a fee of 2.9% + $0.30
 * to be deducted from original amount
-* SERVICE FEE mode calculates a fee based on predetermined parameters 
+* SERVICE FEE mode calculates a fee based on predetermined parameters
 * and adds it to the original amount
 **/
 const FEE_MODE = window.paytheory.SURCHARGE
@@ -447,16 +449,16 @@ To enable IE 11 support you must include the following in your HTML head:
 
     <!-- for sandbox -->
     <script src="https://stage.sdk.paytheorystudy.com"></script>
-    
+
     <!-- for live -->
     <script src="https://sdk.paytheory.com"></script>
-    
+
 </head>
 ```
 
 ## Deprecations
 
-The createPaymentFields initializing function has been replaced with create. The create function no longer requires a clientID to be passed and allows you to set a feeMode. 
+The createPaymentFields initializing function has been replaced with create. The create function no longer requires a clientID to be passed and allows you to set a feeMode.
 
 ## License
 
