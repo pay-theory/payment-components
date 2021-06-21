@@ -28,7 +28,7 @@ import '@paytheory/payment-components'
 or
 
 ```html
-<script src="https://[stage].sdk.[stage].com"></script>
+<script src="https://\[partner\].sdk.\[stage\].com"></script>
 ```
 
 ## Sandbox Import
