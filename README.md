@@ -1,6 +1,3 @@
-[partner]: michigancity
-[stage]: paytheorylab
-[test]: "https://michigancity.sdk.paytheorylab.com"
 # Pay Theory Web SDK
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/d446eeab0c444274bfa00aceca3f0875)](https://www.codacy.com/gh/pay-theory/payment-components?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pay-theory/payment-components&amp;utm_campaign=Badge_Grade)
@@ -28,11 +25,12 @@ import '@paytheory/payment-components'
 
 or
 
-[test]
-
 ```html
-<script src=[test]></script>
+<script src="https://sdk.paytheory.com"></script>
 ```
+[random value]
+
+[random value]: variable value
 
 ## Sandbox Import
 
