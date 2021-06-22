@@ -13,14 +13,14 @@
 
 ## Sandbox Import
 
-```javascript
-import '@paytheory/payment-components@sandbox'
-```
-
-or
-
 ```html
 <script src="https://stage.sdk.paytheorystudy.com"></script>
+```
+
+## Test Import
+
+```html
+<script src="https://test.sdk.paytheorystudy.com"></script>
 ```
 
 either way the SDK will be exposed as
@@ -426,6 +426,9 @@ To enable IE 11 support you must include the following in your HTML head:
       crossorigin="anonymous"
     ></script>
     <!-- end polyfill -->
+
+    <!-- for lab -->
+    <script src="https://test.sdk.paytheorystudy.com"></script>
 
     <!-- for sandbox -->
     <script src="https://stage.sdk.paytheorystudy.com"></script>
