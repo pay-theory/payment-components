@@ -5,25 +5,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/pay-theory/payment-components/badge.svg?targetFile=package.json)](https://snyk.io/test/github/pay-theory/payment-components?targetFile=package.json) 
 [![NPM](https://img.shields.io/npm/v/@paytheory/payment-components.svg)](https://www.npmjs.com/package/@paytheory/payment-components)
 
-## Live Install
-
-```bash
-npm install --save @paytheory/payment-components
-```
-
-## Sandbox Install
-
-```bash
-npm install --save @paytheory/payment-components@sandbox
-```
-
 ## Live Import
-
-```javascript
-import '@paytheory/payment-components'
-```
-
-or
 
 ```html
 <script src="https://sdk.paytheory.com"></script>
