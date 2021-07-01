@@ -43,7 +43,7 @@
         "publish-dev-cdn": "npm run build-dev && npm run dev-cdn-latest && npm run dev-cdn-version",
         "publish-stage-cdn": "npm run build-stage && npm run stage-cdn-latest && npm run stage-cdn-version",
         "publish-prod-cdn": "npm run build-prod && npm run prod-cdn-latest && npm run prod-cdn-version",
-        "dev-cdn-env": "aws s3 cp dist s3://payment-components-cdn/$STAGE/$ENV --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
+        "dev-cdn-env": "aws s3 cp dist s3://payment-components-cdn-$ACCOUNT/$STAGE/$ENV --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "dev-cdn-aron": "aws s3 cp dist s3://payment-components-dev/aron --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "dev-cdn-latest": "aws s3 cp dist s3://payment-components-dev --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
         "dev-cdn-finix": "aws s3 cp dist s3://payment-components-dev/finix --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive --cache-control max-age=3",
