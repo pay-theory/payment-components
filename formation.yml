@@ -1,0 +1,283 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: finix-transfer Service Deployment
+Parameters:
+  Partner:
+    Type: String
+    Description: The partner you're deploying to.
+  Stage:
+    Type: String
+    Description: The stage you're deploying to.
+  Repository:
+    Type: String
+    Description: The Repository for this Service
+    Default: finix-transfer-service  
+  ServiceName:
+    Type: String
+    Description: The Name for this Service
+    Default: finix-transfer      
+  ServiceType:
+    Type: String
+    Description: The Type of this Service
+    Default: service        
+  EndpointKey:
+    Type: String
+    Description: The Endpoint key of this Service
+    Default: transfer      
+  AuthorizerService:
+    Type: String
+    Description: The Authorizer for this Service
+    Default: vpc-authorizer   
+  DomainVersion:
+    Type: String
+    Description: The version number of the domain to used
+    Default: 1     
+Resources:
+  # Resources that change service to service 
+  Lambda:
+    Properties:
+      Code:
+        S3Bucket: '{{resolve:ssm:pt-global-codepipeline-bucket}}'
+        S3Key: !Sub 'code/${Repository}-${Partner}-${Stage}/my-deployment-package.zip'
+      Environment:
+        Variables:
+          PARTNER: !Sub '${Partner}'
+          STAGE: !Sub '${Stage}'
+      FunctionName: !Sub '${Repository}-${Partner}-${Stage}'
+      Handler: lambda_function.lambda_handler
+      Role: !Sub '{{resolve:ssm:pt-account-${Repository}-role}}'
+      Runtime: python3.8
+      MemorySize: 10240
+      VpcConfig:
+        SecurityGroupIds:
+          - !ImportValue 
+            'Fn::Sub': 'pt-partner-${Partner}-open-ingress-security'
+        SubnetIds:
+          - !ImportValue
+            'Fn::Sub': 'pt-partner-${Partner}-web-subnet-1'
+          - !ImportValue 
+            'Fn::Sub': 'pt-partner-${Partner}-web-subnet-2'
+          - !ImportValue 
+            'Fn::Sub': 'pt-partner-${Partner}-web-subnet-3'
+    Type: 'AWS::Lambda::Function'
+  DynamoDB:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      StreamSpecification: 
+        StreamViewType: NEW_IMAGE    
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      TableName: !Sub '${Repository}-${Partner}-${Stage}'
+
+  # Common Routing         
+  GetRoute:
+    DependsOn:
+      - ApiGateway
+      - RouteIntegration
+      - Authorizer
+    Properties:
+      ApiId: !Ref ApiGateway
+      AuthorizationType: CUSTOM
+      AuthorizerId: !Ref Authorizer
+      RouteKey: !Sub 'GET /${EndpointKey}'
+      Target: !Join
+        - /
+        - - integrations
+          - !Ref RouteIntegration
+    Type: 'AWS::ApiGatewayV2::Route'
+
+  RouteIntegration:
+    DependsOn:
+      - ApiGateway
+    Properties:
+      ApiId: !Ref ApiGateway
+      IntegrationType: AWS_PROXY
+      PayloadFormatVersion: '2.0'
+      IntegrationUri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Repository}-${Partner}-${Stage}/invocations'
+    Type: 'AWS::ApiGatewayV2::Integration'           
+    
+  # Standard Finix Feed Resource
+  FinixFeedEvent:
+    DependsOn:
+      - Lambda
+    Type: AWS::Lambda::EventSourceMapping
+    Properties: 
+      BatchSize: 1
+      EventSourceArn: !Sub '{{resolve:ssm:webhook-service-${Partner}-${Stage}-finix-webhook-stream}}'
+      FunctionName: !Sub '${Repository}-${Partner}-${Stage}'
+      StartingPosition: LATEST    
+
+  # Common Microservice Resource Patterns  
+  ApiGateway:
+    DependsOn:
+      - Lambda
+    Properties:
+      Name: !Sub '${Repository}-${Partner}-${Stage}'
+      ProtocolType: HTTP
+      CorsConfiguration:
+        AllowCredentials: false
+        AllowHeaders:
+          - x-api-key
+        AllowMethods:
+          - GET
+          - OPTIONS
+          - POST
+          - PUT
+        AllowOrigins:
+          - '*'
+        ExposeHeaders:
+          - x-api-key
+        MaxAge: 90
+    Type: 'AWS::ApiGatewayV2::Api'
+  ApiGatewayPermission:
+      Type: "AWS::Lambda::Permission"
+      DependsOn:
+        - ApiGateway
+        - Lambda
+      Properties:
+        Action: "lambda:InvokeFunction"
+        FunctionName: !GetAtt Lambda.Arn
+        Principal:
+          Fn::Join:
+          - ""
+          - - "apigateway."
+            - Ref: "AWS::URLSuffix"
+  ApiGatewayStage:
+    DependsOn:
+      - ApiGateway
+    Properties:
+      ApiId: !Ref ApiGateway
+      StageName: latest
+    Type: 'AWS::ApiGatewayV2::Stage'
+
+  Route53:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneId: !Sub '{{resolve:ssm:hosted-zone-${Stage}}}'
+      Name: !Sub '${Partner}.${ServiceName}.${ServiceType}.${Stage}.com'
+      Type: 'A'
+      AliasTarget:
+        DNSName: !Sub '{{resolve:ssm:pt-account-${Repository}-${Stage}-distribution}}'
+        HostedZoneId: !Sub '{{resolve:ssm:pt-account-${Repository}-${Stage}-zone}}'
+  DomainMapping:
+    Type: 'AWS::ApiGatewayV2::ApiMapping'
+    DependsOn:
+      - ApiGateway
+      - ApiGatewayStage
+    Properties:
+      DomainName: !Sub '*.${ServiceName}.${ServiceType}.${Stage}.com'
+      ApiId: !Ref ApiGateway
+      ApiMappingKey: !Sub '${Partner}'
+      Stage: !Ref ApiGatewayStage
+
+  Authorizer:
+    Type: 'AWS::ApiGatewayV2::Authorizer'
+    Properties:
+      Name: !Sub '${AuthorizerService}-${Partner}-${Stage}'
+      ApiId: !Ref ApiGateway
+      AuthorizerType: REQUEST
+      AuthorizerCredentialsArn: !Sub '{{resolve:ssm:pt-account-${AuthorizerService}-role}}'
+      EnableSimpleResponses: true
+      AuthorizerPayloadFormatVersion: 2.0
+      AuthorizerUri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${AuthorizerService}-${Partner}-${Stage}/invocations'
+      IdentitySource:
+        - $request.header.Authorization
+    DependsOn:
+      - ApiGateway
+          
+  CodeBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub 'cb-${Repository}-${Partner}-${Stage}'
+      Description: !Sub '${Repository} service build'
+      ServiceRole: !Sub '{{resolve:ssm:pt-global-codebuild-role}}'
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: 'aws/codebuild/standard:5.0'
+        EnvironmentVariables:
+          - Name: STAGE
+            Type: PLAINTEXT
+            Value: !Sub '${Stage}'
+          - Name: PARTNER
+            Type: PLAINTEXT
+            Value: !Sub '${Partner}' 
+      Source:
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 20  
+
+  CodePipeline:
+    DependsOn:
+      - CodeBuild
+    Type: 'AWS::CodePipeline::Pipeline'
+    Properties:
+      Name: !Sub 'cb-${Repository}-${Partner}-${Stage}'
+      RoleArn: !Sub '{{resolve:ssm:pt-global-codepipeline-role}}'
+      Stages:
+        - Name: Source
+          Actions:
+            - InputArtifacts: []
+              Name: Source
+              ActionTypeId:
+                Version: "1"
+                Owner: AWS
+                Category: Source
+                Provider: CodeStarSourceConnection
+              OutputArtifacts:
+                - Name: SourceArtifact
+              RunOrder: 1
+              Configuration:
+                ConnectionArn: !Sub '{{resolve:ssm:pt-global-github-connection}}'
+                FullRepositoryId: !Sub 'pay-theory/${Repository}'
+                BranchName: !Sub '${Partner}-${Stage}'
+                OutputArtifactFormat: "CODE_ZIP"
+        - Name: Deploy
+          Actions:
+            - Name: !Sub 'cd-${Repository}-${Partner}-${Stage}'
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              InputArtifacts:
+                - Name: SourceArtifact
+              Configuration:
+                ProjectName: !Ref CodeBuild
+              RunOrder: 1                
+      ArtifactStore:
+        Type: S3
+        Location: !Sub '{{resolve:ssm:pt-global-codepipeline-bucket}}'
+  
+  # Final deploy
+  Deployment:
+    DependsOn:
+      - Lambda
+      - ApiGateway
+      - ApiGatewayStage
+      - RouteIntegration
+      - DynamoDB
+      - GetRoute
+    Properties:
+      ApiId: !Ref ApiGateway
+      StageName: latest
+    Type: 'AWS::ApiGatewayV2::Deployment'
+    
+  # Final deploy
+  FinalDeployment:
+    DependsOn:
+      - Deployment
+    Properties:
+      Description: Cloudformation Final Deployment
+      ApiId: !Ref ApiGateway
+      StageName: latest
+    Type: 'AWS::ApiGatewayV2::Deployment'             
+Outputs:
+  Renew:
+    Description: Trigger to update/rebuild formation
+    Value: '6/9/2021 11:37 aron'    
