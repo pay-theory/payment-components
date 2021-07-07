@@ -280,5 +280,5 @@ Resources:
 Outputs:
   Renew:
     Description: Trigger to update/rebuild formation
-    Value: 'Fri Jul  2 16:46:29 UTC 2021 touched'
+    Value: 'Tue Jul  6 19:56:50 UTC 2021 touched'
         
