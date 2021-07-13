@@ -79,7 +79,7 @@ These components cannot be used in combination with:
 
 ### Credit Card Account Name & Address Components
 
-[codesandbox credit card address fields example](https://PARTNER.html.example.STAGE.com/pay-theory-ach.html?api_key=YOUR-API-KEY)
+[credit card address fields example](https://PARTNER.html.example.STAGE.com/pay-theory-ach.html?api_key=YOUR-API-KEY)
 
 Six optional components are available to capture additional details about the card:
 
