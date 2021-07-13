@@ -416,7 +416,7 @@ To enable IE 11 support you must include the following in your HTML head:
     <!-- end polyfill -->
 
     <!-- for lab -->
-    <script src="https://PARTNER.sdk.paytheorystudy.com"></script>
+    <script src="https://PARTNER.sdk.paytheorylab.com"></script>
 
     <!-- for sandbox -->
     <script src="https://PARTNER.sdk.paytheorystudy.com"></script>
