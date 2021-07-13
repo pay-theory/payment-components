@@ -79,8 +79,6 @@ These components cannot be used in combination with:
 
 ### Credit Card Account Name & Address Components
 
-[credit card address fields example](https://PARTNER.html.example.STAGE.com/pay-theory-ach.html?api_key=YOUR-API-KEY)
-
 Six optional components are available to capture additional details about the card:
 
 -   Credit Card Account Name Component
@@ -109,6 +107,8 @@ Include a container for each of the optional inputs you wish to use:
 ```
 
 ### ACH Account Number, Bank Code, Name, and Account Type Components
+
+[ACH components example](https://PARTNER.html.example.STAGE.com/pay-theory-ach.html?api_key=YOUR-API-KEY)
 
 These components will provide a full payment implementation.
 
