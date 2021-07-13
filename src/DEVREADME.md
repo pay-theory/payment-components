@@ -25,7 +25,7 @@ There are ten Card and four ACH components available to use for payments.
 
 This component will provide a full payment implementation.
 
-[codesandbox credit card component example](https://codesandbox.io/s/sdk-payment-example-solok)
+[credit card component example](https://PARTNER.html.example.STAGE.com/pay-theory-credit-card.html?api_key=YOUR-API-KEY)
 
 Credit Card Component provides a single form entry combining:
 
@@ -53,7 +53,7 @@ Credit Card Component cannot be used in combination with:
 
 These components will provide a full payment implementation.
 
-[codesandbox credit card components example](https://codesandbox.io/s/sdk-payment-example-individual-cw5c0)
+[credit card components example](https://PARTNER.html.example.STAGE.com/pay-theory-credit-card-number.html?api_key=YOUR-API-KEY)
 
 These components must be combined in a form to enable payment:
 
@@ -79,7 +79,7 @@ These components cannot be used in combination with:
 
 ### Credit Card Account Name & Address Components
 
-[codesandbox credit card address fields example](https://codesandbox.io/s/sdk-payment-example-with-address-543xy)
+[codesandbox credit card address fields example](https://PARTNER.html.example.STAGE.com/pay-theory-ach.html?api_key=YOUR-API-KEY)
 
 Six optional components are available to capture additional details about the card:
 
@@ -416,13 +416,13 @@ To enable IE 11 support you must include the following in your HTML head:
     <!-- end polyfill -->
 
     <!-- for lab -->
-    <script src="https://test.sdk.paytheorystudy.com"></script>
+    <script src="https://PARTNER.sdk.paytheorystudy.com"></script>
 
     <!-- for sandbox -->
-    <script src="https://stage.sdk.paytheorystudy.com"></script>
+    <script src="https://PARTNER.sdk.paytheorystudy.com"></script>
     
     <!-- for live -->
-    <script src="https://sdk.paytheory.com"></script>
+    <script src="https://PARTNER.sdk.paytheory.com"></script>
     
 </head>
 ```
