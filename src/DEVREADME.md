@@ -8,7 +8,7 @@
 ## Import
 
 ```html
-<script src="sdkurl"></script>
+<script src="https://PARTNER.sdk.STAGE.com"></script>
 ```
 
 the SDK will be exposed as
