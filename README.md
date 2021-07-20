@@ -23,7 +23,7 @@
 <script src="https://test.sdk.paytheorystudy.com"></script>
 ```
 
-either way the SDK will be exposed as
+Either way the SDK will be exposed as
 
 ```javascript
 window.paytheory
