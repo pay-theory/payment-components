@@ -224,7 +224,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     if (this.cashed !== _cash) {
       this.cashed = _cash
       if (_cash) {
-        common.postMessageToHostedField('cash-name-iframe', this.environment, {
+        common.postMessageToHostedField('cash-name-iframe', {
           type: 'pt-static:cash-detail',
           data: _cash
         })
