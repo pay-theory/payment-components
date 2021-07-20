@@ -325,7 +325,7 @@ export default async(
         })
 
     const cashObserver = cb => common.handleHostedFieldMessage(common.cashCompleteTypeMessage, message => {
-        cb(message.data)
+        cb(message.barcode)
         if (message.status === 'FAILURE') {
             document.getElementById(common.getTransactingElement()).cash = false
         }
