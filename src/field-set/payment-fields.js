@@ -35,7 +35,7 @@ export default async(
         'account-name': false,
         'account-type': false,
         'cash-name': false,
-        'cash-zip': true,
+        'cash-zip': false,
         'cash-contact': false
     }
 
