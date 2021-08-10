@@ -78,6 +78,14 @@ export const hostedFieldsEndpoint = () => {
     return `https://${data.getEnvironment()}.tags.static.${data.getStage()}.com`
 }
 
+/**
+ * payment model
+ * - amount: int,required
+ * - currency: string,required
+ * - fee_mode: string,required
+ * - pt-instrument: string,required
+ **/
+
 const requestIdempotency = async(apiKey, fee_mode, message) => {
     const payment = message.tokenize ? message.tokenize : message.transact
     payment.fee_mode = fee_mode
