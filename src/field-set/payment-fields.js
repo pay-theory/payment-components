@@ -127,8 +127,8 @@ export default async(
     ) => {
 
         const env = common.getEnvironment()
-        const stage = common.getStage()
-        console.log("mounted", env, stage)
+        const stage = common.getStage();
+        console.log("mounted", env, stage);
 
         const achElements = {
             'account-number': elements['account-number'],
