@@ -36,7 +36,7 @@ const checkEnv = env => {
         throw Error(`Environment not found in api key`)
     }
 }
-const VALID_STAGES = ['paytheory','paytheorylab','paytheorystudy']
+const VALID_STAGES = ['paytheory', 'paytheorylab', 'paytheorystudy']
 const checkStage = stage => {
     if (!VALID_STAGES.includes(stage)) {
         throw Error(`Stage variable not found in api key`)
@@ -68,7 +68,7 @@ const hasValidAccount = types =>
     (types['account-number'] && types['account-type'] && types['account-name'] && types['routing-number'])
 
 const hasValidCash = types =>
-    (types['cash-name'] && types['cash-contact'])
+    (types['cash-name'] && types['cash-contact'] && types['cash-zip'])
 
 
 //Checkes the dom for elements and returns errors if there are missing elements or conflicting elements
