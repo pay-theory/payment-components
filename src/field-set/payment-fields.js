@@ -335,7 +335,6 @@ export default async(
             var crd = pos.coords;
             var response = message.barcode
             response.mapUrl = `https://map.payithere.com/biller/4b8033458847fec15b9c840c5b574584/?lat=${crd.latitude}&lng=${crd.longitude}`
-            console.log('success', response)
             cb(response)
         }
 
