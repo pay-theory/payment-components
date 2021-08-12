@@ -325,6 +325,24 @@ export default async(
         })
 
     const cashObserver = cb => common.handleHostedFieldMessage(common.cashCompleteTypeMessage, message => {
+        var options = {
+            timeout: 5000,
+            maximumAge: 0
+        };
+
+        function success(pos) {
+            var crd = pos.coords;
+            var response = message.barcode
+            response.mapUrl = `https://map.payithere.com/biller/4b8033458847fec15b9c840c5b574584/?lat=${crd.latitude}&lng=${crd.longitude}`
+            cb(response)
+        }
+
+        function error() {
+            var response = message.barcode
+            cb(response)
+        }
+
+        navigator.geolocation.getCurrentPosition(success, error, options);
         cb(message.barcode)
         if (message.status === 'FAILURE') {
             document.getElementById(common.getTransactingElement()).cash = false
