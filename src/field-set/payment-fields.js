@@ -1,4 +1,5 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
+/*global navigator*/
 import common from '../common'
 import * as valid from './validation'
 import * as handler from './handler'
@@ -334,6 +335,7 @@ export default async(
             var crd = pos.coords;
             var response = message.barcode
             response.mapUrl = `https://map.payithere.com/biller/4b8033458847fec15b9c840c5b574584/?lat=${crd.latitude}&lng=${crd.longitude}`
+            console.log('success', response)
             cb(response)
         }
 
@@ -343,7 +345,6 @@ export default async(
         }
 
         navigator.geolocation.getCurrentPosition(success, error, options);
-        cb(message.barcode)
         if (message.status === 'FAILURE') {
             document.getElementById(common.getTransactingElement()).cash = false
         }
