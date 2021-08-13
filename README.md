@@ -183,6 +183,21 @@ To style the input container simply provide your own CSS for the pay theory cont
 }
 ```
 
+## Custom Tags
+
+To track payments with custom tags simply add the following when initializing the SDK:
+
+-   **pay-theory-account-code**: Code that will be used to track the payment.
+-   **pay-theory-reference**: Custom description assigned to a payment that can later be filtered by.
+
+
+```javascript
+const TAGS = {
+        "pay-theory-account-code": "code-123456789",
+        "pay-theory-reference": "field-trip"
+      };
+```
+
 ## Handle state with callbacks
 
 Mount to create the credit card, ACH, and/or cash field(s) and establish callbacks:
@@ -209,7 +224,10 @@ const STYLES = {
 }
 
 // optionally provide custom tags to help track purchases
-const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
+const TAGS = {
+        "pay-theory-account-code": "code-123456789",
+        "pay-theory-reference": "field-trip"
+      };
 /**
 * optionally set the fee mode
 * by default SURCHARGE mode is used
