@@ -31,7 +31,7 @@ window.paytheory
 
 ## Usage
 
-There are ten Card and four ACH components available to use for payments.
+There are ten Card, four ACH, and two Cash components available to use for payments.
 
 ### Credit Card Component
 
@@ -143,10 +143,28 @@ A container is required for each component:
 ...
 </form>
 ```
+### Cash Name and Cash Contact Components
 
-## Card and ACH components on the same page
+These components will provide all info needed to generate cash barcodes.
 
-To display both Card and ACH on the same page make sure only one is visible at a time and the other is wrapped by a parent element whose CSS is set to ``` display:none ```
+These components must be combined in a form to enable Cash payments:
+
+-   Cash Name Component
+-   Cash Contact Component
+
+A container is required for each component:
+
+```html
+<form>
+...
+<div id="pay-theory-cash-name"></div>
+<div id="pay-theory-cash-contact"></div>
+...
+</form>
+```
+## Card, ACH, or Cash components on the same page
+
+To display Card, Cash and/or ACH on the same page make sure only one is visible at a time and the others are wrapped by a parent element whose CSS is set to ``` display:none ```
 
 ## Styling the container
 
@@ -167,7 +185,7 @@ To style the input container simply provide your own CSS for the pay theory cont
 
 ## Handle state with callbacks
 
-Mount to create the credit card field(s) and establish callbacks:
+Mount to create the credit card, ACH, and/or cash field(s) and establish callbacks:
 
 ```javascript
 
@@ -203,8 +221,8 @@ const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
 **/
 const FEE_MODE = window.paytheory.SURCHARGE
 
-// create a place to store the credit card
-let myCreditCard
+// create a place to store the SDK details
+let myPayTheory
 
 (async() => {
     /**
@@ -214,17 +232,17 @@ let myCreditCard
     * as a placeholder
     **/
 
-    myCreditCard = await window.paytheory.create(
+    myPayTheory = await window.paytheory.create(
         API_KEY,
         STYLES,
         TAGS,
         FEE_MODE)
 
     // mount the hosted fields into the container
-    myCreditCard.mount()
+    myPayTheory.mount()
 
     // handle callbacks
-    myCreditCard.readyObserver(ready => {
+    myPayTheory.readyObserver(ready => {
         /**
         * ready is a boolean indicator
         * fires when SDK is loaded and ready
@@ -235,16 +253,16 @@ let myCreditCard
     })
 
     // only needed when REQUIRE_CONFIRMATION is true
-    myCreditCard.tokenizeObserver(tokenized => {
+    myPayTheory.tokenizeObserver(tokenized => {
         /**
-        * results of the payment card tokenization
+        * results of the payment card or ACH tokenization
         * fires once when tokenization is completed
         * this is a good place to enable confirmation
         **/
     })
 
     // only needed when REQUIRE_CONFIRMATION is true
-    myCreditCard.captureObserver(transactionResult => {
+    myPayTheory.captureObserver(transactionResult => {
         /**
         * results of the transaction with confirmation
         * fires once when capture is completed
@@ -252,14 +270,14 @@ let myCreditCard
     })
 
     // only needed when REQUIRE_CONFIRMATION is false
-    myCreditCard.transactedObserver(transactionResult => {
+    myPayTheory.transactedObserver(transactionResult => {
         /**
         * results of the transaction without confirmation
         * fires once when transaction is completed
         **/
     })
 
-    myCreditCard.validObserver(valid => {
+    myPayTheory.validObserver(valid => {
         /**
         * valid is a boolean indicator
         * fires every time the valid state of the hosted field changes
@@ -267,10 +285,17 @@ let myCreditCard
         **/
     })
 
-    myCreditCard.errorObserver(error => {
+    myPayTheory.errorObserver(error => {
         /**
         * error is false or a message
         * fires every time the error state/message changes
+        **/
+    })
+
+    myPayTheory.cashObserver(cashResult => {
+        /**
+        * results of the cash barcode generation
+        * fires once barcode is generated following initTransaction
         **/
     })
 
@@ -280,10 +305,7 @@ let myCreditCard
 
 ## Initiate the transaction
 
-Once the transaction has ended in either success or failure the buyer should be
-directed to a results page.
-
-When ready submit the transaction using the saved credit card:
+When ready submit the transaction using the saved card, ACH, or cash details:
 
 ```javascript
 
@@ -303,7 +325,7 @@ const BUYER_OPTIONS = {
     }
 }
 
-// optional parameter to require confimation step
+// optional parameter to require confimation step for Card or ACH
 const REQUIRE_CONFIRMATION = true
 
 /**
@@ -320,7 +342,7 @@ const clickListener = (e) => {
      * and optionally details about the buyer and a flag for confirmation
      * amount must be a positive integer or an error will be thrown
      * */
-    myCreditCard.initTransaction(
+    myPayTheory.initTransaction(
       AMOUNT,
       BUYER_OPTIONS,
       REQUIRE_CONFIRMATION // defaults to false
@@ -331,12 +353,12 @@ const clickListener = (e) => {
  * optional
  * use the tokenObserver to handle confirmation step
  **/
-myCreditCard.tokenizeObserver((card) => {
+myPayTheory.tokenizeObserver((card) => {
     const confirmation =  `Are you sure you want to make a payment on ${card.brand} card beginning with ${card.first_six}`
     if (confirm(confirmation)) {
-      myCreditCard.confirm();
+      myPayTheory.confirm();
     } else {
-      myCreditCard.cancel();
+      myPayTheory.cancel();
     }
 });
 
@@ -345,7 +367,7 @@ myCreditCard.tokenizeObserver((card) => {
  * use the ready observer from above to apply listeners
  * provide your own component IDs
  **/
-myCreditCard.readyObserver(ready => {
+myPayTheory.readyObserver(ready => {
     ...
     document
         .getComponentById("initiate-payment-button-id")
@@ -355,9 +377,12 @@ myCreditCard.readyObserver(ready => {
 
 ```
 
+Once the transaction has ended in either success or failure the buyer should be
+directed to a results page.
+
 ## Tokenization response
 
-When the confirm option of initTransaction is set to true, the payment card token details are returned in tokenizeObserver
+When the confirm option of initTransaction is set to true, the payment card or ACH token details are returned in tokenizeObserver
 
 *note that the service fee is included in amount*
 
@@ -401,6 +426,24 @@ If a failure or decline occurs during the transaction, the response will be simi
     "type":"some descriptive reason for the failure / decline"
 }
 ```
+
+## Cash response
+
+Upon completion of generating the cash barcode you will have these details returned:
+
+```json
+{	
+    "BarcodeUid":"XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXX@partner",
+    "Merchant":"XXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXX",
+    "barcode":"12345678901234567890",
+    "barcodeFee":"2.0",
+    "barcodeUrl":"https://partner.env.ptbar.codes/XXXXXX",
+    "mapUrl":"https://pay.vanilladirect.com/pages/locations",
+}
+```
+
+It is reccomend at a minimum to provide both the Barcode URL and Map URL as external links to the payee.  
+They can also be embedded in an iFrame on the page or shared in some other method.
 
 ## Polyfill and IE 11
 
