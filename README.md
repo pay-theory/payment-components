@@ -447,7 +447,8 @@ If a failure or decline occurs during the transaction, the response will be simi
 
 ## Cash response
 
-While generating the Barcode it will use the geoloaction to return a map url for the users specific location. If location services aren't turned on for 
+While generating the Barcode it will use the geoloaction to return a map url for the users specific location. 
+If this is the first time it has been requested the user will have the opportunity to accept or decline the request.  
 
 Upon completion of generating the cash barcode you will have these details returned:
 
