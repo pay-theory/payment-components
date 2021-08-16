@@ -229,7 +229,7 @@ const TAGS = {
         "pay-theory-reference": "field-trip"
       };
 /**
-* optionally set the fee mode
+* optionally set the fee mode for Card and ACH
 * by default SURCHARGE mode is used
 * SERVICE_FEE mode is available only when enabled by Pay Theory
 * SURCHARGE mode applies a fee of 2.9% + $0.30 
@@ -447,6 +447,8 @@ If a failure or decline occurs during the transaction, the response will be simi
 
 ## Cash response
 
+While generating the Barcode it will use the geoloaction to return a map url for the users specific location. If location services aren't turned on for 
+
 Upon completion of generating the cash barcode you will have these details returned:
 
 ```json
@@ -460,7 +462,7 @@ Upon completion of generating the cash barcode you will have these details retur
 }
 ```
 
-It is reccomend at a minimum to provide both the Barcode URL and Map URL as external links to the payee.  
+It is recommended at a minimum to provide both the Barcode URL and Map URL as external links to the payee.  
 They can also be embedded in an iFrame on the page or shared in some other method.
 
 ## Polyfill and IE 11
