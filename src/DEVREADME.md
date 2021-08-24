@@ -19,13 +19,13 @@ window.paytheory
 
 ## Usage
 
-There are ten Card and four ACH components available to use for payments.
+There are ten Card, four ACH, and two Cash components available to use for payments.
 
 ### Credit Card Component
 
 This component will provide a full payment implementation.
 
-[credit card component example](https://PARTNER.html.example.STAGE.com/pay-theory-credit-card.html?api_key=YOUR-API-KEY)
+[codesandbox credit card component example](https://codesandbox.io/s/sdk-payment-example-solok)
 
 Credit Card Component provides a single form entry combining:
 
@@ -53,7 +53,7 @@ Credit Card Component cannot be used in combination with:
 
 These components will provide a full payment implementation.
 
-[credit card components example](https://PARTNER.html.example.STAGE.com/pay-theory-credit-card-number.html?api_key=YOUR-API-KEY)
+[codesandbox credit card components example](https://codesandbox.io/s/sdk-payment-example-individual-cw5c0)
 
 These components must be combined in a form to enable payment:
 
@@ -78,6 +78,8 @@ These components cannot be used in combination with:
 -   Credit Card Component
 
 ### Credit Card Account Name & Address Components
+
+[codesandbox credit card address fields example](https://codesandbox.io/s/sdk-payment-example-with-address-543xy)
 
 Six optional components are available to capture additional details about the card:
 
@@ -108,8 +110,6 @@ Include a container for each of the optional inputs you wish to use:
 
 ### ACH Account Number, Bank Code, Name, and Account Type Components
 
-[ACH components example](https://PARTNER.html.example.STAGE.com/pay-theory-ach.html?api_key=YOUR-API-KEY)
-
 These components will provide a full payment implementation.
 
 These components must be combined in a form to enable ACH payment:
@@ -131,10 +131,28 @@ A container is required for each component:
 ...
 </form>
 ```
+### Cash Name and Cash Contact Components
 
-## Card and ACH components on the same page
+These components will provide all info needed to generate cash barcodes.
 
-To display both Card and ACH on the same page make sure only one is visible at a time and the other is wrapped by a parent element whose CSS is set to ``` display:none ```
+These components must be combined in a form to enable Cash payments:
+
+-   Cash Name Component
+-   Cash Contact Component
+
+A container is required for each component:
+
+```html
+<form>
+...
+<div id="pay-theory-cash-name"></div>
+<div id="pay-theory-cash-contact"></div>
+...
+</form>
+```
+## Card, ACH, or Cash components on the same page
+
+To display Card, Cash and/or ACH on the same page make sure only one is visible at a time and the others are wrapped by a parent element whose CSS is set to ``` display:none ```
 
 ## Styling the container
 
@@ -153,9 +171,24 @@ To style the input container simply provide your own CSS for the pay theory cont
 }
 ```
 
+## Custom Tags
+
+To track payments with custom tags simply add the following when initializing the SDK:
+
+-   **pay-theory-account-code**: Code that will be used to track the payment.
+-   **pay-theory-reference**: Custom description assigned to a payment that can later be filtered by.
+
+
+```javascript
+const TAGS = {
+        "pay-theory-account-code": "code-123456789",
+        "pay-theory-reference": "field-trip"
+      };
+```
+
 ## Handle state with callbacks
 
-Mount to create the credit card field(s) and establish callbacks:
+Mount to create the credit card, ACH, and/or cash field(s) and establish callbacks:
 
 ```javascript
 
@@ -179,9 +212,12 @@ const STYLES = {
 }
 
 // optionally provide custom tags to help track purchases
-const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
+const TAGS = {
+        "pay-theory-account-code": "code-123456789",
+        "pay-theory-reference": "field-trip"
+      };
 /**
-* optionally set the fee mode
+* optionally set the fee mode for Card and ACH
 * by default SURCHARGE mode is used
 * SERVICE_FEE mode is available only when enabled by Pay Theory
 * SURCHARGE mode applies a fee of 2.9% + $0.30 
@@ -191,8 +227,8 @@ const TAGS = { YOUR_TAG_KEY: 'YOUR_TAG_VALUE' }
 **/
 const FEE_MODE = window.paytheory.SURCHARGE
 
-// create a place to store the credit card
-let myCreditCard
+// create a place to store the SDK details
+let myPayTheory
 
 (async() => {
     /**
@@ -202,17 +238,17 @@ let myCreditCard
     * as a placeholder
     **/
 
-    myCreditCard = await window.paytheory.create(
+    myPayTheory = await window.paytheory.create(
         API_KEY,
         STYLES,
         TAGS,
         FEE_MODE)
 
     // mount the hosted fields into the container
-    myCreditCard.mount()
+    myPayTheory.mount()
 
     // handle callbacks
-    myCreditCard.readyObserver(ready => {
+    myPayTheory.readyObserver(ready => {
         /**
         * ready is a boolean indicator
         * fires when SDK is loaded and ready
@@ -223,16 +259,16 @@ let myCreditCard
     })
 
     // only needed when REQUIRE_CONFIRMATION is true
-    myCreditCard.tokenizeObserver(tokenized => {
+    myPayTheory.tokenizeObserver(tokenized => {
         /**
-        * results of the payment card tokenization
+        * results of the payment card or ACH tokenization
         * fires once when tokenization is completed
         * this is a good place to enable confirmation
         **/
     })
 
     // only needed when REQUIRE_CONFIRMATION is true
-    myCreditCard.captureObserver(transactionResult => {
+    myPayTheory.captureObserver(transactionResult => {
         /**
         * results of the transaction with confirmation
         * fires once when capture is completed
@@ -240,14 +276,14 @@ let myCreditCard
     })
 
     // only needed when REQUIRE_CONFIRMATION is false
-    myCreditCard.transactedObserver(transactionResult => {
+    myPayTheory.transactedObserver(transactionResult => {
         /**
         * results of the transaction without confirmation
         * fires once when transaction is completed
         **/
     })
 
-    myCreditCard.validObserver(valid => {
+    myPayTheory.validObserver(valid => {
         /**
         * valid is a boolean indicator
         * fires every time the valid state of the hosted field changes
@@ -255,10 +291,17 @@ let myCreditCard
         **/
     })
 
-    myCreditCard.errorObserver(error => {
+    myPayTheory.errorObserver(error => {
         /**
         * error is false or a message
         * fires every time the error state/message changes
+        **/
+    })
+
+    myPayTheory.cashObserver(cashResult => {
+        /**
+        * results of the cash barcode generation
+        * fires once barcode is generated following initTransaction
         **/
     })
 
@@ -268,10 +311,7 @@ let myCreditCard
 
 ## Initiate the transaction
 
-Once the transaction has ended in either success or failure the buyer should be
-directed to a results page.
-
-When ready submit the transaction using the saved credit card:
+When ready submit the transaction using the saved card, ACH, or cash details:
 
 ```javascript
 
@@ -291,7 +331,7 @@ const BUYER_OPTIONS = {
     }
 }
 
-// optional parameter to require confimation step
+// optional parameter to require confimation step for Card or ACH
 const REQUIRE_CONFIRMATION = true
 
 /**
@@ -308,7 +348,7 @@ const clickListener = (e) => {
      * and optionally details about the buyer and a flag for confirmation
      * amount must be a positive integer or an error will be thrown
      * */
-    myCreditCard.initTransaction(
+    myPayTheory.initTransaction(
       AMOUNT,
       BUYER_OPTIONS,
       REQUIRE_CONFIRMATION // defaults to false
@@ -319,12 +359,12 @@ const clickListener = (e) => {
  * optional
  * use the tokenObserver to handle confirmation step
  **/
-myCreditCard.tokenizeObserver((card) => {
+myPayTheory.tokenizeObserver((card) => {
     const confirmation =  `Are you sure you want to make a payment on ${card.brand} card beginning with ${card.first_six}`
     if (confirm(confirmation)) {
-      myCreditCard.confirm();
+      myPayTheory.confirm();
     } else {
-      myCreditCard.cancel();
+      myPayTheory.cancel();
     }
 });
 
@@ -333,7 +373,7 @@ myCreditCard.tokenizeObserver((card) => {
  * use the ready observer from above to apply listeners
  * provide your own component IDs
  **/
-myCreditCard.readyObserver(ready => {
+myPayTheory.readyObserver(ready => {
     ...
     document
         .getComponentById("initiate-payment-button-id")
@@ -343,9 +383,12 @@ myCreditCard.readyObserver(ready => {
 
 ```
 
+Once the transaction has ended in either success or failure the buyer should be
+directed to a results page.
+
 ## Tokenization response
 
-When the confirm option of initTransaction is set to true, the payment card token details are returned in tokenizeObserver
+When the confirm option of initTransaction is set to true, the payment card or ACH token details are returned in tokenizeObserver
 
 *note that the service fee is included in amount*
 
@@ -390,6 +433,27 @@ If a failure or decline occurs during the transaction, the response will be simi
 }
 ```
 
+## Cash response
+
+While generating the Barcode it will use the geoloaction to return a map url for the users specific location. 
+If this is the first time it has been requested the user will have the opportunity to accept or decline the request.  
+
+Upon completion of generating the cash barcode you will have these details returned:
+
+```json
+{	
+    "BarcodeUid":"XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXX@partner",
+    "Merchant":"XXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXX",
+    "barcode":"12345678901234567890",
+    "barcodeFee":"2.0",
+    "barcodeUrl":"https://partner.env.ptbar.codes/XXXXXX",
+    "mapUrl":"https://pay.vanilladirect.com/pages/locations",
+}
+```
+
+It is recommended at a minimum to provide both the Barcode URL and Map URL as external links to the payee.  
+They can also be embedded in an iFrame on the page or shared in some other method.
+
 ## Polyfill and IE 11
 
 To enable IE 11 support you must include the following in your HTML head:
@@ -416,13 +480,13 @@ To enable IE 11 support you must include the following in your HTML head:
     <!-- end polyfill -->
 
     <!-- for lab -->
-    <script src="https://PARTNER.sdk.paytheorylab.com"></script>
+    <script src="https://test.sdk.paytheorystudy.com"></script>
 
     <!-- for sandbox -->
-    <script src="https://PARTNER.sdk.paytheorystudy.com"></script>
+    <script src="https://stage.sdk.paytheorystudy.com"></script>
     
     <!-- for live -->
-    <script src="https://PARTNER.sdk.paytheory.com"></script>
+    <script src="https://sdk.paytheory.com"></script>
     
 </head>
 ```
