@@ -8,7 +8,7 @@
 ## Import
 
 ```html
-<script src="https://PARTNER.sdk.STAGE.com"></script>
+<script src="https://PARTNER.sdk.STAGE.com/index.js"></script>
 ```
 
 the SDK will be exposed as
