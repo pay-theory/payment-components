@@ -71,7 +71,7 @@ export const defaultEnvironment = (() => {
 })()
 
 export const transactionEndpoint = () => {
-    return `https://${data.getEnvironment()}.token.service.${data.getStage()}.com/${data.getEnvironment()}`
+    return `https://${data.getEnvironment()}.${data.getStage()}.com/token-service`
 }
 
 export const hostedFieldsEndpoint = () => {
