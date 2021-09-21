@@ -139,7 +139,7 @@ A container is required for each component:
 <div id="pay-theory-ach-account-name"></div>
 <div id="pay-theory-ach-account-type"></div>
 <div id="pay-theory-ach-account-number"></div>
-<div id="pay-theory-ach-bank-code"></div>
+<div id="pay-theory-ach-routing-number"></div>
 ...
 </form>
 ```
