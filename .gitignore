@@ -3,6 +3,7 @@
 /build
 /coverage
 /legacy
+.DS_Store
 
 # testing
 /coverage
