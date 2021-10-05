@@ -331,6 +331,8 @@ export default async(
             maximumAge: 0
         };
 
+        common.removeAll()
+
         function success(pos) {
             var crd = pos.coords;
             var response = message.barcode
