@@ -227,9 +227,9 @@ export default async(
             framed.cash = { amount, buyerOptions, tags }
         }
         else {
+            framed.resetToken = resetHostToken
             framed.amount = amount
             framed.action = action
-            framed.resetToken = resetHostToken
         }
     }
 
@@ -241,7 +241,13 @@ export default async(
 
         options.forEach(option => {
             if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
-                initializeActions(amount, action, buyerOptions, transacting[option])
+                // initializeActions(amount, action, buyerOptions, transacting[option])
+                element = transacting[option]
+                element.resetToken = resetHostToken
+                common.postMessageToHostedField(common.hostedFieldMap[element.id], {
+                    type: 'pt-static:payment-detail',
+                    data: { amount, buyerOptions, tags, fee_mode, confirmation }
+                  })
             }
         })
     }
