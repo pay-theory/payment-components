@@ -117,7 +117,6 @@ export const generateTokenize = (cb) => {
         console.log(message, cb, transacting)
         document.getElementById(transacting).idempotencyCallback = cb
         document.getElementById(transacting).idempotent = message.payment
-        // idempotency(apiKey, fee_mode, message)
     }
 }
 
@@ -136,16 +135,15 @@ const transfer = (tags, transfer) => {
     )
 }
 
-export const generateCapture = (cb, tags = {}) => {
-    return async() => {
-        isValidTransaction(data.getIdentity())
+export const generateCapture = (cb) => {
+    return async message => {
         let transacting = document.getElementById(data.getTransactingElement())
         let updatedCb = val => {
             data.removeAll()
             cb(val)
         }
         transacting.captureCallback = updatedCb
-        transfer(tags, transacting.idempotent)
+        transacting.transfer = message.transfer
     }
 }
 

@@ -185,7 +185,7 @@ export default async(
 
         // const removeIdempotency = common.handleHostedFieldMessage(common.idempotencyTypeMessage, handler.idempotencyHandler)
 
-        const removeTransferComplete = common.handleHostedFieldMessage(common.transferCompleteTypeMessage, handler.transferCompleteHandler)
+        // const removeTransferComplete = common.handleHostedFieldMessage(common.transferCompleteTypeMessage, handler.transferCompleteHandler)
 
         if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
             return common.handleError('There are no PayTheory fields')
@@ -358,21 +358,13 @@ export default async(
         }
     })
 
-    const host = common.transactionEndpoint()
-    const sdk = {
-        host,
-        apiKey,
-        fee_mode
-    }
-    return common.generateReturn({
+    return common.generateReturn(
             mount,
             initTransaction,
             confirm,
             cancel,
             readyObserver,
             validObserver,
-            cashObserver,
-            sdk
-        },
-        tags)
+            cashObserver
+        )
 }
