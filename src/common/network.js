@@ -115,7 +115,8 @@ export const generateTokenize = (cb, apiKey, fee_mode) => {
     return async message => {
         let transacting = data.getTransactingElement()
         document.getElementById(transacting).idempotencyCallback = cb
-        idempotency(apiKey, fee_mode, message)
+        document.getElementById(transacting).idempotent = message.payment
+        // idempotency(apiKey, fee_mode, message)
     }
 }
 
