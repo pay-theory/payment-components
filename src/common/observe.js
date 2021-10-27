@@ -10,7 +10,7 @@ export const errorObserver = cb => messaging.handleMessage(messaging.errorTypeMe
 
 
 export const tokenizeObserver = (apiKey, fee_mode) =>
-    cb => messaging.handleMessage(
+    cb => messaging.handleHostedFieldMessage(
         messaging.idempotencyTypeMessage,
         network.generateTokenize(cb, apiKey, fee_mode))
 
