@@ -256,12 +256,12 @@ export default async(
     const initTransaction = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
 
     const confirm = () => {
-        if (common.getTransactingElement()) {
-            window.postMessage({
-                    type: 'pt:capture',
+        const transacting = common.getTransactingElement()
+        if (transacting) {
+            common.postMessageToHostedField(common.hostedFieldMap[transacting], {
+                    type: 'pt-static:capture',
                     capture: true
-                },
-                window.location.origin,
+                }
             )
         }
     }
