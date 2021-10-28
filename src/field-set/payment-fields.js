@@ -84,7 +84,7 @@ export default async(
         let transacting = common.getTransactingElement()
         let token = await fetchPtToken()
         common.postMessageToHostedField(common.hostedFieldMap[transacting], {
-            type: `pt-static:cancel`,
+            type: `pt-static:reset_host`,
             token: token['pt-token']
         })
     }
@@ -267,8 +267,11 @@ export default async(
     }
 
     const cancel = async() => {
-        document.getElementById(common.getTransactingElement()).instrument = 'cancel'
-        document.getElementById(common.getTransactingElement()).tokenize = false
+        let transacting = common.getTransactingElement()
+        common.postMessageToHostedField(common.hostedFieldMap[transacting], {
+            type: `pt-static:cancel`
+        })
+        resetHostToken()
         common.removeIdentity()
         common.removeToken()
         common.removeInitialize()
