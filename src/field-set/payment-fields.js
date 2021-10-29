@@ -129,7 +129,6 @@ export default async(
 
         const env = common.getEnvironment()
         const stage = common.getStage();
-        console.log("mounted", env, stage);
 
         const achElements = {
             'account-number': elements['account-number'],
@@ -257,6 +256,7 @@ export default async(
 
     const confirm = () => {
         const transacting = common.getTransactingElement()
+        console.log('confirm', transacting)
         if (transacting) {
             common.postMessageToHostedField(common.hostedFieldMap[transacting], {
                     type: 'pt-static:capture',
@@ -268,10 +268,12 @@ export default async(
 
     const cancel = async() => {
         let transacting = common.getTransactingElement()
-        common.postMessageToHostedField(common.hostedFieldMap[transacting], {
-            type: `pt-static:cancel`
-        })
-        resetHostToken()
+        if (transacting) {
+            common.postMessageToHostedField(common.hostedFieldMap[transacting], {
+                type: `pt-static:cancel`
+            })
+            resetHostToken()
+        }
         common.removeIdentity()
         common.removeToken()
         common.removeInitialize()
