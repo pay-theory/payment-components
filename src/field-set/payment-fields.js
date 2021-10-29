@@ -256,10 +256,9 @@ export default async(
 
     const confirm = () => {
         const transacting = common.getTransactingElement()
-        console.log('confirm', transacting)
         if (transacting) {
             common.postMessageToHostedField(common.hostedFieldMap[transacting], {
-                    type: 'pt-static:capture',
+                    type: 'pt-static:confirm',
                     capture: true
                 }
             )
