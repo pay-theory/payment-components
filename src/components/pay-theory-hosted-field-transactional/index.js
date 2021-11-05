@@ -169,7 +169,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this.instrumented = false
       }
       const successToken = {
-        "receipt_number": this.idempotency.idempotency,
+        "receipt_number": _transfered.tags["pt-number"],
         "last_four": _transfered.last_four,
         "brand": _transfered.card_brand,
         "created_at": _transfered.created_at,
@@ -224,7 +224,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     if (this.cashed !== _cash) {
       this.cashed = _cash
       if (_cash) {
-        console.log('we sent cash details')
         common.postMessageToHostedField('cash-name-iframe', {
           type: 'pt-static:cash-detail',
           data: _cash

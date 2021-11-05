@@ -84,7 +84,7 @@ export default async(
         let transacting = common.getTransactingElement()
         let token = await fetchPtToken()
         common.postMessageToHostedField(common.hostedFieldMap[transacting], {
-            type: `pt-static:cancel`,
+            type: `pt-static:reset_host`,
             token: token['pt-token']
         })
     }
@@ -129,7 +129,6 @@ export default async(
 
         const env = common.getEnvironment()
         const stage = common.getStage();
-        console.log("mounted", env, stage);
 
         const achElements = {
             'account-number': elements['account-number'],
@@ -183,9 +182,9 @@ export default async(
 
         const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(resetHostToken))
 
-        const removeIdempotency = common.handleHostedFieldMessage(common.idempotencyTypeMessage, handler.idempotencyHandler)
+        // const removeIdempotency = common.handleHostedFieldMessage(common.idempotencyTypeMessage, handler.idempotencyHandler)
 
-        const removeTransferComplete = common.handleHostedFieldMessage(common.transferCompleteTypeMessage, handler.transferCompleteHandler)
+        // const removeTransferComplete = common.handleHostedFieldMessage(common.transferCompleteTypeMessage, handler.transferCompleteHandler)
 
         if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
             return common.handleError('There are no PayTheory fields')
@@ -220,28 +219,35 @@ export default async(
         }
     }
 
-    let initializeActions = (amount, action, buyerOptions, framed) => {
-        common.setTransactingElement(framed)
-        if (framed.id.includes('cash')) {
-            framed.resetToken = resetHostToken
-            framed.cash = { amount, buyerOptions, tags }
-        }
-        else {
-            framed.amount = amount
-            framed.action = action
-            framed.resetToken = resetHostToken
-        }
-    }
+    // let initializeActions = (amount, action, buyerOptions, framed) => {
+    //     common.setTransactingElement(framed)
+    //     if (framed.id.includes('cash')) {
+    //         framed.resetToken = resetHostToken
+    //         framed.cash = { amount, buyerOptions, tags }
+    //     }
+    //     else {
+    //         framed.resetToken = resetHostToken
+    //         framed.amount = amount
+    //         framed.action = action
+    //     }
+    // }
 
     const handleInitialized = (amount, buyerOptions, confirmation) => {
 
-        const action = confirmation ? 'tokenize' : 'transact'
+        // const action = confirmation ? 'tokenize' : 'transact'
         common.setBuyer(buyerOptions)
         const options = ['card', 'cash', 'ach']
 
         options.forEach(option => {
             if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
-                initializeActions(amount, action, buyerOptions, transacting[option])
+                // initializeActions(amount, action, buyerOptions, transacting[option])
+                const element = transacting[option]
+                common.setTransactingElement(element)
+                element.resetToken = resetHostToken
+                common.postMessageToHostedField(common.hostedFieldMap[element.id], {
+                    type: 'pt-static:payment-detail',
+                    data: { amount, buyerOptions, tags, fee_mode, confirmation }
+                  })
             }
         })
     }
@@ -249,19 +255,24 @@ export default async(
     const initTransaction = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
 
     const confirm = () => {
-        if (common.getTransactingElement()) {
-            window.postMessage({
-                    type: 'pt:capture',
+        const transacting = common.getTransactingElement()
+        if (transacting) {
+            common.postMessageToHostedField(common.hostedFieldMap[transacting], {
+                    type: 'pt-static:confirm',
                     capture: true
-                },
-                window.location.origin,
+                }
             )
         }
     }
 
     const cancel = async() => {
-        document.getElementById(common.getTransactingElement()).instrument = 'cancel'
-        document.getElementById(common.getTransactingElement()).tokenize = false
+        let transacting = common.getTransactingElement()
+        if (transacting) {
+            common.postMessageToHostedField(common.hostedFieldMap[transacting], {
+                type: `pt-static:cancel`
+            })
+            resetHostToken()
+        }
         common.removeIdentity()
         common.removeToken()
         common.removeInitialize()
@@ -351,21 +362,13 @@ export default async(
         }
     })
 
-    const host = common.transactionEndpoint()
-    const sdk = {
-        host,
-        apiKey,
-        fee_mode
-    }
-    return common.generateReturn({
+    return common.generateReturn(
             mount,
             initTransaction,
             confirm,
             cancel,
             readyObserver,
             validObserver,
-            cashObserver,
-            sdk
-        },
-        tags)
+            cashObserver
+        )
 }

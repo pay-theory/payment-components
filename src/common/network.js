@@ -105,67 +105,66 @@ const requestIdempotency = async(apiKey, fee_mode, message) => {
     )
 }
 
-const idempotency = async(apiKey, fee_mode, message) => {
-    if (isValidTransaction(data.getToken())) {
-        requestIdempotency(apiKey, fee_mode, message)
-    }
-}
+// const idempotency = async(apiKey, fee_mode, message) => {
+//     if (isValidTransaction(data.getToken())) {
+//         requestIdempotency(apiKey, fee_mode, message)
+//     }
+// }
 
-export const generateTokenize = (cb, apiKey, fee_mode) => {
+export const generateTokenize = (cb) => {
     return async message => {
         let transacting = data.getTransactingElement()
         document.getElementById(transacting).idempotencyCallback = cb
-        idempotency(apiKey, fee_mode, message)
+        document.getElementById(transacting).idempotent = message.payment
     }
 }
 
 
-const transfer = (tags, transfer) => {
-    const frameName = data.getTransactingElement().includes('credit-card') ?
-        'card-number' :
-        'account-number'
-    document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
-            type: "pt-static:transfer",
-            element: frameName,
-            transfer,
-            tags
-        },
-        hostedFieldsEndpoint(data.getEnvironment()),
-    )
-}
+// const transfer = (tags, transfer) => {
+//     const frameName = data.getTransactingElement().includes('credit-card') ?
+//         'card-number' :
+//         'account-number'
+//     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
+//             type: "pt-static:transfer",
+//             element: frameName,
+//             transfer,
+//             tags
+//         },
+//         hostedFieldsEndpoint(data.getEnvironment()),
+//     )
+// }
 
-export const generateCapture = (cb, tags = {}) => {
-    return async() => {
-        isValidTransaction(data.getIdentity())
+export const generateCompletetionResponse = (cb) => {
+    return async message => {
         let transacting = document.getElementById(data.getTransactingElement())
         let updatedCb = val => {
             data.removeAll()
             cb(val)
         }
         transacting.captureCallback = updatedCb
-        transfer(tags, transacting.idempotent)
+        transacting.transfer = message.transfer
     }
 }
 
-export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
-    return async message => {
-        isValidTransaction(data.getToken())
+// export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
+//     return async message => {
+//         isValidTransaction(data.getToken())
 
-        let transacting = data.getTransactingElement()
-        const transactingElement = document.getElementById(transacting)
-        transactingElement.idempotencyCallback = () => {
-            let updatedCb = val => {
-                data.removeAll()
-                cb(val)
-            }
-            transactingElement.captureCallback = updatedCb
-            data.removeInitialize()
-            transfer(tags, transactingElement.idempotent)
-        }
+//         let transacting = data.getTransactingElement()
+//         const transactingElement = document.getElementById(transacting)
+//         transactingElement.idempotencyCallback = () => {
+//             let updatedCb = val => {
+//                 data.removeAll()
+//                 cb(val)
+//             }
+//             transactingElement.captureCallback = updatedCb
+//             data.removeInitialize()
+//             transfer(tags, transactingElement.idempotent)
+//         }
 
-        idempotency(apiKey, fee_mode, message)
-    }
-}
+//         idempotency(apiKey, fee_mode, message)
+//     }
+// }
 
 const createCredentials = async(available, options) => {
     if (available) {
