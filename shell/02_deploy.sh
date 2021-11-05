@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+PARTNER=$1
+STAGE=$2
+SERVICE_TYPE=$3
+SERVICE_NAME=$4
+
