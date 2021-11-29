@@ -185,16 +185,25 @@ To style the input container simply provide your own CSS for the pay theory cont
 
 ## Custom Tags
 
+Tags may be passed in optionally to help in tracking and managing payments.
+
 To track payments with custom tags simply add the following when initializing the SDK:
 
 -   **pay-theory-account-code**: Code that will be used to track the payment.
 -   **pay-theory-reference**: Custom description assigned to a payment that can later be filtered by.
 
+To manage payments with custom tags simply add the following when initializing the SDK:
+
+-   **payment-profile-name**: The payment profile to use for the payment.
+
+If you there is no paymentFor more information on payment profiles check out the [Payment Profiles](docs/PAYMENT_PROFILE.md) documentation.
+
 
 ```javascript
 const TAGS = {
         "pay-theory-account-code": "code-123456789",
-        "pay-theory-reference": "field-trip"
+        "pay-theory-reference": "field-trip",
+        "payment-profile-name": "expires-in-30-days"
       };
 ```
 
