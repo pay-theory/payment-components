@@ -1,1 +1,56 @@
-# Payment Profile
+# **Payment Profile**
+
+Payment profiles can be used to set parameters for a spectific payment.
+
+These profiles are able to be set in the Partner Portal.
+
+![Payment Profile List](https://books-ui-assets.s3.amazonaws.com/payment-profile-list.png)
+
+They can be used to make a sure a speicifc payment meets certain requirements before it is processed.
+
+<img src="https://books-ui-assets.s3.amazonaws.com/payment-profile-details.png" alt="Payment Profile Details" width="500"/>
+
+Upon initialization of a transaction it will use these payment profiles to create a payment intent. The payment intent will immediately be charged in the case of a card or ACH payment. In the case of a cash payment the barcode will represent the payment intent and it will not be charged until the barcode is redeemed at a participating retailer.
+
+<br/>
+<br/>
+
+## **Payment Profile Properties**
+
+These are the properties you will be able to set for a payment profile.
+
+### **Payment Profile Name**: The name of the payment profile.
+* Alphanumeric characters and dashes only.
+* Must be unique for the profile.
+
+### **Days Until Expiry**: Days until the payment intent expires and is no longer valid.
+
+### **Payment Activation Date**: Date that a payment using this profile will begin being valid.
+
+### **Payment Expiration Date**: Date that a payment using this profile will stop being valid.
+
+### **Minumum Amount Limit**: Amount the payment must be greater than to be a valid payment.
+* This will default to $1 if left blank.
+
+### **Maximum Amount Limit**: Amount the payment must be less than to be a valid payment.
+* This will default to $5000 if left blank.
+
+### **Enabled**: Payments using this profile will only be valid if the profile is enabled.
+* This allows you to disable a group of payment intents by disabling a payment profile.
+<br/>
+<br/>
+
+## **Payment Profile Use Case**
+
+### Card and ACH Payments
+
+* Payment profiles will be checked at the time of the transaction. If the payment profile is invalid it will fail and return an error message.
+
+* Payment profiles will be most benificial in enuring that a transaction falls within a certain date and price range for Card and ACH payments. <
+### Cash Payments
+
+* Payment profiles will be checked both at the time of barcode creation and at the time of the transaction.
+
+* Payment profiles will be most benificial in enuring that a transaction falls within a certain date and price range just like Card and ACH payments. 
+
+* They will also be benificial in disabling barcodes that a merhcnat no longer wants to collect on.
