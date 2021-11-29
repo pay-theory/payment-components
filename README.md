@@ -196,7 +196,7 @@ To manage payments with custom tags simply add the following when initializing t
 
 -   **payment-profile-name**: The payment profile to use for the payment.
 
-If you there is no paymentFor more information on payment profiles check out the [Payment Profiles](docs/PAYMENT_PROFILE.md) documentation.
+For more information on payment profiles check out the [Payment Profiles](docs/PAYMENT_PROFILE.md) documentation.
 
 
 ```javascript
