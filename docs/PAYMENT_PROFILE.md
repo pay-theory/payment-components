@@ -46,7 +46,7 @@ These are the properties you will be able to set for a payment profile.
 
 * Payment profiles will be checked at the time of the transaction. If the payment profile is invalid it will fail and return an error message.
 
-* Payment profiles will be most benificial in enuring that a transaction falls within a certain date and price range for Card and ACH payments. <
+* Payment profiles will be most benificial in enuring that a transaction falls within a certain date and price range for Card and ACH payments.
 ### Cash Payments
 
 * Payment profiles will be checked both at the time of barcode creation and at the time of the transaction.
