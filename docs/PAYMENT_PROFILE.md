@@ -19,23 +19,23 @@ Upon initialization of a transaction it will use these payment profiles to creat
 
 These are the properties you will be able to set for a payment profile.
 
-### **Payment Profile Name**: The name of the payment profile.
+**Payment Profile Name**: The name of the payment profile.
 * Alphanumeric characters and dashes only.
 * Must be unique for the profile.
 
-### **Days Until Expiry**: Days until the payment intent expires and is no longer valid.
+**Days Until Expiry**: Days until the payment intent expires and is no longer valid.
 
-### **Payment Activation Date**: Date that a payment using this profile will begin being valid.
+**Payment Activation Date**: Date that a payment using this profile will begin being valid.
 
-### **Payment Expiration Date**: Date that a payment using this profile will stop being valid.
+**Payment Expiration Date**: Date that a payment using this profile will stop being valid.
 
-### **Minumum Amount Limit**: Amount the payment must be greater than to be a valid payment.
+**Minumum Amount Limit**: Amount the payment must be greater than to be a valid payment.
 * This will default to $1 if left blank.
 
-### **Maximum Amount Limit**: Amount the payment must be less than to be a valid payment.
+**Maximum Amount Limit**: Amount the payment must be less than to be a valid payment.
 * This will default to $5000 if left blank.
 
-### **Enabled**: Payments using this profile will only be valid if the profile is enabled.
+**Enabled**: Payments using this profile will only be valid if the profile is enabled.
 * This allows you to disable a group of payment intents by disabling a payment profile.
 <br/>
 <br/>
@@ -54,3 +54,21 @@ These are the properties you will be able to set for a payment profile.
 * Payment profiles will be most benificial in enuring that a transaction falls within a certain date and price range just like Card and ACH payments. 
 
 * They will also be benificial in disabling barcodes that a merhcnat no longer wants to collect on.
+
+## Example Use Case
+
+### Expiring Payment
+
+Payments received after a certain date need to be invalid and not be charged.
+* Stale links should not be able to process ACH or Card payments or create Cash barcodes.
+* Previously generated barcodes should not be able to be used to make payments at retailers.
+
+Create a new profile and set these attributes:
+<br/>
+
+**Payment Profile Name**: pay-before-end-of-year
+<br/>
+
+**Payment Expiration Date**: 12/31/2021
+
+The minimum amount limit will be set to $1 and the maximum amount limit will be set to $5000.
