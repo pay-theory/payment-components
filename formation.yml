@@ -163,16 +163,16 @@ Resources:
       AliasTarget:
         DNSName: !Sub '{{resolve:ssm:pt-account-${Repository}-${Stage}-distribution}}'
         HostedZoneId: !Sub '{{resolve:ssm:pt-account-${Repository}-${Stage}-zone}}'
-  DomainMapping:
-    Type: 'AWS::ApiGatewayV2::ApiMapping'
-    DependsOn:
-      - ApiGateway
-      - ApiGatewayStage
-    Properties:
-      DomainName: !Sub '*.${ServiceName}.${ServiceType}.${Stage}.com'
-      ApiId: !Ref ApiGateway
-      ApiMappingKey: !Sub '${Partner}'
-      Stage: !Ref ApiGatewayStage
+#  DomainMapping:
+#    Type: 'AWS::ApiGatewayV2::ApiMapping'
+#    DependsOn:
+#      - ApiGateway
+#      - ApiGatewayStage
+#    Properties:
+#      DomainName: !Sub '*.${ServiceName}.${ServiceType}.${Stage}.com'
+#      ApiId: !Ref ApiGateway
+#      ApiMappingKey: !Sub '${Partner}'
+#      Stage: !Ref ApiGatewayStage
 
   Authorizer:
     Type: 'AWS::ApiGatewayV2::Authorizer'
