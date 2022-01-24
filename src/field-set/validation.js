@@ -5,10 +5,10 @@ const checkApiKey = key => {
     if (typeof key !== 'string') {
         throw Error('Api key should be a string')
     }
-    else if (key.split("-").length !== 3) {
+    else if (key.split("-").length !== 4) {
         throw Error('Api key should be a string formatted [partner]-[paytheorystage]-[number]')
     }
-    else if (!key.split("-")[1].includes("paytheory")) {
+    else if (!key.split("-")[2].includes("paytheory")) {
         throw Error('Api key should be a string formatted [partner]-[paytheorystage]-[number]')
     }
 }
