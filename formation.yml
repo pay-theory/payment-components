@@ -41,6 +41,7 @@ Resources:
       Environment:
         Variables:
           PARTNER: !Sub '${Partner}'
+          MODE: !Sub '${DeploymentMode}'
           STAGE: !Sub '${Stage}'
       FunctionName: !Sub '${Repository}-${Partner}-${Stage}'
       Handler: lambda_function.lambda_handler
