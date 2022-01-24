@@ -13,8 +13,8 @@ export default async(
 ) => {
 
     var keyParts = apiKey.split("-")
-    var environment = keyParts[0]
-    var stage = keyParts[1]
+    var environment = `${keyParts[0]}-${keyParts[1]}`
+    var stage = keyParts[2]
     valid.checkCreateParams(apiKey, fee_mode, tags, styles, environment, stage)
 
     common.removeAll()
