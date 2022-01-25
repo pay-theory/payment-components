@@ -4,11 +4,11 @@ Payment Parameters can be used to set parameters for a spectific payment.
 
 These profiles are able to be set in the Partner Portal.
 
-![Payment Parameters List](https://books-ui-assets.s3.amazonaws.com/payment-profile-list.png)
+![Payment Parameters List](https://books-ui-assets.s3.amazonaws.com/payment-parameters-list.png)
 
 They can be used to make a sure a speicifc payment meets certain requirements before it is processed.
 
-<img src="https://books-ui-assets.s3.amazonaws.com/payment-profile-details.png" alt="Payment Parameters Details" width="500"/>
+<img src="https://books-ui-assets.s3.amazonaws.com/payment-parameters-details.png" alt="Payment Parameters Details" width="500"/>
 
 Upon initialization of a transaction it will use these payment parameters to create a payment intent. The payment intent will immediately be charged in the case of a card or ACH payment. In the case of a cash payment the barcode will represent the payment intent and it will not be charged until the barcode is redeemed at a participating retailer.
 
