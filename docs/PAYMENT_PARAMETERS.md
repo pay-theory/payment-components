@@ -21,13 +21,13 @@ These are the properties you will be able to configure for a set of payment para
 
 **Payment Parameters Name**: The name of the payment parameters.
 * Alphanumeric characters and dashes only.
-* Must be unique for the profile.
+* Must be unique for these parameters.
 
 **Days Until Expiry**: Days until the payment intent expires and is no longer valid.
 
-**Payment Activation Date**: Date that a payment using this profile will begin being valid.
+**Payment Activation Date**: Date that a payment using these parameters will begin being valid.
 
-**Payment Expiration Date**: Date that a payment using this profile will stop being valid.
+**Payment Expiration Date**: Date that a payment using these parameters will stop being valid.
 
 **Minumum Amount Limit**: Amount the payment must be greater than to be a valid payment.
 * This will default to $1 if left blank.
@@ -35,7 +35,7 @@ These are the properties you will be able to configure for a set of payment para
 **Maximum Amount Limit**: Amount the payment must be less than to be a valid payment.
 * This will default to $5000 if left blank.
 
-**Enabled**: Payments using this profile will only be valid if the profile is enabled.
+**Enabled**: Payments using these parameters will only be valid if the parameters are enabled.
 * This allows you to disable a group of payment intents by disabling a set of payment parameters.
 <br/>
 <br/>
@@ -63,7 +63,7 @@ Payments received after a certain date need to be invalid and not be charged.
 * Stale links should not be able to process ACH or Card payments or create Cash barcodes.
 * Previously generated barcodes should not be able to be used to make payments at retailers.
 
-Create a new profile and set these attributes:
+Create a new set of parameters and set these attributes:
 <br/>
 
 **Payment Parameters Name**: pay-before-end-of-year

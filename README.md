@@ -194,16 +194,16 @@ To track payments with custom tags simply add the following when initializing th
 
 To manage payments with custom tags simply add the following when initializing the SDK:
 
--   **payment-profile-name**: The payment profile to use for the payment.
+-   **payment-parameters-name**: The payment parameters to use for the payment.
 
-For more information on payment profiles check out the [Payment Profiles](docs/PAYMENT_PROFILE.md) documentation.
+For more information on payment parameters check out the [Payment Parameters](docs/PAYMENT_PARAMETERS.md) documentation.
 
 
 ```javascript
 const TAGS = {
         "pay-theory-account-code": "code-123456789",
         "pay-theory-reference": "field-trip",
-        "payment-profile-name": "expires-in-30-days"
+        "payment-parameters-name": "expires-in-30-days"
       };
 ```
 
@@ -235,7 +235,8 @@ const STYLES = {
 // optionally provide custom tags to help track purchases
 const TAGS = {
         "pay-theory-account-code": "code-123456789",
-        "pay-theory-reference": "field-trip"
+        "pay-theory-reference": "field-trip",
+        "payment-parameters-name": "expires-in-30-days"
       };
 /**
 * optionally set the fee mode for Card and ACH

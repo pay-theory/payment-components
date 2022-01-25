@@ -178,11 +178,16 @@ To track payments with custom tags simply add the following when initializing th
 -   **pay-theory-account-code**: Code that will be used to track the payment.
 -   **pay-theory-reference**: Custom description assigned to a payment that can later be filtered by.
 
+To manage payments with custom tags simply add the following when initializing the SDK:
+
+-   **payment-parameters-name**: The payment parameters to use for the payment.
+
 
 ```javascript
 const TAGS = {
         "pay-theory-account-code": "code-123456789",
-        "pay-theory-reference": "field-trip"
+        "pay-theory-reference": "field-trip",
+        "payment-parameters-name": "expires-in-30-days"
       };
 ```
 
@@ -214,7 +219,8 @@ const STYLES = {
 // optionally provide custom tags to help track purchases
 const TAGS = {
         "pay-theory-account-code": "code-123456789",
-        "pay-theory-reference": "field-trip"
+        "pay-theory-reference": "field-trip",
+        "payment-parameters-name": "expires-in-30-days"
       };
 /**
 * optionally set the fee mode for Card and ACH
