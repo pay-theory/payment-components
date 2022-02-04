@@ -30,7 +30,17 @@ Parameters:
   DomainVersion:
     Type: String
     Description: The version number of the domain to used
-    Default: 1     
+    Default: 1          
+  TargetMode:
+    Type: String
+    Description: The Deployment Mode
+    Default: standard
+    AllowedValues:
+        - standard
+        - '-new'
+        - '-old'    
+Conditions:
+    isStandard: !Equals [ !Ref TargetMode, standard]  
 Resources:
   # Resources that change service to service 
   Lambda:
@@ -158,7 +168,10 @@ Resources:
     Type: 'AWS::Route53::RecordSet'
     Properties:
       HostedZoneId: !Sub '{{resolve:ssm:hosted-zone-${Stage}}}'
-      Name: !Sub '${Partner}.${ServiceName}.${ServiceType}.${Stage}.com'
+      Name: !If [ 
+        isStandard, 
+        !Sub "${Partner}.${ServiceName}.${ServiceType}.${Stage}.com", 
+        !Sub "${Partner}${TargetMode}.${ServiceName}.${ServiceType}.${Stage}.com" ]  
       Type: 'A'
       AliasTarget:
         DNSName: !Sub '{{resolve:ssm:pt-account-${Repository}-${Stage}-distribution}}'
