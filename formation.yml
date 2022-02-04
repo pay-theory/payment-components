@@ -248,7 +248,7 @@ Resources:
               Configuration:
                 ConnectionArn: !Sub '{{resolve:ssm:pt-global-github-connection}}'
                 FullRepositoryId: !Sub 'pay-theory/${Repository}'
-                BranchName: !Sub '${Partner}-${Stage}'
+                BranchName: !If [ isStandard, !Sub '${Partner}-${Stage}', !Sub '${Partner}${TargetMode}-${Stage}' ]
                 OutputArtifactFormat: "CODE_ZIP"
         - Name: Deploy
           Actions:
