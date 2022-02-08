@@ -9,7 +9,7 @@ GITHUB_ACCESS_TOKEN=$5
 
 TARGET_MODE=$6
 
-if [ $TARGET_MODE -eq "standard" ]; 
+if [ $TARGET_MODE = "standard" ]; 
 then
     MODE=""
 else
