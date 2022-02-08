@@ -15,7 +15,7 @@ then
 else
     MODE=$TARGET_MODE
 fi
-
+echo "MODE set to ${MODE} from ${TARGET_MODE}"
 # if there is a .git directory we are in partner-factory
 if [ -d ".git" ]
 then
