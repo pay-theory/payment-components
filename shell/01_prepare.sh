@@ -33,7 +33,7 @@ else
     BASE_BRANCH=$(git symbolic-ref --short HEAD)
     echo "Creating backup branch with name" ${PARTNER}${MODE}-${STAGE}-${TIMESTAMP}
     git checkout -b ${PARTNER}${MODE}-${STAGE}-${TIMESTAMP}
-    git push -u origin ${PARTNER}${MODE}-${STAGE}
+    git push -u origin ${PARTNER}${MODE}-${STAGE}-${TIMESTAMP}
     echo "Deleting branch ${PARTNER}${MODE}-${STAGE}"
     git push origin --delete ${PARTNER}${MODE}-${STAGE} &>/dev/null
     git branch -D ${PARTNER}${MODE}-${STAGE} &>/dev/null
