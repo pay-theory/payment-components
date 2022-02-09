@@ -13,12 +13,17 @@ export default async(
 ) => {
 
     var keyParts = apiKey.split("-")
-    var environment = keyParts[0]
-    var stage = keyParts[1]
+    let environment = keyParts[0]
+    let stage = keyParts[1]
+    let partnerMode = ""
+    if (['-new','-old'].includes(stage)) {
+        partnerMode = stage
+        stage = keyParts[2]
+    }
     valid.checkCreateParams(apiKey, fee_mode, tags, styles, environment, stage)
 
     common.removeAll()
-    common.setEnvironment(environment)
+    common.setEnvironment(`${environment}${partnerMode}`)
     common.setStage(stage)
 
     const validTypes = {
