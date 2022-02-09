@@ -1,14 +1,16 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import common from '../common'
-
-const checkApiKey = key => {
+// partner mode is used to indicate migration builds
+const checkApiKey = (key,partnerMode) => {
+    const stageIndex = partnerMode ? 2 : 1
+    const keySplitLength = partnerMode ? 4 : 3
     if (typeof key !== 'string') {
         throw Error('Api key should be a string')
     }
-    else if (key.split("-").length !== 3) {
+    else if (key.split("-").length !== keySplitLength) {
         throw Error('Api key should be a string formatted [partner]-[paytheorystage]-[number]')
     }
-    else if (!key.split("-")[1].includes("paytheory")) {
+    else if (!key.split("-")[stageIndex].includes("paytheory")) {
         throw Error('Api key should be a string formatted [partner]-[paytheorystage]-[number]')
     }
 }
@@ -43,8 +45,8 @@ const checkStage = stage => {
     }
 }
 
-const checkCreateParams = (key, mode, tags, styles, env, stage) => {
-    checkApiKey(key)
+const checkCreateParams = (key, mode, tags, styles, env, stage, partnerMode) => {
+    checkApiKey(key,partnerMode)
     checkFeeMode(mode)
     checkTags(tags)
     checkStyles(styles)
