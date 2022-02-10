@@ -8,10 +8,10 @@ const checkApiKey = (key,partnerMode) => {
         throw Error('Api key should be a string')
     }
     else if (key.split("-").length !== keySplitLength) {
-        throw Error('Api key should be a string formatted [partner]-[paytheorystage]-[number]')
+        throw Error(`Api key should be a string formatted in ${keySplitLength} sections`)
     }
     else if (!key.split("-")[stageIndex].includes("paytheory")) {
-        throw Error('Api key should be a string formatted [partner]-[paytheorystage]-[number]')
+        throw Error(`Api key has invalid stage ${key.split("-")[stageIndex]}`)
     }
 }
 
