@@ -73,7 +73,7 @@ export default async(
     let isReady = false
 
     const fetchPtToken = async() => {
-        return await common.getData(`${common.transactionEndpoint()}/token`, apiKey)
+        return await common.getData(`${common.transactionEndpoint()}`, apiKey)
     }
 
     let ptToken = {}
