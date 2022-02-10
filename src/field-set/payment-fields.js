@@ -16,7 +16,7 @@ export default async(
     let environment = keyParts[0]
     let stage = keyParts[1]
     let partnerMode = ""
-    if (['-new','-old'].includes(stage)) {
+    if (['new','old'].includes(stage)) {
         partnerMode = stage
         stage = keyParts[2]
     }
