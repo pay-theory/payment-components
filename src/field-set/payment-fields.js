@@ -23,7 +23,7 @@ export default async(
     valid.checkCreateParams(apiKey, fee_mode, tags, styles, environment, stage, partnerMode)
 
     common.removeAll()
-    common.setEnvironment(`${environment}${partnerMode}`)
+    common.setEnvironment(`${environment}-${partnerMode}`)
     common.setStage(stage)
 
     const validTypes = {
