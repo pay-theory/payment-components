@@ -8,7 +8,7 @@
         "corejs": "3.6.5"
       }
     ],
-    [{ builtIns: false }]
+    ['minify', { builtIns: false }]
   ],
   plugins: ["@babel/plugin-transform-modules-commonjs"]
 }
