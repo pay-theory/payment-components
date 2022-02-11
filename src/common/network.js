@@ -141,8 +141,10 @@ export const generateCompletetionResponse = (cb) => {
             cb(val)
             data.removeAll()
         }
-        transacting?.captureCallback = updatedCb
-        transacting?.transfer = message.transfer
+        if(transacting) {
+            transacting.captureCallback = updatedCb
+            transacting.transfer = message.transfer
+        }
     }
 }
 
