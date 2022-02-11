@@ -20,7 +20,7 @@ export default async(
         partnerMode = stage
         stage = keyParts[2]
     }
-    valid.checkCreateParams(apiKey, fee_mode, tags, styles, environment, stage)
+    valid.checkCreateParams(apiKey, fee_mode, tags, styles, environment, stage, partnerMode)
 
     common.removeAll()
     common.setEnvironment(`${environment}${partnerMode}`)
