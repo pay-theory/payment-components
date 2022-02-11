@@ -213,8 +213,6 @@ export default async(
             removeSibling()
             removeState()
             removeInstrument()
-            removeIdempotency()
-            removeTransferComplete()
             removeHostedError()
         }
     }
