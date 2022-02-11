@@ -138,8 +138,8 @@ export const generateCompletetionResponse = (cb) => {
     return async message => {
         let transacting = document.getElementById(data.getTransactingElement())
         let updatedCb = val => {
-            data.removeAll()
             cb(val)
+            data.removeAll()
         }
         transacting.captureCallback = updatedCb
         transacting.transfer = message.transfer
