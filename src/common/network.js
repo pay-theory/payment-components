@@ -25,8 +25,7 @@ export const getData = async(url, apiKey) => {
         mode: 'cors',
         cache: 'no-cache',
         headers: {
-            'x-api-key': apiKey,
-            'content-type': 'application/json',
+            'x-api-key': apiKey
         }
     }
     /* global fetch */
