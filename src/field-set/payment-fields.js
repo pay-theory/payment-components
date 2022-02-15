@@ -11,8 +11,8 @@ export default async(
     tags = common.defaultTags,
     fee_mode = common.defaultFeeMode
 ) => {
-
-    var keyParts = apiKey.split("-")
+    
+    const keyParts = apiKey.split("-")
     let environment = keyParts[0]
     let stage = keyParts[1]
     let partnerMode = ""
