@@ -23,7 +23,13 @@ export default async(
     valid.checkCreateParams(apiKey, fee_mode, tags, styles, environment, stage, partnerMode)
 
     common.removeAll()
-    const partner_environment = `${environment}-${partnerMode}`
+    let partner_environment = ""
+    if (partnerMode == "") {
+        partner_environment = `${environment}`
+    } else {
+        partner_environment = `${environment}-${partnerMode}`
+    }
+    
     console.log('setting environment',partner_environment)
     common.setEnvironment(partner_environment)
     common.setStage(stage)
