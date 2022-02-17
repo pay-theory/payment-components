@@ -82,7 +82,7 @@ Resources:
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
       PointInTimeRecoverySpecification: 
-          PointInTimeRecoveryEnabled: true 
+        PointInTimeRecoveryEnabled: true
       TableName: !Sub '${Repository}-${Partner}-${Stage}'
 
   # Common Routing         
