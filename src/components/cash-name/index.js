@@ -1,13 +1,11 @@
 import PayTheoryHostedFieldTransactional from '../pay-theory-hosted-field-transactional'
-const NAME = 'cash-name'
-const FIELDS = [{ name: 'cash-name', label: 'Full Name', validations: null, autoComplete: 'name' }];
 
 class CashNameFrame extends PayTheoryHostedFieldTransactional {
 
   constructor() {
     super()
-    this.setFields(FIELDS)
-    this.setFieldName(NAME)
+    this.setFields([{ name: 'cash-name', label: 'Full Name', validations: null, autoComplete: 'name' }])
+    this.setFieldName('cash-name')
   }
 
 }

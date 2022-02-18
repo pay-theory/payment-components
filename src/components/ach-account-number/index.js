@@ -1,13 +1,10 @@
 import PayTheoryHostedFieldTransactional from '../pay-theory-hosted-field-transactional'
-const NAME = 'account-number'
-const FIELDS = [{ name: 'account-number', label: 'Account Number' }];
-
 class ACHAccountNumberFrame extends PayTheoryHostedFieldTransactional {
 
   constructor() {
     super()
-    this.setFields(FIELDS)
-    this.setFieldName(NAME)
+    this.setFields([{ name: 'account-number', label: 'Account Number' }])
+    this.setFieldName('account-number')
   }
 
 }

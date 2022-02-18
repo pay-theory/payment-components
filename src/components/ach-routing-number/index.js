@@ -1,13 +1,11 @@
 import PayTheoryHostedField from '../pay-theory-hosted-field'
-const NAME = 'routing-number'
-const FIELDS = [{ name: 'routing-number', label: 'Routing Number' }];
 
 class ACHRoutingNumberFrame extends PayTheoryHostedField {
 
   constructor() {
     super()
-    this.setFields(FIELDS)
-    this.setFieldName(NAME)
+    this.setFields([{ name: 'routing-number', label: 'Routing Number' }])
+    this.setFieldName('routing-number')
   }
 
 }

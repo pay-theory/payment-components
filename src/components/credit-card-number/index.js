@@ -1,13 +1,11 @@
 import PayTheoryHostedFieldTransactional from '../pay-theory-hosted-field-transactional'
-const NAME = 'card-number'
-const FIELDS = [{ name: 'card-number', label: 'Card Number', validations: 'required', autoComplete: 'cc-number' }]
 
 class CreditCardNumberFrame extends PayTheoryHostedFieldTransactional {
 
   constructor() {
     super()
-    this.setFields(FIELDS)
-    this.setFieldName(NAME)
+    this.setFields([{ name: 'card-number', label: 'Card Number', validations: 'required', autoComplete: 'cc-number' }])
+    this.setFieldName('card-number')
   }
 
 }
