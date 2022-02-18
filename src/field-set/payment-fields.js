@@ -219,11 +219,11 @@ export default async(
         }
     }
 
-    // let initializeActions = (amount, action, buyerOptions, framed) => {
+    // let initializeActions = (amount, action, shippingDetails, framed) => {
     //     common.setTransactingElement(framed)
     //     if (framed.id.includes('cash')) {
     //         framed.resetToken = resetHostToken
-    //         framed.cash = { amount, buyerOptions, tags }
+    //         framed.cash = { amount, shippingDetails, tags }
     //     }
     //     else {
     //         framed.resetToken = resetHostToken
@@ -232,21 +232,21 @@ export default async(
     //     }
     // }
 
-    const handleInitialized = (amount, buyerOptions, confirmation) => {
+    const handleInitialized = (amount, shippingDetails, confirmation) => {
 
         // const action = confirmation ? 'tokenize' : 'transact'
-        common.setBuyer(buyerOptions)
+        common.setBuyer(shippingDetails)
         const options = ['card', 'cash', 'ach']
 
         options.forEach(option => {
             if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
-                // initializeActions(amount, action, buyerOptions, transacting[option])
+                // initializeActions(amount, action, shippingDetails, transacting[option])
                 const element = transacting[option]
                 common.setTransactingElement(element)
                 element.resetToken = resetHostToken
                 common.postMessageToHostedField(common.hostedFieldMap[element.id], {
                     type: 'pt-static:payment-detail',
-                    data: { amount, buyerOptions, tags, fee_mode, confirmation }
+                    data: { amount, shippingDetails, tags, fee_mode, confirmation }
                   })
             }
         })

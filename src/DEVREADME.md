@@ -316,7 +316,7 @@ When ready submit the transaction using the saved card, ACH, or cash details:
 ```javascript
 
 // optionally provide details about the buyer
-const BUYER_OPTIONS = {
+const SHIPPING_DETAILS = {
     "first_name": "Some",
     "last_name": "Body",
     "email": "somebody@gmail.com",
@@ -350,7 +350,7 @@ const clickListener = (e) => {
      * */
     myPayTheory.initTransaction(
       AMOUNT,
-      BUYER_OPTIONS,
+      SHIPPING_DETAILS,
       REQUIRE_CONFIRMATION // defaults to false
     )
 }

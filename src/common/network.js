@@ -214,7 +214,7 @@ const attestBrowser = async(challengeOptions) => {
     }
 }
 
-const sendTransactingMessage = (buyerOptions) => {
+const sendTransactingMessage = (shippingDetails) => {
     const transacting = data.getTransactingElement()
     const types = transacting.includes('-card-') ? data.fieldTypes : transacting.includes('-ach-') ? data.achFieldTypes : data.cashFieldTypes
     types.forEach(field => {
@@ -223,14 +223,14 @@ const sendTransactingMessage = (buyerOptions) => {
             message.postMessageToHostedField(`${field}-iframe`, {
                 type: "pt-static:transact",
                 element: field,
-                buyerOptions
+                shippingDetails
             })
         }
     })
 }
 
 export const generateInitialization = (handleInitialized, challengeOptions) => {
-    return async(amount, buyerOptions = {}, confirmation = false) => {
+    return async(amount, shippingDetails = {}, confirmation = false) => {
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
             if (!Number.isInteger(amount) || amount < 1) {
@@ -240,7 +240,7 @@ export const generateInitialization = (handleInitialized, challengeOptions) => {
             data.setInitialize('init')
             const attested = await attestBrowser(challengeOptions)
 
-            await handleInitialized(amount, buyerOptions, confirmation)
+            await handleInitialized(amount, shippingDetails, confirmation)
 
             if (attested.response) {
                 const transacting = data.getTransactingElement()
@@ -252,7 +252,7 @@ export const generateInitialization = (handleInitialized, challengeOptions) => {
                 })
             }
 
-            sendTransactingMessage(buyerOptions)
+            sendTransactingMessage(shippingDetails)
         }
     }
 }
