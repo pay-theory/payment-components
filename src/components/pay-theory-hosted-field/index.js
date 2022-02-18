@@ -22,7 +22,7 @@ class PayTheoryHostedField extends HTMLElement {
   }
 
   setFieldName(name) {
-    this.setfieldname(name)
+    this.field = name
   }
 
   defineFields() {
