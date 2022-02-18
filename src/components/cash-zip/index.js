@@ -1,13 +1,11 @@
 import PayTheoryHostedField from '../pay-theory-hosted-field'
-const NAME = 'cash-zip'
-const FIELDS = [{ name: 'cash-zip', label: 'Zip Code', validations: null, autoComplete: 'postal-code' }];
 
 class CashZipFrame extends PayTheoryHostedField {
 
   constructor() {
     super()
-    this.setFields(FIELDS)
-    this.setFieldName(NAME)
+    this.setFields([{ name: 'cash-zip', label: 'Zip Code', validations: null, autoComplete: 'postal-code' }])
+    this.setFieldName('cash-zip')
   }
 
 }

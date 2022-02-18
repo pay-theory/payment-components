@@ -1,13 +1,11 @@
 import PayTheoryHostedField from '../pay-theory-hosted-field'
-const NAME = 'billing-state'
-const FIELDS = [{ name: 'billing-state', label: 'Billing State', validations: null, autoComplete: 'region' }];
 
 class CreditCardBillingStateFrame extends PayTheoryHostedField {
 
   constructor() {
     super()
-    this.setFields(FIELDS)
-    this.setFieldName(NAME)
+    this.setFields([{ name: 'billing-state', label: 'Billing State', validations: null, autoComplete: 'region' }])
+    this.setFieldName('billing-state')
   }
 
 }

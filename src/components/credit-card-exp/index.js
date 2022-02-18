@@ -6,8 +6,8 @@ class CreditCardExpirationFrame extends PayTheoryHostedField {
 
   constructor() {
     super()
-    this.setFields(FIELDS)
-    this.setFieldName(NAME)
+    this.setFields([{ name: 'card-exp', label: 'MM/YY', validations: 'required', autoComplete: 'cc-exp' }])
+    this.setFieldName('card-exp')
   }
 
 }

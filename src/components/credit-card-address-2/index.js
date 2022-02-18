@@ -6,8 +6,8 @@ class CreditCardBillingAddress2Frame extends PayTheoryHostedField {
 
   constructor() {
     super()
-    this.setFields(FIELDS)
-    this.setFieldName(NAME)
+    this.setFields([{ name: 'billing-line2', label: "Billing Address Cont'd", validations: null, autoComplete: 'address-line2' }])
+    this.setFieldName('billing-line2')
   }
 
 }
