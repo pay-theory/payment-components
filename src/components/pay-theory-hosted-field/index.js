@@ -14,10 +14,15 @@ class PayTheoryHostedField extends HTMLElement {
     this.fields = []
     this.wrappers = []
     this.validated = {}
+    this.field = ''
   }
 
   setFields(fieldArray) {
     this.fields = fieldArray
+  }
+
+  setFieldName(name) {
+    this.setfieldname(name)
   }
 
   defineFields() {

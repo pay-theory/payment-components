@@ -7,7 +7,7 @@ class CreditCardBillingStateFrame extends PayTheoryHostedField {
   constructor() {
     super()
     this.setFields(FIELDS)
-    this.field = NAME
+    this.setFieldName(NAME)
   }
 
 }
