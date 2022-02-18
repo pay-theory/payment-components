@@ -11,7 +11,7 @@ class CreditCardFrame extends PayTheoryHostedFieldTransactional {
   constructor() {
     super()
     this.setFields(FIELDS)
-    this.field = NAME
+    this.setFieldName(NAME)
   }
 
 }
