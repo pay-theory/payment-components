@@ -1,6 +1,4 @@
 import PayTheoryHostedField from '../pay-theory-hosted-field'
-const NAME = 'billing-line2'
-const FIELDS = [{ name: 'billing-line2', label: "Billing Address Cont'd", validations: null, autoComplete: 'address-line2' }];
 
 class CreditCardBillingAddress2Frame extends PayTheoryHostedField {
 
