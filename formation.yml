@@ -61,9 +61,9 @@ Resources:
         SecurityGroupIds:
           - !Sub '{{resolve:ssm:pt-${Partner}-open-ingress-security}}'
         SubnetIds:
-          - !Sub '{{resolve:ssm:pt-${Partner}-web-subnet-1}}'
-          - !Sub '{{resolve:ssm:pt-${Partner}-web-subnet-2}}'
-          - !Sub '{{resolve:ssm:pt-${Partner}-web-subnet-3}}'
+          - !Sub '{{resolve:ssm:pt-${Partner}-vpc-web-subnet-1}}'
+          - !Sub '{{resolve:ssm:pt-${Partner}-vpc-web-subnet-2}}'
+          - !Sub '{{resolve:ssm:pt-${Partner}-vpc-web-subnet-3}}'
     Type: 'AWS::Lambda::Function'
   DynamoDB:
     Type: 'AWS::DynamoDB::Table'
