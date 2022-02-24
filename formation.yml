@@ -59,15 +59,11 @@ Resources:
       MemorySize: 10240
       VpcConfig:
         SecurityGroupIds:
-          - !ImportValue 
-            'Fn::Sub': 'pt-partner-${Partner}-open-ingress-security'
+          - !Sub '{{resolve:ssm:pt-${Partner}-open-ingress-security}}'
         SubnetIds:
-          - !ImportValue
-            'Fn::Sub': 'pt-partner-${Partner}-web-subnet-1'
-          - !ImportValue 
-            'Fn::Sub': 'pt-partner-${Partner}-web-subnet-2'
-          - !ImportValue 
-            'Fn::Sub': 'pt-partner-${Partner}-web-subnet-3'
+          - !Sub '{{resolve:ssm:pt-${Partner}-web-subnet-1}}'
+          - !Sub '{{resolve:ssm:pt-${Partner}-web-subnet-2}}'
+          - !Sub '{{resolve:ssm:pt-${Partner}-web-subnet-3}}'
     Type: 'AWS::Lambda::Function'
   DynamoDB:
     Type: 'AWS::DynamoDB::Table'
