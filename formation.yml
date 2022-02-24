@@ -59,11 +59,11 @@ Resources:
       MemorySize: 10240
       VpcConfig:
         SecurityGroupIds:
-          - !Sub '{{resolve:ssm:pt-${Partner}-open-ingress-security}}'
+          - !Sub '{{resolve:ssm:pt-partner-${Partner}-open-ingress-security}}'
         SubnetIds:
-          - !Sub '{{resolve:ssm:pt-${Partner}-vpc-web-subnet-1}}'
-          - !Sub '{{resolve:ssm:pt-${Partner}-vpc-web-subnet-2}}'
-          - !Sub '{{resolve:ssm:pt-${Partner}-vpc-web-subnet-3}}'
+          - !Sub '{{resolve:ssm:pt-partner-${Partner}-vpc-web-subnet-1}}'
+          - !Sub '{{resolve:ssm:pt-partner-${Partner}-vpc-web-subnet-2}}'
+          - !Sub '{{resolve:ssm:pt-partner-${Partner}-vpc-web-subnet-3}}'
     Type: 'AWS::Lambda::Function'
   DynamoDB:
     Type: 'AWS::DynamoDB::Table'
