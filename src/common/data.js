@@ -17,7 +17,8 @@ export const defaultStyles = {
     success: {},
     error: {},
 }
-export const SURCHARGE = 'surcharge'
+export const SURCHARGE = 'interchange'
+export const INTERCHANGE = 'interchange'
 export const SERVICE_FEE = 'service_fee'
 
 export const defaultFeeMode = SURCHARGE
