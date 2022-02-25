@@ -182,7 +182,7 @@ Resources:
     Properties:
       DomainName: !Sub '*.${ServiceName}.${ServiceType}.${Stage}.com'
       ApiId: !Ref ApiGateway
-      ApiMappingKey: !Sub '${Partner}-new'
+      ApiMappingKey: !Sub '${Partner}'
       Stage: !Ref ApiGatewayStage
 
   Authorizer:
