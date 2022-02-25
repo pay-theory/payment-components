@@ -174,7 +174,7 @@ Resources:
       AliasTarget:
         DNSName: !Sub '{{resolve:ssm:pt-account-${Repository}-${Stage}-distribution}}'
         HostedZoneId: !Sub '{{resolve:ssm:pt-account-${Repository}-${Stage}-zone}}'
-  DomainMapping:
+  ApiMapping:
     Type: 'AWS::ApiGatewayV2::ApiMapping'
     DependsOn:
       - ApiGateway
