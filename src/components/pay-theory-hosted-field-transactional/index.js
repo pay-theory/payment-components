@@ -144,12 +144,12 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       this.idempotency = _idempotency
       if (this.reset) this.reset()
       const cbToken = {
-        "first_six": _idempotency.bin.first_six,
-        "last_four": _idempotency.bin.last_four,
-        "brand": _idempotency.bin.card_brand,
+        "first_six": _idempotency.first_six,
+        "last_four": _idempotency.last_four,
+        "brand": _idempotency.card_brand,
         "receipt_number": _idempotency.idempotency,
-        "amount": _idempotency.payment.amount,
-        "service_fee": _idempotency.payment.service_fee
+        "amount": _idempotency.amount,
+        "service_fee": _idempotency.service_fee
       }
       this.idempotencyCB(cbToken)
     }
