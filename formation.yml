@@ -59,7 +59,7 @@ Resources:
       MemorySize: 10240
       VpcConfig:
         SecurityGroupIds:
-          - !Sub '{{resolve:ssm:pt-partner-${Partner}-open-ingress-security}}'
+          - !Sub '{{resolve:ssm:pt-partner-${Partner}-vpc-open-ingress-security}}'
         SubnetIds:
           - !Sub '{{resolve:ssm:pt-partner-${Partner}-vpc-web-subnet-1}}'
           - !Sub '{{resolve:ssm:pt-partner-${Partner}-vpc-web-subnet-2}}'
