@@ -13,7 +13,7 @@ export const tokenizeObserver = cb => messaging.handleHostedFieldMessage(
         network.generateTokenize(cb))
 
 export const captureObserver = cb => messaging.handleHostedFieldMessage(
-        messaging.transferCompleteTypeMessage,
+        messaging.confirmationCompleteTypeMessage,
         network.generateCompletetionResponse(cb))
 
 export const transactedObserver = cb => messaging.handleHostedFieldMessage(
