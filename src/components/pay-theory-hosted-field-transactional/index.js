@@ -146,7 +146,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       const cbToken = {
         "first_six": _idempotency.first_six,
         "last_four": _idempotency.last_four,
-        "brand": _idempotency.card_brand,
+        "brand": _idempotency.brand,
         "receipt_number": _idempotency.idempotency,
         "amount": _idempotency.amount,
         "service_fee": _idempotency.service_fee
@@ -171,7 +171,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       const successToken = {
         "receipt_number": _transfered.tags["pt-number"],
         "last_four": _transfered.last_four,
-        "brand": _transfered.card_brand,
+        "brand": _transfered.brand,
         "created_at": _transfered.created_at,
         "amount": _transfered.amount,
         "service_fee": _transfered.service_fee,
