@@ -54,15 +54,9 @@ const checkCreateParams = (key, mode, tags, styles, env, stage, partnerMode) => 
     checkStage(stage)
 }
 
-//Lets the alid observer check that all fields are set to valid before sending a message
-const hasValidStreetAddress = types =>
-    (types['billing-line1'] && types['billing-line2'])
-
-const hasValidAddress = types =>
-    (hasValidStreetAddress(types) && types['billing-city'] && types['billing-state'] && types['billing-zip'])
-
+//Lets the valid observer check that all fields are set to valid before sending a message
 const hasValidCardNumber = types =>
-    (types['card-number'] && types['card-cvv'] && types['card-exp'])
+    (types['card-number'] && types['card-cvv'] && types['card-exp'] && types['billing-zip'])
 
 const hasValidCard = types => hasValidCardNumber(types)
 
@@ -84,6 +78,10 @@ const findCardNumberError = processedElements => {
         error = 'missing credit card CVV field required for payments'
     }
 
+    if(processedElements.reduce(common.findZip, false) === false) {
+        error = 'missing billing zip field required for payments'
+    }
+
     if (document.getElementById(`pay-theory-credit-card`)) {
         error = 'credit card element is not allowed when using credit card number'
     }
@@ -98,6 +96,10 @@ const findCombinedCardError = processedElements => {
 
     if (processedElements.reduce(common.findCVV, false)) {
         error = 'cvv is not allowed when using combined credit card'
+    }
+
+    if(processedElements.reduce(common.findZip, false) === false) {
+        error = 'missing billing zip field required for payments'
     }
 
     if (document.getElementById(`pay-theory-credit-card-number`)) {
