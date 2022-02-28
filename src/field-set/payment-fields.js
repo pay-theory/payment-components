@@ -43,7 +43,7 @@ export default async(
         'billing-line2': true,
         'billing-city': true,
         'billing-state': true,
-        'billing-zip': true,
+        'billing-zip': false,
         'account-number': false,
         'routing-number': false,
         'account-name': false,
