@@ -167,6 +167,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       }
       else {
         this.instrumented = false
+        if(this.reset) this.reset()
       }
       const successToken = {
         "receipt_number": _transfered.receipt_number,
@@ -209,7 +210,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   get resetToken() {
-    return this.amounting
+    return this.reset
   }
 
   set resetToken(_resetToken) {
