@@ -291,5 +291,4 @@ Resources:
 Outputs:
   Renew:
     Description: Trigger to update/rebuild formation
-    Value: 'something else'
-        
+    Value: 'Mar 14 2022'                    
