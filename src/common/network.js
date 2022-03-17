@@ -77,39 +77,6 @@ export const hostedFieldsEndpoint = () => {
     return `https://${data.getEnvironment()}.tags.static.${data.getStage()}.com`
 }
 
-/**
- * payment model
- * - amount: int,required
- * - currency: string,required
- * - fee_mode: string,required
- * - pt-instrument: string,required
- **/
-
-const requestIdempotency = async(apiKey, fee_mode, message) => {
-    const payment = message.tokenize ? message.tokenize : message.transact
-    payment.fee_mode = fee_mode
-    let transacting = data.getTransactingElement()
-    let action = document.getElementById(transacting).action
-    const frameName = transacting.includes('credit-card') ?
-        'card-number' :
-        'account-number'
-    document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
-            type: "pt-static:idempotency",
-            element: frameName,
-            apiKey,
-            payment,
-            action
-        },
-        hostedFieldsEndpoint(data.getEnvironment()),
-    )
-}
-
-// const idempotency = async(apiKey, fee_mode, message) => {
-//     if (isValidTransaction(data.getToken())) {
-//         requestIdempotency(apiKey, fee_mode, message)
-//     }
-// }
-
 export const generateTokenize = (cb) => {
     return async message => {
         let transacting = data.getTransactingElement()
@@ -117,21 +84,6 @@ export const generateTokenize = (cb) => {
         document.getElementById(transacting).idempotent = message.payment
     }
 }
-
-
-// const transfer = (tags, transfer) => {
-//     const frameName = data.getTransactingElement().includes('credit-card') ?
-//         'card-number' :
-//         'account-number'
-//     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
-//             type: "pt-static:transfer",
-//             element: frameName,
-//             transfer,
-//             tags
-//         },
-//         hostedFieldsEndpoint(data.getEnvironment()),
-//     )
-// }
 
 export const generateCompletetionResponse = (cb) => {
     return async message => {
@@ -144,26 +96,6 @@ export const generateCompletetionResponse = (cb) => {
         transacting.transfer = message.transfer
     }
 }
-
-// export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
-//     return async message => {
-//         isValidTransaction(data.getToken())
-
-//         let transacting = data.getTransactingElement()
-//         const transactingElement = document.getElementById(transacting)
-//         transactingElement.idempotencyCallback = () => {
-//             let updatedCb = val => {
-//                 data.removeAll()
-//                 cb(val)
-//             }
-//             transactingElement.captureCallback = updatedCb
-//             data.removeInitialize()
-//             transfer(tags, transactingElement.idempotent)
-//         }
-
-//         idempotency(apiKey, fee_mode, message)
-//     }
-// }
 
 const createCredentials = async(available, options) => {
     if (available) {
