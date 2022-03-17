@@ -121,7 +121,7 @@ export default async(
                 }
 
                 processed.elements.forEach(element => {
-                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles })
+                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles, apiKey})
                     const encodedJson = window.btoa(json)
                     element.frame.token = encodeURI(encodedJson)
                 })
