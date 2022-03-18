@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: finix-transfer Service Deployment
+Parameters:
+  Partner:
+    Type: String
+    Description: The partner you're deploying to.
+  Stage:
+    Type: String
+    Description: The stage you're deploying to.
+  Repository:
+    Type: String
+    Description: The Repository for this Service
+    Default: finix-transfer-service  
+  ServiceName:
+    Type: String
+    Description: The Name for this Service
+    Default: finix-transfer      
+  ServiceType:
+    Type: String
+    Description: The Type of this Service
+    Default: service        
+  EndpointKey:
+    Type: String
+    Description: The Endpoint key of this Service
+    Default: transfer      
+  AuthorizerService:
+    Type: String
+    Description: The Authorizer for this Service
+    Default: vpc-authorizer   
+  DomainVersion:
+    Type: String
+    Description: The version number of the domain to used
+    Default: 1          
+  TargetMode:
+    Type: String
+    Description: The Deployment Mode
+    Default: standard
+    AllowedValues:
+        - standard
+        - '-new'
+        - '-old'    
+Conditions:
+    isStandard: !Equals [ !Ref TargetMode, standard]  
+Resources:
+
+  DynamoDB:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      StreamSpecification: 
+        StreamViewType: NEW_IMAGE    
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification: 
+          PointInTimeRecoveryEnabled: true 
+      TableName: !Sub '${Repository}-${Partner}-${Stage}'
+
+Outputs:
+  Renew:
+    Description: Trigger to update/rebuild formation
+    Value: 'Tue Jul  6 19:56:50 UTC 2021 touched'
+        

@@ -222,6 +222,11 @@ Resources:
       Source:
         Type: CODEPIPELINE
       TimeoutInMinutes: 20  
+      Tags:
+      - Key: Partner
+        Value: !Ref Partner
+      - Key: Stage
+        Value: !Ref Stage
 
   CodePipeline:
     DependsOn:
