@@ -23,15 +23,19 @@ There are ten Card, four ACH, and two Cash components available to use for payme
 
 ### Credit Card Component
 
-This component will provide a full payment implementation.
+These components will provide a full payment implementation.
 
 [codesandbox credit card component example](https://codesandbox.io/s/sdk-payment-example-solok)
 
 Credit Card Component provides a single form entry combining:
 
--   credit card number
--   credit card CVV security code
--   credit card expiration date
+-   Credit Card Number Component
+-   Credit Card Expiration Component
+-   Credit Card CVV Component
+
+You can use this component along with the Zip component to collect all the data needed for a payment.
+
+-   Credit Card Zip Component
 
 Credit Card Component requires a container for the credit card input:
 
@@ -39,6 +43,7 @@ Credit Card Component requires a container for the credit card input:
 <form>
 ...
 <div id="pay-theory-credit-card"></div>
+<div id="pay-theory-credit-card-zip"></div>
 ...
 </form>
 ```
@@ -51,7 +56,7 @@ Credit Card Component cannot be used in combination with:
 
 ### Credit Card Number, Expiration and CVV Components
 
-These components will provide a full payment implementation.
+These components along with the Zip component will provide a full payment implementation.
 
 [codesandbox credit card components example](https://codesandbox.io/s/sdk-payment-example-individual-cw5c0)
 
@@ -60,6 +65,7 @@ These components must be combined in a form to enable payment:
 -   Credit Card Number Component
 -   Credit Card CVV Component
 -   Credit Card Expiration Component
+-   Credit Card Zip Component
 
 A container is required for each component:
 
@@ -69,6 +75,7 @@ A container is required for each component:
 <div id="pay-theory-credit-card-number"></div>
 <div id="pay-theory-credit-card-exp"></div>
 <div id="pay-theory-credit-card-cvv"></div>
+<div id="pay-theory-credit-card-zip"></div>
 ...
 </form>
 ```
@@ -81,14 +88,13 @@ These components cannot be used in combination with:
 
 [codesandbox credit card address fields example](https://codesandbox.io/s/sdk-payment-example-with-address-543xy)
 
-Six optional components are available to capture additional details about the card:
+Five optional components are available to capture additional details about the card:
 
 -   Credit Card Account Name Component
 -   Credit Card Address Line 1 Component
 -   Credit Card Address Line 2 Component
 -   Credit Card City Component
 -   Credit Card State Component
--   Credit Card Zip Code Component
 
 These entries can be placed wherever you prefer in relation to the other credit card component(s).
 
@@ -103,7 +109,6 @@ Include a container for each of the optional inputs you wish to use:
 <div id="pay-theory-credit-card-address-2"></div>
 <div id="pay-theory-credit-card-city"></div>
 <div id="pay-theory-credit-card-state"></div>
-<div id="pay-theory-credit-card-zip"></div>
 ...
 </form>
 ```
@@ -125,9 +130,9 @@ A container is required for each component:
 <form>
 ...
 <div id="pay-theory-ach-account-name"></div>
-<div id="pay-theory-ach-account-type"></div>
 <div id="pay-theory-ach-account-number"></div>
 <div id="pay-theory-ach-routing-number"></div>
+<div id="pay-theory-ach-account-type"></div>
 ...
 </form>
 ```
@@ -224,14 +229,14 @@ const TAGS = {
       };
 /**
 * optionally set the fee mode for Card and ACH
-* by default SURCHARGE mode is used
+* by default INTERCHANGE mode is used
 * SERVICE_FEE mode is available only when enabled by Pay Theory
-* SURCHARGE mode applies a fee of 2.9% + $0.30 
+* INTERCHANGE mode applies a fee of 2.9% + $0.30 
 * to be deducted from original amount
 * SERVICE FEE mode calculates a fee based on predetermined parameters 
 * and adds it to the original amount
 **/
-const FEE_MODE = window.paytheory.SURCHARGE
+const FEE_MODE = window.paytheory.INTERCHANGE
 
 // create a place to store the SDK details
 let myPayTheory
