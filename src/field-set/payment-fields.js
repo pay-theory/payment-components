@@ -86,7 +86,13 @@ export default async(
     let isReady = false
 
     const fetchPtToken = async() => {
-        return await common.getData(`${common.transactionEndpoint()}`, apiKey)
+        for(let i = 0; i < 5; i++) {
+            let token = await common.getData(`${common.transactionEndpoint()}`, apiKey)
+            if (token['pt-token']) {
+                return token
+            }
+        }
+        return {}
     }
 
     let ptToken = {}
@@ -259,7 +265,12 @@ export default async(
         })
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
+    const transact = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
+
+    const initTransaction = (amount, shippingDetails, confirmation) => {
+        console.warn('initTransaction is deprecated. Please use transact instead.')
+        transact(amount, shippingDetails, {}, confirmation)
+    }
 
     const confirm = () => {
         const transacting = common.getTransactingElement()
@@ -372,6 +383,7 @@ export default async(
     return common.generateReturn(
             mount,
             initTransaction,
+            transact,
             confirm,
             cancel,
             readyObserver,
