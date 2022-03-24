@@ -194,11 +194,7 @@ export default async(
         const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, handler.instrumentHandler(transacting))
 
         const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(resetHostToken))
-
-        // const removeIdempotency = common.handleHostedFieldMessage(common.idempotencyTypeMessage, handler.idempotencyHandler)
-
-        // const removeTransferComplete = common.handleHostedFieldMessage(common.transferCompleteTypeMessage, handler.transferCompleteHandler)
-
+    
         if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
             return common.handleError('There are no PayTheory fields')
         }
@@ -226,8 +222,6 @@ export default async(
             removeSibling()
             removeState()
             removeInstrument()
-            removeIdempotency()
-            removeTransferComplete()
             removeHostedError()
         }
     }
