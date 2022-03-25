@@ -8,7 +8,7 @@ export default async(
     apiKey,
     legacy, // this used to be client id, left in place to preserve backwards compatibility
     styles = common.defaultStyles,
-    tags = common.defaultTags,
+    sessionTags = {},
     fee_mode = common.defaultFeeMode
 ) => {
     
@@ -20,7 +20,7 @@ export default async(
         partnerMode = stage
         stage = keyParts[2]
     }
-    valid.checkCreateParams(apiKey, fee_mode, tags, styles, environment, stage, partnerMode)
+    valid.checkCreateParams(apiKey, fee_mode, sessionTags, styles, environment, stage, partnerMode)
 
     common.removeAll()
     let partner_environment = ""
@@ -235,19 +235,6 @@ export default async(
         }
     }
 
-    // let initializeActions = (amount, action, shippingDetails, framed) => {
-    //     common.setTransactingElement(framed)
-    //     if (framed.id.includes('cash')) {
-    //         framed.resetToken = resetHostToken
-    //         framed.cash = { amount, shippingDetails, tags }
-    //     }
-    //     else {
-    //         framed.resetToken = resetHostToken
-    //         framed.amount = amount
-    //         framed.action = action
-    //     }
-    // }
-
     const handleInitialized = (amount, shippingDetails, transactionTags, confirmation) => {
         common.setBuyer(shippingDetails)
         const options = ['card', 'cash', 'ach']
@@ -269,7 +256,7 @@ export default async(
 
     const initTransaction = (amount, shippingDetails, confirmation) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
-        transact(amount, shippingDetails, tags, confirmation)
+        transact(amount, shippingDetails, sessionTags, confirmation)
     }
 
     const confirm = () => {
