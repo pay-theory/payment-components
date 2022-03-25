@@ -127,6 +127,9 @@ export default async(
                 }
 
                 processed.elements.forEach(element => {
+                    if(!token['pt-token']) {
+                        return common.handleError(`No pt-token found`)
+                    }
                     const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles, apiKey})
                     const encodedJson = window.btoa(json)
                     element.frame.token = encodeURI(encodedJson)
@@ -245,21 +248,18 @@ export default async(
     //     }
     // }
 
-    const handleInitialized = (amount, shippingDetails, confirmation) => {
-
-        // const action = confirmation ? 'tokenize' : 'transact'
+    const handleInitialized = (amount, shippingDetails, transactionTags, confirmation) => {
         common.setBuyer(shippingDetails)
         const options = ['card', 'cash', 'ach']
 
         options.forEach(option => {
             if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
-                // initializeActions(amount, action, shippingDetails, transacting[option])
                 const element = transacting[option]
                 common.setTransactingElement(element)
                 element.resetToken = resetHostToken
                 common.postMessageToHostedField(common.hostedFieldMap[element.id], {
                     type: 'pt-static:payment-detail',
-                    data: { amount, shippingDetails, tags, fee_mode, confirmation }
+                    data: { amount, shippingDetails, transactionTags, fee_mode, confirmation }
                   })
             }
         })
@@ -269,7 +269,7 @@ export default async(
 
     const initTransaction = (amount, shippingDetails, confirmation) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
-        transact(amount, shippingDetails, {}, confirmation)
+        transact(amount, shippingDetails, tags, confirmation)
     }
 
     const confirm = () => {
