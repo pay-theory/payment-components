@@ -25,8 +25,7 @@ export const getData = async(url, apiKey) => {
         mode: 'cors',
         cache: 'no-cache',
         headers: {
-            'x-api-key': apiKey,
-            'content-type': 'application/json',
+            'x-api-key': apiKey
         }
     }
     /* global fetch */
@@ -71,45 +70,12 @@ export const defaultEnvironment = (() => {
 })()
 
 export const transactionEndpoint = () => {
-    return `https://${data.getEnvironment()}.rest.${data.getStage()}.com/token-service`
+    return `https://${data.getEnvironment()}.${data.getStage()}.com/pt-token-service/`
 }
 
 export const hostedFieldsEndpoint = () => {
     return `https://${data.getEnvironment()}.tags.static.${data.getStage()}.com`
 }
-
-/**
- * payment model
- * - amount: int,required
- * - currency: string,required
- * - fee_mode: string,required
- * - pt-instrument: string,required
- **/
-
-const requestIdempotency = async(apiKey, fee_mode, message) => {
-    const payment = message.tokenize ? message.tokenize : message.transact
-    payment.fee_mode = fee_mode
-    let transacting = data.getTransactingElement()
-    let action = document.getElementById(transacting).action
-    const frameName = transacting.includes('credit-card') ?
-        'card-number' :
-        'account-number'
-    document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
-            type: "pt-static:idempotency",
-            element: frameName,
-            apiKey,
-            payment,
-            action
-        },
-        hostedFieldsEndpoint(data.getEnvironment()),
-    )
-}
-
-// const idempotency = async(apiKey, fee_mode, message) => {
-//     if (isValidTransaction(data.getToken())) {
-//         requestIdempotency(apiKey, fee_mode, message)
-//     }
-// }
 
 export const generateTokenize = (cb) => {
     return async message => {
@@ -118,21 +84,6 @@ export const generateTokenize = (cb) => {
         document.getElementById(transacting).idempotent = message.payment
     }
 }
-
-
-// const transfer = (tags, transfer) => {
-//     const frameName = data.getTransactingElement().includes('credit-card') ?
-//         'card-number' :
-//         'account-number'
-//     document.getElementsByName(`${frameName}-iframe`)[0].contentWindow.postMessage({
-//             type: "pt-static:transfer",
-//             element: frameName,
-//             transfer,
-//             tags
-//         },
-//         hostedFieldsEndpoint(data.getEnvironment()),
-//     )
-// }
 
 export const generateCompletetionResponse = (cb) => {
     return async message => {
@@ -147,26 +98,6 @@ export const generateCompletetionResponse = (cb) => {
         }
     }
 }
-
-// export const generateTransacted = (cb, apiKey, fee_mode, tags = {}) => {
-//     return async message => {
-//         isValidTransaction(data.getToken())
-
-//         let transacting = data.getTransactingElement()
-//         const transactingElement = document.getElementById(transacting)
-//         transactingElement.idempotencyCallback = () => {
-//             let updatedCb = val => {
-//                 data.removeAll()
-//                 cb(val)
-//             }
-//             transactingElement.captureCallback = updatedCb
-//             data.removeInitialize()
-//             transfer(tags, transactingElement.idempotent)
-//         }
-
-//         idempotency(apiKey, fee_mode, message)
-//     }
-// }
 
 const createCredentials = async(available, options) => {
     if (available) {
@@ -217,7 +148,7 @@ const attestBrowser = async(challengeOptions) => {
     }
 }
 
-const sendTransactingMessage = (buyerOptions) => {
+const sendTransactingMessage = () => {
     const transacting = data.getTransactingElement()
     const types = transacting.includes('-card-') ? data.fieldTypes : transacting.includes('-ach-') ? data.achFieldTypes : data.cashFieldTypes
     types.forEach(field => {
@@ -225,15 +156,14 @@ const sendTransactingMessage = (buyerOptions) => {
         if (iframe) {
             message.postMessageToHostedField(`${field}-iframe`, {
                 type: "pt-static:transact",
-                element: field,
-                buyerOptions
+                element: field
             })
         }
     })
 }
 
 export const generateInitialization = (handleInitialized, challengeOptions) => {
-    return async(amount, buyerOptions = {}, confirmation = false) => {
+    return async(amount, shippingDetails = {}, transactionTags = {}, confirmation = false) => {
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
             if (!Number.isInteger(amount) || amount < 1) {
@@ -243,7 +173,7 @@ export const generateInitialization = (handleInitialized, challengeOptions) => {
             data.setInitialize('init')
             const attested = await attestBrowser(challengeOptions)
 
-            await handleInitialized(amount, buyerOptions, confirmation)
+            await handleInitialized(amount, shippingDetails, transactionTags, confirmation)
 
             if (attested.response) {
                 const transacting = data.getTransactingElement()
@@ -255,7 +185,7 @@ export const generateInitialization = (handleInitialized, challengeOptions) => {
                 })
             }
 
-            sendTransactingMessage(buyerOptions)
+            sendTransactingMessage()
         }
     }
 }

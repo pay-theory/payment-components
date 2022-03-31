@@ -1,15 +1,17 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import common from '../common'
-
-const checkApiKey = key => {
+// partner mode is used to indicate migration builds
+const checkApiKey = (key,partnerMode) => {
+    const stageIndex = partnerMode ? 2 : 1
+    const keySplitLength = partnerMode ? 4 : 3
     if (typeof key !== 'string') {
         throw Error('Api key should be a string')
     }
-    else if (key.split("-").length !== 3) {
-        throw Error('Api key should be a string formatted [partner]-[paytheorystage]-[number]')
+    else if (key.split("-").length !== keySplitLength) {
+        throw Error(`Api key should be a string formatted in ${keySplitLength} sections`)
     }
-    else if (!key.split("-")[1].includes("paytheory")) {
-        throw Error('Api key should be a string formatted [partner]-[paytheorystage]-[number]')
+    else if (!key.split("-")[stageIndex].includes("paytheory")) {
+        throw Error(`Api key has invalid stage ${key.split("-")[stageIndex]}`)
     }
 }
 
@@ -43,8 +45,8 @@ const checkStage = stage => {
     }
 }
 
-const checkCreateParams = (key, mode, tags, styles, env, stage) => {
-    checkApiKey(key)
+const checkCreateParams = (key, mode, tags, styles, env, stage, partnerMode) => {
+    checkApiKey(key,partnerMode)
     checkFeeMode(mode)
     checkTags(tags)
     checkStyles(styles)
@@ -52,15 +54,9 @@ const checkCreateParams = (key, mode, tags, styles, env, stage) => {
     checkStage(stage)
 }
 
-//Lets the alid observer check that all fields are set to valid before sending a message
-const hasValidStreetAddress = types =>
-    (types['billing-line1'] && types['billing-line2'])
-
-const hasValidAddress = types =>
-    (hasValidStreetAddress(types) && types['billing-city'] && types['billing-state'] && types['billing-zip'])
-
+//Lets the valid observer check that all fields are set to valid before sending a message
 const hasValidCardNumber = types =>
-    (types['card-number'] && types['card-cvv'] && types['card-exp'])
+    (types['card-number'] && types['card-cvv'] && types['card-exp'] && types['billing-zip'])
 
 const hasValidCard = types => hasValidCardNumber(types)
 
@@ -82,6 +78,10 @@ const findCardNumberError = processedElements => {
         error = 'missing credit card CVV field required for payments'
     }
 
+    if(processedElements.reduce(common.findZip, false) === false) {
+        error = 'missing billing zip field required for payments'
+    }
+
     if (document.getElementById(`pay-theory-credit-card`)) {
         error = 'credit card element is not allowed when using credit card number'
     }
@@ -96,6 +96,10 @@ const findCombinedCardError = processedElements => {
 
     if (processedElements.reduce(common.findCVV, false)) {
         error = 'cvv is not allowed when using combined credit card'
+    }
+
+    if(processedElements.reduce(common.findZip, false) === false) {
+        error = 'missing billing zip field required for payments'
     }
 
     if (document.getElementById(`pay-theory-credit-card-number`)) {

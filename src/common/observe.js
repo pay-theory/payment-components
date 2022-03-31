@@ -13,7 +13,7 @@ export const tokenizeObserver = cb => messaging.handleHostedFieldMessage(
         network.generateTokenize(cb))
 
 export const captureObserver = cb => messaging.handleHostedFieldMessage(
-        messaging.transferCompleteTypeMessage,
+        messaging.confirmationCompleteTypeMessage,
         network.generateCompletetionResponse(cb))
 
 export const transactedObserver = cb => messaging.handleHostedFieldMessage(
@@ -22,6 +22,7 @@ export const transactedObserver = cb => messaging.handleHostedFieldMessage(
 
 export const generateReturn = ( mount,
         initTransaction,
+        transact,
         confirm,
         cancel,
         readyObserver,
@@ -29,6 +30,7 @@ export const generateReturn = ( mount,
         cashObserver) => Object.create({
     mount,
     initTransaction,
+    transact,
     confirm,
     cancel,
     readyObserver,
