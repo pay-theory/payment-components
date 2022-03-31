@@ -21,7 +21,7 @@ import 'regenerator-runtime'
 import './style.css'
 
 import createPaymentFieldsLegacy from './field-set/payment-fields'
-import { SURCHARGE, SERVICE_FEE } from './common/data'
+import { SURCHARGE, SERVICE_FEE, INTERCHANGE } from './common/data'
 
 const create = (apiKey, styles, tags, feeMode) => createPaymentFieldsLegacy(apiKey, '', styles, tags, feeMode)
 const createPaymentFields = (apiKey, clientId, styles, tags) => {
@@ -33,7 +33,8 @@ window.paytheory = {
     createPaymentFields,
     create,
     SURCHARGE,
-    SERVICE_FEE
+    SERVICE_FEE,
+    INTERCHANGE
 }
 
 export default window.paytheory

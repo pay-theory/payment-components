@@ -23,15 +23,19 @@ There are ten Card, four ACH, and two Cash components available to use for payme
 
 ### Credit Card Component
 
-This component will provide a full payment implementation.
+These components will provide a full payment implementation.
 
 [codesandbox credit card component example](https://codesandbox.io/s/sdk-payment-example-solok)
 
 Credit Card Component provides a single form entry combining:
 
--   credit card number
--   credit card CVV security code
--   credit card expiration date
+-   Credit Card Number Component
+-   Credit Card Expiration Component
+-   Credit Card CVV Component
+
+You can use this component along with the Zip component to collect all the data needed for a payment.
+
+-   Credit Card Zip Component
 
 Credit Card Component requires a container for the credit card input:
 
@@ -39,6 +43,7 @@ Credit Card Component requires a container for the credit card input:
 <form>
 ...
 <div id="pay-theory-credit-card"></div>
+<div id="pay-theory-credit-card-zip"></div>
 ...
 </form>
 ```
@@ -51,7 +56,7 @@ Credit Card Component cannot be used in combination with:
 
 ### Credit Card Number, Expiration and CVV Components
 
-These components will provide a full payment implementation.
+These components along with the Zip component will provide a full payment implementation.
 
 [codesandbox credit card components example](https://codesandbox.io/s/sdk-payment-example-individual-cw5c0)
 
@@ -60,6 +65,7 @@ These components must be combined in a form to enable payment:
 -   Credit Card Number Component
 -   Credit Card CVV Component
 -   Credit Card Expiration Component
+-   Credit Card Zip Component
 
 A container is required for each component:
 
@@ -69,6 +75,7 @@ A container is required for each component:
 <div id="pay-theory-credit-card-number"></div>
 <div id="pay-theory-credit-card-exp"></div>
 <div id="pay-theory-credit-card-cvv"></div>
+<div id="pay-theory-credit-card-zip"></div>
 ...
 </form>
 ```
@@ -81,14 +88,13 @@ These components cannot be used in combination with:
 
 [codesandbox credit card address fields example](https://codesandbox.io/s/sdk-payment-example-with-address-543xy)
 
-Six optional components are available to capture additional details about the card:
+Five optional components are available to capture additional details about the card:
 
 -   Credit Card Account Name Component
 -   Credit Card Address Line 1 Component
 -   Credit Card Address Line 2 Component
 -   Credit Card City Component
 -   Credit Card State Component
--   Credit Card Zip Code Component
 
 These entries can be placed wherever you prefer in relation to the other credit card component(s).
 
@@ -103,7 +109,6 @@ Include a container for each of the optional inputs you wish to use:
 <div id="pay-theory-credit-card-address-2"></div>
 <div id="pay-theory-credit-card-city"></div>
 <div id="pay-theory-credit-card-state"></div>
-<div id="pay-theory-credit-card-zip"></div>
 ...
 </form>
 ```
@@ -125,9 +130,9 @@ A container is required for each component:
 <form>
 ...
 <div id="pay-theory-ach-account-name"></div>
-<div id="pay-theory-ach-account-type"></div>
 <div id="pay-theory-ach-account-number"></div>
 <div id="pay-theory-ach-routing-number"></div>
+<div id="pay-theory-ach-account-type"></div>
 ...
 </form>
 ```
@@ -154,9 +159,9 @@ A container is required for each component:
 
 To display Card, Cash and/or ACH on the same page make sure only one is visible at a time and the others are wrapped by a parent element whose CSS is set to ``` display:none ```
 
-## Styling the container
+## Styling the fields
 
-To style the input container simply provide your own CSS for the pay theory containers you create.
+To style the input parent div simply provide your own CSS for the pay theory containers you create. This is best used to style the height, width, and border of the container.
 
 *Individual pay-theory-credit-card-number containers should be at least 340px wide, pay-theory-credit-card combined input should be 400px*
 
@@ -170,6 +175,47 @@ To style the input container simply provide your own CSS for the pay theory cont
   margin: 4px 0;
 }
 ```
+
+To style the input fields you can pass in a custom style object to the create function in our SDK. This allows you to style the text inside the inputs as well as the style of the radio buttons for the ACH account type.
+
+- default: (Object) The way text fields look when there if ir is not in state success or error.
+- success: (Object) The way text fields look when they have go through validation and are in state success
+- error: (Object) The way text fields look when they have go through validation and are in state error
+- radio: The way radio buttons look for the ACH account type
+    - width: (Int) The width in pixels of the radio buttons
+    - fill: (String) The color of the radio buttons
+    - stroke: (String) The color of the radio buttons border
+    - text: (Object) This style object will be used to style the labels for the radio buttons
+- hidePlaceholder: (Boolean) that allows you to hide the placeholder text in the input fields
+
+
+```javascript
+const STYLES = {
+    default: {
+        color: 'black',
+        fontSize: '14px'
+    },
+    success: {
+        color: '#5cb85c',
+        fontSize: '14px'
+    },
+    error: {
+        color: '#d9534f',
+        fontSize: '14px'
+    },
+    radio: {
+          width: 18,
+          fill: "blue",
+          stroke: "grey",
+          text: {
+            fontSize: "18px",
+            color: "grey"
+          }
+    },
+    hidePlaceholder: false
+}
+```
+
 
 ## Custom Tags
 
@@ -206,14 +252,14 @@ const STYLES = {
         color: 'black',
         fontSize: '14px'
     },
-    success: {
-        color: '#5cb85c',
-        fontSize: '14px'
+    radio: {
+          fill: "blue",
+          stroke: "grey",
+          text: {
+            color: "grey"
+          }
     },
-    error: {
-        color: '#d9534f',
-        fontSize: '14px'
-    }
+    hidePlaceholder: false
 }
 
 // optionally provide custom tags to help track purchases
@@ -224,14 +270,14 @@ const TAGS = {
       };
 /**
 * optionally set the fee mode for Card and ACH
-* by default SURCHARGE mode is used
+* by default INTERCHANGE mode is used
 * SERVICE_FEE mode is available only when enabled by Pay Theory
-* SURCHARGE mode applies a fee of 2.9% + $0.30 
+* INTERCHANGE mode applies a fee of 2.9% + $0.30 
 * to be deducted from original amount
 * SERVICE FEE mode calculates a fee based on predetermined parameters 
 * and adds it to the original amount
 **/
-const FEE_MODE = window.paytheory.SURCHARGE
+const FEE_MODE = window.paytheory.INTERCHANGE
 
 // create a place to store the SDK details
 let myPayTheory
@@ -354,9 +400,10 @@ const clickListener = (e) => {
      * and optionally details about the buyer and a flag for confirmation
      * amount must be a positive integer or an error will be thrown
      * */
-    myPayTheory.initTransaction(
+    myPayTheory.transact(
       AMOUNT,
       SHIPPING_DETAILS,
+      TAGS,
       REQUIRE_CONFIRMATION // defaults to false
     )
 }

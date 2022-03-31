@@ -8,17 +8,30 @@ export default async(
     apiKey,
     legacy, // this used to be client id, left in place to preserve backwards compatibility
     styles = common.defaultStyles,
-    tags = common.defaultTags,
+    sessionTags = {},
     fee_mode = common.defaultFeeMode
 ) => {
-
-    var keyParts = apiKey.split("-")
-    var environment = keyParts[0]
-    var stage = keyParts[1]
-    valid.checkCreateParams(apiKey, fee_mode, tags, styles, environment, stage)
+    
+    const keyParts = apiKey.split("-")
+    let environment = keyParts[0]
+    let stage = keyParts[1]
+    let partnerMode = ""
+    if (['new','old'].includes(stage)) {
+        partnerMode = stage
+        stage = keyParts[2]
+    }
+    valid.checkCreateParams(apiKey, fee_mode, sessionTags, styles, environment, stage, partnerMode)
 
     common.removeAll()
-    common.setEnvironment(environment)
+    let partner_environment = ""
+    if (partnerMode == "") {
+        partner_environment = `${environment}`
+    } else {
+        partner_environment = `${environment}-${partnerMode}`
+    }
+    
+    console.log('setting environment',partner_environment)
+    common.setEnvironment(partner_environment)
     common.setStage(stage)
 
     const validTypes = {
@@ -30,7 +43,7 @@ export default async(
         'billing-line2': true,
         'billing-city': true,
         'billing-state': true,
-        'billing-zip': true,
+        'billing-zip': false,
         'account-number': false,
         'routing-number': false,
         'account-name': false,
@@ -73,7 +86,13 @@ export default async(
     let isReady = false
 
     const fetchPtToken = async() => {
-        return await common.getData(`${common.transactionEndpoint()}/token`, apiKey)
+        for(let i = 0; i < 5; i++) {
+            let token = await common.getData(`${common.transactionEndpoint()}`, apiKey)
+            if (token['pt-token']) {
+                return token
+            }
+        }
+        return {}
     }
 
     let ptToken = {}
@@ -108,7 +127,10 @@ export default async(
                 }
 
                 processed.elements.forEach(element => {
-                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles })
+                    if(!token['pt-token']) {
+                        return common.handleError(`No pt-token found`)
+                    }
+                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles, apiKey})
                     const encodedJson = window.btoa(json)
                     element.frame.token = encodeURI(encodedJson)
                 })
@@ -181,11 +203,7 @@ export default async(
         const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, handler.instrumentHandler(transacting))
 
         const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(resetHostToken))
-
-        // const removeIdempotency = common.handleHostedFieldMessage(common.idempotencyTypeMessage, handler.idempotencyHandler)
-
-        // const removeTransferComplete = common.handleHostedFieldMessage(common.transferCompleteTypeMessage, handler.transferCompleteHandler)
-
+    
         if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
             return common.handleError('There are no PayTheory fields')
         }
@@ -217,40 +235,30 @@ export default async(
         }
     }
 
-    // let initializeActions = (amount, action, buyerOptions, framed) => {
-    //     common.setTransactingElement(framed)
-    //     if (framed.id.includes('cash')) {
-    //         framed.resetToken = resetHostToken
-    //         framed.cash = { amount, buyerOptions, tags }
-    //     }
-    //     else {
-    //         framed.resetToken = resetHostToken
-    //         framed.amount = amount
-    //         framed.action = action
-    //     }
-    // }
-
-    const handleInitialized = (amount, buyerOptions, confirmation) => {
-
-        // const action = confirmation ? 'tokenize' : 'transact'
-        common.setBuyer(buyerOptions)
+    const handleInitialized = (amount, shippingDetails, transactionTags, confirmation) => {
+        common.setBuyer(shippingDetails)
         const options = ['card', 'cash', 'ach']
 
         options.forEach(option => {
             if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
-                // initializeActions(amount, action, buyerOptions, transacting[option])
                 const element = transacting[option]
                 common.setTransactingElement(element)
                 element.resetToken = resetHostToken
                 common.postMessageToHostedField(common.hostedFieldMap[element.id], {
                     type: 'pt-static:payment-detail',
-                    data: { amount, buyerOptions, tags, fee_mode, confirmation }
+                    data: { amount, shippingDetails, transactionTags, fee_mode, confirmation }
                   })
             }
         })
     }
 
-    const initTransaction = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
+    const transact = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
+
+    const initTransaction = (amount, shippingDetails, confirmation) => {
+        console.warn('initTransaction is deprecated. Please use transact instead.')
+        //Passing in the session tags from create because those used to be the only tags that were passed in
+        transact(amount, shippingDetails, sessionTags, confirmation)
+    }
 
     const confirm = () => {
         const transacting = common.getTransactingElement()
@@ -363,6 +371,7 @@ export default async(
     return common.generateReturn(
             mount,
             initTransaction,
+            transact,
             confirm,
             cancel,
             readyObserver,
