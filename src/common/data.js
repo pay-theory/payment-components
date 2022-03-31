@@ -23,8 +23,6 @@ export const SERVICE_FEE = 'service_fee'
 
 export const defaultFeeMode = SURCHARGE
 
-export const defaultTags = {}
-
 export const fields = {
     CREDIT_CARD: 'pay-theory-credit-card',
     CREDIT_CARD_NUMBER: 'pay-theory-credit-card-number',

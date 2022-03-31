@@ -256,6 +256,7 @@ export default async(
 
     const initTransaction = (amount, shippingDetails, confirmation) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
+        //Passing in the session tags from create because those used to be the only tags that were passed in
         transact(amount, shippingDetails, sessionTags, confirmation)
     }
 
