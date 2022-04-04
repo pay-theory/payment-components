@@ -5,22 +5,10 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/pay-theory/payment-components/badge.svg?targetFile=package.json)](https://snyk.io/test/github/pay-theory/payment-components?targetFile=package.json) 
 [![NPM](https://img.shields.io/npm/v/@paytheory/payment-components.svg)](https://www.npmjs.com/package/@paytheory/payment-components)
 
-## Live Import
+## Import
 
 ```html
-<script src="https://sdk.paytheory.com"></script>
-```
-
-## Sandbox Import
-
-```html
-<script src="https://stage.sdk.paytheorystudy.com"></script>
-```
-
-## Test Import
-
-```html
-<script src="https://test.sdk.paytheorystudy.com"></script>
+<script src="https://start.sdk.paytheory.com/index.js"></script>
 ```
 
 the SDK will be exposed as
@@ -544,14 +532,8 @@ To enable IE 11 support you must include the following in your HTML head:
     ></script>
     <!-- end polyfill -->
 
-    <!-- for lab -->
-    <script src="https://test.sdk.paytheorystudy.com"></script>
-
-    <!-- for sandbox -->
-    <script src="https://stage.sdk.paytheorystudy.com"></script>
-    
-    <!-- for live -->
-    <script src="https://sdk.paytheory.com"></script>
+    <!-- import -->
+    <script src="https://start.sdk.paytheory.com/index.js"></script>
     
 </head>
 ```
