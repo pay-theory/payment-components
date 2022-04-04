@@ -178,9 +178,9 @@ To style the input parent div simply provide your own CSS for the pay theory con
 
 To style the input fields you can pass in a custom style object to the create function in our SDK. This allows you to style the text inside the inputs as well as the style of the radio buttons for the ACH account type.
 
-- default: (Object) The way text fields look when there if ir is not in state success or error.
-- success: (Object) The way text fields look when they have go through validation and are in state success
-- error: (Object) The way text fields look when they have go through validation and are in state error
+- default: (Object) The way a text field look when it is not in state success or error.
+- success: (Object) The way a text field look when it is valid. Only applies to fields that go through validation.
+- error: (Object) The way a text field look when it is invalid. Only applies to fields that go through validation.
 - radio: The way radio buttons look for the ACH account type
     - width: (Int) The width in pixels of the radio buttons
     - fill: (String) The color of the radio buttons
@@ -547,6 +547,8 @@ To enable IE 11 support you must include the following in your HTML head:
 ## Deprecations
 
 The createPaymentFields initializing function has been replaced with create. The create function no longer requires a clientID to be passed and allows you to set a feeMode. 
+
+The initTransaction function has been replaced with transact. The transact function allows you to pass in the tags at the time of transaction for more time to collect data before having to pass them.
 
 ## License
 
