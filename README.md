@@ -476,7 +476,7 @@ Upon completion of authorization and capture, details similar to the following a
 
 If a failure or decline occurs during the transaction, the response will be similar to the following:
 
-```json
+```json 
 {
     "receipt_number":"pt-test-XXXXXX",
     "last_four":"XXXX",

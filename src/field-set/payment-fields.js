@@ -22,7 +22,7 @@ export default async(
     }
     valid.checkCreateParams(apiKey, fee_mode, sessionTags, styles, environment, stage, partnerMode)
 
-    common.removeAll()
+    common.removeAll(true)
     let partner_environment = ""
     if (partnerMode == "") {
         partner_environment = `${environment}`
@@ -102,6 +102,7 @@ export default async(
     const resetHostToken = async() => {
         let transacting = common.getTransactingElement()
         let token = await fetchPtToken()
+        common.
         common.postMessageToHostedField(common.hostedFieldMap[transacting], {
             type: `pt-static:reset_host`,
             token: token['pt-token']
@@ -111,11 +112,11 @@ export default async(
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
     const mountProcessedElements = async(processedArray) => {
-        processedArray.forEach(async(processed) => {
+        for (const processed of processedArray) {
             if (processed.elements.length > 0) {
                 let error = processed.errorCheck(processed.elements, transacting[processed.type])
                 if (error) {
-                    return common.handleError(error)
+                    common.handleError(error);
                 }
                 let token;
                 if (ptToken.isUsed) {
@@ -135,7 +136,7 @@ export default async(
                     element.frame.token = encodeURI(encodedJson)
                 })
             }
-        })
+        }
 
         window.postMessage({
                 type: `pay-theory:ready`,
@@ -151,6 +152,7 @@ export default async(
 
         const env = common.getEnvironment()
         const stage = common.getStage();
+        common.removeInitialize()
 
         const achElements = {
             'account-number': elements['account-number'],
@@ -224,7 +226,7 @@ export default async(
 
         mountProcessedElements(processed)
 
-        //returns a funciton that removes any event handlers that were put on the window during the mount function
+        //returns a function that removes any event handlers that were put on the window during the mount function
         return () => {
             removeRelay()
             removeSetup()
@@ -359,7 +361,7 @@ export default async(
         function error() {
             var response = message.barcode
             cb(response)
-            common.removeAll()
+            common.removeAll(true)
         }
 
         navigator.geolocation.getCurrentPosition(success, error, options);

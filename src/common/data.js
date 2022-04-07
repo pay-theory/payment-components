@@ -262,7 +262,7 @@ export const removeInitialize = () => {
     return localStorage.removeItem(INITIALIZE)
 }
 
-export const removeAll = () => {
+export const removeAll = (allowRetry) => {
     removeAutofill()
     removeMerchant()
     removeIdentity()
@@ -272,5 +272,5 @@ export const removeAll = () => {
     removeBin()
     removeTransactingElement()
     removeIdempotency()
-    removeInitialize()
+    if(allowRetry) removeInitialize()
 }

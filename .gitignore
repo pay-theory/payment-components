@@ -4,7 +4,7 @@
 /coverage
 /legacy
 .DS_Store
-
+.idea
 # testing
 /coverage
 .codacy-coverage

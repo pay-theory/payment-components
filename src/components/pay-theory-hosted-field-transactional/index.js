@@ -167,6 +167,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       }
       else {
         this.instrumented = false
+        common.removeInitialize()
         if(this.reset) this.reset()
       }
       const successToken = {
