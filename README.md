@@ -226,7 +226,9 @@ To track payments with custom metadata simply add the following when initializin
 
 To manage payments with payment parameters simply add the following when initializing the transaction:
 
--   **payment-parameters-name**: The payment parameters to use for the payment.
+- **payment-parameters-name**: The payment parameters to use for the payment.
+
+For more information on payment parameters check out the [Payment Parameters](docs/PAYMENT_PARAMETERS.md) documentation.
 
 
 ```javascript
@@ -239,11 +241,11 @@ const TRANSACTION_METADATA = {
 
 ## Session Metadata
 
-To track PayTheory SDK Sessions feel free to pass an object into the create function when initializing the SDK. These can be used to track sessions that are initiated but not completed a transaction.
+To track PayTheory SDK Sessions feel free to pass an object into the create function when initializing the SDK. These can be used to track sessions that are initiated but have not completed a transaction.
 
 ```javascript
 const SESSION_METADATA = {
-        "page-key": "card-payment",
+        "page_key": "card-payment",
         "user_id": "123456789"
       };
 ```
@@ -275,7 +277,7 @@ const STYLES = {
 
 // optionally provide custom metadata to help track sessions
 const SESSION_METADATA = {
-  "page-key": "card-payment",
+  "page_key": "card-payment",
   "user_id": "123456789"
 };
 
