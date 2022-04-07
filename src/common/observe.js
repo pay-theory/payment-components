@@ -1,8 +1,10 @@
 import * as messaging from './message'
 import * as network from './network'
+import * as data from './data'
 
 export const errorObserver = cb => messaging.handleMessage(messaging.errorTypeMessage, message => {
     cb(message.error)
+    data.removeInitialize()
     if (message.throws) {
         throw new Error(message.error)
     }
