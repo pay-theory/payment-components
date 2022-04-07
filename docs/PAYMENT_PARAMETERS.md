@@ -1,4 +1,4 @@
-# **Payment Parameters**
+# Payment Parameters
 
 Payment Parameters can be used to set parameters for a specific payment.
 
@@ -12,7 +12,7 @@ They can be used to make a sure a specific payment meets certain requirements be
 
 Upon initialization of a transaction it will use these payment parameters to create a payment intent. The payment intent will immediately be charged in the case of a card or ACH payment. In the case of a cash payment the barcode will represent the payment intent, and it will not be charged until the barcode is redeemed at a participating retailer.
 
-## **Payment Parameters Properties**
+## Payment Parameters Properties
 
 These are the properties you will be able to configure for a set of payment parameters.
 
@@ -35,7 +35,7 @@ These are the properties you will be able to configure for a set of payment para
 **Enabled**: Payments using these parameters will only be valid if the parameters are enabled.
 * This allows you to disable a group of payment intents by disabling a set of payment parameters.
 
-## **Card, ACH and Cash details**
+## Card, ACH and Cash details
 
 ### Card and ACH Payments
 
@@ -50,7 +50,7 @@ These are the properties you will be able to configure for a set of payment para
 
 * They will also be beneficial in disabling barcodes that a merchant no longer wants to collect on.
 
-## **Example Use Case**
+## Example Use Case
 
 ### Expiring Payment
 
