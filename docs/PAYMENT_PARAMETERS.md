@@ -1,19 +1,16 @@
 # **Payment Parameters**
 
-Payment Parameters can be used to set parameters for a spectific payment.
+Payment Parameters can be used to set parameters for a specific payment.
 
 These profiles are able to be set in the Partner Portal.
 
 ![Payment Parameters List](https://books-ui-assets.s3.amazonaws.com/payment-parameters-list.png)
 
-They can be used to make a sure a speicifc payment meets certain requirements before it is processed.
+They can be used to make a sure a specific payment meets certain requirements before it is processed.
 
-<img src="https://books-ui-assets.s3.amazonaws.com/payment-parameters-details.png" alt="Payment Parameters Details" width="500"/>
+![Payment Parameters List](https://books-ui-assets.s3.amazonaws.com/payment-parameters-details.png)
 
-Upon initialization of a transaction it will use these payment parameters to create a payment intent. The payment intent will immediately be charged in the case of a card or ACH payment. In the case of a cash payment the barcode will represent the payment intent and it will not be charged until the barcode is redeemed at a participating retailer.
-
-<br/>
-<br/>
+Upon initialization of a transaction it will use these payment parameters to create a payment intent. The payment intent will immediately be charged in the case of a card or ACH payment. In the case of a cash payment the barcode will represent the payment intent, and it will not be charged until the barcode is redeemed at a participating retailer.
 
 ## **Payment Parameters Properties**
 
@@ -29,7 +26,7 @@ These are the properties you will be able to configure for a set of payment para
 
 **Payment Expiration Date**: Date that a payment using these parameters will stop being valid.
 
-**Minumum Amount Limit**: Amount the payment must be greater than to be a valid payment.
+**Minimum Amount Limit**: Amount the payment must be greater than to be a valid payment.
 * This will default to $1 if left blank.
 
 **Maximum Amount Limit**: Amount the payment must be less than to be a valid payment.
@@ -37,25 +34,23 @@ These are the properties you will be able to configure for a set of payment para
 
 **Enabled**: Payments using these parameters will only be valid if the parameters are enabled.
 * This allows you to disable a group of payment intents by disabling a set of payment parameters.
-<br/>
-<br/>
 
-## **Payment Parameters Use Case**
+## **Card, ACH and Cash details**
 
 ### Card and ACH Payments
 
 * Payment Parameters will be checked at the time of the transaction. If the payment parameters are invalid it will fail and return an error message.
 
-* Payment Parameters will be most benificial in enuring that a transaction falls within a certain date and price range for Card and ACH payments.
+* Payment Parameters will be most beneficial in ensuring that a transaction falls within a certain date and price range for Card and ACH payments.
 ### Cash Payments
 
 * Payment Parameters will be checked both at the time of barcode creation and at the time of the transaction.
 
-* Payment Parameters will be most benificial in enuring that a transaction falls within a certain date and price range just like Card and ACH payments. 
+* Payment Parameters will be most beneficial in ensuring that a transaction falls within a certain date and price range just like Card and ACH payments. 
 
-* They will also be benificial in disabling barcodes that a merhcnat no longer wants to collect on.
+* They will also be beneficial in disabling barcodes that a merchant no longer wants to collect on.
 
-## Example Use Case
+## **Example Use Case**
 
 ### Expiring Payment
 
@@ -64,11 +59,9 @@ Payments received after a certain date need to be invalid and not be charged.
 * Previously generated barcodes should not be able to be used to make payments at retailers.
 
 Create a new set of parameters and set these attributes:
-<br/>
 
 **Payment Parameters Name**: pay-before-end-of-year
-<br/>
 
-**Payment Expiration Date**: 12/31/2021
+**Payment Expiration Date**: 12/31/2022
 
-The minimum amount limit will be set to $1 and the maximum amount limit will be set to $5000.
+The minimum amount limit will be set to the $1 and the maximum amount limit will be set to $5000 which is our standard default.
