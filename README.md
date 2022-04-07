@@ -217,23 +217,34 @@ const STYLES = {
 ```
 
 
-## Custom Tags
+## Transaction Metadata
 
-To track payments with custom tags simply add the following when initializing the SDK:
+To track payments with custom metadata simply add the following when initializing the transaction:
 
 -   **pay-theory-account-code**: Code that will be used to track the payment.
 -   **pay-theory-reference**: Custom description assigned to a payment that can later be filtered by.
 
-To manage payments with custom tags simply add the following when initializing the SDK:
+To manage payments with payment parameters simply add the following when initializing the transaction:
 
 -   **payment-parameters-name**: The payment parameters to use for the payment.
 
 
 ```javascript
-const TAGS = {
+const TRANSACTION_METADATA = {
         "pay-theory-account-code": "code-123456789",
         "pay-theory-reference": "field-trip",
         "payment-parameters-name": "expires-in-30-days"
+      };
+```
+
+## Session Metadata
+
+To track PayTheory SDK Sessions feel free to pass an object into the create function when initializing the SDK. These can be used to track sessions that are initiated but not completed a transaction.
+
+```javascript
+const SESSION_METADATA = {
+        "page-key": "card-payment",
+        "user_id": "123456789"
       };
 ```
 
@@ -262,12 +273,12 @@ const STYLES = {
     hidePlaceholder: false
 }
 
-// optionally provide custom tags to help track purchases
-const TAGS = {
-        "pay-theory-account-code": "code-123456789",
-        "pay-theory-reference": "field-trip",
-        "payment-parameters-name": "expires-in-30-days"
-      };
+// optionally provide custom metadata to help track sessions
+const SESSION_METADATA = {
+  "page-key": "card-payment",
+  "user_id": "123456789"
+};
+
 /**
 * optionally set the fee mode for Card and ACH
 * by default INTERCHANGE mode is used
@@ -293,7 +304,7 @@ let myPayTheory
     myPayTheory = await window.paytheory.create(
         API_KEY,
         STYLES,
-        TAGS,
+        SESSION_METADATA,
         FEE_MODE)
 
     // mount the hosted fields into the container
@@ -367,21 +378,31 @@ When ready submit the transaction using the saved card, ACH, or cash details:
 
 ```javascript
 
+//Amount passed in is in cents
+const AMOUNT = 1000
+
 // optionally provide details about the buyer
 const SHIPPING_DETAILS = {
-    "first_name": "Some",
-    "last_name": "Body",
-    "email": "somebody@gmail.com",
-    "phone": "3335554444",
-    "personal_address": {
-        "city": "Somewhere",
-        "country": "USA",
-        "region": "OH",
-        "line1": "123 Street St",
-        "line2": "Apartment 17",
-        "postal_code": "12345"
-    }
+  "first_name": "Some",
+  "last_name": "Body",
+  "email": "somebody@gmail.com",
+  "phone": "3335554444",
+  "personal_address": {
+    "city": "Somewhere",
+    "country": "USA",
+    "region": "OH",
+    "line1": "123 Street St",
+    "line2": "Apartment 17",
+    "postal_code": "12345"
+  }
 }
+
+// optionally provide custom metadata to help track transactions
+const TRANSACTION_METADATA = {
+  "pay-theory-account-code": "code-123456789",
+  "pay-theory-reference": "field-trip",
+  "payment-parameters-name": "expires-in-30-days"
+};
 
 // optional parameter to require confimation step for Card or ACH
 const REQUIRE_CONFIRMATION = true
@@ -403,7 +424,7 @@ const clickListener = (e) => {
     myPayTheory.transact(
       AMOUNT,
       SHIPPING_DETAILS,
-      TAGS,
+      TRANSACTION_METADATA,
       REQUIRE_CONFIRMATION // defaults to false
     )
 }
