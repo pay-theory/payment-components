@@ -24,13 +24,11 @@ export default async(
 
     common.removeAll(true)
     let partner_environment = ""
-    if (partnerMode == "") {
+    if (partnerMode === "") {
         partner_environment = `${environment}`
     } else {
         partner_environment = `${environment}-${partnerMode}`
     }
-    
-    console.log('setting environment',partner_environment)
     common.setEnvironment(partner_environment)
     common.setStage(stage)
 
@@ -102,7 +100,6 @@ export default async(
     const resetHostToken = async() => {
         let transacting = common.getTransactingElement()
         let token = await fetchPtToken()
-        common.
         common.postMessageToHostedField(common.hostedFieldMap[transacting], {
             type: `pt-static:reset_host`,
             token: token['pt-token']
