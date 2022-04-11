@@ -163,7 +163,8 @@ const sendTransactingMessage = () => {
 }
 
 export const generateInitialization = (handleInitialized, challengeOptions) => {
-    return async(amount, shippingDetails = {}, transactionTags = {}, confirmation = false) => {
+    return async(inputParameters) => {
+        let {amount, shippingDetails = {}, metadata = {}, confirmation = false} = inputParameters
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
             if (!Number.isInteger(amount) || amount < 1) {
@@ -173,7 +174,7 @@ export const generateInitialization = (handleInitialized, challengeOptions) => {
             data.setInitialize('init')
             const attested = await attestBrowser(challengeOptions)
 
-            await handleInitialized(amount, shippingDetails, transactionTags, confirmation)
+            await handleInitialized(amount, shippingDetails, metadata, confirmation)
 
             if (attested.response) {
                 const transacting = data.getTransactingElement()

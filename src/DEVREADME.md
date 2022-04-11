@@ -421,12 +421,12 @@ const clickListener = (e) => {
      * and optionally details about the buyer and a flag for confirmation
      * amount must be a positive integer or an error will be thrown
      * */
-    myPayTheory.transact(
-      AMOUNT,
-      SHIPPING_DETAILS, 
-      TRANSACTION_METADATA,
-      REQUIRE_CONFIRMATION // defaults to false
-    )
+    myPayTheory.transact({
+      amount: AMOUNT,
+      shippingDetails: SHIPPING_DETAILS,
+      metadata: TRANSACTION_METADATA,
+      confirmation: REQUIRE_CONFIRMATION // defaults to false
+    })
 }
 
 /**
