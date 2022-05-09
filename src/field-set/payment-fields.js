@@ -237,6 +237,8 @@ export default async(
     const handleInitialized = (amount, shippingDetails, transactionTags, confirmation) => {
         common.setBuyer(shippingDetails)
         const options = ['card', 'cash', 'ach']
+        // Add timezone to the tags for use with sending receipts from PayTheory
+        transactionTags.paymentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
         options.forEach(option => {
             if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
