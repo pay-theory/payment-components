@@ -247,32 +247,32 @@ export default async(
         })
     }
 
-    const handleInitialized = (amount, shippingDetails, transactionTags, confirmation) => {
-        common.setBuyer(shippingDetails)
+    const handleInitialized = (amount, customerInfo, transactionTags, confirmation) => {
+        common.setBuyer(customerInfo)
         // Add timezone to the tags for use with sending receipts from PayTheory
         transactionTags['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
         // Define the message type and data to send to the hosted field
         const type = 'pt-static:payment-detail'
-        const data = { amount, shippingDetails, transactionTags, fee_mode, confirmation }
+        const data = { amount, customerInfo, transactionTags, fee_mode, confirmation }
         handleInitMessage(type, data)
     }
 
-    const handleRecurring = (amount, shippingDetails, recurringMetadata, confirmation, recurringSettings) => {
-        common.setBuyer(shippingDetails)
+    const handleRecurring = (amount, customerInfo, recurringMetadata, confirmation, recurringSettings) => {
+        common.setBuyer(customerInfo)
         // Add timezone to the tags for use with sending receipts from PayTheory
         recurringMetadata['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
         // Define the message type and data to send to the hosted field
         const type = 'pt-static:recurring-detail'
-        const data =  { amount, shippingDetails, recurringMetadata, fee_mode, confirmation, recurringSettings }
+        const data =  { amount, customerInfo, recurringMetadata, fee_mode, confirmation, recurringSettings }
         handleInitMessage(type, data)
     }
 
     const transact = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
 
-    const initTransaction = (amount, shippingDetails, confirmation) => {
+    const initTransaction = (amount, customerInfo, confirmation) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
         //Passing in the session tags from create because those used to be the only tags that were passed in
-        transact({amount, shippingDetails, metadata: sessionTags, confirmation})
+        transact({amount, customerInfo, metadata: sessionTags, confirmation})
     }
 
     const createRecurringPayment = common.generateRecurring(handleRecurring, ptToken.token.challengeOptions)
