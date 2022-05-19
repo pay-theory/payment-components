@@ -385,8 +385,8 @@ When ready submit the transaction using the saved card, ACH, or cash details:
 //Amount passed in is in cents
 const AMOUNT = 1000
 
-// optionally provide details about the buyer
-const SHIPPING_DETAILS = {
+// optionally provide details about the customer
+const CUSTOMER_INFO = {
     "first_name": "Some",
     "last_name": "Body",
     "email": "somebody@gmail.com",
@@ -427,7 +427,7 @@ const clickListener = (e) => {
      * */
     myPayTheory.transact({
       amount: AMOUNT,
-      shippingDetails: SHIPPING_DETAILS,
+      customerInfo: CUSTOMER_INFO,
       metadata: TRANSACTION_METADATA,
       confirmation: REQUIRE_CONFIRMATION // defaults to false
     })
