@@ -234,23 +234,37 @@ export default async(
         }
     }
 
-    const handleInitialized = (amount, shippingDetails, transactionTags, confirmation) => {
-        common.setBuyer(shippingDetails)
+    const handleInitMessage = (type, data) => {
         const options = ['card', 'cash', 'ach']
-        // Add timezone to the tags for use with sending receipts from PayTheory
-        transactionTags['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
 
         options.forEach(option => {
             if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
                 const element = transacting[option]
                 common.setTransactingElement(element)
                 element.resetToken = resetHostToken
-                common.postMessageToHostedField(common.hostedFieldMap[element.id], {
-                    type: 'pt-static:payment-detail',
-                    data: { amount, shippingDetails, transactionTags, fee_mode, confirmation }
-                  })
+                common.postMessageToHostedField(common.hostedFieldMap[element.id], {type, data})
             }
         })
+    }
+
+    const handleInitialized = (amount, shippingDetails, transactionTags, confirmation) => {
+        common.setBuyer(shippingDetails)
+        // Add timezone to the tags for use with sending receipts from PayTheory
+        transactionTags['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
+        // Define the message type and data to send to the hosted field
+        const type = 'pt-static:payment-detail'
+        const data = { amount, shippingDetails, transactionTags, fee_mode, confirmation }
+        handleInitMessage(type, data)
+    }
+
+    const handleRecurring = (amount, shippingDetails, recurringMetadata, confirmation, recurringSettings) => {
+        common.setBuyer(shippingDetails)
+        // Add timezone to the tags for use with sending receipts from PayTheory
+        recurringMetadata['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
+        // Define the message type and data to send to the hosted field
+        const type = 'pt-static:recurring-detail'
+        const data =  { amount, shippingDetails, recurringMetadata, fee_mode, confirmation, recurringSettings }
+        handleInitMessage(type, data)
     }
 
     const transact = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
@@ -260,6 +274,8 @@ export default async(
         //Passing in the session tags from create because those used to be the only tags that were passed in
         transact({amount, shippingDetails, metadata: sessionTags, confirmation})
     }
+
+    const createRecurringPayment = common.generateRecurring(handleRecurring, ptToken.token.challengeOptions)
 
     const confirm = () => {
         const transacting = common.getTransactingElement()
@@ -344,21 +360,21 @@ export default async(
         })
 
     const cashObserver = cb => common.handleHostedFieldMessage(common.cashCompleteTypeMessage, message => {
-        var options = {
+        const options = {
             timeout: 5000,
             maximumAge: 0
         };
 
         function success(pos) {
-            var crd = pos.coords;
-            var response = message.barcode
+            const crd = pos.coords;
+            const response = message.barcode;
             response.mapUrl = `https://map.payithere.com/biller/4b8033458847fec15b9c840c5b574584/?lat=${crd.latitude}&lng=${crd.longitude}`
             cb(response)
             common.removeAll()
         }
 
         function error() {
-            var response = message.barcode
+            const response = message.barcode;
             cb(response)
             common.removeAll(true)
         }
@@ -373,6 +389,7 @@ export default async(
             mount,
             initTransaction,
             transact,
+            createRecurringPayment,
             confirm,
             cancel,
             readyObserver,
