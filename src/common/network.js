@@ -179,7 +179,10 @@ const handleAttestation = async challengeOptions => {
 
 export const generateInitialization = (handleInitialized, challengeOptions) => {
     return async(inputParameters) => {
-        let {amount, shippingDetails = {}, metadata = {}, confirmation = false, feeMode = 'interchange'} = inputParameters
+        let {amount, customerInfo, shippingDetails, metadata = {}, confirmation = false} = inputParameters
+        // Adding line for backwards compatibility
+        // TODO add some logging to SDK to see usage of deprecated variables and functions
+        customerInfo = customerInfo ? customerInfo : shippingDetails ? shippingDetails : {}
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
             if (!Number.isInteger(amount) || amount < 1) {
@@ -187,7 +190,7 @@ export const generateInitialization = (handleInitialized, challengeOptions) => {
             }
 
             data.setInitialize('init')
-            await handleInitialized(amount, shippingDetails, metadata, confirmation)
+            await handleInitialized(amount, customerInfo, metadata, confirmation)
             await handleAttestation(challengeOptions)
 
             sendTransactingMessage()
@@ -197,7 +200,7 @@ export const generateInitialization = (handleInitialized, challengeOptions) => {
 
 export const generateRecurring = (handleRecurring, challengeOptions) => {
     return async(inputParameters) => {
-        let {amount, shippingDetails = {}, metadata = {}, confirmation = false, recurringSettings} = inputParameters
+        let {amount, customerInfo = {}, metadata = {}, confirmation = false, recurringSettings} = inputParameters
         if (!amount || !recurringSettings) {
             return common.handleError('Amount and recurring settings are required')
         }
@@ -213,7 +216,7 @@ export const generateRecurring = (handleRecurring, challengeOptions) => {
             }
 
             data.setInitialize('init')
-            await handleRecurring(amount, shippingDetails, metadata, confirmation, recurringSettings)
+            await handleRecurring(amount, customerInfo, metadata, confirmation, recurringSettings)
             await handleAttestation(challengeOptions)
 
             sendTransactingMessage()
