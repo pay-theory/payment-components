@@ -248,6 +248,9 @@ export default async(
     }
 
     const handleInitialized = (amount, customerInfo, transactionTags, confirmation) => {
+        //validate the amount
+        if(!valid.isValidAmount(amount)) return false
+
         common.setBuyer(customerInfo)
         // Add timezone to the tags for use with sending receipts from PayTheory
         transactionTags['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -255,9 +258,17 @@ export default async(
         const type = 'pt-static:payment-detail'
         const data = { amount, customerInfo, transactionTags, fee_mode, confirmation }
         handleInitMessage(type, data)
+        return true
     }
 
     const handleRecurring = (amount, customerInfo, recurringMetadata, confirmation, recurringSettings) => {
+        //validate the amount
+        if(!valid.isValidAmount(amount)) return false
+        //validate the recurring settings
+        if(!valid.isValidRecurringSettings(recurringSettings)) return false
+        //validate the customer info
+        if(!valid.isValidRecurringCustomerInfo(customerInfo)) return false
+
         common.setBuyer(customerInfo)
         // Add timezone to the tags for use with sending receipts from PayTheory
         recurringMetadata['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -265,6 +276,7 @@ export default async(
         const type = 'pt-static:recurring-detail'
         const data =  { amount, customerInfo, recurringMetadata, fee_mode, confirmation, recurringSettings }
         handleInitMessage(type, data)
+        return true
     }
 
     const transact = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)

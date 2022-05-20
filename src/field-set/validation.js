@@ -1,5 +1,6 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import common from '../common'
+import * as message from "../common/message";
 // partner mode is used to indicate migration builds
 const checkApiKey = (key,partnerMode) => {
     const stageIndex = partnerMode ? 2 : 1
@@ -15,26 +16,30 @@ const checkApiKey = (key,partnerMode) => {
     }
 }
 
+const validate = (value, type) => {
+    return typeof value === type && value
+}
+
 const checkFeeMode = mode => {
-    if (typeof mode !== 'string') {
-        throw Error(`Fee Mode should be either 'surcharge' or 'service_fee' which are also available as constants at window.paytheory.SURCHARGE and window.paytheory.SERVICE_FEE`)
+    if (!validate(mode, 'string') || ![common.INTERCHANGE, common.SERVICE_FEE].includes(mode)) {
+        throw Error(`Fee Mode should be either 'interchange' or 'service_fee' which are also available as constants at window.paytheory.INTERCHANGE and window.paytheory.SERVICE_FEE`)
     }
 }
 
 const checkTags = tags => {
-    if (typeof tags !== 'object') {
+    if (!validate(tags, 'object')) {
         throw Error(`Tags should be a JSON Object`)
     }
 }
 
 const checkStyles = styles => {
-    if (typeof styles !== 'object') {
+    if (!validate(styles, 'object')) {
         throw Error(`Styles should be a JSON Object. An example of the object is at https://github.com/pay-theory/payment-components`)
     }
 }
 
 const checkEnv = env => {
-    if (typeof env !== 'string' || env.length <= 1) {
+    if (!validate(env, 'string')) {
         throw Error(`Environment not found in api key`)
     }
 }
@@ -191,6 +196,34 @@ const validTypeMessage = elements => message => {
     return false
 }
 
+const isValidAmount = (amount) => {
+    if (!validate(amount, 'number')) {
+        message.handleError('amount must be a positive integer')
+        return false
+    }
+    return true
+}
+
+const isValidRecurringCustomerInfo = (customerInfo) => {
+    let {first_name, last_name, email} = customerInfo
+    if(!validate(first_name, 'string') || !validate(last_name, 'string') || !validate(email, 'string')) {
+        const missing = `${!validate(first_name, 'string') ? 'first_name' : ''}${!validate(last_name, 'string') ? 'last_name' : ''}${!validate(email, 'string') ? 'email' : ''}`
+        message.handleError('Some required fields from customerInfo are invalid or missing: ' + missing)
+        return false
+    }
+    return true
+}
+
+const isValidRecurringSettings = (settings) => {
+    let {interval} = settings
+    // Validating the required recurring settings
+    if (!validate(interval, 'string')) {
+        message.handleError('Some required recurringSettings are missing or invalid: interval')
+        return false
+    }
+    return true
+}
+
 export {
     checkCreateParams,
     hasValidCard,
@@ -201,5 +234,9 @@ export {
     findAchError,
     findCardError,
     findCashError,
-    validTypeMessage
+    validTypeMessage,
+    validate,
+    isValidAmount,
+    isValidRecurringCustomerInfo,
+    isValidRecurringSettings
 }
