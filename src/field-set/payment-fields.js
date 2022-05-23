@@ -234,8 +234,8 @@ export default async(
         }
     }
 
-    const handleInitialized = (amount, shippingDetails, transactionTags, confirmation) => {
-        common.setBuyer(shippingDetails)
+    const handleInitialized = (amount, customerInfo, transactionTags, confirmation) => {
+        common.setBuyer(customerInfo)
         const options = ['card', 'cash', 'ach']
         // Add timezone to the tags for use with sending receipts from PayTheory
         transactionTags['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -247,7 +247,7 @@ export default async(
                 element.resetToken = resetHostToken
                 common.postMessageToHostedField(common.hostedFieldMap[element.id], {
                     type: 'pt-static:payment-detail',
-                    data: { amount, shippingDetails, transactionTags, fee_mode, confirmation }
+                    data: { amount, customerInfo, transactionTags, fee_mode, confirmation }
                   })
             }
         })
@@ -255,10 +255,10 @@ export default async(
 
     const transact = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
 
-    const initTransaction = (amount, shippingDetails, confirmation) => {
+    const initTransaction = (amount, customerInfo, confirmation) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
         //Passing in the session tags from create because those used to be the only tags that were passed in
-        transact({amount, shippingDetails, metadata: sessionTags, confirmation})
+        transact({amount, customerInfo, metadata: sessionTags, confirmation})
     }
 
     const confirm = () => {
