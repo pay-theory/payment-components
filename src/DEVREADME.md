@@ -221,19 +221,26 @@ const STYLES = {
 ```
 
 
-## Transaction Metadata
+## Payment Metadata
 
-To track payments with custom metadata simply add the following when initializing the transaction:
+### Track
+To track payments with custom metadata simply add key value pairs to the payment metadata object.
 
--   **pay-theory-account-code**: Code that will be used to track the payment.
--   **pay-theory-reference**: Custom description assigned to a payment that can later be filtered by.
+All metadata will be tracked with the payment. The values must be scalar types (strings, numbers, booleans).
 
-To manage payments with payment parameters simply add the following when initializing the transaction:
+The following values are reserved keys and will be part of the data displayed in our portals:
+
+- **pay-theory-account-code**: Code that will be used to track the payment.
+- **pay-theory-reference**: Custom description assigned to a payment that can later be filtered by.
+
+### Manage
+To manage payments with payment parameters simply add the following when initializing the payment:
 
 - **payment-parameters-name**: The payment parameters to use for the payment.
 
 For more information on payment parameters check out the [Payment Parameters](payment-parameters) documentation.
 
+### Contact
 To send an email receipt to a customer include an `email` in the customerInfo and include this metadata:
 
 - **pay-theory-receipt**: Pass *true* to send a receipt to the customer.
@@ -243,7 +250,7 @@ For more info on receipts check out the [Receipts](email-receipts) documentation
 
 
 ```javascript
-const TRANSACTION_METADATA = {
+const PAYMENT_METADATA = {
   "pay-theory-account-code": "code-123456789",
   "pay-theory-reference": "field-trip",
   "payment-parameters-name": "expires-in-30-days",
@@ -254,7 +261,7 @@ const TRANSACTION_METADATA = {
 
 ## Session Metadata
 
-To track PayTheory SDK Sessions feel free to pass an object into the create function when initializing the SDK. These can be used to track sessions that are initiated but have not completed a transaction.
+To track PayTheory SDK Sessions feel free to pass an object into the create function when initializing the SDK. These can be used to track sessions that are initiated but have not completed a payment.
 
 ```javascript
 const SESSION_METADATA = {
@@ -412,8 +419,8 @@ const CUSTOMER_INFO = {
     }
 }
 
-// optionally provide custom metadata to help track transactions
-const TRANSACTION_METADATA = {
+// optionally provide custom metadata to help track payments
+const PAYMENT_METADATA = {
   "pay-theory-account-code": "code-123456789",
   "pay-theory-reference": "field-trip",
   "payment-parameters-name": "expires-in-30-days"
@@ -439,7 +446,7 @@ const clickListener = (e) => {
     myPayTheory.transact({
       amount: AMOUNT,
       customerInfo: CUSTOMER_INFO,
-      metadata: TRANSACTION_METADATA,
+      metadata: PAYMENT_METADATA,
       confirmation: REQUIRE_CONFIRMATION // defaults to false
     })
 }
@@ -472,7 +479,7 @@ myPayTheory.readyObserver(ready => {
 
 ```
 
-Once the transaction has ended in either success or failure the buyer should be
+Once the payment has ended in either success or failure the buyer should be
 directed to a results page.
 
 ## Tokenization response
@@ -510,7 +517,7 @@ Upon completion of authorization and capture, details similar to the following a
 }
 ```
 
-If a failure or decline occurs during the transaction, the response will be similar to the following:
+If a failure or decline occurs during the payment, the response will be similar to the following:
 
 ```json
 {
@@ -578,7 +585,7 @@ To enable IE 11 support you must include the following in your HTML head:
 
 The createPaymentFields initializing function has been replaced with create. The create function no longer requires a clientID to be passed and allows you to set a feeMode. 
 
-The initTransaction function has been replaced with transact. The transact function allows you to pass in the tags at the time of transaction for more time to collect data before having to pass them.
+The initTransaction function has been replaced with transact. The transact function allows you to pass in the tags at the time of payment for more time to collect data before having to pass them.
 
 ## License
 
