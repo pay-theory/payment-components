@@ -234,12 +234,21 @@ To manage payments with payment parameters simply add the following when initial
 
 For more information on payment parameters check out the [Payment Parameters](docs/PAYMENT_PARAMETERS.md) documentation.
 
+To send an email receipt to a customer include an `email` in the customerInfo and include this metadata:
+
+- **pay-theory-receipt**: Pass *true* to send a receipt to the customer.
+- **pay-theory-receipt-description**: Description to be included in the receipt. Defaults to "Payment from {merchant name}".
+
+For more info on receipts check out the [Receipts](docs/EMAIL_RECEIPTS.md) documentation.
+
 
 ```javascript
 const TRANSACTION_METADATA = {
         "pay-theory-account-code": "code-123456789",
         "pay-theory-reference": "field-trip",
-        "payment-parameters-name": "expires-in-30-days"
+        "payment-parameters-name": "expires-in-30-days",
+        "pay-theory-receipt": true,
+        "pay-theory-receipt-description": "School Technology Fees"
       };
 ```
 
