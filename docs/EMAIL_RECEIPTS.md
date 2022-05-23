@@ -35,7 +35,7 @@ myPayTheory.transact({
 })
 ```
 
-As long as `email` and `pay-theory-receipt` included when calling the transact function it will send am email receipt.
+As long as `email` and `pay-theory-receipt` are included when calling the transact function it will send an email receipt.
 
 ## Refund Receipts
 
