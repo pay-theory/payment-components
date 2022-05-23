@@ -230,15 +230,16 @@ To track payments with custom metadata simply add the following when initializin
 
 To manage payments with payment parameters simply add the following when initializing the transaction:
 
--   **payment-parameters-name**: The payment parameters to use for the payment.
+- **payment-parameters-name**: The payment parameters to use for the payment.
 
+For more information on payment parameters check out the [Payment Parameters](payment-parameters) documentation.
 
 To send an email receipt to a customer include an `email` in the customerInfo and include this metadata:
 
 - **pay-theory-receipt**: Pass *true* to send a receipt to the customer.
 - **pay-theory-receipt-description**: Description to be included in the receipt. Defaults to "Payment from {merchant name}".
 
-For more info on receipts check out the [Receipts](docs/EMAIL_RECEIPTS.md) documentation.
+For more info on receipts check out the [Receipts](email-receipts) documentation.
 
 
 ```javascript
