@@ -1,6 +1,7 @@
 import * as messaging from './message'
 import * as network from './network'
 import * as data from './data'
+import {confirmTypeMessage, transferCompleteTypeMessage} from "./message";
 
 export const errorObserver = cb => messaging.handleMessage(messaging.errorTypeMessage, message => {
     cb(message.error)
@@ -11,7 +12,7 @@ export const errorObserver = cb => messaging.handleMessage(messaging.errorTypeMe
 })
 
 export const tokenizeObserver = cb => messaging.handleHostedFieldMessage(
-        messaging.idempotencyTypeMessage,
+        messaging.confirmTypeMessage,
         network.generateTokenize(cb))
 
 export const captureObserver = cb => messaging.handleHostedFieldMessage(
