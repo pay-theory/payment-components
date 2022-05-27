@@ -1,6 +1,7 @@
 /* global navigator */
 import * as data from './data'
 import * as message from './message'
+import { validate } from '../field-set/validation'
 export const postData = async(url, apiKey, data = {}) => {
     const options = {
         method: 'POST',
@@ -162,6 +163,20 @@ const sendTransactingMessage = () => {
     })
 }
 
+const handleAttestation = async challengeOptions => {
+    const attested = await attestBrowser(challengeOptions)
+
+    if (attested.response) {
+        const transacting = data.getTransactingElement()
+        const response = { clientDataJSON: attested.response.clientDataJSON, attestationObject: attested.response.attestationObject }
+        const attestation = { response, id: attested.id, type: attested.type }
+        message.postMessageToHostedField(data.hostedFieldMap[transacting], {
+            type: `pt-static:attestation`,
+            attestation
+        })
+    }
+}
+
 export const generateInitialization = (handleInitialized, challengeOptions) => {
     return async(inputParameters) => {
         let {amount, customerInfo, shippingDetails, metadata = {}, confirmation = false} = inputParameters
@@ -170,26 +185,34 @@ export const generateInitialization = (handleInitialized, challengeOptions) => {
         customerInfo = customerInfo ? customerInfo : shippingDetails ? shippingDetails : {}
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
-            if (!Number.isInteger(amount) || amount < 1) {
-                return message.handleError('amount must be a positive integer')
-            }
 
             data.setInitialize('init')
-            const attested = await attestBrowser(challengeOptions)
-
-            await handleInitialized(amount, customerInfo, metadata, confirmation)
-
-            if (attested.response) {
-                const transacting = data.getTransactingElement()
-                const response = { clientDataJSON: attested.response.clientDataJSON, attestationObject: attested.response.attestationObject }
-                const attestation = { response, id: attested.id, type: attested.type }
-                message.postMessageToHostedField(data.hostedFieldMap[transacting], {
-                    type: `pt-static:attestation`,
-                    attestation
-                })
+            const success = await handleInitialized(amount, customerInfo, metadata, confirmation)
+            if (success) {
+                await handleAttestation(challengeOptions)
+                sendTransactingMessage()
             }
+        }
+    }
+}
 
-            sendTransactingMessage()
+export const generateRecurring = (handleRecurring, challengeOptions) => {
+    return async(inputParameters) => {
+        let {amount, customerInfo, metadata = {}, confirmation = false, recurringSettings} = inputParameters
+        //Make sure that we have the base required settings
+        if (!validate(amount, 'number') || !validate(recurringSettings, 'object') || !validate(customerInfo, 'object')) {
+            const missing = `${!validate(amount, 'number') ? 'amount' : ''}${!validate(recurringSettings, 'object') ? 'recurringSettings' : ''}${!validate(customerInfo, 'object') ? 'customerInfo' : ''}`
+            return message.handleError('Some required fields are missing or invalid: ' + missing)
+        }
+        let initialize = data.getInitialize()
+        if (initialize !== 'init') {
+
+            data.setInitialize('init')
+            const success = await handleRecurring(amount, customerInfo, metadata, confirmation, recurringSettings)
+            if(success) {
+                await handleAttestation(challengeOptions)
+                sendTransactingMessage()
+            }
         }
     }
 }
