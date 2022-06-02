@@ -94,7 +94,7 @@ export const generateCompletionResponse = (cb) => {
                 "tags": message.transfer.metadata,
                 "metadata": message.transfer.metadata
             }
-        } else if(message.transfer.state === "FAILURE") {
+        } else if(message.transfer.state !== "FAILURE") {
             cbToken = {
                 "receipt_number": message.transfer.receipt_number,
                 "last_four": message.transfer.last_four,
