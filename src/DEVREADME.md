@@ -319,7 +319,7 @@ let myPayTheory
     /**
     * initialize the SDK (can also be called as a promise)
     *
-    * if providing tags but no styles, provide an empty object
+    * if providing metadata but no styles, provide an empty object
     * as a placeholder
     **/
 
@@ -513,7 +513,7 @@ Upon completion of authorization and capture, details similar to the following a
     "amount": 999,
     "service_fee": 195,
     "state":"SUCCEEDED",
-    "tags":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
+    "metadata":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
 }
 ```
 
@@ -585,7 +585,7 @@ To enable IE 11 support you must include the following in your HTML head:
 
 The createPaymentFields initializing function has been replaced with create. The create function no longer requires a clientID to be passed and allows you to set a feeMode. 
 
-The initTransaction function has been replaced with transact. The transact function allows you to pass in the tags at the time of payment for more time to collect data before having to pass them.
+The initTransaction function has been replaced with transact. The transact function allows you to pass in the metadata at the time of payment for more time to collect data before having to pass them.
 
 ## License
 

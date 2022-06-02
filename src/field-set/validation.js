@@ -26,9 +26,9 @@ const checkFeeMode = mode => {
     }
 }
 
-const checkTags = tags => {
-    if (!validate(tags, 'object')) {
-        throw Error(`Tags should be a JSON Object`)
+const checkMetadata = metadata => {
+    if (!validate(metadata, 'object')) {
+        throw Error(`Metadata should be a JSON Object`)
     }
 }
 
@@ -50,10 +50,10 @@ const checkStage = stage => {
     }
 }
 
-const checkCreateParams = (key, mode, tags, styles, env, stage, partnerMode) => {
+const checkCreateParams = (key, mode, metadata, styles, env, stage, partnerMode) => {
     checkApiKey(key,partnerMode)
     checkFeeMode(mode)
-    checkTags(tags)
+    checkMetadata(metadata)
     checkStyles(styles)
     checkEnv(env)
     checkStage(stage)
@@ -214,11 +214,29 @@ const isValidRecurringCustomerInfo = (customerInfo) => {
     return true
 }
 
+const isValidDateObject = (date) => {
+    if (Object.prototype.toString.call(date) !== '[object Date]') {
+        return false
+    }
+    if (isNaN(date.getTime()) || isNaN(date.getMonth())) {
+        return false
+    }
+    if(!(date instanceof Date)) {
+        return false
+    }
+    return true
+}
+
 const isValidRecurringSettings = (settings) => {
-    let {interval} = settings
+    let {payment_interval, first_payment_date} = settings
     // Validating the required recurring settings
-    if (!validate(interval, 'string')) {
+    if (!validate(payment_interval, 'string')) {
         message.handleError('Some required recurringSettings are missing or invalid: interval')
+        return false
+    }
+    // If first_payment_date is passed in validate it a Date object
+    if (!isValidDateObject(first_payment_date) && first_payment_date) {
+        message.handleError('first_payment_date must be a valid JavaScript Date object')
         return false
     }
     return true

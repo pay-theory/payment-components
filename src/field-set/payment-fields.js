@@ -8,7 +8,7 @@ export default async(
     apiKey,
     legacy, // this used to be client id, left in place to preserve backwards compatibility
     styles = common.defaultStyles,
-    sessionTags = {},
+    sessionMetadata = {},
     fee_mode = common.defaultFeeMode
 ) => {
     
@@ -20,7 +20,7 @@ export default async(
         partnerMode = stage
         stage = keyParts[2]
     }
-    valid.checkCreateParams(apiKey, fee_mode, sessionTags, styles, environment, stage, partnerMode)
+    valid.checkCreateParams(apiKey, fee_mode, sessionMetadata, styles, environment, stage, partnerMode)
 
     common.removeAll(true)
     let partner_environment = ""
@@ -219,7 +219,7 @@ export default async(
             errorCheck: valid.findCashError
         }]
 
-        mountProcessedElements(processed)
+        await mountProcessedElements(processed)
 
         //returns a function that removes any event handlers that were put on the window during the mount function
         return () => {
@@ -227,7 +227,6 @@ export default async(
             removeSetup()
             removeSibling()
             removeState()
-            removeInstrument()
             removeHostedError()
         }
     }
@@ -245,21 +244,21 @@ export default async(
         })
     }
 
-    const handleInitialized = (amount, customerInfo, transactionTags, confirmation) => {
+    const handleInitialized = (amount, customerInfo, metadata, confirmation) => {
         //validate the amount
         if(!valid.isValidAmount(amount)) return false
 
         common.setBuyer(customerInfo)
-        // Add timezone to the tags for use with sending receipts from PayTheory
-        transactionTags['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
+        // Add timezone to the metadata for use with sending receipts from PayTheory
+        metadata['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
         // Define the message type and data to send to the hosted field
         const type = 'pt-static:payment-detail'
-        const data = { amount, customerInfo, transactionTags, fee_mode, confirmation }
+        const data = { amount, customerInfo, metadata, fee_mode, confirmation }
         handleInitMessage(type, data)
         return true
     }
 
-    const handleRecurring = (amount, customerInfo, recurringMetadata, confirmation, recurringSettings) => {
+    const handleRecurring = (amount, customerInfo, metadata, confirmation, recurringSettings) => {
         //validate the amount
         if(!valid.isValidAmount(amount)) return false
         //validate the recurring settings
@@ -267,12 +266,16 @@ export default async(
         //validate the customer info
         if(!valid.isValidRecurringCustomerInfo(customerInfo)) return false
 
+        if(recurringSettings.first_payment_date) {
+            recurringSettings.first_payment_date = recurringSettings.first_payment_date.toISOString().split('T')[0]
+        }
+
         common.setBuyer(customerInfo)
-        // Add timezone to the tags for use with sending receipts from PayTheory
-        recurringMetadata['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
+        // Add timezone to the metadata for use with sending receipts from PayTheory
+        metadata['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
         // Define the message type and data to send to the hosted field
         const type = 'pt-static:recurring-detail'
-        const data =  { amount, customerInfo, recurringMetadata, fee_mode, confirmation, recurringSettings }
+        const data =  { amount, customerInfo, metadata, fee_mode, confirmation, recurringSettings }
         handleInitMessage(type, data)
         return true
     }
@@ -281,8 +284,8 @@ export default async(
 
     const initTransaction = (amount, customerInfo, confirmation) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
-        //Passing in the session tags from create because those used to be the only tags that were passed in
-        transact({amount, customerInfo, metadata: sessionTags, confirmation})
+        //Passing in the session metadata from create because those used to be the only metadata that were passed in
+        transact({amount, customerInfo, metadata: sessionMetadata, confirmation})
     }
 
     const createRecurringPayment = common.generateRecurring(handleRecurring, ptToken.token.challengeOptions)
