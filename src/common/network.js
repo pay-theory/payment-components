@@ -2,10 +2,6 @@
 import * as data from './data'
 import * as message from './message'
 
-const validate = (value, type) => {
-    return typeof value === type && value
-}
-
 export const getData = async(url, apiKey) => {
     const options = {
         method: 'GET',
@@ -220,11 +216,6 @@ export const generateInitialization = (handleInitialized, challengeOptions) => {
 export const generateRecurring = (handleRecurring, challengeOptions) => {
     return async(inputParameters) => {
         let {amount, customerInfo, metadata = {}, confirmation = false, recurringSettings} = inputParameters
-        //Make sure that we have the base required settings
-        if (!validate(amount, 'number') || !validate(recurringSettings, 'object') || !validate(customerInfo, 'object')) {
-            const missing = `${!validate(amount, 'number') ? 'amount' : ''}${!validate(recurringSettings, 'object') ? 'recurringSettings' : ''}${!validate(customerInfo, 'object') ? 'customerInfo' : ''}`
-            return message.handleError('Some required fields are missing or invalid: ' + missing)
-        }
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
 

@@ -197,6 +197,16 @@ const validTypeMessage = elements => message => {
     return false
 }
 
+const isvalidInputParams = (amount, customerInfo, metadata, recurringSettings = {}) => {
+    //Make sure that we have the base required settings
+    if (!validate(amount, 'number') || !validate(metadata, 'object') || !validate(recurringSettings, 'object') || !validate(customerInfo, 'object')) {
+        const missing = `${!validate(amount, 'number') ? 'amount ' : ''}${!validate(metadata, 'object') ? 'metadata ' : ''}${!validate(recurringSettings, 'object') ? 'recurringSettings ' : ''}${!validate(customerInfo, 'object') ? 'customerInfo ' : ''}`
+        message.handleError('Some required fields are missing or invalid: ' + missing)
+        return false
+    }
+    return true
+}
+
 const isValidAmount = (amount) => {
     if (!validate(amount, 'number')) {
         message.handleError('amount must be a positive integer')
@@ -255,5 +265,6 @@ export {
     validate,
     isValidAmount,
     isValidRecurringCustomerInfo,
-    isValidRecurringSettings
+    isValidRecurringSettings,
+    isvalidInputParams
 }
