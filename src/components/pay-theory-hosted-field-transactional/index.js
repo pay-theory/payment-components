@@ -52,42 +52,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
   }
 
-  get tokenize() {
-    return this.tokenizing
-  }
-
-  set tokenize(_tokenizing) {
-    const amount = _tokenizing
-    if (amount === false) {
-      this.tokenizing = false
-    }
-    else if (!this.isValidAmount(amount)) {
-      common.handleError('amount must be a positive integer')
-    }
-    else if (this.tokenizing !== _tokenizing) {
-      this.tokenizing = _tokenizing
-      this.form.submit(common.getFinixEnv(), this.application, this.generateTokenizeCallback(amount))
-    }
-  }
-
-  get transact() {
-    return this.transacting
-  }
-
-  set transact(_transacting) {
-    const amount = _transacting
-    if (amount === false) {
-      this.transacting = false
-    }
-    else if (!this.isValidAmount(_transacting)) {
-      common.handleError('amount must be a positive integer')
-    }
-    else if (this.transacting !== _transacting) {
-      this.transacting = _transacting
-      this.form.submit(common.getFinixEnv(), this.application, this.generateTransactCallback(amount))
-    }
-  }
-
   get instrument() {
     return this.instrumented
   }

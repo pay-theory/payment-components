@@ -2,23 +2,6 @@
 import * as data from './data'
 import * as message from './message'
 import { validate } from '../field-set/validation'
-export const postData = async(url, apiKey, data = {}) => {
-    const options = {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        headers: {
-            'x-api-key': apiKey,
-            'content-type': 'application/json',
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-        body: JSON.stringify(data),
-    }
-    /* global fetch */
-    const response = await fetch(url, options)
-    return await response.json()
-}
 
 export const getData = async(url, apiKey) => {
     const options = {
@@ -33,23 +16,6 @@ export const getData = async(url, apiKey) => {
     const response = await fetch(url, options)
     return await response.json()
 }
-
-const isValidTransaction = (tokenized) => {
-
-    if (tokenized) {
-        window.postMessage({
-                type: 'pt:error',
-                error: 'transaction already initiated',
-                throws: true
-            },
-            window.location.origin,
-        );
-        return false
-    }
-    return true
-}
-
-export const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
 
 // deprecated environment is always derived from API key
 export const defaultEnvironment = (() => {

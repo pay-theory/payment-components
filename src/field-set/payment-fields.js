@@ -23,7 +23,7 @@ export default async(
     valid.checkCreateParams(apiKey, fee_mode, sessionMetadata, styles, environment, stage, partnerMode)
 
     common.removeAll(true)
-    let partner_environment = ""
+    let partner_environment
     if (partnerMode === "") {
         partner_environment = `${environment}`
     } else {
@@ -146,9 +146,6 @@ export default async(
     const mount = async(
         elements = defaultElementIds
     ) => {
-
-        const env = common.getEnvironment()
-        const stage = common.getStage();
         common.removeInitialize()
 
         const achElements = {
@@ -248,7 +245,6 @@ export default async(
         //validate the amount
         if(!valid.isValidAmount(amount)) return false
 
-        common.setBuyer(customerInfo)
         // Add timezone to the metadata for use with sending receipts from PayTheory
         metadata['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
         // Define the message type and data to send to the hosted field
@@ -270,7 +266,6 @@ export default async(
             recurringSettings.first_payment_date = recurringSettings.first_payment_date.toISOString().split('T')[0]
         }
 
-        common.setBuyer(customerInfo)
         // Add timezone to the metadata for use with sending receipts from PayTheory
         metadata['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
         // Define the message type and data to send to the hosted field
@@ -307,7 +302,7 @@ export default async(
             common.postMessageToHostedField(common.hostedFieldMap[transacting], {
                 type: `pt-static:cancel`
             })
-            resetHostToken()
+            await resetHostToken()
         }
         common.removeIdentity()
         common.removeToken()

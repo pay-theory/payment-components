@@ -72,7 +72,7 @@ const hasValidCash = types =>
     (types['cash-name'] && types['cash-contact'] && types['cash-zip'])
 
 
-//Checkes the dom for elements and returns errors if there are missing elements or conflicting elements
+// Checks the dom for elements and returns errors if there are missing elements or conflicting elements
 const findCardNumberError = processedElements => {
     let error = false
     if (processedElements.reduce(common.findExp, false) === false) {
@@ -221,10 +221,8 @@ const isValidDateObject = (date) => {
     if (isNaN(date.getTime()) || isNaN(date.getMonth())) {
         return false
     }
-    if(!(date instanceof Date)) {
-        return false
-    }
-    return true
+    return date instanceof Date;
+
 }
 
 const isValidRecurringSettings = (settings) => {
