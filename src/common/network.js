@@ -79,16 +79,16 @@ export const generateCompletionResponse = (cb) => {
 
         if (paymentType === 'recurring') {
             cbToken = {
-                "receipt_number": message.transfer.receipt_number,
+                "recurring_id": message.transfer.recurring_id,
                 "last_four": message.transfer.last_four,
                 "brand": message.transfer.brand,
-                "created_at": message.transfer.created_at,
                 "amount": message.transfer.amount,
                 "service_fee": message.transfer.service_fee,
-                "state": message.transfer.state,
-                // Keeping tags in the response for backwards compatibility
-                "tags": message.transfer.metadata,
-                "metadata": message.transfer.metadata
+                "metadata": message.transfer.metadata,
+                "payment_interval": message.transfer.payment_interval,
+                "payment_count": message.transfer.payment_count,
+                "description": message.transfer.description,
+                "first_payment_date": message.transfer.first_payment_date
             }
         } else if(message.transfer.state !== "FAILURE") {
             cbToken = {
