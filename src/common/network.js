@@ -1,7 +1,10 @@
 /* global navigator */
 import * as data from './data'
 import * as message from './message'
-import { validate } from '../field-set/validation'
+
+const validate = (value, type) => {
+    return typeof value === type && value
+}
 
 export const getData = async(url, apiKey) => {
     const options = {

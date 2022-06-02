@@ -1,6 +1,7 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import common from '../common'
 import * as message from "../common/message";
+
 // partner mode is used to indicate migration builds
 const checkApiKey = (key,partnerMode) => {
     const stageIndex = partnerMode ? 2 : 1
