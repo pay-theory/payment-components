@@ -107,7 +107,7 @@ export const generateTokenize = (cb) => {
     }
 }
 
-export const generateCompletetionResponse = (cb) => {
+export const generateCompletionResponse = (cb) => {
     return async message => {
         let paymentType = message.paymentType
         let cbToken
