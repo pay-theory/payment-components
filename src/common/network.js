@@ -80,23 +80,75 @@ export const hostedFieldsEndpoint = () => {
 
 export const generateTokenize = (cb) => {
     return async message => {
-        let transacting = data.getTransactingElement()
-        document.getElementById(transacting).idempotencyCallback = cb
-        document.getElementById(transacting).idempotent = message.payment
+        let paymentType = message.paymentType
+        let cbToken
+
+        if(paymentType === 'recurring') {
+            cbToken = {
+                "first_six": message.payment.first_six,
+                "last_four": message.payment.last_four,
+                "brand": message.payment.brand,
+                "receipt_number": message.payment.idempotency,
+                "amount": message.payment.amount,
+                "service_fee": message.payment.service_fee
+            }
+        } else {
+            cbToken = {
+                "first_six": message.payment.first_six,
+                "last_four": message.payment.last_four,
+                "brand": message.payment.brand,
+                "receipt_number": message.payment.idempotency,
+                "amount": message.payment.amount,
+                "service_fee": message.payment.service_fee
+            }
+        }
+
+        cb(cbToken)
     }
 }
 
 export const generateCompletetionResponse = (cb) => {
     return async message => {
-        let transacting = document.getElementById(data.getTransactingElement())
-        let updatedCb = val => {
-            cb(val)
-            data.removeAll()
+        let paymentType = message.paymentType
+        let cbToken
+
+        if (paymentType === 'recurring') {
+            cbToken = {
+                "receipt_number": message.transfer.receipt_number,
+                "last_four": message.transfer.last_four,
+                "brand": message.transfer.brand,
+                "created_at": message.transfer.created_at,
+                "amount": message.transfer.amount,
+                "service_fee": message.transfer.service_fee,
+                "state": message.transfer.state,
+                // Keeping tags in the response for backwards compatibility
+                "tags": message.transfer.metadata,
+                "metadata": message.transfer.metadata
+            }
+        } else if(message.transfer.state === "FAILURE") {
+            cbToken = {
+                "receipt_number": message.transfer.receipt_number,
+                "last_four": message.transfer.last_four,
+                "brand": message.transfer.brand,
+                "created_at": message.transfer.created_at,
+                "amount": message.transfer.amount,
+                "service_fee": message.transfer.service_fee,
+                "state": message.transfer.state,
+                // Keeping tags in the response for backwards compatibility
+                "tags": message.transfer.metadata,
+                "metadata": message.transfer.metadata
+            }
+        } else {
+            cbToken = {
+                "receipt_number": message.transfer.receipt_number,
+                "last_four": message.transfer.last_four,
+                "brand": message.transfer.brand,
+                "state": message.transfer.state,
+                "type": message.transfer.type
+            }
         }
-        if(transacting) {
-            transacting.captureCallback = updatedCb
-            transacting.transfer = message.transfer
-        }
+        cb(cbToken)
+        data.removeAll()
     }
 }
 
