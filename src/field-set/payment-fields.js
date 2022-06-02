@@ -242,6 +242,8 @@ export default async(
     }
 
     const handleInitialized = (amount, customerInfo, metadata, confirmation) => {
+        //validate the input param types
+        if(!valid.isvalidInputParams(amount, customerInfo, metadata)) return false
         //validate the amount
         if(!valid.isValidAmount(amount)) return false
 
@@ -255,6 +257,8 @@ export default async(
     }
 
     const handleRecurring = (amount, customerInfo, metadata, confirmation, recurringSettings) => {
+        //validate the input param types
+        if(!valid.isvalidInputParams(amount, customerInfo, metadata, recurringSettings)) return false
         //validate the amount
         if(!valid.isValidAmount(amount)) return false
         //validate the recurring settings
