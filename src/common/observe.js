@@ -1,7 +1,6 @@
 import * as messaging from './message'
 import * as network from './network'
 import * as data from './data'
-import {confirmTypeMessage, transferCompleteTypeMessage} from "./message";
 
 export const errorObserver = cb => messaging.handleMessage(messaging.errorTypeMessage, message => {
     cb(message.error)
@@ -17,15 +16,16 @@ export const tokenizeObserver = cb => messaging.handleHostedFieldMessage(
 
 export const captureObserver = cb => messaging.handleHostedFieldMessage(
         messaging.confirmationCompleteTypeMessage,
-        network.generateCompletetionResponse(cb))
+        network.generateCompletionResponse(cb))
 
 export const transactedObserver = cb => messaging.handleHostedFieldMessage(
         messaging.transferCompleteTypeMessage,
-        network.generateCompletetionResponse(cb))
+        network.generateCompletionResponse(cb))
 
 export const generateReturn = ( mount,
         initTransaction,
         transact,
+        createRecurringPayment,
         confirm,
         cancel,
         readyObserver,
@@ -34,6 +34,7 @@ export const generateReturn = ( mount,
     mount,
     initTransaction,
     transact,
+    createRecurringPayment,
     confirm,
     cancel,
     readyObserver,
