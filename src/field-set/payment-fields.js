@@ -304,8 +304,6 @@ export default async(
             })
             await resetHostToken()
         }
-        common.removeIdentity()
-        common.removeToken()
         common.removeInitialize()
         common.removeTransactingElement()
     }
