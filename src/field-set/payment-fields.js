@@ -279,6 +279,18 @@ export default async(
         return true
     }
 
+
+    const handleRecurringUpdate = (recurringId) => {
+        //validate the input param types
+        if(!valid.validate(recurringId, 'string')) return false
+
+        // Define the message type and data to send to the hosted field
+        const type = 'pt-static:recurring-update'
+        const data =  { recurringId }
+        handleInitMessage(type, data)
+        return true
+    }
+
     const transact = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
 
     const initTransaction = (amount, customerInfo, confirmation) => {
@@ -288,6 +300,8 @@ export default async(
     }
 
     const createRecurringPayment = common.generateRecurring(handleRecurring, ptToken.token.challengeOptions)
+
+    const updateRecurringPaymentMethod = common.updateRecurring(handleRecurringUpdate, ptToken.token.challengeOptions)
 
     const confirm = () => {
         const transacting = common.getTransactingElement()
@@ -400,6 +414,7 @@ export default async(
             initTransaction,
             transact,
             createRecurringPayment,
+            updateRecurringPaymentMethod,
             confirm,
             cancel,
             readyObserver,
