@@ -77,19 +77,8 @@ export const generateCompletionResponse = (cb) => {
         let paymentType = message.paymentType
         let cbToken
 
-        if (paymentType === 'recurring') {
-            cbToken = {
-                "recurring_id": message.transfer.recurring_id,
-                "last_four": message.transfer.last_four,
-                "brand": message.transfer.brand,
-                "amount": message.transfer.amount,
-                "service_fee": message.transfer.service_fee,
-                "metadata": message.transfer.metadata,
-                "payment_interval": message.transfer.payment_interval,
-                "payment_count": message.transfer.payment_count,
-                "description": message.transfer.description,
-                "first_payment_date": message.transfer.first_payment_date
-            }
+        if (paymentType === 'recurring' || paymentType === 'recurring-update') {
+            cbToken = message.transfer
         } else if(message.transfer.state !== "FAILURE") {
             cbToken = {
                 "receipt_number": message.transfer.receipt_number,
