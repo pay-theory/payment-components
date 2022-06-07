@@ -228,3 +228,18 @@ export const generateRecurring = (handleRecurring, challengeOptions) => {
         }
     }
 }
+
+export const updateRecurring = (handleRecurringUpdate, challengeOptions) => {
+    return async(recurringId) => {
+        let initialize = data.getInitialize()
+        if (initialize !== 'init') {
+
+            data.setInitialize('init')
+            const success = await handleRecurringUpdate(recurringId)
+            if(success) {
+                await handleAttestation(challengeOptions)
+                sendTransactingMessage()
+            }
+        }
+    }
+}
