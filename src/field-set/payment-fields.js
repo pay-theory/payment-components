@@ -248,7 +248,7 @@ export default async(
         if(!valid.isValidAmount(amount)) return false
 
         // Add timezone to the metadata for use with sending receipts from PayTheory
-        metadata['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
+        metadata['pt_payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
         // Define the message type and data to send to the hosted field
         const type = 'pt-static:payment-detail'
         const data = { amount, customerInfo, metadata, fee_mode, confirmation }
@@ -271,7 +271,7 @@ export default async(
         }
 
         // Add timezone to the metadata for use with sending receipts from PayTheory
-        metadata['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
+        metadata['pt_payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
         // Define the message type and data to send to the hosted field
         const type = 'pt-static:recurring-detail'
         const data =  { amount, customerInfo, metadata, fee_mode, confirmation, recurringSettings }
