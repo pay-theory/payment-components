@@ -8,7 +8,7 @@ export default async(
     apiKey,
     legacy, // this used to be client id, left in place to preserve backwards compatibility
     styles = common.defaultStyles,
-    sessionTags = {},
+    sessionMetadata = {},
     fee_mode = common.defaultFeeMode
 ) => {
     
@@ -20,10 +20,10 @@ export default async(
         partnerMode = stage
         stage = keyParts[2]
     }
-    valid.checkCreateParams(apiKey, fee_mode, sessionTags, styles, environment, stage, partnerMode)
+    valid.checkCreateParams(apiKey, fee_mode, sessionMetadata, styles, environment, stage, partnerMode)
 
     common.removeAll(true)
-    let partner_environment = ""
+    let partner_environment
     if (partnerMode === "") {
         partner_environment = `${environment}`
     } else {
@@ -146,9 +146,6 @@ export default async(
     const mount = async(
         elements = defaultElementIds
     ) => {
-
-        const env = common.getEnvironment()
-        const stage = common.getStage();
         common.removeInitialize()
 
         const achElements = {
@@ -199,8 +196,6 @@ export default async(
 
         const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, handler.stateUpdater(processedElements))
 
-        const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, handler.instrumentHandler(transacting))
-
         const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(resetHostToken))
     
         if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
@@ -221,7 +216,7 @@ export default async(
             errorCheck: valid.findCashError
         }]
 
-        mountProcessedElements(processed)
+        await mountProcessedElements(processed)
 
         //returns a function that removes any event handlers that were put on the window during the mount function
         return () => {
@@ -229,37 +224,84 @@ export default async(
             removeSetup()
             removeSibling()
             removeState()
-            removeInstrument()
             removeHostedError()
         }
     }
 
-    const handleInitialized = (amount, customerInfo, transactionTags, confirmation) => {
-        common.setBuyer(customerInfo)
+    const handleInitMessage = (type, data) => {
         const options = ['card', 'cash', 'ach']
-        // Add timezone to the tags for use with sending receipts from PayTheory
-        transactionTags['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
 
         options.forEach(option => {
             if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
                 const element = transacting[option]
                 common.setTransactingElement(element)
                 element.resetToken = resetHostToken
-                common.postMessageToHostedField(common.hostedFieldMap[element.id], {
-                    type: 'pt-static:payment-detail',
-                    data: { amount, customerInfo, transactionTags, fee_mode, confirmation }
-                  })
+                common.postMessageToHostedField(common.hostedFieldMap[element.id], {type, data})
             }
         })
+    }
+
+    const handleInitialized = (amount, customerInfo, metadata, confirmation) => {
+        //validate the input param types
+        if(!valid.isvalidInputParams(amount, customerInfo, metadata)) return false
+        //validate the amount
+        if(!valid.isValidAmount(amount)) return false
+
+        // Add timezone to the metadata for use with sending receipts from PayTheory
+        metadata['pt_payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
+        // Define the message type and data to send to the hosted field
+        const type = 'pt-static:payment-detail'
+        const data = { amount, customerInfo, metadata, fee_mode, confirmation }
+        handleInitMessage(type, data)
+        return true
+    }
+
+    const handleRecurring = (amount, customerInfo, metadata, confirmation, recurringSettings) => {
+        //validate the input param types
+        if(!valid.isvalidInputParams(amount, customerInfo, metadata, recurringSettings)) return false
+        //validate the amount
+        if(!valid.isValidAmount(amount)) return false
+        //validate the recurring settings
+        if(!valid.isValidRecurringSettings(recurringSettings)) return false
+        //validate the customer info
+        if(!valid.isValidRecurringCustomerInfo(customerInfo)) return false
+
+        if(recurringSettings.first_payment_date) {
+            recurringSettings.first_payment_date = recurringSettings.first_payment_date.toISOString().split('T')[0]
+        }
+
+        // Add timezone to the metadata for use with sending receipts from PayTheory
+        metadata['pt_payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
+        // Define the message type and data to send to the hosted field
+        const type = 'pt-static:recurring-detail'
+        const data =  { amount, customerInfo, metadata, fee_mode, confirmation, recurringSettings }
+        handleInitMessage(type, data)
+        return true
+    }
+
+
+    const handleRecurringUpdate = (recurringId) => {
+        //validate the input param types
+        if(!valid.validate(recurringId, 'string')) return false
+
+        // Define the message type and data to send to the hosted field
+        const type = 'pt-static:recurring-update'
+        const data =  { recurringId }
+        handleInitMessage(type, data)
+        return true
     }
 
     const transact = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
 
     const initTransaction = (amount, customerInfo, confirmation) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
-        //Passing in the session tags from create because those used to be the only tags that were passed in
-        transact({amount, customerInfo, metadata: sessionTags, confirmation})
+        //Passing in the session metadata from create because those used to be the only metadata that were passed in
+        transact({amount, customerInfo, metadata: sessionMetadata, confirmation})
     }
+
+    const createRecurringPayment = common.generateRecurring(handleRecurring, ptToken.token.challengeOptions)
+
+    const updateRecurringPaymentMethod = common.updateRecurring(handleRecurringUpdate, ptToken.token.challengeOptions)
 
     const confirm = () => {
         const transacting = common.getTransactingElement()
@@ -278,10 +320,8 @@ export default async(
             common.postMessageToHostedField(common.hostedFieldMap[transacting], {
                 type: `pt-static:cancel`
             })
-            resetHostToken()
+            await resetHostToken()
         }
-        common.removeIdentity()
-        common.removeToken()
         common.removeInitialize()
         common.removeTransactingElement()
     }
@@ -344,21 +384,21 @@ export default async(
         })
 
     const cashObserver = cb => common.handleHostedFieldMessage(common.cashCompleteTypeMessage, message => {
-        var options = {
+        const options = {
             timeout: 5000,
             maximumAge: 0
         };
 
         function success(pos) {
-            var crd = pos.coords;
-            var response = message.barcode
+            const crd = pos.coords;
+            const response = message.barcode;
             response.mapUrl = `https://map.payithere.com/biller/4b8033458847fec15b9c840c5b574584/?lat=${crd.latitude}&lng=${crd.longitude}`
             cb(response)
             common.removeAll()
         }
 
         function error() {
-            var response = message.barcode
+            const response = message.barcode;
             cb(response)
             common.removeAll(true)
         }
@@ -373,6 +413,8 @@ export default async(
             mount,
             initTransaction,
             transact,
+            createRecurringPayment,
+            updateRecurringPaymentMethod,
             confirm,
             cancel,
             readyObserver,

@@ -17,19 +17,11 @@ export const findField = (type) => (element, cv) => {
 
 export const findCVV = findField('card-cvv')
 export const findExp = findField('card-exp')
-export const findCardName = findField('card-name')
 export const findAccountNumber = findField('account-number')
 export const findBankCode = findField('routing-number')
 export const findAccountType = findField('account-type')
 export const findAccountName = findField('account-name')
-export const findLine1 = findField('billing-line1')
-export const findLine2 = findField('billing-line2')
-export const findCity = findField('billing-city')
-export const findState = findField('billing-state')
 export const findZip = findField('billing-zip')
-export const findCashName = findField('cash-name')
-export const findCashContact = findField('cash-contact')
-export const findCashZip = findField('cash-zip')
 
 export const addFrame = (
     container,
@@ -90,15 +82,15 @@ export const processElements = (elements, styles, fieldTypes, tagType) => {
 export const isHidden = element => {
     if (element === false) return true
 
-    var elem = element;
-    var elements = [elem]
+    let elem = element;
+    let elements = [elem]
 
     for (; elem && elem !== document; elem = elem.parentNode) {
         elements.push(elem);
     }
 
     const displayNone = (hidden, cv) => {
-        var style = window.getComputedStyle(cv)
+        const style = window.getComputedStyle(cv)
         const result = style.display === 'none'
         return hidden ? hidden : result
     }

@@ -1,5 +1,7 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import common from '../common'
+import * as message from "../common/message";
+
 // partner mode is used to indicate migration builds
 const checkApiKey = (key,partnerMode) => {
     const stageIndex = partnerMode ? 2 : 1
@@ -15,26 +17,30 @@ const checkApiKey = (key,partnerMode) => {
     }
 }
 
+const validate = (value, type) => {
+    return typeof value === type && value
+}
+
 const checkFeeMode = mode => {
-    if (typeof mode !== 'string') {
-        throw Error(`Fee Mode should be either 'surcharge' or 'service_fee' which are also available as constants at window.paytheory.SURCHARGE and window.paytheory.SERVICE_FEE`)
+    if (!validate(mode, 'string') || ![common.INTERCHANGE, common.SERVICE_FEE].includes(mode)) {
+        throw Error(`Fee Mode should be either 'interchange' or 'service_fee' which are also available as constants at window.paytheory.INTERCHANGE and window.paytheory.SERVICE_FEE`)
     }
 }
 
-const checkTags = tags => {
-    if (typeof tags !== 'object') {
-        throw Error(`Tags should be a JSON Object`)
+const checkMetadata = metadata => {
+    if (!validate(metadata, 'object')) {
+        throw Error(`Metadata should be a JSON Object`)
     }
 }
 
 const checkStyles = styles => {
-    if (typeof styles !== 'object') {
+    if (!validate(styles, 'object')) {
         throw Error(`Styles should be a JSON Object. An example of the object is at https://github.com/pay-theory/payment-components`)
     }
 }
 
 const checkEnv = env => {
-    if (typeof env !== 'string' || env.length <= 1) {
+    if (!validate(env, 'string')) {
         throw Error(`Environment not found in api key`)
     }
 }
@@ -45,10 +51,10 @@ const checkStage = stage => {
     }
 }
 
-const checkCreateParams = (key, mode, tags, styles, env, stage, partnerMode) => {
+const checkCreateParams = (key, mode, metadata, styles, env, stage, partnerMode) => {
     checkApiKey(key,partnerMode)
     checkFeeMode(mode)
-    checkTags(tags)
+    checkMetadata(metadata)
     checkStyles(styles)
     checkEnv(env)
     checkStage(stage)
@@ -67,7 +73,7 @@ const hasValidCash = types =>
     (types['cash-name'] && types['cash-contact'] && types['cash-zip'])
 
 
-//Checkes the dom for elements and returns errors if there are missing elements or conflicting elements
+// Checks the dom for elements and returns errors if there are missing elements or conflicting elements
 const findCardNumberError = processedElements => {
     let error = false
     if (processedElements.reduce(common.findExp, false) === false) {
@@ -191,6 +197,60 @@ const validTypeMessage = elements => message => {
     return false
 }
 
+const isvalidInputParams = (amount, customerInfo, metadata, recurringSettings = {}) => {
+    //Make sure that we have the base required settings
+    if (!validate(amount, 'number') || !validate(metadata, 'object') || !validate(recurringSettings, 'object') || !validate(customerInfo, 'object')) {
+        const missing = `${!validate(amount, 'number') ? 'amount ' : ''}${!validate(metadata, 'object') ? 'metadata ' : ''}${!validate(recurringSettings, 'object') ? 'recurringSettings ' : ''}${!validate(customerInfo, 'object') ? 'customerInfo ' : ''}`
+        message.handleError('Some required fields are missing or invalid: ' + missing)
+        return false
+    }
+    return true
+}
+
+const isValidAmount = (amount) => {
+    if (!validate(amount, 'number')) {
+        message.handleError('amount must be a positive integer')
+        return false
+    }
+    return true
+}
+
+const isValidRecurringCustomerInfo = (customerInfo) => {
+    let {first_name, last_name, email} = customerInfo
+    if(!validate(first_name, 'string') || !validate(last_name, 'string') || !validate(email, 'string')) {
+        const missing = `${!validate(first_name, 'string') ? 'first_name' : ''}${!validate(last_name, 'string') ? 'last_name' : ''}${!validate(email, 'string') ? 'email' : ''}`
+        message.handleError('Some required fields from customerInfo are invalid or missing: ' + missing)
+        return false
+    }
+    return true
+}
+
+const isValidDateObject = (date) => {
+    if (Object.prototype.toString.call(date) !== '[object Date]') {
+        return false
+    }
+    if (isNaN(date.getTime()) || isNaN(date.getMonth())) {
+        return false
+    }
+    return date instanceof Date;
+
+}
+
+const isValidRecurringSettings = (settings) => {
+    let {payment_interval, first_payment_date} = settings
+    // Validating the required recurring settings
+    if (!validate(payment_interval, 'string')) {
+        message.handleError('Some required recurringSettings are missing or invalid: interval')
+        return false
+    }
+    // If first_payment_date is passed in validate it a Date object
+    if (!isValidDateObject(first_payment_date) && first_payment_date) {
+        message.handleError('first_payment_date must be a valid JavaScript Date object')
+        return false
+    }
+    return true
+}
+
 export {
     checkCreateParams,
     hasValidCard,
@@ -201,5 +261,10 @@ export {
     findAchError,
     findCardError,
     findCashError,
-    validTypeMessage
+    validTypeMessage,
+    validate,
+    isValidAmount,
+    isValidRecurringCustomerInfo,
+    isValidRecurringSettings,
+    isvalidInputParams
 }
