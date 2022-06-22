@@ -241,67 +241,31 @@ export default async(
         })
     }
 
-    const handleInitialized = (amount, customerInfo, metadata, confirmation) => {
+    const handleInitialized = (messageType) => (amount, payorInfo, metadata, confirmation) => {
         //validate the input param types
-        if(!valid.isvalidInputParams(amount, customerInfo, metadata)) return false
+        if(!valid.isvalidInputParams(amount, payorInfo, metadata)) return false
         //validate the amount
         if(!valid.isValidAmount(amount)) return false
 
         // Add timezone to the metadata for use with sending receipts from PayTheory
-        metadata['pt_payment_timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
+        metadata.pt_payment_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
         // Define the message type and data to send to the hosted field
-        const type = 'pt-static:payment-detail'
-        const data = { amount, customerInfo, metadata, fee_mode, confirmation }
+        const type = messageType
+        const data = { amount, payorInfo, metadata, fee_mode, confirmation }
         handleInitMessage(type, data)
         return true
     }
 
-    const handleRecurring = (amount, customerInfo, metadata, confirmation, recurringSettings) => {
-        //validate the input param types
-        if(!valid.isvalidInputParams(amount, customerInfo, metadata, recurringSettings)) return false
-        //validate the amount
-        if(!valid.isValidAmount(amount)) return false
-        //validate the recurring settings
-        if(!valid.isValidRecurringSettings(recurringSettings)) return false
-        //validate the customer info
-        if(!valid.isValidRecurringCustomerInfo(customerInfo)) return false
+    const transact = common.generateInitialization(handleInitialized('pt-static:payment-detail'), ptToken.token.challengeOptions)
 
-        if(recurringSettings.first_payment_date) {
-            recurringSettings.first_payment_date = recurringSettings.first_payment_date.toISOString().split('T')[0]
-        }
-
-        // Add timezone to the metadata for use with sending receipts from PayTheory
-        metadata['pt_payment_timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
-        // Define the message type and data to send to the hosted field
-        const type = 'pt-static:recurring-detail'
-        const data =  { amount, customerInfo, metadata, fee_mode, confirmation, recurringSettings }
-        handleInitMessage(type, data)
-        return true
-    }
-
-
-    const handleRecurringUpdate = (recurringId) => {
-        //validate the input param types
-        if(!valid.validate(recurringId, 'string')) return false
-
-        // Define the message type and data to send to the hosted field
-        const type = 'pt-static:recurring-update'
-        const data =  { recurringId }
-        handleInitMessage(type, data)
-        return true
-    }
-
-    const transact = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
-
-    const initTransaction = (amount, customerInfo, confirmation) => {
+    const initTransaction = (amount, payorInfo, confirmation) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
         //Passing in the session metadata from create because those used to be the only metadata that were passed in
-        transact({amount, customerInfo, metadata: sessionMetadata, confirmation})
+        transact({amount, payorInfo, metadata: sessionMetadata, confirmation})
     }
 
-    const createRecurringPayment = common.generateRecurring(handleRecurring, ptToken.token.challengeOptions)
+    const tokenizePaymentMethod = common.generateRecurring(handleInitialized('pt-static:tokenize-detail'), ptToken.token.challengeOptions)
 
-    const updateRecurringPaymentMethod = common.updateRecurring(handleRecurringUpdate, ptToken.token.challengeOptions)
 
     const confirm = () => {
         const transacting = common.getTransactingElement()
@@ -404,17 +368,13 @@ export default async(
         }
 
         navigator.geolocation.getCurrentPosition(success, error, options);
-        if (message.status === 'FAILURE') {
-            document.getElementById(common.getTransactingElement()).cash = false
-        }
     })
 
     return common.generateReturn(
             mount,
             initTransaction,
             transact,
-            createRecurringPayment,
-            updateRecurringPaymentMethod,
+            tokenizePaymentMethod,
             confirm,
             cancel,
             readyObserver,

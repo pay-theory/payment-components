@@ -197,10 +197,10 @@ const validTypeMessage = elements => message => {
     return false
 }
 
-const isvalidInputParams = (amount, customerInfo, metadata, recurringSettings = {}) => {
+const isvalidInputParams = (amount, payorInfo, metadata) => {
     //Make sure that we have the base required settings
-    if (!validate(amount, 'number') || !validate(metadata, 'object') || !validate(recurringSettings, 'object') || !validate(customerInfo, 'object')) {
-        const missing = `${!validate(amount, 'number') ? 'amount ' : ''}${!validate(metadata, 'object') ? 'metadata ' : ''}${!validate(recurringSettings, 'object') ? 'recurringSettings ' : ''}${!validate(customerInfo, 'object') ? 'customerInfo ' : ''}`
+    if (!validate(amount, 'number') || !validate(metadata, 'object') || !validate(payorInfo, 'object')) {
+        const missing = `${!validate(amount, 'number') ? 'amount ' : ''}${!validate(metadata, 'object') ? 'metadata ' : ''}${!validate(payorInfo, 'object') ? 'payorInfo ' : ''}`
         message.handleError('Some required fields are missing or invalid: ' + missing)
         return false
     }
@@ -210,42 +210,6 @@ const isvalidInputParams = (amount, customerInfo, metadata, recurringSettings = 
 const isValidAmount = (amount) => {
     if (!validate(amount, 'number')) {
         message.handleError('amount must be a positive integer')
-        return false
-    }
-    return true
-}
-
-const isValidRecurringCustomerInfo = (customerInfo) => {
-    let {first_name, last_name, email} = customerInfo
-    if(!validate(first_name, 'string') || !validate(last_name, 'string') || !validate(email, 'string')) {
-        const missing = `${!validate(first_name, 'string') ? 'first_name' : ''}${!validate(last_name, 'string') ? 'last_name' : ''}${!validate(email, 'string') ? 'email' : ''}`
-        message.handleError('Some required fields from customerInfo are invalid or missing: ' + missing)
-        return false
-    }
-    return true
-}
-
-const isValidDateObject = (date) => {
-    if (Object.prototype.toString.call(date) !== '[object Date]') {
-        return false
-    }
-    if (isNaN(date.getTime()) || isNaN(date.getMonth())) {
-        return false
-    }
-    return date instanceof Date;
-
-}
-
-const isValidRecurringSettings = (settings) => {
-    let {payment_interval, first_payment_date} = settings
-    // Validating the required recurring settings
-    if (!validate(payment_interval, 'string')) {
-        message.handleError('Some required recurringSettings are missing or invalid: interval')
-        return false
-    }
-    // If first_payment_date is passed in validate it a Date object
-    if (!isValidDateObject(first_payment_date) && first_payment_date) {
-        message.handleError('first_payment_date must be a valid JavaScript Date object')
         return false
     }
     return true
@@ -264,7 +228,5 @@ export {
     validTypeMessage,
     validate,
     isValidAmount,
-    isValidRecurringCustomerInfo,
-    isValidRecurringSettings,
     isvalidInputParams
 }

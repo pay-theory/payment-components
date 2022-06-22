@@ -185,47 +185,16 @@ const handleAttestation = async challengeOptions => {
 
 export const generateInitialization = (handleInitialized, challengeOptions) => {
     return async(inputParameters) => {
-        let {amount, customerInfo, shippingDetails, metadata = {}, confirmation = false} = inputParameters
+        let {amount, payorInfo, shippingDetails, metadata = {}, confirmation = false} = inputParameters
         // Adding line for backwards compatibility
         // TODO add some logging to SDK to see usage of deprecated variables and functions
-        customerInfo = customerInfo ? customerInfo : shippingDetails ? shippingDetails : {}
+        payorInfo = payorInfo ? payorInfo : shippingDetails ? shippingDetails : {}
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
 
             data.setInitialize('init')
-            const success = await handleInitialized(amount, customerInfo, metadata, confirmation)
+            const success = await handleInitialized(amount, payorInfo, metadata, confirmation)
             if (success) {
-                await handleAttestation(challengeOptions)
-                sendTransactingMessage()
-            }
-        }
-    }
-}
-
-export const generateRecurring = (handleRecurring, challengeOptions) => {
-    return async(inputParameters) => {
-        let {amount, customerInfo, metadata = {}, confirmation = false, recurringSettings} = inputParameters
-        let initialize = data.getInitialize()
-        if (initialize !== 'init') {
-
-            data.setInitialize('init')
-            const success = await handleRecurring(amount, customerInfo, metadata, confirmation, recurringSettings)
-            if(success) {
-                await handleAttestation(challengeOptions)
-                sendTransactingMessage()
-            }
-        }
-    }
-}
-
-export const updateRecurring = (handleRecurringUpdate, challengeOptions) => {
-    return async(recurringId) => {
-        let initialize = data.getInitialize()
-        if (initialize !== 'init') {
-
-            data.setInitialize('init')
-            const success = await handleRecurringUpdate(recurringId)
-            if(success) {
                 await handleAttestation(challengeOptions)
                 sendTransactingMessage()
             }
