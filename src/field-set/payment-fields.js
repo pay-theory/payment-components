@@ -264,7 +264,7 @@ export default async(
         transact({amount, payorInfo, metadata: sessionMetadata, confirmation})
     }
 
-    const tokenizePaymentMethod = common.generateRecurring(handleInitialized('pt-static:tokenize-detail'), ptToken.token.challengeOptions)
+    const tokenizePaymentMethod = common.generateInitialization(handleInitialized('pt-static:tokenize-detail'), ptToken.token.challengeOptions)
 
 
     const confirm = () => {
