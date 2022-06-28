@@ -246,6 +246,8 @@ export default async(
         if(!valid.isvalidInputParams(amount, payorInfo, metadata)) return false
         //validate the amount
         if(!valid.isValidAmount(amount)) return false
+        //validate the payorInfo
+        if(!valid.isValidPayorInfo(payorInfo)) return false
 
         // Add timezone to the metadata for use with sending receipts from PayTheory
         metadata.pt_payment_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
