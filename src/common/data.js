@@ -18,7 +18,8 @@ export const defaultFeeMode = SURCHARGE
 
 export const initialState = {
     isDirty: false,
-    isFocused: false
+    isFocused: false,
+    errorMessages: []
 }
 
 export const fields = {
@@ -43,8 +44,7 @@ export const achFields = {
 
 export const cashFields = {
     NAME: 'pay-theory-cash-name',
-    CONTACT: 'pay-theory-cash-contact',
-    ZIP: 'pay-theory-cash-zip'
+    CONTACT: 'pay-theory-cash-contact'
 }
 
 export const achFieldTypes = [
@@ -56,8 +56,7 @@ export const achFieldTypes = [
 
 export const cashFieldTypes = [
     'cash-name',
-    'cash-contact',
-    'cash-zip'
+    'cash-contact'
 ]
 
 export const fieldTypes = [
