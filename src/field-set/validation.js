@@ -178,6 +178,24 @@ const findCashError = (processedElements) => {
     return error
 }
 
+const isValidPayorInfo = (payorInfo) => {
+    if (!validate(payorInfo, 'object')) {
+        message.handleError('payor_info is not an object')
+        return false
+    }
+    if(payorInfo.sameAsBilling === true) {
+        const allowedKeys = ['sameAsBilling', 'email', 'phone']
+        const keys = Object.keys(payorInfo)
+        for (let key in keys) {
+            if (!allowedKeys.includes(key)) {
+                message.handleError(`if payor_info is sameAsBilling, only the following keys are allowed: ${allowedKeys.join(', ')}`)
+                return false
+            }
+        }
+        return true
+    }
+}
+
 const validTypeMessage = elements => message => {
     if (typeof message.type === 'string') {
         const validType = message.type.split(':')[1]
@@ -228,5 +246,6 @@ export {
     validTypeMessage,
     validate,
     isValidAmount,
-    isvalidInputParams
+    isvalidInputParams,
+    isValidPayorInfo
 }
