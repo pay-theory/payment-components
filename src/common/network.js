@@ -45,28 +45,15 @@ export const hostedFieldsEndpoint = () => {
 
 export const generateTokenize = (cb) => {
     return async message => {
-        let paymentType = message.paymentType
-        let cbToken
-
-        if(paymentType === 'recurring') {
-            cbToken = {
+        const fee = message.payment.fee_mode === data.SERVICE_FEE ? message.payment.fee : 0
+        let cbToken = {
                 "first_six": message.payment.first_six,
                 "last_four": message.payment.last_four,
                 "brand": message.payment.brand,
                 "receipt_number": message.payment.idempotency,
                 "amount": message.payment.amount,
-                "service_fee": message.payment.service_fee
+                "service_fee": fee
             }
-        } else {
-            cbToken = {
-                "first_six": message.payment.first_six,
-                "last_four": message.payment.last_four,
-                "brand": message.payment.brand,
-                "receipt_number": message.payment.idempotency,
-                "amount": message.payment.amount,
-                "service_fee": message.payment.service_fee
-            }
-        }
 
         cb(cbToken)
     }
