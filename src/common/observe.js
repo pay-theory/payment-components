@@ -30,7 +30,8 @@ export const generateReturn = ( mount,
         cancel,
         readyObserver,
         validObserver,
-        cashObserver) => Object.create({
+        cashObserver,
+        stateObserver) => Object.create({
     mount,
     initTransaction,
     transact,
@@ -43,5 +44,6 @@ export const generateReturn = ( mount,
     cashObserver,
     captureObserver,
     tokenizeObserver,
-    transactedObserver
+    transactedObserver,
+    stateObserver
 })
