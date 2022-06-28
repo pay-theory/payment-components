@@ -70,7 +70,7 @@ const hasValidAccount = types =>
     (types['account-number'] && types['account-type'] && types['account-name'] && types['routing-number'])
 
 const hasValidCash = types =>
-    (types['cash-name'] && types['cash-contact'] && types['cash-zip'])
+    (types['cash-name'] && types['cash-contact'])
 
 
 // Checks the dom for elements and returns errors if there are missing elements or conflicting elements

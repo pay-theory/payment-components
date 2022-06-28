@@ -3,6 +3,7 @@
 import common from '../common'
 import * as valid from './validation'
 import * as handler from './handler'
+import {c} from "sinon/lib/sinon/spy-formatters";
 
 export default async(
     apiKey,
@@ -47,7 +48,6 @@ export default async(
         'account-name': false,
         'account-type': false,
         'cash-name': false,
-        'cash-zip': true,
         'cash-contact': false
     }
 
@@ -67,8 +67,7 @@ export default async(
         'routing-number': common.achFields.BANK_CODE,
         'account-type': common.achFields.ACCOUNT_TYPE,
         'cash-name': common.cashFields.NAME,
-        'cash-contact': common.cashFields.CONTACT,
-        'cash-zip': common.cashFields.ZIP,
+        'cash-contact': common.cashFields.CONTACT
     }
 
     let isValid = false
@@ -172,8 +171,7 @@ export default async(
 
         const cashElements = {
             'cash-name': elements['cash-name'],
-            'cash-contact': elements['cash-contact'],
-            'cash-zip': elements['cash-zip']
+            'cash-contact': elements['cash-contact']
         }
 
         processedElements.card = common.processElements(cardElements, elementStates, common.fieldTypes, 'credit-card')
@@ -350,7 +348,9 @@ export default async(
         })
 
     const stateObserver = cb => common.handleHostedFieldMessage(common.stateTypeMessage, message => {
-        elementStates[message.element] = message.state
+        const state = {...message.state}
+        delete state.element
+        elementStates[message.element] = state
         cb(elementStates)
     })
 
