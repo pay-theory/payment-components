@@ -186,14 +186,14 @@ const isValidPayorInfo = (payorInfo) => {
     if(payorInfo.sameAsBilling === true) {
         const allowedKeys = ['sameAsBilling', 'email', 'phone']
         const keys = Object.keys(payorInfo)
-        for (let key in keys) {
+        for (let key of keys) {
             if (!allowedKeys.includes(key)) {
                 message.handleError(`if payor_info is sameAsBilling, only the following keys are allowed: ${allowedKeys.join(', ')}`)
                 return false
             }
         }
-        return true
     }
+    return true
 }
 
 const validTypeMessage = elements => message => {
