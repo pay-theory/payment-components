@@ -79,6 +79,8 @@ export default async(
         cash: []
     }
 
+    let elementStates = {}
+
     let transacting = {}
 
     let isReady = false
@@ -174,9 +176,9 @@ export default async(
             'cash-zip': elements['cash-zip']
         }
 
-        processedElements.card = common.processElements(cardElements, styles, common.fieldTypes, 'credit-card')
-        processedElements.ach = common.processElements(achElements, styles, common.achFieldTypes, 'ach')
-        processedElements.cash = common.processElements(cashElements, styles, common.cashFieldTypes)
+        processedElements.card = common.processElements(cardElements, elementStates, common.fieldTypes, 'credit-card')
+        processedElements.ach = common.processElements(achElements, elementStates, common.achFieldTypes, 'ach')
+        processedElements.cash = common.processElements(cashElements, elementStates, common.cashFieldTypes)
 
         transacting.card = processedElements.card.reduce(common.findTransactingElement, false)
         transacting.ach = processedElements.ach.reduce(common.findAccountNumber, false)
@@ -347,6 +349,11 @@ export default async(
             }
         })
 
+    const stateObserver = cb => common.handleHostedFieldMessage(common.stateTypeMessage, message => {
+        elementStates[message.element] = message.state
+        cb(elementStates)
+    })
+
     const cashObserver = cb => common.handleHostedFieldMessage(common.cashCompleteTypeMessage, message => {
         const options = {
             timeout: 5000,
@@ -379,6 +386,7 @@ export default async(
             cancel,
             readyObserver,
             validObserver,
-            cashObserver
+            cashObserver,
+            stateObserver
         )
 }
