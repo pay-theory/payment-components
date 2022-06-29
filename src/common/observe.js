@@ -19,7 +19,7 @@ export const captureObserver = cb => messaging.handleHostedFieldMessage(
         network.generateCompletionResponse(cb))
 
 export const transactedObserver = cb => messaging.handleHostedFieldMessage(
-        messaging.transferCompleteTypeMessage,
+        messaging.completeTypeMessage,
         network.generateCompletionResponse(cb))
 
 export const generateReturn = ( mount,

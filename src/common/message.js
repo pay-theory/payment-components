@@ -49,7 +49,7 @@ export const relayTypeMessage = message => typeof message.type === 'string' && m
 export const confirmTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:confirm'
 
 //passes transfer-complete from hosted fields to SDK
-export const transferCompleteTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:complete'
+export const completeTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:complete'
 
 //passes confirmation-complete from hosted fields to SDK
 export const confirmationCompleteTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:confirmation-complete'
