@@ -101,6 +101,10 @@ export default async(
             token: token['pt-token']
         })
     }
+    
+    const expireHostToken = async() => {
+        // logic for expiring sessions
+    }    
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
@@ -193,7 +197,9 @@ export default async(
 
         const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, handler.instrumentHandler(transacting))
 
-        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(resetHostToken))
+
+        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(expireHostToken))
+
 
         // const removeIdempotency = common.handleHostedFieldMessage(common.idempotencyTypeMessage, handler.idempotencyHandler)
 

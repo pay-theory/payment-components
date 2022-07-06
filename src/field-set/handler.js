@@ -129,10 +129,16 @@ export const instrumentHandler = transacting => message => {
 }
 
 
-export const hostedErrorHandler = resetHostToken => message => {
+// export const hostedErrorHandler = resetHostToken => message => {
+//     common.removeInitialize()
+//     common.handleError(message.error)
+//     resetHostToken()
+// }
+
+export const hostedErrorHandler = expireSession => message => {
     common.removeInitialize()
     common.handleError(message.error)
-    resetHostToken()
+    expireSession()
 }
 
 export const idempotencyHandler = message => {
