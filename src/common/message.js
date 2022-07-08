@@ -81,7 +81,7 @@ export const siblingTypeMessage = message => typeof message.type === 'string' &&
 export const cashCompleteTypeMessage = message => typeof message.type === 'string' && message.type === `pt-static:cash-complete`
 
 export const postMessageToHostedField = (id, message) => {
-    document.getElementsByName(id) ? 
+    return document.getElementsByName(id) ? 
         document.getElementsByName(id)[0]
             .contentWindow.postMessage(message, hostedFieldsEndpoint()) :
         console.log('field is no longer available')
