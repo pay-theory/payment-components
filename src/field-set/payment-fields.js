@@ -108,6 +108,7 @@ export default async(
     
     const expireHostToken = async() => {
         // logic for expiring sessions
+         console.error('expiring host token')
     }      
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
