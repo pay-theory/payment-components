@@ -105,6 +105,10 @@ export default async(
             token: token['pt-token']
         })
     }
+    
+    const expireHostToken = async() => {  
+        console.warn('expiring host token')
+    }
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
@@ -201,7 +205,7 @@ export default async(
 
         const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, handler.instrumentHandler(transacting))
 
-        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(resetHostToken))
+        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(expireHostToken))
     
         if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
             return common.handleError('There are no PayTheory fields')
