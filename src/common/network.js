@@ -175,7 +175,7 @@ const handleAttestation = async challengeOptions => {
 
 export const generateInitialization = (handleInitialized, challengeOptions) => {
     return async(inputParameters) => {
-        let {amount, payorInfo, shippingDetails, metadata = {}, confirmation = false} = inputParameters
+        let {amount, payorInfo, payorId, shippingDetails, metadata = {}, confirmation = false} = inputParameters
         // Adding line for backwards compatibility
         // TODO add some logging to SDK to see usage of deprecated variables and functions
         payorInfo = payorInfo ? payorInfo : shippingDetails ? shippingDetails : {}
@@ -183,7 +183,7 @@ export const generateInitialization = (handleInitialized, challengeOptions) => {
         if (initialize !== 'init') {
 
             data.setInitialize('init')
-            const success = await handleInitialized(amount, payorInfo, metadata, confirmation)
+            const success = await handleInitialized(amount, payorInfo, payorId, metadata, confirmation)
             if (success) {
                 await handleAttestation(challengeOptions)
                 sendTransactingMessage()

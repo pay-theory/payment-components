@@ -233,6 +233,19 @@ const isValidAmount = (amount) => {
     return true
 }
 
+const isValidPayorDetails = (payorInfo, payorId) => {
+    let keys  = Object.keys(payorInfo)
+    // Verify both id and info aren't passed in
+    if (payorId && keys.length > 0) {
+        message.handleError('Unable to process when both payorId and payorInfo are provided')
+        return false
+    } else if(payorId && !validate(payorId, 'string')) { // Verify payorId is a string if present
+        message.handleError('payorId must be a string')
+        return false
+    }
+    return true
+}
+
 export {
     checkCreateParams,
     hasValidCard,
@@ -247,5 +260,6 @@ export {
     validate,
     isValidAmount,
     isvalidInputParams,
-    isValidPayorInfo
+    isValidPayorInfo,
+    isValidPayorDetails
 }
