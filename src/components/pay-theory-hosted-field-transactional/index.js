@@ -142,7 +142,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     let oldIdempotency = this.idempotency ? this.idempotency : {}
     if (oldIdempotency.idempotency !== _idempotency.idempotency) {
       this.idempotency = _idempotency
-      if (this.reset) this.reset()
       const fee = _idempotency.fee_mode === common.SERVICE_FEE ? _idempotency.fee : 0
       const cbToken = {
         "first_six": _idempotency.first_six,
