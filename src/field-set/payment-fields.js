@@ -241,19 +241,21 @@ export default async(
         })
     }
 
-    const handleInitialized = (messageType) => (amount, payorInfo, metadata, confirmation) => {
+    const handleInitialized = (messageType) => (amount, payorInfo, payorId, metadata, confirmation) => {
         //validate the input param types
         if(!valid.isvalidInputParams(amount, payorInfo, metadata)) return false
         //validate the amount
         if(!valid.isValidAmount(amount)) return false
         //validate the payorInfo
         if(!valid.isValidPayorInfo(payorInfo)) return false
+        // validate the payorId
+        if(!valid.isValidPayorDetails(payorInfo, payorId)) return false
 
         // Add timezone to the metadata for use with sending receipts from PayTheory
         metadata.pt_payment_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
         // Define the message type and data to send to the hosted field
         const type = messageType
-        const data = { amount, payorInfo, metadata, fee_mode, confirmation }
+        const data = { amount, payorInfo, payorId, metadata, fee_mode, confirmation }
         handleInitMessage(type, data)
         return true
     }
