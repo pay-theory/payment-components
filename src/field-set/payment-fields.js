@@ -47,7 +47,6 @@ export default async(
         'account-name': false,
         'account-type': false,
         'cash-name': false,
-        'cash-zip': true,
         'cash-contact': false
     }
 
@@ -67,8 +66,7 @@ export default async(
         'routing-number': common.achFields.BANK_CODE,
         'account-type': common.achFields.ACCOUNT_TYPE,
         'cash-name': common.cashFields.NAME,
-        'cash-contact': common.cashFields.CONTACT,
-        'cash-zip': common.cashFields.ZIP,
+        'cash-contact': common.cashFields.CONTACT
     }
 
     let isValid = false
@@ -78,6 +76,8 @@ export default async(
         ach: [],
         cash: []
     }
+
+    let elementStates = {}
 
     let transacting = {}
 
@@ -113,7 +113,7 @@ export default async(
             if (processed.elements.length > 0) {
                 let error = processed.errorCheck(processed.elements, transacting[processed.type])
                 if (error) {
-                    common.handleError(error);
+                    common.handleError(`FIELD_ERROR: ${error}`);
                 }
                 let token;
                 if (ptToken.isUsed) {
@@ -126,7 +126,7 @@ export default async(
 
                 processed.elements.forEach(element => {
                     if(!token['pt-token']) {
-                        return common.handleError(`No pt-token found`)
+                        return common.handleError(`NO_TOKEN: No pt-token found`)
                     }
                     const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles, apiKey})
                     const encodedJson = window.btoa(json)
@@ -170,13 +170,12 @@ export default async(
 
         const cashElements = {
             'cash-name': elements['cash-name'],
-            'cash-contact': elements['cash-contact'],
-            'cash-zip': elements['cash-zip']
+            'cash-contact': elements['cash-contact']
         }
 
-        processedElements.card = common.processElements(cardElements, styles, common.fieldTypes, 'credit-card')
-        processedElements.ach = common.processElements(achElements, styles, common.achFieldTypes, 'ach')
-        processedElements.cash = common.processElements(cashElements, styles, common.cashFieldTypes)
+        processedElements.card = common.processElements(cardElements, elementStates, common.fieldTypes, 'credit-card')
+        processedElements.ach = common.processElements(achElements, elementStates, common.achFieldTypes, 'ach')
+        processedElements.cash = common.processElements(cashElements, elementStates, common.cashFieldTypes)
 
         transacting.card = processedElements.card.reduce(common.findTransactingElement, false)
         transacting.ach = processedElements.ach.reduce(common.findAccountNumber, false)
@@ -196,10 +195,10 @@ export default async(
 
         const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, handler.stateUpdater(processedElements))
 
-        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(resetHostToken))
+        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler)
     
         if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
-            return common.handleError('There are no PayTheory fields')
+            return common.handleError('NO_FIELDS: There are no PayTheory fields')
         }
 
         let processed = [{
@@ -230,78 +229,53 @@ export default async(
 
     const handleInitMessage = (type, data) => {
         const options = ['card', 'cash', 'ach']
-
+        let initialized = false
         options.forEach(option => {
             if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
+                initialized = true
                 const element = transacting[option]
                 common.setTransactingElement(element)
                 element.resetToken = resetHostToken
                 common.postMessageToHostedField(common.hostedFieldMap[element.id], {type, data})
             }
         })
-    }
-
-    const handleInitialized = (amount, customerInfo, metadata, confirmation) => {
-        //validate the input param types
-        if(!valid.isvalidInputParams(amount, customerInfo, metadata)) return false
-        //validate the amount
-        if(!valid.isValidAmount(amount)) return false
-
-        // Add timezone to the metadata for use with sending receipts from PayTheory
-        metadata.pt_payment_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-        // Define the message type and data to send to the hosted field
-        const type = 'pt-static:payment-detail'
-        const data = { amount, customerInfo, metadata, fee_mode, confirmation }
-        handleInitMessage(type, data)
-        return true
-    }
-
-    const handleRecurring = (amount, customerInfo, metadata, confirmation, recurringSettings) => {
-        //validate the input param types
-        if(!valid.isvalidInputParams(amount, customerInfo, metadata, recurringSettings)) return false
-        //validate the amount
-        if(!valid.isValidAmount(amount)) return false
-        //validate the recurring settings
-        if(!valid.isValidRecurringSettings(recurringSettings)) return false
-        //validate the customer info
-        if(!valid.isValidRecurringCustomerInfo(customerInfo)) return false
-
-        if(recurringSettings.first_payment_date) {
-            recurringSettings.first_payment_date = recurringSettings.first_payment_date.toISOString().split('T')[0]
+        // If there was not transacting message sent we should throw error and remove initialize so it can be run again after fields are valid
+        if (!initialized) {
+            common.handleError('NOT_VALID: Fields displayed are not valid.')
+            common.removeInitialize()
+            return false
         }
+        return true
+    }
+
+    const handleInitialized = (messageType) => (amount, payorInfo, payorId, metadata, confirmation) => {
+        //validate the input param types
+        if(!valid.isvalidInputParams(amount, payorInfo, metadata)) return false
+        //validate the amount
+        if(!valid.isValidAmount(amount)) return false
+        //validate the payorInfo
+        if(!valid.isValidPayorInfo(payorInfo)) return false
+        // validate the payorId
+        if(!valid.isValidPayorDetails(payorInfo, payorId)) return false
 
         // Add timezone to the metadata for use with sending receipts from PayTheory
         metadata.pt_payment_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
         // Define the message type and data to send to the hosted field
-        const type = 'pt-static:recurring-detail'
-        const data =  { amount, customerInfo, metadata, fee_mode, confirmation, recurringSettings }
-        handleInitMessage(type, data)
-        return true
+        const type = messageType
+        const data = { amount, payorInfo, payorId, metadata, fee_mode, confirmation }
+        return handleInitMessage(type, data)
     }
 
+    const transact = common.generateInitialization(handleInitialized('pt-static:payment-detail'), ptToken.token.challengeOptions)
 
-    const handleRecurringUpdate = (recurringId) => {
-        //validate the input param types
-        if(!valid.validate(recurringId, 'string')) return false
-
-        // Define the message type and data to send to the hosted field
-        const type = 'pt-static:recurring-update'
-        const data =  { recurringId }
-        handleInitMessage(type, data)
-        return true
-    }
-
-    const transact = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
-
-    const initTransaction = (amount, customerInfo, confirmation) => {
+    const initTransaction = (amount, payorInfo, confirmation) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
         //Passing in the session metadata from create because those used to be the only metadata that were passed in
-        transact({amount, customerInfo, metadata: sessionMetadata, confirmation})
+        transact({amount, payorInfo, metadata: sessionMetadata, confirmation})
     }
 
-    const createRecurringPayment = common.generateRecurring(handleRecurring, ptToken.token.challengeOptions)
+    const tokenizePaymentMethod = common.generateInitialization(handleInitialized('pt-static:tokenize-detail'), ptToken.token.challengeOptions)
 
-    const updateRecurringPaymentMethod = common.updateRecurring(handleRecurringUpdate, ptToken.token.challengeOptions)
 
     const confirm = () => {
         const transacting = common.getTransactingElement()
@@ -383,6 +357,13 @@ export default async(
             }
         })
 
+    const stateObserver = cb => common.handleHostedFieldMessage(common.stateTypeMessage, message => {
+        const state = {...message.state}
+        delete state.element
+        elementStates[message.element] = state
+        cb(elementStates)
+    })
+
     const cashObserver = cb => common.handleHostedFieldMessage(common.cashCompleteTypeMessage, message => {
         const options = {
             timeout: 5000,
@@ -404,21 +385,18 @@ export default async(
         }
 
         navigator.geolocation.getCurrentPosition(success, error, options);
-        if (message.status === 'FAILURE') {
-            document.getElementById(common.getTransactingElement()).cash = false
-        }
     })
 
     return common.generateReturn(
             mount,
             initTransaction,
             transact,
-            createRecurringPayment,
-            updateRecurringPaymentMethod,
+            tokenizePaymentMethod,
             confirm,
             cancel,
             readyObserver,
             validObserver,
-            cashObserver
+            cashObserver,
+            stateObserver
         )
 }

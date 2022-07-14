@@ -1,4 +1,5 @@
 import * as message from './message'
+import * as data from './data'
 export const findTransactingElement = (element, cv) => {
     return element === false ?
         (cv.type === 'credit-card' || cv.type === 'card-number') ?
@@ -26,12 +27,10 @@ export const findZip = findField('billing-zip')
 export const addFrame = (
     container,
     element,
-    styles,
     frameType = 'pay-theory-credit-card-tag-frame',
     env
 ) => {
     const tagFrame = document.createElement(frameType)
-    tagFrame.styles = styles
     tagFrame.env = env
     tagFrame.ready = true
     tagFrame.setAttribute('id', `${element}-tag-frame`)
@@ -39,14 +38,13 @@ export const addFrame = (
     return tagFrame
 }
 
-const processContainer = (container, elements, processed, styles, type, tagType) => {
+const processContainer = (container, elements, processed, type, tagType) => {
     let error = false
     const contained = document.getElementById(`${elements[type]}-tag-frame`)
     if (contained === null) {
         const frame = addFrame(
             container,
             elements[type],
-            styles,
             type === 'credit-card' ?
             `pay-theory-credit-card-tag-frame` :
             `pay-theory-${tagType ? `${tagType}-` : ''}${type}-tag-frame`)
@@ -63,17 +61,19 @@ const findElementError = (elements, type) => {
     return typeof element === 'undefined' ? `unknown type ${type}` : typeof element !== 'string' ? 'invalid element' : false
 }
 
-export const processElements = (elements, styles, fieldTypes, tagType) => {
+export const processElements = (elements, state, fieldTypes, tagType) => {
     let processed = []
     fieldTypes.forEach(type => {
         let error = findElementError(elements, type)
 
         const container = document.getElementById(elements[type])
         if (container && error === false) {
-            error = processContainer(container, elements, processed, styles, type, tagType)
+            error = processContainer(container, elements, processed, type, tagType)
         }
         if (error) {
-            return message.handleError(error)
+            return message.handleError(`FIELD_ERROR: ${error}`)
+        } else {
+            state[type] = data.initialState
         }
     })
     return processed
