@@ -180,7 +180,7 @@ const findCashError = (processedElements) => {
 
 const isValidPayorInfo = (payorInfo) => {
     if (!validate(payorInfo, 'object')) {
-        message.handleError('payor_info is not an object')
+        message.handleError('INVALID_PARAM: payor_info is not an object')
         return false
     }
     if(payorInfo.sameAsBilling === true) {
@@ -188,7 +188,7 @@ const isValidPayorInfo = (payorInfo) => {
         const keys = Object.keys(payorInfo)
         for (let key of keys) {
             if (!allowedKeys.includes(key)) {
-                message.handleError(`if payor_info is sameAsBilling, only the following keys are allowed: ${allowedKeys.join(', ')}`)
+                message.handleError(`INVALID_PARAM: if payor_info is sameAsBilling, only the following keys are allowed: ${allowedKeys.join(', ')}`)
                 return false
             }
         }
@@ -219,7 +219,7 @@ const isvalidInputParams = (amount, payorInfo, metadata) => {
     //Make sure that we have the base required settings
     if (!validate(amount, 'number') || !validate(metadata, 'object') || !validate(payorInfo, 'object')) {
         const missing = `${!validate(amount, 'number') ? 'amount ' : ''}${!validate(metadata, 'object') ? 'metadata ' : ''}${!validate(payorInfo, 'object') ? 'payorInfo ' : ''}`
-        message.handleError('Some required fields are missing or invalid: ' + missing)
+        message.handleError('INVALID_PARAM: Some required fields are missing or invalid: ' + missing)
         return false
     }
     return true
@@ -227,7 +227,7 @@ const isvalidInputParams = (amount, payorInfo, metadata) => {
 
 const isValidAmount = (amount) => {
     if (!validate(amount, 'number')) {
-        message.handleError('amount must be a positive integer')
+        message.handleError('INVALID_PARAM: amount must be a positive integer')
         return false
     }
     return true
@@ -237,10 +237,10 @@ const isValidPayorDetails = (payorInfo, payorId) => {
     let keys  = Object.keys(payorInfo)
     // Verify both id and info aren't passed in
     if (payorId && keys.length > 0) {
-        message.handleError('Unable to process when both payorId and payorInfo are provided')
+        message.handleError('INVALID_PARAM: Unable to process when both payorId and payorInfo are provided')
         return false
     } else if(payorId && !validate(payorId, 'string')) { // Verify payorId is a string if present
-        message.handleError('payorId must be a string')
+        message.handleError('INVALID_PARAM: payorId must be a string')
         return false
     }
     return true

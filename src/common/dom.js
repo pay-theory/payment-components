@@ -71,7 +71,7 @@ export const processElements = (elements, state, fieldTypes, tagType) => {
             error = processContainer(container, elements, processed, type, tagType)
         }
         if (error) {
-            return message.handleError(error)
+            return message.handleError(`FIELD_ERROR: ${error}`)
         } else {
             state[type] = data.initialState
         }

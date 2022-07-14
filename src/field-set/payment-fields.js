@@ -3,7 +3,6 @@
 import common from '../common'
 import * as valid from './validation'
 import * as handler from './handler'
-import {c} from "sinon/lib/sinon/spy-formatters";
 
 export default async(
     apiKey,
@@ -114,7 +113,7 @@ export default async(
             if (processed.elements.length > 0) {
                 let error = processed.errorCheck(processed.elements, transacting[processed.type])
                 if (error) {
-                    common.handleError(error);
+                    common.handleError(`FIELD_ERROR: ${error}`);
                 }
                 let token;
                 if (ptToken.isUsed) {
@@ -127,7 +126,7 @@ export default async(
 
                 processed.elements.forEach(element => {
                     if(!token['pt-token']) {
-                        return common.handleError(`No pt-token found`)
+                        return common.handleError(`NO_TOKEN: No pt-token found`)
                     }
                     const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles, apiKey})
                     const encodedJson = window.btoa(json)
@@ -196,10 +195,10 @@ export default async(
 
         const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, handler.stateUpdater(processedElements))
 
-        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(resetHostToken))
+        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler)
     
         if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
-            return common.handleError('There are no PayTheory fields')
+            return common.handleError('NO_FIELDS: There are no PayTheory fields')
         }
 
         let processed = [{
@@ -230,15 +229,23 @@ export default async(
 
     const handleInitMessage = (type, data) => {
         const options = ['card', 'cash', 'ach']
-
+        let initialized = false
         options.forEach(option => {
             if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
+                initialized = true
                 const element = transacting[option]
                 common.setTransactingElement(element)
                 element.resetToken = resetHostToken
                 common.postMessageToHostedField(common.hostedFieldMap[element.id], {type, data})
             }
         })
+        // If there was not transacting message sent we should throw error and remove initialize so it can be run again after fields are valid
+        if (!initialized) {
+            common.handleError('NOT_VALID: Fields displayed are not valid.')
+            common.removeInitialize()
+            return false
+        }
+        return true
     }
 
     const handleInitialized = (messageType) => (amount, payorInfo, payorId, metadata, confirmation) => {
@@ -256,8 +263,7 @@ export default async(
         // Define the message type and data to send to the hosted field
         const type = messageType
         const data = { amount, payorInfo, payorId, metadata, fee_mode, confirmation }
-        handleInitMessage(type, data)
-        return true
+        return handleInitMessage(type, data)
     }
 
     const transact = common.generateInitialization(handleInitialized('pt-static:payment-detail'), ptToken.token.challengeOptions)
