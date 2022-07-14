@@ -16,6 +16,12 @@ export const SERVICE_FEE = 'service_fee'
 
 export const defaultFeeMode = SURCHARGE
 
+export const initialState = {
+    isDirty: false,
+    isFocused: false,
+    errorMessages: []
+}
+
 export const fields = {
     CREDIT_CARD: 'pay-theory-credit-card',
     CREDIT_CARD_NUMBER: 'pay-theory-credit-card-number',
@@ -38,8 +44,7 @@ export const achFields = {
 
 export const cashFields = {
     NAME: 'pay-theory-cash-name',
-    CONTACT: 'pay-theory-cash-contact',
-    ZIP: 'pay-theory-cash-zip'
+    CONTACT: 'pay-theory-cash-contact'
 }
 
 export const achFieldTypes = [
@@ -51,8 +56,7 @@ export const achFieldTypes = [
 
 export const cashFieldTypes = [
     'cash-name',
-    'cash-contact',
-    'cash-zip'
+    'cash-contact'
 ]
 
 export const fieldTypes = [

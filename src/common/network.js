@@ -45,28 +45,15 @@ export const hostedFieldsEndpoint = () => {
 
 export const generateTokenize = (cb) => {
     return async message => {
-        let paymentType = message.paymentType
-        let cbToken
-
-        if(paymentType === 'recurring') {
-            cbToken = {
+        const fee = message.payment.fee_mode === data.SERVICE_FEE ? message.payment.fee : 0
+        let cbToken = {
                 "first_six": message.payment.first_six,
                 "last_four": message.payment.last_four,
                 "brand": message.payment.brand,
                 "receipt_number": message.payment.idempotency,
                 "amount": message.payment.amount,
-                "service_fee": message.payment.service_fee
+                "service_fee": fee
             }
-        } else {
-            cbToken = {
-                "first_six": message.payment.first_six,
-                "last_four": message.payment.last_four,
-                "brand": message.payment.brand,
-                "receipt_number": message.payment.idempotency,
-                "amount": message.payment.amount,
-                "service_fee": message.payment.service_fee
-            }
-        }
 
         cb(cbToken)
     }
@@ -77,28 +64,31 @@ export const generateCompletionResponse = (cb) => {
         let paymentType = message.paymentType
         let cbToken
 
-        if (paymentType === 'recurring' || paymentType === 'recurring-update') {
-            cbToken = message.transfer
-        } else if(message.transfer.state !== "FAILURE") {
+        if (paymentType === 'tokenize') {
+            cbToken = message.body
+        } else if(message.body.state !== "FAILURE") {
             cbToken = {
-                "receipt_number": message.transfer.receipt_number,
-                "last_four": message.transfer.last_four,
-                "brand": message.transfer.brand,
-                "created_at": message.transfer.created_at,
-                "amount": message.transfer.amount,
-                "service_fee": message.transfer.service_fee,
-                "state": message.transfer.state,
+                "receipt_number": message.body.receipt_number,
+                "last_four": message.body.last_four,
+                "brand": message.body.brand,
+                "created_at": message.body.created_at,
+                "amount": message.body.amount,
+                "service_fee": message.body.service_fee,
+                "state": message.body.state,
                 // Keeping tags in the response for backwards compatibility
-                "tags": message.transfer.metadata,
-                "metadata": message.transfer.metadata
+                "tags": message.body.metadata,
+                "metadata": message.body.metadata,
+                "payor_id": message.body.payor_id,
+                "payment_method_id": message.body.payment_method_id
             }
         } else {
             cbToken = {
-                "receipt_number": message.transfer.receipt_number,
-                "last_four": message.transfer.last_four,
-                "brand": message.transfer.brand,
-                "state": message.transfer.state,
-                "type": message.transfer.type
+                "receipt_number": message.body.receipt_number,
+                "last_four": message.body.last_four,
+                "brand": message.body.brand,
+                "state": message.body.state,
+                "type": message.body.type,
+                "payor_id": message.body.payor_id,
             }
         }
         cb(cbToken)
@@ -185,47 +175,16 @@ const handleAttestation = async challengeOptions => {
 
 export const generateInitialization = (handleInitialized, challengeOptions) => {
     return async(inputParameters) => {
-        let {amount, customerInfo, shippingDetails, metadata = {}, confirmation = false} = inputParameters
+        let {amount, payorInfo, payorId, shippingDetails, metadata = {}, confirmation = false} = inputParameters
         // Adding line for backwards compatibility
         // TODO add some logging to SDK to see usage of deprecated variables and functions
-        customerInfo = customerInfo ? customerInfo : shippingDetails ? shippingDetails : {}
+        payorInfo = payorInfo ? payorInfo : shippingDetails ? shippingDetails : {}
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
 
             data.setInitialize('init')
-            const success = await handleInitialized(amount, customerInfo, metadata, confirmation)
+            const success = await handleInitialized(amount, payorInfo, payorId, metadata, confirmation)
             if (success) {
-                await handleAttestation(challengeOptions)
-                sendTransactingMessage()
-            }
-        }
-    }
-}
-
-export const generateRecurring = (handleRecurring, challengeOptions) => {
-    return async(inputParameters) => {
-        let {amount, customerInfo, metadata = {}, confirmation = false, recurringSettings} = inputParameters
-        let initialize = data.getInitialize()
-        if (initialize !== 'init') {
-
-            data.setInitialize('init')
-            const success = await handleRecurring(amount, customerInfo, metadata, confirmation, recurringSettings)
-            if(success) {
-                await handleAttestation(challengeOptions)
-                sendTransactingMessage()
-            }
-        }
-    }
-}
-
-export const updateRecurring = (handleRecurringUpdate, challengeOptions) => {
-    return async(recurringId) => {
-        let initialize = data.getInitialize()
-        if (initialize !== 'init') {
-
-            data.setInitialize('init')
-            const success = await handleRecurringUpdate(recurringId)
-            if(success) {
                 await handleAttestation(challengeOptions)
                 sendTransactingMessage()
             }

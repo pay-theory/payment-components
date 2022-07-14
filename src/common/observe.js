@@ -19,24 +19,23 @@ export const captureObserver = cb => messaging.handleHostedFieldMessage(
         network.generateCompletionResponse(cb))
 
 export const transactedObserver = cb => messaging.handleHostedFieldMessage(
-        messaging.transferCompleteTypeMessage,
+        messaging.completeTypeMessage,
         network.generateCompletionResponse(cb))
 
 export const generateReturn = ( mount,
         initTransaction,
         transact,
-        createRecurringPayment,
-                                updateRecurringPaymentMethod,
+        tokenizePaymentMethod,
         confirm,
         cancel,
         readyObserver,
         validObserver,
-        cashObserver) => Object.create({
+        cashObserver,
+        stateObserver) => Object.create({
     mount,
     initTransaction,
     transact,
-    createRecurringPayment,
-    updateRecurringPaymentMethod,
+    tokenizePaymentMethod,
     confirm,
     cancel,
     readyObserver,
@@ -45,5 +44,6 @@ export const generateReturn = ( mount,
     cashObserver,
     captureObserver,
     tokenizeObserver,
-    transactedObserver
+    transactedObserver,
+    stateObserver
 })

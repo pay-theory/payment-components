@@ -12,10 +12,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     this.appendElement(badgeElement)
   }
 
-  isValidAmount(amount) {
-    return amount % 1 === 0 && amount >= 1
-  }
-
   generateTokenizeCallback(amount, token) {
     const message = {
       type: 'pt:tokenize',
@@ -73,22 +69,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   set amount(_amounting) {
     if (this.amounting !== _amounting) {
       this.amounting = _amounting
-    }
-  }
-
-  get cash() {
-    return this.cashed
-  }
-
-  set cash(_cash) {
-    if (this.cashed !== _cash) {
-      this.cashed = _cash
-      if (_cash) {
-        common.postMessageToHostedField('cash-name-iframe', {
-          type: 'pt-static:cash-detail',
-          data: _cash
-        })
-      }
     }
   }
 }

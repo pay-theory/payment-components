@@ -49,7 +49,7 @@ export const relayTypeMessage = message => typeof message.type === 'string' && m
 export const confirmTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:confirm'
 
 //passes transfer-complete from hosted fields to SDK
-export const transferCompleteTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:complete'
+export const completeTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:complete'
 
 //passes confirmation-complete from hosted fields to SDK
 export const confirmationCompleteTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:confirmation-complete'
@@ -64,8 +64,11 @@ export const siblingTypeMessage = message => typeof message.type === 'string' &&
 export const cashCompleteTypeMessage = message => typeof message.type === 'string' && message.type === `pt-static:cash-complete`
 
 export const postMessageToHostedField = (id, message) => {
-    document.getElementsByName(id)[0]
-        .contentWindow.postMessage(message, hostedFieldsEndpoint());
+    return document.getElementsByName(id) ? 
+        document.getElementsByName(id)[0]
+            .contentWindow.postMessage(message, hostedFieldsEndpoint()) :
+        console.log('field is no longer available')
+        
 }
 
 export const handleError = error => {
