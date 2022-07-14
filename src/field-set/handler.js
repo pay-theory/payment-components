@@ -122,8 +122,7 @@ export const stateUpdater = elements => (message) => {
 }
 
 
-export const hostedErrorHandler = resetHostToken => message => {
+export const hostedErrorHandler = message => {
     common.removeInitialize()
     common.handleError(message.error)
-    resetHostToken()
 }
