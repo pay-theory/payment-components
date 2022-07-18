@@ -637,6 +637,9 @@ The state object will include an object with all the possible fields that can be
 }
 ```
 
+This can be used to help if you want to display field specific error messages or style the fields based on the state.  
+This can also be used to help if you are using the Card Billing fields to capture the payor info and want to ensure the fields are filled out.
+
 ## Error Types
 
 The error handler will return a string indicating what happened in the SDK. The string should start with one of the following error types:
