@@ -183,12 +183,12 @@ const isValidPayorInfo = (payorInfo) => {
         message.handleError('INVALID_PARAM: payor_info is not an object')
         return false
     }
-    if(payorInfo.sameAsBilling === true) {
-        const allowedKeys = ['sameAsBilling', 'email', 'phone']
+    if(payorInfo.same_as_billing === true) {
+        const allowedKeys = ['same_as_billing', 'email', 'phone']
         const keys = Object.keys(payorInfo)
         for (let key of keys) {
             if (!allowedKeys.includes(key)) {
-                message.handleError(`INVALID_PARAM: if payor_info is sameAsBilling, only the following keys are allowed: ${allowedKeys.join(', ')}`)
+                message.handleError(`INVALID_PARAM: if payor_info is same_as_billing, only the following keys are allowed: ${allowedKeys.join(', ')}`)
                 return false
             }
         }
