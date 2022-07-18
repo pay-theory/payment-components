@@ -249,6 +249,8 @@ export default async(
     }
 
     const handleInitialized = (messageType) => (amount, payorInfo, payorId, metadata, confirmation) => {
+        // Fix to ensure other services aren't broken by changing format of same_as_billing boolean
+        payorInfo.sameAsBilling = payorInfo.same_as_billing
         //validate the input param types
         if(!valid.isvalidInputParams(amount, payorInfo, metadata)) return false
         //validate the amount
@@ -260,6 +262,7 @@ export default async(
 
         // Add timezone to the metadata for use with sending receipts from PayTheory
         metadata.pt_payment_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
         // Define the message type and data to send to the hosted field
         const type = messageType
         const data = { amount, payorInfo, payorId, metadata, fee_mode, confirmation }
