@@ -220,6 +220,49 @@ const STYLES = {
 }
 ```
 
+## Payor Information
+This data will be used to create a payor that is tied to a payment.
+
+- first_name: (String) The first name of the payor
+- last_name: (String) The last name of the payor
+- email: (String) The email address of the payor
+- phone: (String) The phone number of the payor
+- personal_address: (Object) The address of the payor
+  - line1: (String) The street address of the payor
+  - line2: (String) The street address of the payor
+  - city: (String) The city of the payor
+  - region: (String) The region (state) of the payor
+  - postal_code: (String) The postal code of the payor
+  - country: (String) The country of the payor
+
+```json
+{
+  "first_name": "Some",
+  "last_name": "Body",
+  "email": "somebody@paytheory.com",
+  "phone": "3335554444",
+  "personal_address": {
+    "city": "Somewhere",
+    "country": "USA",
+    "region": "OH",
+    "line1": "123 Street St",
+    "line2": "Apartment 17",
+    "postal_code": "12345"
+  }
+}
+```
+
+You can also optionally pass in a boolean to use the same info that is passed into the card address fields if you want to avoid collecting this information twice on a card transaction.
+
+When you pass this boolean in as true the only other fields allowed to be passed in are the email and phone fields. It will error if you pass in any other fields.
+
+```json
+{
+  "same_as_billing": true,
+  "phone": "3335554444",
+  "email": "somebody@paytheory.com"
+}
+```
 
 ## Payment Metadata
 
@@ -241,9 +284,9 @@ To manage payments with payment parameters simply add the following when initial
 For more information on payment parameters check out the [Payment Parameters](payment-parameters) documentation.
 
 ### Contact
-To send an email receipt to a customer include an `email` in the customerInfo and include this metadata:
+To send an email receipt to a payor include an `email` in the payorInfo and include this metadata:
 
-- **pay-theory-receipt**: Pass *true* to send a receipt to the customer.
+- **pay-theory-receipt**: Pass *true* to send a receipt to the payor.
 - **pay-theory-receipt-description**: Description to be included in the receipt. Defaults to "Payment from {merchant name}".
 
 For more info on receipts check out the [Receipts](email-receipts) documentation.
@@ -297,8 +340,8 @@ const STYLES = {
 
 // optionally provide custom metadata to help track sessions
 const SESSION_METADATA = {
-        "page_key": "card-payment",
-        "user_id": "123456789"
+  "page_key": "card-payment",
+  "user_id": "123456789"
 };
 
 /**
@@ -325,7 +368,7 @@ let myPayTheory
 
     myPayTheory = await window.paytheory.create(
         API_KEY,
-        STYLES, 
+        STYLES,
         SESSION_METADATA,
         FEE_MODE)
 
@@ -389,6 +432,15 @@ let myPayTheory
         * fires once barcode is generated following initTransaction
         **/
     })
+  
+    myPayTheory.stateObserver(state => {
+        /**
+        * state is a object indicating the current state of the hosted fields
+        * fires every time the state changes or a field is focused/blurred
+        * Example of the state object is below.
+        **/
+    }
+    )
 
 })()
 
@@ -403,20 +455,20 @@ When ready submit the transaction using the saved card, ACH, or cash details:
 //Amount passed in is in cents
 const AMOUNT = 1000
 
-// optionally provide details about the customer
-const CUSTOMER_INFO = {
-    "first_name": "Some",
-    "last_name": "Body",
-    "email": "somebody@gmail.com",
-    "phone": "3335554444",
-    "personal_address": {
-        "city": "Somewhere",
-        "country": "USA",
-        "region": "OH",
-        "line1": "123 Street St",
-        "line2": "Apartment 17",
-        "postal_code": "12345"
-    }
+// optionally provide details about the payor
+const PAYOR_INFO = {
+  "first_name": "Some",
+  "last_name": "Body",
+  "email": "somebody@gmail.com",
+  "phone": "3335554444",
+  "personal_address": {
+    "city": "Somewhere",
+    "country": "USA",
+    "region": "OH",
+    "line1": "123 Street St",
+    "line2": "Apartment 17",
+    "postal_code": "12345"
+  }
 }
 
 // optionally provide custom metadata to help track payments
@@ -436,19 +488,19 @@ const REQUIRE_CONFIRMATION = true
  * otherwise tokenization and capture observers are bypassed
  **/
 const clickListener = (e) => {
-    e.preventDefault()
-    ...
-    /**
-     * begin the transaction authorization by providing an amount
-     * and optionally details about the buyer and a flag for confirmation
-     * amount must be a positive integer or an error will be thrown
-     * */
-    myPayTheory.transact({
-      amount: AMOUNT,
-      customerInfo: CUSTOMER_INFO,
-      metadata: PAYMENT_METADATA,
-      confirmation: REQUIRE_CONFIRMATION // defaults to false
-    })
+  e.preventDefault()
+...
+  /**
+   * begin the transaction authorization by providing an amount
+   * and optionally details about the buyer and a flag for confirmation
+   * amount must be a positive integer or an error will be thrown
+   * */
+  myPayTheory.transact({
+    amount: AMOUNT,
+    payorInfo: PAYOR_INFO,
+    metadata: PAYMENT_METADATA,
+    confirmation: REQUIRE_CONFIRMATION // defaults to false
+  })
 }
 
 /**
@@ -456,12 +508,12 @@ const clickListener = (e) => {
  * use the tokenObserver to handle confirmation step
  **/
 myPayTheory.tokenizeObserver((card) => {
-    const confirmation =  `Are you sure you want to make a payment on ${card.brand} card beginning with ${card.first_six}`
-    if (confirm(confirmation)) {
-      myPayTheory.confirm();
-    } else {
-      myPayTheory.cancel();
-    }
+  const confirmation =  `Are you sure you want to make a payment on ${card.brand} card beginning with ${card.first_six}`
+  if (confirm(confirmation)) {
+    myPayTheory.confirm();
+  } else {
+    myPayTheory.cancel();
+  }
 });
 
 
@@ -470,11 +522,11 @@ myPayTheory.tokenizeObserver((card) => {
  * provide your own component IDs
  **/
 myPayTheory.readyObserver(ready => {
-    ...
-    document
-        .getComponentById("initiate-payment-button-id")
-        .addEventListener("click", clickListener)
-    ...
+...
+  document
+          .getComponentById("initiate-payment-button-id")
+          .addEventListener("click", clickListener)
+...
 })
 
 ```
@@ -549,6 +601,39 @@ Upon completion of generating the cash barcode you will have these details retur
 
 It is recommended at a minimum to provide both the Barcode URL and Map URL as external links to the payee.  
 They can also be embedded in an iFrame on the page or shared in some other method.
+
+## State response
+
+The state object will include an object with all the possible fields that can be used with the PayTheory SDK and consist of 3 pieces of information.
+- isFocused: boolean indicating if the field is focused
+- isDirty: boolean indicating if the field currently has text entered
+- errorMessages: array of error messages if the field is invalid
+
+*Note: If using the combined card field you will receive state updates for number, cvv, and exp separately*
+
+```json
+{
+  "card-number": {
+    "isDirty": false,
+    "isFocused": false,
+    "errorMessages": []
+  },
+  "card-cvv": ...,
+  "card-exp": ...,
+  "card-name": ...,
+  "billing-line1": ...,
+  "billing-line2": ...,
+  "billing-city": ...,
+  "billing-state": ...,
+  "billing-zip": ...,
+  "account-name": ...,
+  "account-type": ...,
+  "account-number": ...,
+  "routing-number": ...,
+  "cash-name": ...,
+  "cash-contact": ...
+}
+```
 
 ## Error Types
 

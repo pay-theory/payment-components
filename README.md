@@ -220,6 +220,50 @@ const STYLES = {
 }
 ```
 
+## Payor Information  
+This data will be used to create a payor that is tied to a payment.
+
+- first_name: (String) The first name of the payor
+- last_name: (String) The last name of the payor
+- email: (String) The email address of the payor
+- phone: (String) The phone number of the payor
+- personal_address: (Object) The address of the payor
+    - line1: (String) The street address of the payor
+    - line2: (String) The street address of the payor
+    - city: (String) The city of the payor
+    - region: (String) The region (state) of the payor
+    - postal_code: (String) The postal code of the payor
+    - country: (String) The country of the payor
+
+```json
+{
+  "first_name": "Some",
+  "last_name": "Body",
+  "email": "somebody@paytheory.com",
+  "phone": "3335554444",
+  "personal_address": {
+    "city": "Somewhere",
+    "country": "USA",
+    "region": "OH",
+    "line1": "123 Street St",
+    "line2": "Apartment 17",
+    "postal_code": "12345"
+  }
+}
+```
+
+You can also optionally pass in a boolean to use the same info that is passed into the card address fields if you want to avoid collecting this information twice.
+
+When you pass this boolean in as true the only other fields allowed to be passed in are the email and phone fields. It will error if you pass in any other fields.
+
+```json
+{
+  "same_as_billing": true,
+  "phone": "3335554444",
+  "email": "somebody@paytheory.com"
+}
+```
+
 
 ## Payment Metadata
 
@@ -241,9 +285,9 @@ To manage payments with payment parameters simply add the following when initial
 For more information on payment parameters check out the [Payment Parameters](docs/PAYMENT_PARAMETERS.md) documentation.
 
 ### Contact
-To send an email receipt to a customer include an `email` in the customerInfo and include this metadata:
+To send an email receipt to a payor include an `email` in the payorInfo and include this metadata:
 
-- **pay-theory-receipt**: Pass *true* to send a receipt to the customer.
+- **pay-theory-receipt**: Pass *true* to send a receipt to the payor.
 - **pay-theory-receipt-description**: Description to be included in the receipt. Defaults to "Payment from {merchant name}".
 
 For more info on receipts check out the [Receipts](docs/EMAIL_RECEIPTS.md) documentation.
@@ -389,6 +433,15 @@ let myPayTheory
         * fires once barcode is generated following initTransaction
         **/
     })
+  
+    myPayTheory.stateObserver(state => {
+        /**
+        * state is a object indicating the current state of the hosted fields
+        * fires every time the state changes or a field is focused/blurred
+        * Example of the state object is below.
+        **/
+    }
+    )
 
 })()
 
@@ -403,8 +456,8 @@ When ready submit the transaction using the saved card, ACH, or cash details:
 //Amount passed in is in cents
 const AMOUNT = 1000
 
-// optionally provide details about the customer
-const CUSTOMER_INFO = {
+// optionally provide details about the payor
+const PAYOR_INFO = {
   "first_name": "Some",
   "last_name": "Body",
   "email": "somebody@gmail.com",
@@ -445,7 +498,7 @@ const clickListener = (e) => {
      * */
     myPayTheory.transact({
               amount: AMOUNT,
-              customerInfo: CUSTOMER_INFO,
+              payorInfo: PAYOR_INFO,
               metadata: PAYMENT_METADATA,
               confirmation: REQUIRE_CONFIRMATION // defaults to false
             })
@@ -502,7 +555,7 @@ When the confirm option of initTransaction is set to true, the payment card or A
 
 Upon completion of authorization and capture, details similar to the following are returned:
 
-*note that the service fee is included in amount*
+*Note: the service fee is included in amount*
 
 ```json
 {
@@ -513,7 +566,9 @@ Upon completion of authorization and capture, details similar to the following a
     "amount": 999,
     "service_fee": 195,
     "state":"SUCCEEDED",
-    "metadata":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" }
+    "metadata":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" },
+    "payor_id": "pt-pay-XXXXX",
+    "payment_method_id": "pt-pmt-XXXXX"
 }
 ```
 
@@ -549,6 +604,42 @@ Upon completion of generating the cash barcode you will have these details retur
 
 It is recommended at a minimum to provide both the Barcode URL and Map URL as external links to the payee.  
 They can also be embedded in an iFrame on the page or shared in some other method.
+
+## State response
+
+The state object will include an object with all the possible fields that can be used with the PayTheory SDK and consist of 3 pieces of information.
+- isFocused: boolean indicating if the field is focused
+- isDirty: boolean indicating if the field currently has text entered
+- errorMessages: array of error messages if the field is invalid
+
+*Note: If using the combined card field you will receive state updates for number, cvv, and exp separately*
+
+```json
+{
+  "card-number": {
+    "isDirty": false,
+    "isFocused": false,
+    "errorMessages": []
+  },
+  "card-cvv": ...,
+  "card-exp": ...,
+  "card-name": ...,
+  "billing-line1": ...,
+  "billing-line2": ...,
+  "billing-city": ...,
+  "billing-state": ...,
+  "billing-zip": ...,
+  "account-name": ...,
+  "account-type": ...,
+  "account-number": ...,
+  "routing-number": ...,
+  "cash-name": ...,
+  "cash-contact": ...
+}
+```
+
+This can be used to help if you want to display field specific error messages or style the fields based on the state.  
+This can also be used to help if you are using the Card Billing fields to capture the payor info and want to ensure the fields are filled out.
 
 ## Error Types
 
