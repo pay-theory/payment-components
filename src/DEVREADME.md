@@ -566,8 +566,8 @@ Upon completion of authorization and capture, details similar to the following a
     "service_fee": 195,
     "state":"SUCCEEDED",
     "metadata":{ "pay-theory-environment":"env","pt-number":"pt-env-XXXXXX", "YOUR_TAG_KEY": "YOUR_TAG_VALUE" },
-  "payor_id": "pt-pay-XXXXX",
-  "payment_method_id": "pt-pmt-XXXXX"
+    "payor_id": "pt-pay-XXXXX",
+    "payment_method_id": "pt-pmt-XXXXX"
 }
 ```
 
