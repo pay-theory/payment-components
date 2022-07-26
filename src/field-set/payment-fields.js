@@ -260,9 +260,6 @@ export default async(
         // validate the payorId
         if(!valid.isValidPayorDetails(payorInfo, payTheoryData.payorId)) return false
 
-        // Add timezone to the metadata for use with sending receipts from PayTheory
-        payTheoryData.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-
         // Define the message type and data to send to the hosted field
         const type = messageType
         const data = { amount, payorInfo, payTheoryData, metadata, fee_mode, confirmation }
