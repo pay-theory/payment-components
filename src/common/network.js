@@ -173,17 +173,31 @@ const handleAttestation = async challengeOptions => {
     }
 }
 
+const parseInputParams = (inputParams) => {
+    let { payorId, invoiceId, metadata = {} } = inputParams
+    let payTheoryData = {
+        accountCode: inputParams.accountCode || metadata["pay-theory-account-code"],
+        reference: inputParams.reference || metadata["pay-theory-reference"],
+        paymentParameters: inputParams.paymentParameters || metadata["payment-parameters-name"],
+        payorId: payorId,
+        sendReceipt: inputParams.sendReceipt || metadata["pay-theory-send-receipt"],
+        receiptDescription: inputParams.receiptDescription || metadata["pay-theory-receipt-description"],
+        invoiceId: invoiceId
+    }
+    inputParams.payTheoryData = payTheoryData
+    return inputParams
+}
+
 export const generateInitialization = (handleInitialized, challengeOptions) => {
     return async(inputParameters) => {
-        let {amount, payorInfo, payorId, shippingDetails, metadata = {}, confirmation = false} = inputParameters
+        let {amount, payorInfo, payTheoryData, shippingDetails, metadata = {}, confirmation = false} = parseInputParams(inputParameters)
         // Adding line for backwards compatibility
         // TODO add some logging to SDK to see usage of deprecated variables and functions
         payorInfo = payorInfo ? payorInfo : shippingDetails ? shippingDetails : {}
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
-
             data.setInitialize('init')
-            const success = await handleInitialized(amount, payorInfo, payorId, metadata, confirmation)
+            const success = await handleInitialized(amount, payorInfo, payTheoryData, metadata, confirmation)
             if (success) {
                 await handleAttestation(challengeOptions)
                 sendTransactingMessage()
