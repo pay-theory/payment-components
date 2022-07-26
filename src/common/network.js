@@ -182,7 +182,8 @@ const parseInputParams = (inputParams) => {
         payorId: payorId,
         sendReceipt: inputParams.sendReceipt || metadata["pay-theory-send-receipt"],
         receiptDescription: inputParams.receiptDescription || metadata["pay-theory-receipt-description"],
-        invoiceId: invoiceId
+        invoiceId: invoiceId,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
     }
     inputParams.payTheoryData = payTheoryData
     return inputParams
