@@ -23,7 +23,7 @@ const validate = (value, type) => {
 
 const checkFeeMode = mode => {
     if (!validate(mode, 'string') || ![common.INTERCHANGE, common.SERVICE_FEE].includes(mode)) {
-        throw Error(`Fee Mode should be either 'interchange' or 'service_fee' which are also available as constants at window.paytheory.INTERCHANGE and window.paytheory.SERVICE_FEE`)
+        console.error(`Fee Mode should be either 'interchange' or 'service_fee' which are also available as constants at window.paytheory.INTERCHANGE and window.paytheory.SERVICE_FEE`)
     }
 }
 
