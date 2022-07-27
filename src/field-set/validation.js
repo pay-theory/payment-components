@@ -246,6 +246,14 @@ const isValidPayorDetails = (payorInfo, payorId) => {
     return true
 }
 
+const isValidFeeMode = (feeMode) => {
+    if (![common.INTERCHANGE, common.SERVICE_FEE].includes(feeMode)) {
+        message.handleError('INVALID_PARAM: feeMode must be either INTERCHANGE or SERVICE_FEE')
+        return false
+    }
+    return true
+}
+
 export {
     checkCreateParams,
     hasValidCard,
@@ -261,5 +269,6 @@ export {
     isValidAmount,
     isvalidInputParams,
     isValidPayorInfo,
-    isValidPayorDetails
+    isValidPayorDetails,
+    isValidFeeMode
 }

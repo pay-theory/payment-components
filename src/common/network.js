@@ -176,13 +176,13 @@ const handleAttestation = async challengeOptions => {
 const parseInputParams = (inputParams) => {
     let { payorId, invoiceId, metadata = {} } = inputParams
     let payTheoryData = {
-        accountCode: inputParams.accountCode || metadata["pay-theory-account-code"],
+        account_code: inputParams.accountCode || metadata["pay-theory-account-code"],
         reference: inputParams.reference || metadata["pay-theory-reference"],
-        paymentParameters: inputParams.paymentParameters || metadata["payment-parameters-name"],
-        payorId: payorId,
-        sendReceipt: inputParams.sendReceipt || metadata["pay-theory-send-receipt"],
-        receiptDescription: inputParams.receiptDescription || metadata["pay-theory-receipt-description"],
-        invoiceId: invoiceId,
+        payment_parameters: inputParams.paymentParameters || metadata["payment-parameters-name"],
+        payor_id: payorId,
+        send_receipt: inputParams.sendReceipt || metadata["pay-theory-send-receipt"],
+        receipt_description: inputParams.receiptDescription || metadata["pay-theory-receipt-description"],
+        invoice_id: invoiceId,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
     }
     inputParams.payTheoryData = payTheoryData
@@ -191,14 +191,14 @@ const parseInputParams = (inputParams) => {
 
 export const generateInitialization = (handleInitialized, challengeOptions) => {
     return async(inputParameters) => {
-        let {amount, payorInfo, payTheoryData, shippingDetails, metadata = {}, confirmation = false} = parseInputParams(inputParameters)
+        let {amount, payorInfo, payTheoryData, shippingDetails, metadata = {}, feeMode, confirmation = false} = parseInputParams(inputParameters)
         // Adding line for backwards compatibility
         // TODO add some logging to SDK to see usage of deprecated variables and functions
         payorInfo = payorInfo ? payorInfo : shippingDetails ? shippingDetails : {}
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
             data.setInitialize('init')
-            const success = await handleInitialized(amount, payorInfo, payTheoryData, metadata, confirmation)
+            const success = await handleInitialized(amount, payorInfo, payTheoryData, metadata, feeMode, confirmation)
             if (success) {
                 await handleAttestation(challengeOptions)
                 sendTransactingMessage()
