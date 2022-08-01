@@ -4,6 +4,11 @@ const devtool = 'inline-source-map'
 //const devtool = false
 module.exports = {
   devtool,
+  resolve: {
+    fallback: {
+      util: require.resolve('util/')
+    }
+  },
   entry: './src/index.js',
   output: {
     filename: 'index.js',

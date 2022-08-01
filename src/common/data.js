@@ -1,14 +1,7 @@
 /* global localStorage */
 export const AUTOFILL = 'pt-autofill'
-export const MERCHANT = 'pt-merchant'
-export const IDENTITY = 'pt-identity'
-export const INSTRUMENT = 'pt-instrument'
-export const BUYER = 'pt-buyer'
-export const TOKEN = 'pt-token'
-export const BIN = 'pt-bin'
 export const READY = 'pt-ready'
 export const TRANSACTING = 'pt-transacting'
-export const IDEMPOTENCY = 'pt-idempotency'
 export const ENVIRONMENT = 'pt-environment'
 export const STAGE = 'pt-stage'
 export const INITIALIZE = 'pt-initialize'
@@ -22,6 +15,12 @@ export const INTERCHANGE = 'interchange'
 export const SERVICE_FEE = 'service_fee'
 
 export const defaultFeeMode = SURCHARGE
+
+export const initialState = {
+    isDirty: false,
+    isFocused: false,
+    errorMessages: []
+}
 
 export const fields = {
     CREDIT_CARD: 'pay-theory-credit-card',
@@ -45,8 +44,7 @@ export const achFields = {
 
 export const cashFields = {
     NAME: 'pay-theory-cash-name',
-    CONTACT: 'pay-theory-cash-contact',
-    ZIP: 'pay-theory-cash-zip'
+    CONTACT: 'pay-theory-cash-contact'
 }
 
 export const achFieldTypes = [
@@ -58,8 +56,7 @@ export const achFieldTypes = [
 
 export const cashFieldTypes = [
     'cash-name',
-    'cash-contact',
-    'cash-zip'
+    'cash-contact'
 ]
 
 export const fieldTypes = [
@@ -110,30 +107,6 @@ export {
     combinedCardTypes
 }
 
-export const findEnv = () => {
-    switch (process.env.BUILD_ENV) {
-    case 'prod':
-        return 'prod'
-    case 'stage':
-        return 'demo'
-    default:
-        return 'dev'
-    }
-}
-
-export const stateMap = {
-    'credit-card': 'security_code|expiration_date|number',
-    'card-number': 'number',
-    'card-exp': 'exp',
-    'card-cvv': 'cvv',
-    'card-name': 'name',
-    'billing-line1': 'address-1',
-    'billing-line2': 'address-2',
-    'billing-city': 'city',
-    'billing-state': 'state',
-    'billing-zip': 'zip'
-}
-
 export const isAutofill = () => {
     return localStorage.getItem(AUTOFILL)
 }
@@ -166,7 +139,6 @@ export const getFinixEnv = () => {
     return localStorage.getItem(STAGE) === 'paytheory' ? 'live' : 'sandbox'
 }
 
-
 export const setStage = stage => {
     return localStorage.setItem(STAGE, stage)
 }
@@ -178,76 +150,6 @@ export const setReady = ready => {
 }
 export const removeReady = () => {
     return localStorage.removeItem(READY)
-}
-
-export const getBuyer = () => {
-    return JSON.parse(localStorage.getItem(BUYER))
-}
-export const setBuyer = buyer => {
-    return localStorage.setItem(BUYER, JSON.stringify(buyer))
-}
-export const removeBuyer = () => {
-    return localStorage.removeItem(BUYER)
-}
-
-export const getBin = () => {
-    return JSON.parse(localStorage.getItem(BIN))
-}
-export const setBin = bin => {
-    return localStorage.setItem(BIN, JSON.stringify(bin))
-}
-export const removeBin = () => {
-    return localStorage.removeItem(BIN)
-}
-
-export const getToken = () => {
-    return JSON.parse(localStorage.getItem(TOKEN))
-}
-export const setToken = token => {
-    return localStorage.setItem(TOKEN, JSON.stringify(token))
-}
-export const removeToken = () => {
-    return localStorage.removeItem(TOKEN)
-}
-
-export const getIdempotency = () => {
-    return JSON.parse(localStorage.getItem(IDEMPOTENCY))
-}
-export const setIdempotency = token => {
-    return localStorage.setItem(IDEMPOTENCY, JSON.stringify(token))
-}
-export const removeIdempotency = () => {
-    return localStorage.removeItem(IDEMPOTENCY)
-}
-
-export const getIdentity = () => {
-    return JSON.parse(localStorage.getItem(IDENTITY))
-}
-export const setIdentity = identity => {
-    return localStorage.setItem(IDENTITY, JSON.stringify(identity))
-}
-export const removeIdentity = () => {
-    return localStorage.removeItem(IDENTITY)
-}
-
-export const getInstrument = () => {
-    return JSON.parse(localStorage.getItem(INSTRUMENT))
-}
-export const setInstrument = instrument => {
-    return localStorage.setItem(INSTRUMENT, JSON.stringify(instrument))
-}
-export const removeInstrument = () => {
-    return localStorage.removeItem(INSTRUMENT)
-}
-
-export const getMerchant = () => {
-    return JSON.parse(localStorage.getItem(MERCHANT))
-}
-export const setMerchant = merchant => {
-    return localStorage.setItem(MERCHANT, JSON.stringify(merchant))
-}
-export const removeMerchant = () => {
-    return localStorage.removeItem(MERCHANT)
 }
 
 export const getInitialize = () => {
@@ -264,13 +166,6 @@ export const removeInitialize = () => {
 
 export const removeAll = (allowRetry) => {
     removeAutofill()
-    removeMerchant()
-    removeIdentity()
-    removeInstrument()
-    removeToken()
-    removeBuyer()
-    removeBin()
     removeTransactingElement()
-    removeIdempotency()
     if(allowRetry) removeInitialize()
 }

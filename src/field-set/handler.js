@@ -29,7 +29,7 @@ const autofillHandler = (message) => {
     }
 }
 
-//Relays messages from hosted fields to the transacting element for autofill and transacting
+//Relay messages from hosted fields to the transacting element for autofill and transacting
 export const relayHandler = () => message => {
     if (message.element.endsWith("autofill")) {
         common.setAutofill(true)
@@ -42,7 +42,7 @@ export const relayHandler = () => message => {
 };
 
 
-//sends styles to hosted fields when they are set up
+//Send styles to hosted fields when they are set up
 export const setupHandler = (styles, setupTransacting) => (message) => {
     common.postMessageToHostedField(`${message.element}-iframe`, {
         type: "pt:setup",
@@ -122,30 +122,7 @@ export const stateUpdater = elements => (message) => {
 }
 
 
-export const instrumentHandler = transacting => message => {
-    common.setInstrument(message.instrument)
-    const type = common.isFieldType(message.field)
-    transacting[type].instrument = message.instrument
-}
-
-
-// export const hostedErrorHandler = resetHostToken => message => {
-//     common.removeInitialize()
-//     common.handleError(message.error)
-//     resetHostToken()
-// }
-
-export const hostedErrorHandler = expireSession => message => {
+export const hostedErrorHandler = message => {
     common.removeInitialize()
     common.handleError(message.error)
-    expireSession()
-}
-
-export const idempotencyHandler = message => {
-    common.setIdempotency(message.payment)
-    document.getElementById(common.getTransactingElement()).idempotent = message.payment
-}
-
-export const transferCompleteHandler = message => {
-    document.getElementById(common.getTransactingElement()).transfer = message.transfer
 }
