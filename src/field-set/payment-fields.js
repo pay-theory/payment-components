@@ -105,6 +105,10 @@ export default async(
             token: token['pt-token']
         })
     }
+    
+    const expireHostToken = async() => {  
+        console.warn('expiring host token')
+    }
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
