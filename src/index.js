@@ -16,17 +16,16 @@ import './components/ach-account-type'
 import './components/ach-routing-number'
 import './components/cash-contact'
 import './components/cash-name'
-import './components/cash-zip'
 import 'regenerator-runtime'
 import './style.css'
 
 import createPaymentFieldsLegacy from './field-set/payment-fields'
 import { SURCHARGE, SERVICE_FEE, INTERCHANGE } from './common/data'
 
-const create = (apiKey, styles, tags, feeMode) => createPaymentFieldsLegacy(apiKey, '', styles, tags, feeMode)
-const createPaymentFields = (apiKey, clientId, styles, tags) => {
+const create = (apiKey, styles, metadata, feeMode) => createPaymentFieldsLegacy(apiKey, '', styles, metadata, feeMode)
+const createPaymentFields = (apiKey, clientId, styles, metadata) => {
     console.warn('createPaymentFields has been deprecated')
-    return createPaymentFieldsLegacy(apiKey, clientId, styles, tags, SERVICE_FEE)
+    return createPaymentFieldsLegacy(apiKey, clientId, styles, metadata, INTERCHANGE)
 }
 
 window.paytheory = {

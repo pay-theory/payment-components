@@ -1,23 +1,6 @@
 /* global navigator */
 import * as data from './data'
 import * as message from './message'
-export const postData = async(url, apiKey, data = {}) => {
-    const options = {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        headers: {
-            'x-api-key': apiKey,
-            'content-type': 'application/json',
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-        body: JSON.stringify(data),
-    }
-    /* global fetch */
-    const response = await fetch(url, options)
-    return await response.json()
-}
 
 export const getData = async(url, apiKey) => {
     const options = {
@@ -32,23 +15,6 @@ export const getData = async(url, apiKey) => {
     const response = await fetch(url, options)
     return await response.json()
 }
-
-const isValidTransaction = (tokenized) => {
-
-    if (tokenized) {
-        window.postMessage({
-                type: 'pt:error',
-                error: 'transaction already initiated',
-                throws: true
-            },
-            window.location.origin,
-        );
-        return false
-    }
-    return true
-}
-
-export const invalidate = _t => (_t.isDirty ? _t.errorMessages.length > 0 : null)
 
 // deprecated environment is always derived from API key
 export const defaultEnvironment = (() => {
@@ -79,23 +45,54 @@ export const hostedFieldsEndpoint = () => {
 
 export const generateTokenize = (cb) => {
     return async message => {
-        let transacting = data.getTransactingElement()
-        document.getElementById(transacting).idempotencyCallback = cb
-        document.getElementById(transacting).idempotent = message.payment
+        const fee = message.payment.fee_mode === data.SERVICE_FEE ? message.payment.fee : 0
+        let cbToken = {
+                "first_six": message.payment.first_six,
+                "last_four": message.payment.last_four,
+                "brand": message.payment.brand,
+                "receipt_number": message.payment.idempotency,
+                "amount": message.payment.amount,
+                "service_fee": fee
+            }
+
+        cb(cbToken)
     }
 }
 
-export const generateCompletetionResponse = (cb) => {
+export const generateCompletionResponse = (cb) => {
     return async message => {
-        let transacting = document.getElementById(data.getTransactingElement())
-        let updatedCb = val => {
-            cb(val)
-            data.removeAll()
+        let paymentType = message.paymentType
+        let cbToken
+
+        if (paymentType === 'tokenize') {
+            cbToken = message.body
+        } else if(message.body.state !== "FAILURE") {
+            cbToken = {
+                "receipt_number": message.body.receipt_number,
+                "last_four": message.body.last_four,
+                "brand": message.body.brand,
+                "created_at": message.body.created_at,
+                "amount": message.body.amount,
+                "service_fee": message.body.service_fee,
+                "state": message.body.state,
+                // Keeping tags in the response for backwards compatibility
+                "tags": message.body.metadata,
+                "metadata": message.body.metadata,
+                "payor_id": message.body.payor_id,
+                "payment_method_id": message.body.payment_method_id
+            }
+        } else {
+            cbToken = {
+                "receipt_number": message.body.receipt_number,
+                "last_four": message.body.last_four,
+                "brand": message.body.brand,
+                "state": message.body.state,
+                "type": message.body.type,
+                "payor_id": message.body.payor_id,
+            }
         }
-        if(transacting) {
-            transacting.captureCallback = updatedCb
-            transacting.transfer = message.transfer
-        }
+        cb(cbToken)
+        data.removeAll()
     }
 }
 
@@ -162,34 +159,35 @@ const sendTransactingMessage = () => {
     })
 }
 
+const handleAttestation = async challengeOptions => {
+    const attested = await attestBrowser(challengeOptions)
+
+    if (attested.response) {
+        const transacting = data.getTransactingElement()
+        const response = { clientDataJSON: attested.response.clientDataJSON, attestationObject: attested.response.attestationObject }
+        const attestation = { response, id: attested.id, type: attested.type }
+        message.postMessageToHostedField(data.hostedFieldMap[transacting], {
+            type: `pt-static:attestation`,
+            attestation
+        })
+    }
+}
+
 export const generateInitialization = (handleInitialized, challengeOptions) => {
     return async(inputParameters) => {
-        let {amount, customerInfo, shippingDetails, metadata = {}, confirmation = false} = inputParameters
+        let {amount, payorInfo, payorId, shippingDetails, metadata = {}, confirmation = false} = inputParameters
         // Adding line for backwards compatibility
         // TODO add some logging to SDK to see usage of deprecated variables and functions
-        customerInfo = customerInfo ? customerInfo : shippingDetails ? shippingDetails : {}
+        payorInfo = payorInfo ? payorInfo : shippingDetails ? shippingDetails : {}
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
-            if (!Number.isInteger(amount) || amount < 1) {
-                return message.handleError('amount must be a positive integer')
-            }
 
             data.setInitialize('init')
-            const attested = await attestBrowser(challengeOptions)
-
-            await handleInitialized(amount, customerInfo, metadata, confirmation)
-
-            if (attested.response) {
-                const transacting = data.getTransactingElement()
-                const response = { clientDataJSON: attested.response.clientDataJSON, attestationObject: attested.response.attestationObject }
-                const attestation = { response, id: attested.id, type: attested.type }
-                message.postMessageToHostedField(data.hostedFieldMap[transacting], {
-                    type: `pt-static:attestation`,
-                    attestation
-                })
+            const success = await handleInitialized(amount, payorInfo, payorId, metadata, confirmation)
+            if (success) {
+                await handleAttestation(challengeOptions)
+                sendTransactingMessage()
             }
-
-            sendTransactingMessage()
         }
     }
 }

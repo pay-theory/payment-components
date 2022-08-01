@@ -8,7 +8,7 @@ export default async(
     apiKey,
     legacy, // this used to be client id, left in place to preserve backwards compatibility
     styles = common.defaultStyles,
-    sessionTags = {},
+    sessionMetadata = {},
     fee_mode = common.defaultFeeMode
 ) => {
     
@@ -20,10 +20,10 @@ export default async(
         partnerMode = stage
         stage = keyParts[2]
     }
-    valid.checkCreateParams(apiKey, fee_mode, sessionTags, styles, environment, stage, partnerMode)
+    valid.checkCreateParams(apiKey, fee_mode, sessionMetadata, styles, environment, stage, partnerMode)
 
     common.removeAll(true)
-    let partner_environment = ""
+    let partner_environment
     if (partnerMode === "") {
         partner_environment = `${environment}`
     } else {
@@ -47,7 +47,6 @@ export default async(
         'account-name': false,
         'account-type': false,
         'cash-name': false,
-        'cash-zip': true,
         'cash-contact': false
     }
 
@@ -67,8 +66,7 @@ export default async(
         'routing-number': common.achFields.BANK_CODE,
         'account-type': common.achFields.ACCOUNT_TYPE,
         'cash-name': common.cashFields.NAME,
-        'cash-contact': common.cashFields.CONTACT,
-        'cash-zip': common.cashFields.ZIP,
+        'cash-contact': common.cashFields.CONTACT
     }
 
     let isValid = false
@@ -78,6 +76,8 @@ export default async(
         ach: [],
         cash: []
     }
+
+    let elementStates = {}
 
     let transacting = {}
 
@@ -117,7 +117,7 @@ export default async(
             if (processed.elements.length > 0) {
                 let error = processed.errorCheck(processed.elements, transacting[processed.type])
                 if (error) {
-                    common.handleError(error);
+                    common.handleError(`FIELD_ERROR: ${error}`);
                 }
                 let token;
                 if (ptToken.isUsed) {
@@ -130,7 +130,7 @@ export default async(
 
                 processed.elements.forEach(element => {
                     if(!token['pt-token']) {
-                        return common.handleError(`No pt-token found`)
+                        return common.handleError(`NO_TOKEN: No pt-token found`)
                     }
                     const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles, apiKey})
                     const encodedJson = window.btoa(json)
@@ -150,9 +150,6 @@ export default async(
     const mount = async(
         elements = defaultElementIds
     ) => {
-
-        const env = common.getEnvironment()
-        const stage = common.getStage();
         common.removeInitialize()
 
         const achElements = {
@@ -177,13 +174,12 @@ export default async(
 
         const cashElements = {
             'cash-name': elements['cash-name'],
-            'cash-contact': elements['cash-contact'],
-            'cash-zip': elements['cash-zip']
+            'cash-contact': elements['cash-contact']
         }
 
-        processedElements.card = common.processElements(cardElements, styles, common.fieldTypes, 'credit-card')
-        processedElements.ach = common.processElements(achElements, styles, common.achFieldTypes, 'ach')
-        processedElements.cash = common.processElements(cashElements, styles, common.cashFieldTypes)
+        processedElements.card = common.processElements(cardElements, elementStates, common.fieldTypes, 'credit-card')
+        processedElements.ach = common.processElements(achElements, elementStates, common.achFieldTypes, 'ach')
+        processedElements.cash = common.processElements(cashElements, elementStates, common.cashFieldTypes)
 
         transacting.card = processedElements.card.reduce(common.findTransactingElement, false)
         transacting.ach = processedElements.ach.reduce(common.findAccountNumber, false)
@@ -203,12 +199,10 @@ export default async(
 
         const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, handler.stateUpdater(processedElements))
 
-        const removeInstrument = common.handleHostedFieldMessage(common.instrumentTypeMessage, handler.instrumentHandler(transacting))
-
-        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler(expireHostToken))
+        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler)
     
         if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
-            return common.handleError('There are no PayTheory fields')
+            return common.handleError('NO_FIELDS: There are no PayTheory fields')
         }
 
         let processed = [{
@@ -225,7 +219,7 @@ export default async(
             errorCheck: valid.findCashError
         }]
 
-        mountProcessedElements(processed)
+        await mountProcessedElements(processed)
 
         //returns a function that removes any event handlers that were put on the window during the mount function
         return () => {
@@ -233,37 +227,62 @@ export default async(
             removeSetup()
             removeSibling()
             removeState()
-            removeInstrument()
             removeHostedError()
         }
     }
 
-    const handleInitialized = (amount, customerInfo, transactionTags, confirmation) => {
-        common.setBuyer(customerInfo)
+    const handleInitMessage = (type, data) => {
         const options = ['card', 'cash', 'ach']
-        // Add timezone to the tags for use with sending receipts from PayTheory
-        transactionTags['payment-timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone
-
+        let initialized = false
         options.forEach(option => {
             if (common.isHidden(transacting[option]) === false && isValid.includes(option)) {
+                initialized = true
                 const element = transacting[option]
                 common.setTransactingElement(element)
                 element.resetToken = resetHostToken
-                common.postMessageToHostedField(common.hostedFieldMap[element.id], {
-                    type: 'pt-static:payment-detail',
-                    data: { amount, customerInfo, transactionTags, fee_mode, confirmation }
-                  })
+                common.postMessageToHostedField(common.hostedFieldMap[element.id], {type, data})
             }
         })
+        // If there was not transacting message sent we should throw error and remove initialize so it can be run again after fields are valid
+        if (!initialized) {
+            common.handleError('NOT_VALID: Fields displayed are not valid.')
+            common.removeInitialize()
+            return false
+        }
+        return true
     }
 
-    const transact = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
+    const handleInitialized = (messageType) => (amount, payorInfo, payorId, metadata, confirmation) => {
+        // Fix to ensure other services aren't broken by changing format of same_as_billing boolean
+        payorInfo.sameAsBilling = payorInfo.same_as_billing
+        //validate the input param types
+        if(!valid.isvalidInputParams(amount, payorInfo, metadata)) return false
+        //validate the amount
+        if(!valid.isValidAmount(amount)) return false
+        //validate the payorInfo
+        if(!valid.isValidPayorInfo(payorInfo)) return false
+        // validate the payorId
+        if(!valid.isValidPayorDetails(payorInfo, payorId)) return false
 
-    const initTransaction = (amount, customerInfo, confirmation) => {
+        // Add timezone to the metadata for use with sending receipts from PayTheory
+        metadata.pt_payment_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
+        // Define the message type and data to send to the hosted field
+        const type = messageType
+        const data = { amount, payorInfo, payorId, metadata, fee_mode, confirmation }
+        return handleInitMessage(type, data)
+    }
+
+    const transact = common.generateInitialization(handleInitialized('pt-static:payment-detail'), ptToken.token.challengeOptions)
+
+    const initTransaction = (amount, payorInfo, confirmation) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
-        //Passing in the session tags from create because those used to be the only tags that were passed in
-        transact({amount, customerInfo, metadata: sessionTags, confirmation})
+        //Passing in the session metadata from create because those used to be the only metadata that were passed in
+        transact({amount, payorInfo, metadata: sessionMetadata, confirmation})
     }
+
+    const tokenizePaymentMethod = common.generateInitialization(handleInitialized('pt-static:tokenize-detail'), ptToken.token.challengeOptions)
+
 
     const confirm = () => {
         const transacting = common.getTransactingElement()
@@ -282,10 +301,8 @@ export default async(
             common.postMessageToHostedField(common.hostedFieldMap[transacting], {
                 type: `pt-static:cancel`
             })
-            resetHostToken()
+            await resetHostToken()
         }
-        common.removeIdentity()
-        common.removeToken()
         common.removeInitialize()
         common.removeTransactingElement()
     }
@@ -347,40 +364,46 @@ export default async(
             }
         })
 
+    const stateObserver = cb => common.handleHostedFieldMessage(common.stateTypeMessage, message => {
+        const state = {...message.state}
+        delete state.element
+        elementStates[message.element] = state
+        cb(elementStates)
+    })
+
     const cashObserver = cb => common.handleHostedFieldMessage(common.cashCompleteTypeMessage, message => {
-        var options = {
+        const options = {
             timeout: 5000,
             maximumAge: 0
         };
 
         function success(pos) {
-            var crd = pos.coords;
-            var response = message.barcode
+            const crd = pos.coords;
+            const response = message.barcode;
             response.mapUrl = `https://map.payithere.com/biller/4b8033458847fec15b9c840c5b574584/?lat=${crd.latitude}&lng=${crd.longitude}`
             cb(response)
             common.removeAll()
         }
 
         function error() {
-            var response = message.barcode
+            const response = message.barcode;
             cb(response)
             common.removeAll(true)
         }
 
         navigator.geolocation.getCurrentPosition(success, error, options);
-        if (message.status === 'FAILURE') {
-            document.getElementById(common.getTransactingElement()).cash = false
-        }
     })
 
     return common.generateReturn(
             mount,
             initTransaction,
             transact,
+            tokenizePaymentMethod,
             confirm,
             cancel,
             readyObserver,
             validObserver,
-            cashObserver
+            cashObserver,
+            stateObserver
         )
 }

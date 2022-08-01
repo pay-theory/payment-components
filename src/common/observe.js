@@ -11,28 +11,31 @@ export const errorObserver = cb => messaging.handleMessage(messaging.errorTypeMe
 })
 
 export const tokenizeObserver = cb => messaging.handleHostedFieldMessage(
-        messaging.idempotencyTypeMessage,
+        messaging.confirmTypeMessage,
         network.generateTokenize(cb))
 
 export const captureObserver = cb => messaging.handleHostedFieldMessage(
         messaging.confirmationCompleteTypeMessage,
-        network.generateCompletetionResponse(cb))
+        network.generateCompletionResponse(cb))
 
 export const transactedObserver = cb => messaging.handleHostedFieldMessage(
-        messaging.transferCompleteTypeMessage,
-        network.generateCompletetionResponse(cb))
+        messaging.completeTypeMessage,
+        network.generateCompletionResponse(cb))
 
 export const generateReturn = ( mount,
         initTransaction,
         transact,
+        tokenizePaymentMethod,
         confirm,
         cancel,
         readyObserver,
         validObserver,
-        cashObserver) => Object.create({
+        cashObserver,
+        stateObserver) => Object.create({
     mount,
     initTransaction,
     transact,
+    tokenizePaymentMethod,
     confirm,
     cancel,
     readyObserver,
@@ -41,5 +44,6 @@ export const generateReturn = ( mount,
     cashObserver,
     captureObserver,
     tokenizeObserver,
-    transactedObserver
+    transactedObserver,
+    stateObserver
 })
