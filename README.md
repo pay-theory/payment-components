@@ -534,7 +534,7 @@ The only required key is `amount`.
 
 
 * metadata: (Object)
-  * see the TRANSACTION_METADATA object above for details
+  * see the PAYMENT_METADATA object above for details
 
 
 * feeMode: (String)

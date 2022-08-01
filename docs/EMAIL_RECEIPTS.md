@@ -16,7 +16,7 @@ You can optionally include a receipt description.
 const AMOUNT = 1000
 
 // email is required for a receipt to send
-const CUSTOMER_INFO = {
+const PAYOR_INFO = {
     "first_name": "Some",
     "last_name": "Body",
     "email": "somebody@paytheory.com"
@@ -25,7 +25,7 @@ const CUSTOMER_INFO = {
 
 myPayTheory.transact({
     amount: AMOUNT,
-    customerInfo: CUSTOMER_INFO,
+    payorInfo: PAYOR_INFO,
     sendReceipt: true, 
     receiptDescription: "School Technology Fees"
 })
