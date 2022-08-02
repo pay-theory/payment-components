@@ -267,40 +267,13 @@ When you pass this boolean in as true the only other fields allowed to be passed
 
 ## Payment Metadata
 
-### Track
-To track payments with custom metadata simply add key value pairs to the payment metadata object.
-
-All metadata will be tracked with the payment. The values must be scalar types (strings, numbers, booleans).
-
-The following values are reserved keys and will be part of the data displayed in our portals:
-
-- **pay-theory-account-code**: Code that will be used to track the payment.
-- **pay-theory-reference**: Custom description assigned to a payment that can later be filtered by.
-
-### Manage
-To manage payments with payment parameters simply add the following when initializing the payment:
-
-- **payment-parameters-name**: The payment parameters to use for the payment.
-
-For more information on payment parameters check out the [Payment Parameters](docs/PAYMENT_PARAMETERS.md) documentation.
-
-### Contact
-To send an email receipt to a payor include an `email` in the payorInfo and include this metadata:
-
-- **pay-theory-receipt**: Pass *true* to send a receipt to the payor.
-- **pay-theory-receipt-description**: Description to be included in the receipt. Defaults to "Payment from {merchant name}".
-
-For more info on receipts check out the [Receipts](docs/EMAIL_RECEIPTS.md) documentation.
-
+To track payments with custom metadata simply add key value pairs to the payment metadata object. The values must be scalar types (strings, numbers, booleans).
 
 ```javascript
 const PAYMENT_METADATA = {
-        "pay-theory-account-code": "code-123456789",
-        "pay-theory-reference": "field-trip",
-        "payment-parameters-name": "expires-in-30-days",
-        "pay-theory-receipt": true,
-        "pay-theory-receipt-description": "School Technology Fees"
-      };
+  "studentId": "student_1859034",
+  "courseId": "course_1859034",
+};
 ```
 
 ## Session Metadata
@@ -472,6 +445,8 @@ const PAYOR_INFO = {
   }
 }
 
+const FEE_MODE = window.paytheory.INTERCHANGE
+
 // optionally provide custom metadata to help track payments
 const PAYMENT_METADATA = {
   "pay-theory-account-code": "code-123456789",
@@ -482,6 +457,22 @@ const PAYMENT_METADATA = {
 // optional parameter to require confimation step for Card or ACH
 const REQUIRE_CONFIRMATION = true
 
+// Parameters that you will pass into the transact function. More details below.
+const TRANSACTING_PARAMETERS = { 
+        amount: AMOUNT, 
+        payorInfo: PAYOR_INFO, // optional
+        payorId: "pt_pay_XXXXXXXXX", // optional
+        metadata: PAYMENT_METADATA, // optional 
+        feeMode: FEE_MODE, // optional
+        confirmation: REQUIRE_CONFIRMATION, // optional 
+        accountCode: "code-123456789", // optional 
+        reference: "field-trip", // optional
+        paymentParameters: "expires-in-30-days", // optional
+        invoiceId: "pt_inv_XXXXXXXXX", // optional
+        sendReceipt: true, // optional 
+        receiptDescription: "School Technology Fees" // optional
+}
+
 /**
  * create a listener that will trigger the payment process
  * if REQUIRE_CONFIRMATION is true
@@ -489,19 +480,14 @@ const REQUIRE_CONFIRMATION = true
  * otherwise tokenization and capture observers are bypassed
  **/
 const clickListener = (e) => {
-    e.preventDefault()
-    ...
-    /**
-     * begin the transaction authorization by providing an amount
-     * and optionally details about the buyer and a flag for confirmation
-     * amount must be a positive integer or an error will be thrown
-     * */
-    myPayTheory.transact({
-              amount: AMOUNT,
-              payorInfo: PAYOR_INFO,
-              metadata: PAYMENT_METADATA,
-              confirmation: REQUIRE_CONFIRMATION // defaults to false
-            })
+  e.preventDefault()
+...
+  /**
+   * begin the transaction authorization by providing an amount
+   * and optionally details about the buyer and a flag for confirmation
+   * amount must be a positive integer or an error will be thrown
+   * */
+  myPayTheory.transact(TRANSACTING_PARAMETERS)
 }
 
 /**
@@ -509,12 +495,12 @@ const clickListener = (e) => {
  * use the tokenObserver to handle confirmation step
  **/
 myPayTheory.tokenizeObserver((card) => {
-    const confirmation =  `Are you sure you want to make a payment on ${card.brand} card beginning with ${card.first_six}`
-    if (confirm(confirmation)) {
-      myPayTheory.confirm();
-    } else {
-      myPayTheory.cancel();
-    }
+  const confirmation =  `Are you sure you want to make a payment on ${card.brand} card beginning with ${card.first_six}`
+  if (confirm(confirmation)) {
+    myPayTheory.confirm();
+  } else {
+    myPayTheory.cancel();
+  }
 });
 
 
@@ -523,17 +509,70 @@ myPayTheory.tokenizeObserver((card) => {
  * provide your own component IDs
  **/
 myPayTheory.readyObserver(ready => {
-    ...
-    document
-        .getComponentById("initiate-payment-button-id")
-        .addEventListener("click", clickListener)
-    ...
+...
+  document
+          .getComponentById("initiate-payment-button-id")
+          .addEventListener("click", clickListener)
+...
 })
 
 ```
 
 Once the payment has ended in either success or failure the buyer should be
 directed to a results page.
+
+## Transact Parameters
+These are the values that you can pass into the `transact` function to customize the payment.  
+The only required key is `amount`.
+
+* amount: (Int)
+  * represents the amount to be charged in cents
+
+
+* payorInfo: (Object)
+  * see the PAYOR_INFO object above for details
+
+
+* metadata: (Object)
+  * see the PAYMENT_METADATA object above for details
+
+
+* feeMode: (String)
+  * Defaults to `window.paytheory.INTERCHANGE`. If available to merchant and set to `window.paytheory.SERVICE_FEE` the fee will be added to the amount and charged to the payor. More details about the fee modes in your PayTheory Portal.
+
+
+* confirmation: (Boolean)
+  * Defaults to `false`. If set to `true` the payment will return a response to the tokenizeObserver before it needs to be confirmed. Required if using `SERVICE_FEE` fee mode.
+
+
+* accountCode: (String)
+  * Code that can be used to track a payment or group of payments. Will be included in the transaction schema and in the PayTheory Portal.
+
+
+* reference: (String)
+  * Custom description assigned to a payment. Will be included in the transaction schema and in the PayTheory Portal.
+
+
+* paymentParameters: (String)
+  * The payment parameters to use for the payment.
+  * For more information on payment parameters check out the [Payment Parameters](payment-parameters) documentation.
+
+
+* payorId: (String)
+  * The PayTheory payor ID to use for the payment. Allows for user to manage identities. This cannot be used if also using the `payorInfo` parameter.
+
+
+* invoiceId: (String)
+  * The PayTheory invoice ID to use for the payment. Allows for user to assign a payment to an invoice.
+
+
+* sendReceipt: (Boolean)
+  * Pass *true* to send a receipt to the payor. Must have an email address on the payorInfo object or pass in a payorId that has an email address tied to it.
+
+
+* receiptDescription: (String)
+  * Description to be included in the receipt. Defaults to "Payment from {merchant name}".
+  * For more info on receipts check out the [Receipts](email-receipts) documentation.
 
 ## Tokenization response
 
@@ -689,9 +728,11 @@ To enable IE 11 support you must include the following in your HTML head:
 
 ## Deprecations
 
-The createPaymentFields initializing function has been replaced with create. The create function no longer requires a clientID to be passed and allows you to set a feeMode. 
+* The createPaymentFields initializing function has been replaced with create. The create function no longer requires a clientID to be passed and allows you to set a feeMode. 
 
-The initTransaction function has been replaced with transact. The transact function allows you to pass in the metadata at the time of payment for more time to collect data before having to pass them.
+* The initTransaction function has been replaced with transact. The transact function allows you to pass in the metadata at the time of payment for more time to collect data before having to pass them.
+
+* Custom PayTheory metadata such as accountCode, reference, email, emailDescription, and paymentParameters have been deprecated and will be removed in a future release.They have been given their own dedicated key in the transact function parameters object.
 
 ## License
 
