@@ -215,10 +215,20 @@ const validTypeMessage = elements => message => {
     return false
 }
 
-const isvalidInputParams = (amount, payorInfo, metadata) => {
+const isvalidTransactParams = (amount, payorInfo, metadata) => {
     //Make sure that we have the base required settings
     if (!validate(amount, 'number') || !validate(metadata, 'object') || !validate(payorInfo, 'object')) {
         const missing = `${!validate(amount, 'number') ? 'amount ' : ''}${!validate(metadata, 'object') ? 'metadata ' : ''}${!validate(payorInfo, 'object') ? 'payorInfo ' : ''}`
+        message.handleError('INVALID_PARAM: Some required fields are missing or invalid: ' + missing)
+        return false
+    }
+    return true
+}
+
+const isValidTokenizeParams = (payorInfo, metadata) => {
+    //Make sure that we have the base required settings
+    if (!validate(metadata, 'object') || !validate(payorInfo, 'object')) {
+        const missing = `${!validate(metadata, 'object') ? 'metadata ' : ''}${!validate(payorInfo, 'object') ? 'payorInfo ' : ''}`
         message.handleError('INVALID_PARAM: Some required fields are missing or invalid: ' + missing)
         return false
     }
@@ -267,7 +277,8 @@ export {
     validTypeMessage,
     validate,
     isValidAmount,
-    isvalidInputParams,
+    isvalidTransactParams,
+    isValidTokenizeParams,
     isValidPayorInfo,
     isValidPayorDetails,
     isValidFeeMode

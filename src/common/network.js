@@ -206,3 +206,18 @@ export const generateInitialization = (handleInitialized, challengeOptions) => {
         }
     }
 }
+
+export const generateTokenization = (handleTokenize, challengeOptions) => {
+    return async(inputParameters) => {
+        let {payorInfo = {}, payorId, metadata = {}} = inputParameters
+        let initialize = data.getInitialize()
+        if (initialize !== 'init') {
+            data.setInitialize('init')
+            const success = await handleTokenize(payorInfo, payorId, metadata)
+            if (success) {
+                await handleAttestation(challengeOptions)
+                sendTransactingMessage()
+            }
+        }
+    }
+}
