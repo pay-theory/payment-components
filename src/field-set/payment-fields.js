@@ -284,7 +284,7 @@ export default async(
         return handleInitMessage('pt-static:tokenize-detail', data)
     }
 
-    const tokenizePaymentMethod = common.generateInitialization(handleTokenize, ptToken.token.challengeOptions)
+    const tokenizePaymentMethod = common.generateTokenization(handleTokenize, ptToken.token.challengeOptions)
 
 
     const confirm = () => {
