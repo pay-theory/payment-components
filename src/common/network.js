@@ -191,10 +191,10 @@ const parseInputParams = (inputParams) => {
 
 export const generateInitialization = (handleInitialized, challengeOptions) => {
     return async(inputParameters) => {
-        let {amount, payorInfo, payTheoryData, shippingDetails, metadata = {}, feeMode, confirmation = false} = parseInputParams(inputParameters)
+        let {amount, payorInfo, payTheoryData, shippingDetails, customerInfo, metadata = {}, feeMode, confirmation = false} = parseInputParams(inputParameters)
         // Adding line for backwards compatibility
         // TODO add some logging to SDK to see usage of deprecated variables and functions
-        payorInfo = payorInfo ? payorInfo : shippingDetails ? shippingDetails : {}
+        payorInfo = payorInfo || customerInfo || shippingDetails || {}
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
             data.setInitialize('init')
