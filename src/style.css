@@ -1,37 +1,8 @@
-.pay-theory-card-badge {
-	background-repeat: no-repeat;
-	background-size: 100%;
-	background-position: 50%;
-	align-self: center;
-	margin: 0 0.5em 0 0;
-	min-width: 32px;
-	max-width: 48px;
-	height: 100%;
-	width: auto;
-	flex-grow: 1;
-}
-
 #pay-theory-badge-wrapper {
 	display: flex;
 	flex-direction: column;
 	align-content: center;
 	justify-content: center;
-}
-
-.pay-theory-card-visa {
-	background-image: url(https://assets.paytheory.com/visa-badge-icon.svg);
-}
-
-.pay-theory-card-mastercard {
-	background-image: url(https://assets.paytheory.com/mastercard-badge-icon.svg);
-}
-
-.pay-theory-card-amex {
-	background-image: url(https://assets.paytheory.com/amex-badge-icon.svg);
-}
-
-.pay-theory-card-discover {
-	background-image: url(https://assets.paytheory.com/discover-badge-icon.svg);
 }
 
 .combined {
@@ -94,18 +65,5 @@
 .framed {
 	display: flex;
 	flex-direction: column;
-	height: 100%;
-}
-
-pay-theory-credit-card-tag-frame,
-pay-theory-credit-card-account-name-tag-frame,
-pay-theory-credit-card-address-1-tag-frame,
-pay-theory-credit-card-address-2-tag-frame,
-pay-theory-credit-card-city-tag-frame,
-pay-theory-credit-card-cvv-tag-frame,
-pay-theory-credit-card-exp-tag-frame,
-pay-theory-credit-card-number-tag-frame,
-pay-theory-credit-card-region-tag-frame,
-pay-theory-credit-card-zip-tag-frame {
 	height: 100%;
 }
