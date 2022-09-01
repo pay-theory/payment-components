@@ -29,13 +29,13 @@ These components will provide a full payment implementation.
 
 Credit Card Component provides a single form entry combining:
 
--   Credit Card Number Component
--   Credit Card Expiration Component
--   Credit Card CVV Component
+- Credit Card Number Component
+- Credit Card Expiration Component
+- Credit Card CVV Component
 
 You can use this component along with the Zip component to collect all the data needed for a payment.
 
--   Credit Card Zip Component
+- Credit Card Zip Component
 
 Credit Card Component requires a container for the credit card input:
 
@@ -50,9 +50,9 @@ Credit Card Component requires a container for the credit card input:
 
 Credit Card Component cannot be used in combination with:
 
--   Credit Card Number Component
--   Credit Card Expiration Component
--   Credit Card CVV Component
+- Credit Card Number Component
+- Credit Card Expiration Component
+- Credit Card CVV Component
 
 ### Credit Card Number, Expiration and CVV Components
 
@@ -62,10 +62,10 @@ These components along with the Zip component will provide a full payment implem
 
 These components must be combined in a form to enable payment:
 
--   Credit Card Number Component
--   Credit Card CVV Component
--   Credit Card Expiration Component
--   Credit Card Zip Component
+- Credit Card Number Component
+- Credit Card CVV Component
+- Credit Card Expiration Component
+- Credit Card Zip Component
 
 A container is required for each component:
 
@@ -82,7 +82,7 @@ A container is required for each component:
 
 These components cannot be used in combination with:
 
--   Credit Card Component
+- Credit Card Component
 
 ### Credit Card Account Name & Address Components
 
@@ -90,11 +90,11 @@ These components cannot be used in combination with:
 
 Five optional components are available to capture additional details about the card:
 
--   Credit Card Account Name Component
--   Credit Card Address Line 1 Component
--   Credit Card Address Line 2 Component
--   Credit Card City Component
--   Credit Card State Component
+- Credit Card Account Name Component
+- Credit Card Address Line 1 Component
+- Credit Card Address Line 2 Component
+- Credit Card City Component
+- Credit Card State Component
 
 These entries can be placed wherever you prefer in relation to the other credit card component(s).
 
@@ -121,10 +121,10 @@ These components will provide a full payment implementation.
 
 These components must be combined in a form to enable ACH payment:
 
--   ACH Account Name Component
--   ACH Account Type Component
--   ACH Account Number Component
--   ACH Bank Code Component
+- ACH Account Name Component
+- ACH Account Type Component
+- ACH Account Number Component
+- ACH Bank Code Component
 
 A container is required for each component:
 
@@ -146,8 +146,8 @@ These components will provide all info needed to generate cash barcodes.
 
 These components must be combined in a form to enable Cash payments:
 
--   Cash Name Component
--   Cash Contact Component
+- Cash Name Component
+- Cash Contact Component
 
 A container is required for each component:
 
@@ -159,6 +159,7 @@ A container is required for each component:
 ...
 </form>
 ```
+
 ## Card, ACH, or Cash components on the same page
 
 To display Card, Cash and/or ACH on the same page make sure only one is visible at a time and the others are wrapped by a parent element whose CSS is set to ``` display:none ```
@@ -186,10 +187,10 @@ To style the input fields you can pass in a custom style object to the create fu
 - success: (Object) The way a text field look when it is valid. Only applies to fields that go through validation.
 - error: (Object) The way a text field look when it is invalid. Only applies to fields that go through validation.
 - radio: The way radio buttons look for the ACH account type
-    - width: (Int) The width in pixels of the radio buttons
-    - fill: (String) The color of the radio buttons
-    - stroke: (String) The color of the radio buttons border
-    - text: (Object) This style object will be used to style the labels for the radio buttons
+  - width: (Int) The width in pixels of the radio buttons
+  - fill: (String) The color of the radio buttons
+  - stroke: (String) The color of the radio buttons border
+  - text: (Object) This style object will be used to style the labels for the radio buttons
 - hidePlaceholder: (Boolean) that allows you to hide the placeholder text in the input fields
 
 
@@ -221,6 +222,7 @@ const STYLES = {
 ```
 
 ## Payor Information  
+
 This data will be used to create a payor that is tied to a payment.
 
 - first_name: (String) The first name of the payor
@@ -228,12 +230,12 @@ This data will be used to create a payor that is tied to a payment.
 - email: (String) The email address of the payor
 - phone: (String) The phone number of the payor
 - personal_address: (Object) The address of the payor
-    - line1: (String) The street address of the payor
-    - line2: (String) The street address of the payor
-    - city: (String) The city of the payor
-    - region: (String) The region (state) of the payor
-    - postal_code: (String) The postal code of the payor
-    - country: (String) The country of the payor
+  - line1: (String) The street address of the payor
+  - line2: (String) The street address of the payor
+  - city: (String) The city of the payor
+  - region: (String) The region (state) of the payor
+  - postal_code: (String) The postal code of the payor
+  - country: (String) The country of the payor
 
 ```json
 {
