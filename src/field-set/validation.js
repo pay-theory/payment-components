@@ -277,6 +277,14 @@ const isValidFeeMode = (feeMode) => {
     return true
 }
 
+const isValidFeeAmount = (fee) => {
+    if ((fee || typeof fee === 'number') && !validate(fee, 'number')) {
+        message.handleError('INVALID_PARAM: fee must be a positive integer')
+        return false
+    }
+    return true
+}
+
 export {
     checkCreateParams,
     hasValidCard,
@@ -295,5 +303,6 @@ export {
     isValidPayorInfo,
     isValidPayorDetails,
     isValidFeeMode,
-    isValidInvoiceAndRecurringId
+    isValidInvoiceAndRecurringId,
+    isValidFeeAmount
 }
