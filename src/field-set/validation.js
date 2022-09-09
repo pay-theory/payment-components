@@ -256,6 +256,19 @@ const isValidPayorDetails = (payorInfo, payorId) => {
     return true
 }
 
+const isValidInvoiceAndRecurringId = payTheoryInfo => {
+    const { invoiceId, recurringId } = payTheoryInfo
+    if (invoiceId && !validate(invoiceId, 'string')) {
+        message.handleError('INVALID_PARAM: invoiceId must be a string')
+        return false
+    }
+    if (recurringId && !validate(recurringId, 'string')) {
+        message.handleError('INVALID_PARAM: recurringId must be a string')
+        return false
+    }
+    return true
+}
+
 const isValidFeeMode = (feeMode) => {
     if (![common.INTERCHANGE, common.SERVICE_FEE].includes(feeMode)) {
         message.handleError('INVALID_PARAM: feeMode must be either INTERCHANGE or SERVICE_FEE')
@@ -281,5 +294,6 @@ export {
     isValidTokenizeParams,
     isValidPayorInfo,
     isValidPayorDetails,
-    isValidFeeMode
+    isValidFeeMode,
+    isValidInvoiceAndRecurringId
 }

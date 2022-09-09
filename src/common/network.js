@@ -174,7 +174,7 @@ const handleAttestation = async challengeOptions => {
 }
 
 const parseInputParams = (inputParams) => {
-    let { payorId, invoiceId, metadata = {} } = inputParams
+    let { payorId, invoiceId, recurringId, metadata = {} } = inputParams
     let payTheoryData = {
         account_code: inputParams.accountCode || metadata["pay-theory-account-code"],
         reference: inputParams.reference || metadata["pay-theory-reference"],
@@ -183,6 +183,7 @@ const parseInputParams = (inputParams) => {
         send_receipt: inputParams.sendReceipt || metadata["pay-theory-receipt"],
         receipt_description: inputParams.receiptDescription || metadata["pay-theory-receipt-description"],
         invoice_id: invoiceId,
+        recurring_id: recurringId,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
     }
     inputParams.payTheoryData = payTheoryData
