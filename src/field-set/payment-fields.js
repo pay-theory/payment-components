@@ -261,6 +261,8 @@ export default async(
         if(!valid.isValidFeeMode(feeMode || fee_mode)) return false
         // validate the invoice and recurring id
         if(!valid.isValidInvoiceAndRecurringId(payTheoryData)) return false
+        // validate the fee
+        if(!valid.isValidFeeAmount(payTheoryData.fee)) return false
 
         const data = { amount, payorInfo, payTheoryData, metadata, fee_mode: feeMode || fee_mode, confirmation }
         return handleInitMessage('pt-static:payment-detail', data)
