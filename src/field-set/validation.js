@@ -266,6 +266,10 @@ const isValidInvoiceAndRecurringId = payTheoryInfo => {
         message.handleError('INVALID_PARAM: recurringId must be a string')
         return false
     }
+    if (invoiceId && recurringId) {
+        message.handleError('INVALID_PARAM: invoiceId and recurringId cannot both be present')
+        return false
+    }
     return true
 }
 
