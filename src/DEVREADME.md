@@ -451,6 +451,7 @@ const TRANSACTING_PARAMETERS = {
         payorId: "pt_pay_XXXXXXXXX", // optional
         metadata: PAYMENT_METADATA, // optional 
         feeMode: FEE_MODE, // optional
+        fee: 100, // optional
         confirmation: REQUIRE_CONFIRMATION, // optional 
         accountCode: "code-123456789", // optional 
         reference: "field-trip", // optional
@@ -458,6 +459,7 @@ const TRANSACTING_PARAMETERS = {
         invoiceId: "pt_inv_XXXXXXXXX", // optional
         sendReceipt: true, // optional 
         receiptDescription: "School Technology Fees" // optional
+        recurringId: "pt_rec_XXXXXXXXX", // optional
 }
 
 /**
@@ -527,6 +529,9 @@ The only required key is `amount`.
 * feeMode: (String)
   * Defaults to `window.paytheory.INTERCHANGE`. If available to merchant and set to `window.paytheory.SERVICE_FEE` the fee will be added to the amount and charged to the payor. More details about the fee modes in your PayTheory Portal.
 
+* fee: (Int)
+  * Represents the fee to be charged in cents. 
+  * If you are using `SERVICE_FEE` mode and want to skip the confirmation step, you must provide the fee amount. This will be validated to make sure it matches the fee amount that would be charged. If the fee amount does not match, an error will be thrown.
 
 * confirmation: (Boolean)
   * Defaults to `false`. If set to `true` the payment will return a response to the tokenizeObserver before it needs to be confirmed. Required if using `SERVICE_FEE` fee mode. 
@@ -552,6 +557,9 @@ The only required key is `amount`.
 * invoiceId: (String)
   * The PayTheory invoice ID to use for the payment. Allows for user to assign a payment to an invoice. 
 
+* recurringId: (String)
+  * The PayTheory recurring ID to use for the payment. Allows for user to assign a payment to a recurring payment.
+  * If you pass in a recurring ID, the transactions amount must be an interval of the recurring payments amount per payment.
 
 * sendReceipt: (Boolean)
   * Pass *true* to send a receipt to the payor. Must have an email address on the payorInfo object or pass in a payorId that has an email address tied to it. 
