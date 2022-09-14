@@ -174,7 +174,7 @@ const handleAttestation = async challengeOptions => {
 }
 
 const parseInputParams = (inputParams) => {
-    let { payorId, invoiceId, metadata = {} } = inputParams
+    let { payorId, invoiceId, recurringId, fee, metadata = {} } = inputParams
     let payTheoryData = {
         account_code: inputParams.accountCode || metadata["pay-theory-account-code"],
         reference: inputParams.reference || metadata["pay-theory-reference"],
@@ -183,7 +183,9 @@ const parseInputParams = (inputParams) => {
         send_receipt: inputParams.sendReceipt || metadata["pay-theory-receipt"],
         receipt_description: inputParams.receiptDescription || metadata["pay-theory-receipt-description"],
         invoice_id: invoiceId,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        recurring_id: recurringId,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        fee: fee
     }
     inputParams.payTheoryData = payTheoryData
     return inputParams
@@ -191,14 +193,29 @@ const parseInputParams = (inputParams) => {
 
 export const generateInitialization = (handleInitialized, challengeOptions) => {
     return async(inputParameters) => {
-        let {amount, payorInfo, payTheoryData, shippingDetails, metadata = {}, feeMode, confirmation = false} = parseInputParams(inputParameters)
+        let {amount, payorInfo, payTheoryData, shippingDetails, customerInfo, metadata = {}, feeMode, confirmation = false} = parseInputParams(inputParameters)
         // Adding line for backwards compatibility
         // TODO add some logging to SDK to see usage of deprecated variables and functions
-        payorInfo = payorInfo ? payorInfo : shippingDetails ? shippingDetails : {}
+        payorInfo = payorInfo || customerInfo || shippingDetails || {}
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
             data.setInitialize('init')
             const success = await handleInitialized(amount, payorInfo, payTheoryData, metadata, feeMode, confirmation)
+            if (success) {
+                await handleAttestation(challengeOptions)
+                sendTransactingMessage()
+            }
+        }
+    }
+}
+
+export const generateTokenization = (handleTokenize, challengeOptions) => {
+    return async(inputParameters) => {
+        let {payorInfo = {}, payorId, metadata = {}} = inputParameters
+        let initialize = data.getInitialize()
+        if (initialize !== 'init') {
+            data.setInitialize('init')
+            const success = await handleTokenize(payorInfo, payorId, metadata)
             if (success) {
                 await handleAttestation(challengeOptions)
                 sendTransactingMessage()
