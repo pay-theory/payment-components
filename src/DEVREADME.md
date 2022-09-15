@@ -462,6 +462,12 @@ const TRANSACTING_PARAMETERS = {
         recurringId: "pt_rec_XXXXXXXXX", // optional
 }
 
+const TOKENIZE_PAYMENT_METHOD_PARAMETERS = {
+  payorInfo: PAYOR_INFO, // optional
+  payorId: "pt_pay_XXXXXXXXX", // optional
+  metadata: PAYMENT_METADATA, // optional 
+}
+
 /**
  * create a listener that will trigger the payment process
  * if REQUIRE_CONFIRMATION is true
@@ -477,6 +483,13 @@ const clickListener = (e) => {
    * amount must be a positive integer or an error will be thrown
    * */
   myPayTheory.transact(TRANSACTING_PARAMETERS)
+  
+  /**
+   * begin the tokenization process by providing details about the payor
+   * or a payorId
+   * */
+  
+  myPayTheory.tokenizePaymentMethod(TOKENIZE_PAYMENT_METHOD_PARAMETERS)
 }
 
 /**
@@ -551,7 +564,8 @@ The only required key is `amount`.
 
 
 * payorId: (String)
-  * The PayTheory payor ID to use for the payment. Allows for user to manage identities. This cannot be used if also using the `payorInfo` parameter.
+  * The PayTheory payor ID to use for the payment. Allows for user to manage identities. 
+  * This cannot be used if also using the `payorInfo` parameter.
 
 
 * invoiceId: (String)
@@ -568,6 +582,17 @@ The only required key is `amount`.
 * receiptDescription: (String) 
   * Description to be included in the receipt. Defaults to "Payment from {merchant name}". 
   * For more info on receipts check out the [Receipts](email-receipts) documentation.
+
+## Tokenize Payment Method Parameters
+These are the values that you can pass into the `tokenizePaymentMethod` function to tokenize a card or bank account.
+
+* payorInfo: (Object)
+  * see the PAYOR_INFO object above for details
+* metadata: (Object)
+  * see the PAYMENT_METADATA object above for details
+* payorId: (String)
+  * The PayTheory payor ID to use for the payment. Allows for user to manage identities. 
+  * This cannot be used if also using the `payorInfo` parameter.
 
 ## Tokenization response
 
@@ -638,6 +663,24 @@ Upon completion of generating the cash barcode you will have these details retur
 
 It is recommended at a minimum to provide both the Barcode URL and Map URL as external links to the payee.  
 They can also be embedded in an iFrame on the page or shared in some other method.
+
+## Payment Method Token Response
+
+After generating the Payment Method Token when calling `tokenizePaymentMethod` you will get a response like this back to the completion observer:
+
+```json
+{
+  "payment_method_id":"ptl_pmt_D1oc12GgwIGRNBpbwK8Ft",
+  "payor_id":"ptl_pay_D1ls15qbE5TeLQQzkAHrB",
+  "last_four":"5454",
+  "brand":"MASTERCARD",
+  "metadata": {
+    "meta_key":"meta_value"
+  },
+  "expiration":"0444",
+  "payment_type":"card"
+}
+```
 
 ## State response
 
