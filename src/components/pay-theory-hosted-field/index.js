@@ -85,7 +85,7 @@ class PayTheoryHostedField extends HTMLElement {
     return this.connected
   }
   
-  set application(_connected) {
+  set connected(_connected) {
     this.connected = _connected
   }  
 
