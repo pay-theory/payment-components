@@ -15,6 +15,7 @@ class PayTheoryHostedField extends HTMLElement {
     this.wrappers = []
     this.validated = {}
     this.field = ''
+    this.connected = false
   }
 
   setFields(fieldArray) {
@@ -78,6 +79,10 @@ class PayTheoryHostedField extends HTMLElement {
     if (newValue !== oldValue) {
       this[attrName.toString()] = this.hasAttribute(attrName)
     }
+  }
+
+  get connected() {
+    return this.connected
   }
 
   get application() {
@@ -165,7 +170,15 @@ class PayTheoryHostedField extends HTMLElement {
     else if (_stated.isDirty) {
       this.error = false
     }
-
+    if (_stated.isConnected) {
+      this.connected = _stated.isConnected
+      window.postMessage({
+              type: `pay-theory:ready`,
+              ready: true
+          },
+          window.location.origin,
+      )      
+    }
   }
 
   get error() {

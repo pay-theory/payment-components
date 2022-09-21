@@ -138,13 +138,6 @@ export default async(
                 })
             }
         }
-
-        window.postMessage({
-                type: `pay-theory:ready`,
-                ready: true
-            },
-            window.location.origin,
-        )
     }
 
     const mount = async(
