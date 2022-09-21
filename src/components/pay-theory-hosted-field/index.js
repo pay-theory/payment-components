@@ -15,6 +15,7 @@ class PayTheoryHostedField extends HTMLElement {
     this.wrappers = []
     this.validated = {}
     this.field = ''
+    this.connectionSet = false
   }
 
   setFields(fieldArray) {
@@ -81,11 +82,11 @@ class PayTheoryHostedField extends HTMLElement {
   }
 
   get connected() {
-    return this.isConnected
+    return this.connectionSet
   }
   
   set connected(_connected) {
-    this.isConnected = _connected
+    this.connectionSet = _connected
   }  
 
   get application() {
