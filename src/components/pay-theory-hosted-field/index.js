@@ -15,7 +15,7 @@ class PayTheoryHostedField extends HTMLElement {
     this.wrappers = []
     this.validated = {}
     this.field = ''
-    this.isConnected = false
+    this.connected = false
   }
 
   setFields(fieldArray) {
