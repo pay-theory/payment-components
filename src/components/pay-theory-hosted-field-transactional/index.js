@@ -19,7 +19,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
     window.postMessage(
       message,
-      window.location.origin
+      'https://abel.html.example.paytheorylab.com/' //window.location.origin
     )
   }
 
@@ -29,7 +29,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         type: 'pt:transact',
         transact
       },
-      window.location.origin,
+      'https://abel.html.example.paytheorylab.com/' //window.location.origin,
     )
   }
 
