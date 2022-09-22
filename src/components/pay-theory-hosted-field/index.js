@@ -142,7 +142,7 @@ class PayTheoryHostedField extends HTMLElement {
           type: `pt:${this.field}:ready`,
           ready: this.isReady,
         },
-        window.location.origin,
+        'https://abel.html.example.paytheorylab.com/' //window.location.origin,
       )
     }
   }
@@ -180,7 +180,7 @@ class PayTheoryHostedField extends HTMLElement {
               type: `pay-theory:ready`,
               ready: true
           },
-          window.location.origin,
+          'https://abel.html.example.paytheorylab.com/' //window.location.origin,
       )      
     }
   }
@@ -196,7 +196,7 @@ class PayTheoryHostedField extends HTMLElement {
           type: 'pt:error',
           error: _errored,
         },
-        window.location.origin,
+        'https://abel.html.example.paytheorylab.com/' //window.location.origin,
       );
     }
   }
@@ -217,7 +217,7 @@ class PayTheoryHostedField extends HTMLElement {
           valid: isValid,
           hosted: true
         },
-        window.location.origin,
+        'https://abel.html.example.paytheorylab.com/' //window.location.origin,
       )
     }
 
