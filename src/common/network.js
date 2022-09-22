@@ -40,7 +40,7 @@ export const transactionEndpoint = () => {
 }
 
 export const hostedFieldsEndpoint = () => {
-    return `https://tags.app.${data.getEnvironment()}.${data.getStage()}.com`
+    return `https://${data.getEnvironment()}.tags.static.${data.getStage()}.com`
 }
 
 export const generateTokenize = (cb) => {
