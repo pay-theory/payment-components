@@ -138,7 +138,7 @@ class PayTheoryHostedField extends HTMLElement {
   set ready(_isReady) {
     if (_isReady !== this.isReady) {
       this.isReady = _isReady
-      console.log('postMessage',window.location.origin)
+      
       window.postMessage({
           type: `pt:${this.field}:ready`,
           ready: this.isReady,
@@ -177,7 +177,7 @@ class PayTheoryHostedField extends HTMLElement {
     }
     if (_stated.isConnected) {
       this.connected = _stated.isConnected
-      console.log('postMessage',window.location.origin)
+      
       window.postMessage({
               type: `pay-theory:ready`,
               ready: true
@@ -194,7 +194,7 @@ class PayTheoryHostedField extends HTMLElement {
   set error(_errored) {
     if (this.errored !== _errored) {
       this.errored = _errored;
-      console.log('postMessage',window.location.origin)
+      
       window.postMessage({
           type: 'pt:error',
           error: _errored,
@@ -215,7 +215,7 @@ class PayTheoryHostedField extends HTMLElement {
     if (isValid !== this.validated[this.stated.element]) {
       let type = this.stated.element
       this.validated[type] = isValid
-      console.log('postMessage',window.location.origin)
+      
       window.postMessage({
           type: `pt:${type}:valid`,
           valid: isValid,
