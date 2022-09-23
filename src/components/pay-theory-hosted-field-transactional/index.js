@@ -17,6 +17,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       type: 'pt:tokenize',
       tokenize: { amount, currency: 'USD', "pt-instrument": token }
     }
+    
     window.postMessage(
       message,
       window.location.origin
@@ -25,6 +26,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   generateTransactCallback(amount, token) {
     const transact = { amount, currency: 'USD', "pt-instrument": token }
+    
     window.postMessage({
         type: 'pt:transact',
         transact

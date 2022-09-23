@@ -15,6 +15,7 @@ class PayTheoryHostedField extends HTMLElement {
     this.wrappers = []
     this.validated = {}
     this.field = ''
+    this.connectionSet = false
   }
 
   setFields(fieldArray) {
@@ -80,6 +81,14 @@ class PayTheoryHostedField extends HTMLElement {
     }
   }
 
+  get connected() {
+    return this.connectionSet
+  }
+  
+  set connected(_connected) {
+    this.connectionSet = _connected
+  }  
+
   get application() {
     return this.applicationId
   }
@@ -129,6 +138,7 @@ class PayTheoryHostedField extends HTMLElement {
   set ready(_isReady) {
     if (_isReady !== this.isReady) {
       this.isReady = _isReady
+      
       window.postMessage({
           type: `pt:${this.field}:ready`,
           ready: this.isReady,
@@ -165,7 +175,16 @@ class PayTheoryHostedField extends HTMLElement {
     else if (_stated.isDirty) {
       this.error = false
     }
-
+    if (_stated.isConnected) {
+      this.connected = _stated.isConnected
+      
+      window.postMessage({
+              type: `pay-theory:ready`,
+              ready: true
+          },
+          window.location.origin,
+      )      
+    }
   }
 
   get error() {
@@ -175,6 +194,7 @@ class PayTheoryHostedField extends HTMLElement {
   set error(_errored) {
     if (this.errored !== _errored) {
       this.errored = _errored;
+      
       window.postMessage({
           type: 'pt:error',
           error: _errored,
@@ -195,6 +215,7 @@ class PayTheoryHostedField extends HTMLElement {
     if (isValid !== this.validated[this.stated.element]) {
       let type = this.stated.element
       this.validated[type] = isValid
+      
       window.postMessage({
           type: `pt:${type}:valid`,
           valid: isValid,
