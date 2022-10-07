@@ -252,11 +252,9 @@ export default async(
         return true
     }
 
-    const handleInitialized = (messageType) => (amount, payorInfo, payTheoryData, metadata, feeMode, confirmation) => {
-        // Fix to ensure other services aren't broken by changing format of same_as_billing boolean
-        payorInfo.sameAsBilling = payorInfo.same_as_billing
+    const handleInitialized = (amount, payorInfo, payTheoryData, metadata, feeMode, confirmation) => {
         //validate the input param types
-        if(!valid.isvalidInputParams(amount, payorInfo, metadata)) return false
+        if(!valid.isvalidTransactParams(amount, payorInfo, metadata)) return false
         //validate the amount
         if(!valid.isValidAmount(amount)) return false
         //validate the payorInfo
@@ -265,14 +263,16 @@ export default async(
         if(!valid.isValidPayorDetails(payorInfo, payTheoryData.payorId)) return false
         // validate the fee mode
         if(!valid.isValidFeeMode(feeMode || fee_mode)) return false
+        // validate the invoice and recurring id
+        if(!valid.isValidInvoiceAndRecurringId(payTheoryData)) return false
+        // validate the fee
+        if(!valid.isValidFeeAmount(payTheoryData.fee)) return false
 
-        // Define the message type and data to send to the hosted field
-        const type = messageType
         const data = { amount, payorInfo, payTheoryData, metadata, fee_mode: feeMode || fee_mode, confirmation }
-        return handleInitMessage(type, data)
+        return handleInitMessage('pt-static:payment-detail', data)
     }
 
-    const transact = common.generateInitialization(handleInitialized('pt-static:payment-detail'), ptToken.token.challengeOptions)
+    const transact = common.generateInitialization(handleInitialized, ptToken.token.challengeOptions)
 
     const initTransaction = (amount, payorInfo, confirmation) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
@@ -280,7 +280,19 @@ export default async(
         transact({amount, payorInfo, metadata: sessionMetadata, confirmation})
     }
 
-    const tokenizePaymentMethod = common.generateInitialization(handleInitialized('pt-static:tokenize-detail'), ptToken.token.challengeOptions)
+    const handleTokenize = (payorInfo, payorId, metadata) => {
+        //validate the input param types
+        if(!valid.isValidTokenizeParams(payorInfo, metadata)) return false
+        //validate the payorInfo
+        if(!valid.isValidPayorInfo(payorInfo)) return false
+        // validate the payorId
+        if(!valid.isValidPayorDetails(payorInfo, payorId)) return false
+
+        const data = { payorInfo, metadata, payorId }
+        return handleInitMessage('pt-static:tokenize-detail', data)
+    }
+
+    const tokenizePaymentMethod = common.generateTokenization(handleTokenize, ptToken.token.challengeOptions)
 
 
     const confirm = () => {
