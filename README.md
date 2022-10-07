@@ -29,13 +29,13 @@ These components will provide a full payment implementation.
 
 Credit Card Component provides a single form entry combining:
 
--   Credit Card Number Component
--   Credit Card Expiration Component
--   Credit Card CVV Component
+- Credit Card Number Component
+- Credit Card Expiration Component
+- Credit Card CVV Component
 
 You can use this component along with the Zip component to collect all the data needed for a payment.
 
--   Credit Card Zip Component
+- Credit Card Zip Component
 
 Credit Card Component requires a container for the credit card input:
 
@@ -50,9 +50,9 @@ Credit Card Component requires a container for the credit card input:
 
 Credit Card Component cannot be used in combination with:
 
--   Credit Card Number Component
--   Credit Card Expiration Component
--   Credit Card CVV Component
+- Credit Card Number Component
+- Credit Card Expiration Component
+- Credit Card CVV Component
 
 ### Credit Card Number, Expiration and CVV Components
 
@@ -62,10 +62,10 @@ These components along with the Zip component will provide a full payment implem
 
 These components must be combined in a form to enable payment:
 
--   Credit Card Number Component
--   Credit Card CVV Component
--   Credit Card Expiration Component
--   Credit Card Zip Component
+- Credit Card Number Component
+- Credit Card CVV Component
+- Credit Card Expiration Component
+- Credit Card Zip Component
 
 A container is required for each component:
 
@@ -82,7 +82,7 @@ A container is required for each component:
 
 These components cannot be used in combination with:
 
--   Credit Card Component
+- Credit Card Component
 
 ### Credit Card Account Name & Address Components
 
@@ -90,11 +90,11 @@ These components cannot be used in combination with:
 
 Five optional components are available to capture additional details about the card:
 
--   Credit Card Account Name Component
--   Credit Card Address Line 1 Component
--   Credit Card Address Line 2 Component
--   Credit Card City Component
--   Credit Card State Component
+- Credit Card Account Name Component
+- Credit Card Address Line 1 Component
+- Credit Card Address Line 2 Component
+- Credit Card City Component
+- Credit Card State Component
 
 These entries can be placed wherever you prefer in relation to the other credit card component(s).
 
@@ -121,10 +121,10 @@ These components will provide a full payment implementation.
 
 These components must be combined in a form to enable ACH payment:
 
--   ACH Account Name Component
--   ACH Account Type Component
--   ACH Account Number Component
--   ACH Bank Code Component
+- ACH Account Name Component
+- ACH Account Type Component
+- ACH Account Number Component
+- ACH Bank Code Component
 
 A container is required for each component:
 
@@ -146,8 +146,8 @@ These components will provide all info needed to generate cash barcodes.
 
 These components must be combined in a form to enable Cash payments:
 
--   Cash Name Component
--   Cash Contact Component
+- Cash Name Component
+- Cash Contact Component
 
 A container is required for each component:
 
@@ -159,6 +159,7 @@ A container is required for each component:
 ...
 </form>
 ```
+
 ## Card, ACH, or Cash components on the same page
 
 To display Card, Cash and/or ACH on the same page make sure only one is visible at a time and the others are wrapped by a parent element whose CSS is set to ``` display:none ```
@@ -186,10 +187,10 @@ To style the input fields you can pass in a custom style object to the create fu
 - success: (Object) The way a text field look when it is valid. Only applies to fields that go through validation.
 - error: (Object) The way a text field look when it is invalid. Only applies to fields that go through validation.
 - radio: The way radio buttons look for the ACH account type
-    - width: (Int) The width in pixels of the radio buttons
-    - fill: (String) The color of the radio buttons
-    - stroke: (String) The color of the radio buttons border
-    - text: (Object) This style object will be used to style the labels for the radio buttons
+  - width: (Int) The width in pixels of the radio buttons
+  - fill: (String) The color of the radio buttons
+  - stroke: (String) The color of the radio buttons border
+  - text: (Object) This style object will be used to style the labels for the radio buttons
 - hidePlaceholder: (Boolean) that allows you to hide the placeholder text in the input fields
 
 
@@ -221,6 +222,7 @@ const STYLES = {
 ```
 
 ## Payor Information  
+
 This data will be used to create a payor that is tied to a payment.
 
 - first_name: (String) The first name of the payor
@@ -228,12 +230,12 @@ This data will be used to create a payor that is tied to a payment.
 - email: (String) The email address of the payor
 - phone: (String) The phone number of the payor
 - personal_address: (Object) The address of the payor
-    - line1: (String) The street address of the payor
-    - line2: (String) The street address of the payor
-    - city: (String) The city of the payor
-    - region: (String) The region (state) of the payor
-    - postal_code: (String) The postal code of the payor
-    - country: (String) The country of the payor
+  - line1: (String) The street address of the payor
+  - line2: (String) The street address of the payor
+  - city: (String) The city of the payor
+  - region: (String) The region (state) of the payor
+  - postal_code: (String) The postal code of the payor
+  - country: (String) The country of the payor
 
 ```json
 {
@@ -488,6 +490,13 @@ const clickListener = (e) => {
    * amount must be a positive integer or an error will be thrown
    * */
   myPayTheory.transact(TRANSACTING_PARAMETERS)
+  
+  /**
+   * begin the tokenization process by providing details about the payor
+   * or a payorId
+   * */
+  
+  myPayTheory.tokenizePaymentMethod(TOKENIZE_PAYMENT_METHOD_PARAMETERS)
 }
 
 /**
@@ -540,6 +549,9 @@ The only required key is `amount`.
 * feeMode: (String)
   * Defaults to `window.paytheory.INTERCHANGE`. If available to merchant and set to `window.paytheory.SERVICE_FEE` the fee will be added to the amount and charged to the payor. More details about the fee modes in your PayTheory Portal.
 
+* fee: (Int)
+  * Represents the fee to be charged in cents.
+  * If you are using `SERVICE_FEE` mode and want to skip the confirmation step, you must provide the fee amount. This will be validated to make sure it matches the fee amount that would be charged. If the fee amount does not match, an error will be thrown.
 
 * confirmation: (Boolean)
   * Defaults to `false`. If set to `true` the payment will return a response to the tokenizeObserver before it needs to be confirmed. Required if using `SERVICE_FEE` fee mode.
@@ -559,12 +571,16 @@ The only required key is `amount`.
 
 
 * payorId: (String)
-  * The PayTheory payor ID to use for the payment. Allows for user to manage identities. This cannot be used if also using the `payorInfo` parameter.
+  * The PayTheory payor ID to use for the payment. Allows for user to manage identities.
+  * This cannot be used if also using the `payorInfo` parameter.
 
 
 * invoiceId: (String)
   * The PayTheory invoice ID to use for the payment. Allows for user to assign a payment to an invoice.
 
+* recurringId: (String)
+  * The PayTheory recurring ID to use for the payment. Allows for user to assign a payment to a recurring payment.
+  * If you pass in a recurring ID, the transactions amount must be an interval of the recurring payments amount per payment.
 
 * sendReceipt: (Boolean)
   * Pass *true* to send a receipt to the payor. Must have an email address on the payorInfo object or pass in a payorId that has an email address tied to it.
@@ -573,6 +589,19 @@ The only required key is `amount`.
 * receiptDescription: (String)
   * Description to be included in the receipt. Defaults to "Payment from {merchant name}".
   * For more info on receipts check out the [Receipts](email-receipts) documentation.
+
+## Tokenize Payment Method Parameters
+These are the values that you can pass into the `tokenizePaymentMethod` function to tokenize a card or bank account.
+
+* payorInfo: (Object)
+  * see the PAYOR_INFO object above for details
+
+* metadata: (Object)
+  * see the PAYMENT_METADATA object above for details
+
+* payorId: (String)
+  * The PayTheory payor ID to use for the payment. Allows for user to manage identities.
+  * This cannot be used if also using the `payorInfo` parameter.
 
 ## Tokenization response
 
@@ -594,7 +623,7 @@ When the confirm option of initTransaction is set to true, the payment card or A
 
 Upon completion of authorization and capture, details similar to the following are returned:
 
-*Note: the service fee is included in amount*
+*note that the service fee is included in amount*
 
 ```json
 {
@@ -613,7 +642,7 @@ Upon completion of authorization and capture, details similar to the following a
 
 If a failure or decline occurs during the payment, the response will be similar to the following:
 
-```json 
+```json
 {
     "receipt_number":"pt-test-XXXXXX",
     "last_four":"XXXX",
@@ -625,8 +654,8 @@ If a failure or decline occurs during the payment, the response will be similar 
 
 ## Cash response
 
-While generating the Barcode it will use the geoloaction to return a map url for the users specific location. 
-If this is the first time it has been requested the user will have the opportunity to accept or decline the request.  
+While generating the Barcode it will use the geoloaction to return a map url for the users specific location.
+If this is the first time it has been requested the user will have the opportunity to accept or decline the request.
 
 Upon completion of generating the cash barcode you will have these details returned:
 
@@ -636,13 +665,31 @@ Upon completion of generating the cash barcode you will have these details retur
     "Merchant":"XXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXX",
     "barcode":"12345678901234567890",
     "barcodeFee":"2.0",
-    "barcodeUrl":"https://partner.env.ptbar.codes/XXXXXX",
-    "mapUrl":"https://pay.vanilladirect.com/pages/locations",
+    "barcodeUrl":"https://PARTNER.STAGE.ptbar.codes/XXXXXX",
+    "mapUrl":"https://pay.vanilladirect.com/pages/locations"
 }
 ```
 
 It is recommended at a minimum to provide both the Barcode URL and Map URL as external links to the payee.  
 They can also be embedded in an iFrame on the page or shared in some other method.
+
+## Payment Method Token Response
+
+After generating the Payment Method Token when calling `tokenizePaymentMethod` you will get a response like this back to the completion observer:
+
+```json
+{
+  "payment_method_id":"ptl_pmt_D1oc12GgwIGRNBpbwK8Ft",
+  "payor_id":"ptl_pay_D1ls15qbE5TeLQQzkAHrB",
+  "last_four":"5454",
+  "brand":"MASTERCARD",
+  "metadata": {
+    "meta_key":"meta_value"
+  },
+  "expiration":"0444",
+  "payment_type":"card"
+}
+```
 
 ## State response
 
