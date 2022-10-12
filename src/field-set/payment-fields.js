@@ -3,6 +3,7 @@
 import common from '../common'
 import * as valid from './validation'
 import * as handler from './handler'
+import * as message from "../common/message";
 
 export default async(
     apiKey,
@@ -66,7 +67,8 @@ export default async(
         'routing-number': common.achFields.BANK_CODE,
         'account-type': common.achFields.ACCOUNT_TYPE,
         'cash-name': common.cashFields.NAME,
-        'cash-contact': common.cashFields.CONTACT
+        'cash-contact': common.cashFields.CONTACT,
+        'card-present': common.cardPresentFields.CARD_PRESENT
     }
 
     let isValid = false
@@ -173,13 +175,20 @@ export default async(
             'cash-contact': elements['cash-contact']
         }
 
+        const cardPresentElement = {
+            'card-present': elements['card-present']
+        }
+
         processedElements.card = common.processElements(cardElements, elementStates, common.fieldTypes, 'credit-card')
         processedElements.ach = common.processElements(achElements, elementStates, common.achFieldTypes, 'ach')
         processedElements.cash = common.processElements(cashElements, elementStates, common.cashFieldTypes)
+        processedElements.cardPresent = common.processElements(cardPresentElement, elementStates, common.cardPresentFields)
+
 
         transacting.card = processedElements.card.reduce(common.findTransactingElement, false)
         transacting.ach = processedElements.ach.reduce(common.findAccountNumber, false)
         transacting.cash = processedElements.cash.reduce(common.findField('cash-name'), false)
+        transacting.cardPresent = processedElements.cardPresent.reduce(common.findField('card-present'), false)
 
         const removeRelay = common.handleHostedFieldMessage(common.relayTypeMessage, handler.relayHandler())
 
@@ -289,6 +298,34 @@ export default async(
     }
 
     const tokenizePaymentMethod = common.generateTokenization(handleTokenize, ptToken.token.challengeOptions)
+
+    const handleActivate = (input) => {
+        let { amount, payorInfo, fee, metadata, feeMode = common.INTERCHANGE, invoiceId, recurringId, payorId } = input
+        //validate the input param types
+        if(!valid.isvalidTransactParams(amount, payorInfo || {}, metadata)) return false
+        //validate the amount
+        if(!valid.isValidAmount(amount)) return false
+        //validate the payorInfo
+        if(!valid.isValidPayorInfo(payorInfo || {})) return false
+        // validate the payorId
+        if(!valid.isValidPayorDetails(payorInfo || {}, payorId)) return false
+        // validate the fee mode
+        if(!valid.isValidFeeMode(feeMode)) return false
+        // validate the invoice and recurring id
+        if(!valid.isValidInvoiceAndRecurringId({ invoiceId, recurringId })) return false
+        // validate the fee
+        if(!valid.isValidFeeAmount(fee)) return false
+
+        let iframe = document.getElementsByName(`card-present-iframe`)[0]
+        if (iframe) {
+            message.postMessageToHostedField(`card-present-iframe`, {
+                type: "pt-static:activate",
+                data: input
+            })
+        }
+    }
+
+    const activateCardPresentDevice = common.generateActivation(handleActivate, ptToken.token.challengeOptions)
 
 
     const confirm = () => {
@@ -406,6 +443,7 @@ export default async(
             initTransaction,
             transact,
             tokenizePaymentMethod,
+            activateCardPresentDevice,
             confirm,
             cancel,
             readyObserver,

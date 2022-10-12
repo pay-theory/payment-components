@@ -47,6 +47,10 @@ export const cashFields = {
     CONTACT: 'pay-theory-cash-contact'
 }
 
+export const cardPresentFields = {
+    CARD_PRESENT: 'pay-theory-card-present'
+}
+
 export const achFieldTypes = [
     'account-name',
     'account-type',

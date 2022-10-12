@@ -223,3 +223,14 @@ export const generateTokenization = (handleTokenize, challengeOptions) => {
         }
     }
 }
+
+export const generateActivation = (handleActivate, challengeOptions) => {
+    return async(inputParameters) => {
+        let initialize = data.getInitialize()
+        if (initialize !== 'init') {
+            data.setInitialize('init')
+            await handleAttestation(challengeOptions)
+            handleActivate(inputParameters)
+        }
+    }
+}
