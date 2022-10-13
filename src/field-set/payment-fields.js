@@ -222,6 +222,11 @@ export default async(
             type: 'cash',
             elements: processedElements.cash,
             errorCheck: valid.findCashError
+        },
+        {
+            type: 'cardPresent',
+            elements: processedElements.cardPresent,
+            errorCheck: valid.findCardPresentError
         }]
 
         await mountProcessedElements(processed)
