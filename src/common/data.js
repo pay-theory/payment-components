@@ -63,6 +63,10 @@ export const cashFieldTypes = [
     'cash-contact'
 ]
 
+export const cardPresentFieldTypes = [
+    'card-present'
+]
+
 export const fieldTypes = [
     'credit-card',
     'card-number',

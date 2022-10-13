@@ -182,7 +182,7 @@ export default async(
         processedElements.card = common.processElements(cardElements, elementStates, common.fieldTypes, 'credit-card')
         processedElements.ach = common.processElements(achElements, elementStates, common.achFieldTypes, 'ach')
         processedElements.cash = common.processElements(cashElements, elementStates, common.cashFieldTypes)
-        processedElements.cardPresent = common.processElements(cardPresentElement, elementStates, common.cardPresentFields)
+        processedElements.cardPresent = common.processElements(cardPresentElement, elementStates, common.cardPresentFieldTypes)
 
 
         transacting.card = processedElements.card.reduce(common.findTransactingElement, false)
