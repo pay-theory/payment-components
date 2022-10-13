@@ -322,6 +322,9 @@ export default async(
                 type: "pt-static:activate",
                 data: input
             })
+        } else {
+            common.handleError('NO_MOUNT: There is no card present iframe mounted.')
+            common.removeInitialize()
         }
     }
 
