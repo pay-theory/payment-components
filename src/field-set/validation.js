@@ -178,6 +178,19 @@ const findCashError = (processedElements) => {
     return error
 }
 
+const findCardPresentError = (processedElements) => {
+    let error = false
+    if (processedElements.length === 0) {
+        return error
+    }
+
+    if (processedElements.reduce(common.findField('card-present'), false) === false) {
+        error = 'missing Card Present field required for payments'
+    }
+
+    return error
+}
+
 const isValidPayorInfo = (payorInfo) => {
     if (!validate(payorInfo, 'object')) {
         message.handleError('INVALID_PARAM: payor_info is not an object')
@@ -299,6 +312,7 @@ export {
     findAchError,
     findCardError,
     findCashError,
+    findCardPresentError,
     validTypeMessage,
     validate,
     isValidAmount,

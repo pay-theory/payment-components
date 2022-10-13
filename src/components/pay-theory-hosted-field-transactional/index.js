@@ -1,7 +1,4 @@
 import PayTheoryHostedField from '../pay-theory-hosted-field'
-import common from '../../common'
-
-
 
 class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
