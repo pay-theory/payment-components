@@ -206,7 +206,10 @@ export default async(
 
         const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler)
     
-        if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
+        if (processedElements.ach.length === 0 &&
+            processedElements.card.length === 0 &&
+            processedElements.cash.length === 0 &&
+            processedElements.cardPresent.length === 0) {
             return common.handleError('NO_FIELDS: There are no PayTheory fields')
         }
 
