@@ -308,11 +308,13 @@ export default async(
     const tokenizePaymentMethod = common.generateTokenization(handleTokenize, ptToken.token.challengeOptions)
 
     const handleActivate = (input) => {
-        let { amount, payorInfo, fee, metadata = {}, feeMode = common.INTERCHANGE, invoiceId, recurringId, payorId } = input
+        let { amount, payorInfo, fee, metadata = {}, feeMode = common.INTERCHANGE, invoiceId, recurringId, payorId, deviceId } = input
         //validate the input param types
         if(!valid.isvalidTransactParams(amount, payorInfo || {}, metadata)) return false
         //validate the amount
         if(!valid.isValidAmount(amount)) return false
+        //validate the device id
+        if(!valid.isValidDeviceId(deviceId)) return false
         //validate the payorInfo
         if(!valid.isValidPayorInfo(payorInfo || {})) return false
         // validate the payorId

@@ -256,6 +256,14 @@ const isValidAmount = (amount) => {
     return true
 }
 
+const isValidDeviceId = (deviceId) => {
+    if (!validate(deviceId, 'string')) {
+        message.handleError('INVALID_PARAM: device_id is required and must be a string')
+        return false
+    }
+    return true
+}
+
 const isValidPayorDetails = (payorInfo, payorId) => {
     let keys  = Object.keys(payorInfo)
     // Verify both id and info aren't passed in
@@ -316,6 +324,7 @@ export {
     validTypeMessage,
     validate,
     isValidAmount,
+    isValidDeviceId,
     isvalidTransactParams,
     isValidTokenizeParams,
     isValidPayorInfo,
