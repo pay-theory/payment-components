@@ -326,6 +326,8 @@ export default async(
         // validate the fee
         if(!valid.isValidFeeAmount(fee)) return false
 
+        input.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
         let iframe = document.getElementsByName(`card-present-iframe`)[0]
         if (iframe) {
             message.postMessageToHostedField(`card-present-iframe`, {
