@@ -258,7 +258,7 @@ const isValidAmount = (amount) => {
 
 const isValidDeviceId = (deviceId) => {
     if (!validate(deviceId, 'string')) {
-        message.handleError('INVALID_PARAM: device_id is required and must be a string')
+        message.handleError('INVALID_PARAM: deviceId is required and must be a string')
         return false
     }
     return true
