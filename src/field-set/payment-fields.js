@@ -107,6 +107,10 @@ export default async(
             token: token['pt-token']
         })
     }
+    
+    const expireHostToken = async() => {  
+        console.warn('expiring host token')
+    }
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
@@ -136,13 +140,6 @@ export default async(
                 })
             }
         }
-
-        window.postMessage({
-                type: `pay-theory:ready`,
-                ready: true
-            },
-            window.location.origin,
-        )
     }
 
     const mount = async(
