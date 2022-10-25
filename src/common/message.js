@@ -75,6 +75,7 @@ export const postMessageToHostedField = (id, message) => {
 }
 
 export const handleError = error => {
+    
     window.postMessage({
             type: 'pt:error',
             throws: true,
