@@ -142,13 +142,10 @@ export default async(
         }
     }
 
-    const mount = async(
-        {
-            elements = defaultElementIds,
-            placeholders
-        }
-    ) => {
+    const mount = async(props) => {
         common.removeInitialize()
+
+        let {elements = defaultElementIds, placeholders} = props
 
         const achElements = {
             'account-number': elements['account-number'],
