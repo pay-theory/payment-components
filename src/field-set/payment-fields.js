@@ -145,35 +145,35 @@ export default async(
     const mount = async(props) => {
         common.removeInitialize()
 
-        let {elements = defaultElementIds, placeholders} = props
+        let {placeholders} = props
 
         const achElements = {
-            'account-number': elements['account-number'],
-            'account-name': elements['ach-name'],
-            'routing-number': elements['routing-number'],
-            'account-type': elements['account-type'],
+            'account-number': defaultElementIds['account-number'],
+            'account-name': defaultElementIds['ach-name'],
+            'routing-number': defaultElementIds['routing-number'],
+            'account-type': defaultElementIds['account-type'],
         }
 
         const cardElements = {
-            'credit-card': elements['credit-card'],
-            'card-number': elements.number,
-            'card-exp': elements.exp,
-            'card-cvv': elements.cvv,
-            'card-name': elements['account-name'],
-            'billing-line1': elements['address-1'],
-            'billing-line2': elements['address-2'],
-            'billing-city': elements.city,
-            'billing-state': elements.state,
-            'billing-zip': elements.zip,
+            'credit-card': defaultElementIds['credit-card'],
+            'card-number': defaultElementIds.number,
+            'card-exp': defaultElementIds.exp,
+            'card-cvv': defaultElementIds.cvv,
+            'card-name': defaultElementIds['account-name'],
+            'billing-line1': defaultElementIds['address-1'],
+            'billing-line2': defaultElementIds['address-2'],
+            'billing-city': defaultElementIds.city,
+            'billing-state': defaultElementIds.state,
+            'billing-zip': defaultElementIds.zip,
         }
 
         const cashElements = {
-            'cash-name': elements['cash-name'],
-            'cash-contact': elements['cash-contact']
+            'cash-name': defaultElementIds['cash-name'],
+            'cash-contact': defaultElementIds['cash-contact']
         }
 
         const cardPresentElement = {
-            'card-present': elements['card-present']
+            'card-present': defaultElementIds['card-present']
         }
 
         processedElements.card = common.processElements(cardElements, elementStates, common.fieldTypes, 'credit-card')
