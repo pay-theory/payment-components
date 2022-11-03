@@ -63,6 +63,7 @@ export const generateCompletionResponse = (cb) => {
     return async message => {
         let paymentType = message.paymentType
         let cbToken
+        let transacting = data.getTransactingElement()
 
         if (paymentType === 'tokenize') {
             cbToken = message.body
@@ -89,6 +90,10 @@ export const generateCompletionResponse = (cb) => {
                 "state": message.body.state,
                 "type": message.body.type,
                 "payor_id": message.body.payor_id,
+            }
+            if (transacting) {
+                let element = document.getElementById(transacting)
+                if (element) element.resetToken()
             }
         }
         cb(cbToken)
