@@ -71,7 +71,6 @@ export const postMessageToHostedField = (id, message) => {
         document.getElementsByName(id)[0]
             .contentWindow.postMessage(message, hostedFieldsEndpoint()) :
         console.log('field is no longer available')
-        
 }
 
 export const handleError = error => {

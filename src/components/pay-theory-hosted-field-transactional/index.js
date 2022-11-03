@@ -70,6 +70,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       this.amounting = _amounting
     }
   }
+
+  get resetToken() {
+    return this.reset
+  }
+
+  set resetToken(_resetToken) {
+    this.reset = _resetToken
+  }
 }
 
 
