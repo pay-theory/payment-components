@@ -93,7 +93,10 @@ export const generateCompletionResponse = (cb) => {
             }
             if (transacting) {
                 let element = document.getElementById(transacting)
-                if (element) element.resetToken()
+                if (element) {
+                    element.resetToken()
+                    data.removeInitialize()
+                }
             }
         }
         cb(cbToken)
