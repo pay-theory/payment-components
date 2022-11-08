@@ -63,15 +63,18 @@ export const siblingTypeMessage = message => typeof message.type === 'string' &&
 //Message sent from hosted-fields with data when a cash barcode is sent back
 export const cashCompleteTypeMessage = message => typeof message.type === 'string' && message.type === `pt-static:cash-complete`
 
+//Message sent from hosted-fields with data when a card present device is activated or response is received from processor
+export const cardPresentTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:card-present'
+
 export const postMessageToHostedField = (id, message) => {
     return document.getElementsByName(id) ? 
         document.getElementsByName(id)[0]
             .contentWindow.postMessage(message, hostedFieldsEndpoint()) :
         console.log('field is no longer available')
-        
 }
 
 export const handleError = error => {
+    
     window.postMessage({
             type: 'pt:error',
             throws: true,
