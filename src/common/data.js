@@ -47,6 +47,10 @@ export const cashFields = {
     CONTACT: 'pay-theory-cash-contact'
 }
 
+export const cardPresentFields = {
+    CARD_PRESENT: 'pay-theory-card-present'
+}
+
 export const achFieldTypes = [
     'account-name',
     'account-type',
@@ -57,6 +61,10 @@ export const achFieldTypes = [
 export const cashFieldTypes = [
     'cash-name',
     'cash-contact'
+]
+
+export const cardPresentFieldTypes = [
+    'card-present'
 ]
 
 export const fieldTypes = [
@@ -133,10 +141,6 @@ export const setEnvironment = environment => {
 }
 export const getStage = () => {
     return localStorage.getItem(STAGE)
-}
-
-export const getFinixEnv = () => {
-    return localStorage.getItem(STAGE) === 'paytheory' ? 'live' : 'sandbox'
 }
 
 export const setStage = stage => {

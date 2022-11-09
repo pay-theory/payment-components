@@ -3,6 +3,7 @@
 import common from '../common'
 import * as valid from './validation'
 import * as handler from './handler'
+import * as message from "../common/message";
 
 export default async(
     apiKey,
@@ -66,7 +67,8 @@ export default async(
         'routing-number': common.achFields.BANK_CODE,
         'account-type': common.achFields.ACCOUNT_TYPE,
         'cash-name': common.cashFields.NAME,
-        'cash-contact': common.cashFields.CONTACT
+        'cash-contact': common.cashFields.CONTACT,
+        'card-present': common.cardPresentFields.CARD_PRESENT
     }
 
     let isValid = false
@@ -112,7 +114,7 @@ export default async(
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
-    const mountProcessedElements = async(processedArray) => {
+    const mountProcessedElements = async(processedArray, placeholders) => {
         for (const processed of processedArray) {
             if (processed.elements.length > 0) {
                 let error = processed.errorCheck(processed.elements, transacting[processed.type])
@@ -132,25 +134,18 @@ export default async(
                     if(!token['pt-token']) {
                         return common.handleError(`NO_TOKEN: No pt-token found`)
                     }
-                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles, apiKey})
+                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles, apiKey, placeholders})
                     const encodedJson = window.btoa(json)
                     element.frame.token = encodeURI(encodedJson)
                 })
             }
         }
-
-        window.postMessage({
-                type: `pay-theory:ready`,
-                ready: true
-            },
-            window.location.origin,
-        )
     }
 
-    const mount = async(
-        elements = defaultElementIds
-    ) => {
+    const mount = async(props = {}) => {
         common.removeInitialize()
+
+        let {placeholders, elements = defaultElementIds} = props
 
         const achElements = {
             'account-number': elements['account-number'],
@@ -177,13 +172,20 @@ export default async(
             'cash-contact': elements['cash-contact']
         }
 
+        const cardPresentElement = {
+            'card-present': elements['card-present']
+        }
+
         processedElements.card = common.processElements(cardElements, elementStates, common.fieldTypes, 'credit-card')
         processedElements.ach = common.processElements(achElements, elementStates, common.achFieldTypes, 'ach')
         processedElements.cash = common.processElements(cashElements, elementStates, common.cashFieldTypes)
+        processedElements.cardPresent = common.processElements(cardPresentElement, elementStates, common.cardPresentFieldTypes)
+
 
         transacting.card = processedElements.card.reduce(common.findTransactingElement, false)
         transacting.ach = processedElements.ach.reduce(common.findAccountNumber, false)
         transacting.cash = processedElements.cash.reduce(common.findField('cash-name'), false)
+        transacting.cardPresent = processedElements.cardPresent.reduce(common.findField('card-present'), false)
 
         const removeRelay = common.handleHostedFieldMessage(common.relayTypeMessage, handler.relayHandler())
 
@@ -201,7 +203,10 @@ export default async(
 
         const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler)
     
-        if (processedElements.ach.length === 0 && processedElements.card.length === 0 && processedElements.cash.length === 0) {
+        if (processedElements.ach.length === 0 &&
+            processedElements.card.length === 0 &&
+            processedElements.cash.length === 0 &&
+            processedElements.cardPresent.length === 0) {
             return common.handleError('NO_FIELDS: There are no PayTheory fields')
         }
 
@@ -217,9 +222,14 @@ export default async(
             type: 'cash',
             elements: processedElements.cash,
             errorCheck: valid.findCashError
+        },
+        {
+            type: 'cardPresent',
+            elements: processedElements.cardPresent,
+            errorCheck: valid.findCardPresentError
         }]
 
-        await mountProcessedElements(processed)
+        await mountProcessedElements(processed, placeholders)
 
         //returns a function that removes any event handlers that were put on the window during the mount function
         return () => {
@@ -293,6 +303,41 @@ export default async(
     }
 
     const tokenizePaymentMethod = common.generateTokenization(handleTokenize, ptToken.token.challengeOptions)
+
+    const handleActivate = (input) => {
+        let { amount, payorInfo, fee, metadata = {}, feeMode = common.INTERCHANGE, invoiceId, recurringId, payorId, deviceId } = input
+        //validate the input param types
+        if(!valid.isvalidTransactParams(amount, payorInfo || {}, metadata)) return false
+        //validate the amount
+        if(!valid.isValidAmount(amount)) return false
+        //validate the device id
+        if(!valid.isValidDeviceId(deviceId)) return false
+        //validate the payorInfo
+        if(!valid.isValidPayorInfo(payorInfo || {})) return false
+        // validate the payorId
+        if(!valid.isValidPayorDetails(payorInfo || {}, payorId)) return false
+        // validate the fee mode
+        if(!valid.isValidFeeMode(feeMode)) return false
+        // validate the invoice and recurring id
+        if(!valid.isValidInvoiceAndRecurringId({ invoiceId, recurringId })) return false
+        // validate the fee
+        if(!valid.isValidFeeAmount(fee)) return false
+
+        input.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
+        let iframe = document.getElementsByName(`card-present-iframe`)[0]
+        if (iframe) {
+            message.postMessageToHostedField(`card-present-iframe`, {
+                type: "pt-static:activate",
+                data: input
+            })
+        } else {
+            common.handleError('NO_MOUNT: There is no card present iframe mounted.')
+            common.removeInitialize()
+        }
+    }
+
+    const activateCardPresentDevice = common.generateActivation(handleActivate, ptToken.token.challengeOptions)
 
 
     const confirm = () => {
@@ -410,6 +455,7 @@ export default async(
             initTransaction,
             transact,
             tokenizePaymentMethod,
+            activateCardPresentDevice,
             confirm,
             cancel,
             readyObserver,
