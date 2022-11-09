@@ -63,6 +63,7 @@ export const generateCompletionResponse = (cb) => {
     return async message => {
         let paymentType = message.paymentType
         let cbToken
+        let transacting = data.getTransactingElement()
 
         if (paymentType === 'tokenize') {
             cbToken = message.body
@@ -89,6 +90,13 @@ export const generateCompletionResponse = (cb) => {
                 "state": message.body.state,
                 "type": message.body.type,
                 "payor_id": message.body.payor_id,
+            }
+            if (transacting) {
+                let element = document.getElementById(transacting)
+                if (element) {
+                    element.resetToken()
+                    data.removeInitialize()
+                }
             }
         }
         cb(cbToken)
@@ -220,6 +228,17 @@ export const generateTokenization = (handleTokenize, challengeOptions) => {
                 await handleAttestation(challengeOptions)
                 sendTransactingMessage()
             }
+        }
+    }
+}
+
+export const generateActivation = (handleActivate, challengeOptions) => {
+    return async(inputParameters) => {
+        let initialize = data.getInitialize()
+        if (initialize !== 'init') {
+            data.setInitialize('init')
+            await handleAttestation(challengeOptions)
+            handleActivate(inputParameters)
         }
     }
 }

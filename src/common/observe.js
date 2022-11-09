@@ -11,31 +11,39 @@ export const errorObserver = cb => messaging.handleMessage(messaging.errorTypeMe
 })
 
 export const tokenizeObserver = cb => messaging.handleHostedFieldMessage(
-        messaging.confirmTypeMessage,
-        network.generateTokenize(cb))
+    messaging.confirmTypeMessage,
+    network.generateTokenize(cb))
 
 export const captureObserver = cb => messaging.handleHostedFieldMessage(
-        messaging.confirmationCompleteTypeMessage,
-        network.generateCompletionResponse(cb))
+    messaging.confirmationCompleteTypeMessage,
+    network.generateCompletionResponse(cb))
 
 export const transactedObserver = cb => messaging.handleHostedFieldMessage(
-        messaging.completeTypeMessage,
-        network.generateCompletionResponse(cb))
+    messaging.completeTypeMessage,
+    network.generateCompletionResponse(cb))
 
-export const generateReturn = ( mount,
-        initTransaction,
-        transact,
-        tokenizePaymentMethod,
-        confirm,
-        cancel,
-        readyObserver,
-        validObserver,
-        cashObserver,
-        stateObserver) => Object.create({
+export const cardPresentObserver = cb => messaging.handleHostedFieldMessage(
+    messaging.cardPresentTypeMessage, message => {
+        cb(message.body)
+        data.removeAll()
+    })
+
+export const generateReturn = (mount,
+                               initTransaction,
+                               transact,
+                               tokenizePaymentMethod,
+                               activateCardPresentDevice,
+                               confirm,
+                               cancel,
+                               readyObserver,
+                               validObserver,
+                               cashObserver,
+                               stateObserver) => Object.create({
     mount,
     initTransaction,
     transact,
     tokenizePaymentMethod,
+    activateCardPresentDevice,
     confirm,
     cancel,
     readyObserver,
@@ -45,5 +53,6 @@ export const generateReturn = ( mount,
     captureObserver,
     tokenizeObserver,
     transactedObserver,
-    stateObserver
+    stateObserver,
+    cardPresentObserver
 })

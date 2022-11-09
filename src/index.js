@@ -16,6 +16,7 @@ import './components/ach-account-type'
 import './components/ach-routing-number'
 import './components/cash-contact'
 import './components/cash-name'
+import './components/card-present'
 import 'regenerator-runtime'
 import './style.css'
 

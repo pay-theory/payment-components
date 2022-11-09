@@ -1,7 +1,4 @@
 import PayTheoryHostedField from '../pay-theory-hosted-field'
-import common from '../../common'
-
-
 
 class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
@@ -17,6 +14,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       type: 'pt:tokenize',
       tokenize: { amount, currency: 'USD', "pt-instrument": token }
     }
+    
     window.postMessage(
       message,
       window.location.origin
@@ -25,6 +23,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   generateTransactCallback(amount, token) {
     const transact = { amount, currency: 'USD', "pt-instrument": token }
+    
     window.postMessage({
         type: 'pt:transact',
         transact
@@ -70,6 +69,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     if (this.amounting !== _amounting) {
       this.amounting = _amounting
     }
+  }
+
+  get resetToken() {
+    return this.reset
+  }
+
+  set resetToken(_resetToken) {
+    this.reset = _resetToken
   }
 }
 
