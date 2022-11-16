@@ -178,6 +178,19 @@ const findCashError = (processedElements) => {
     return error
 }
 
+const findCardPresentError = (processedElements) => {
+    let error = false
+    if (processedElements.length === 0) {
+        return error
+    }
+
+    if (processedElements.reduce(common.findField('card-present'), false) === false) {
+        error = 'missing Card Present field required for payments'
+    }
+
+    return error
+}
+
 const isValidPayorInfo = (payorInfo) => {
     if (!validate(payorInfo, 'object')) {
         message.handleError('INVALID_PARAM: payor_info is not an object')
@@ -243,6 +256,14 @@ const isValidAmount = (amount) => {
     return true
 }
 
+const isValidDeviceId = (deviceId) => {
+    if (!validate(deviceId, 'string')) {
+        message.handleError('INVALID_PARAM: deviceId is required and must be a string')
+        return false
+    }
+    return true
+}
+
 const isValidPayorDetails = (payorInfo, payorId) => {
     let keys  = Object.keys(payorInfo)
     // Verify both id and info aren't passed in
@@ -299,9 +320,11 @@ export {
     findAchError,
     findCardError,
     findCashError,
+    findCardPresentError,
     validTypeMessage,
     validate,
     isValidAmount,
+    isValidDeviceId,
     isvalidTransactParams,
     isValidTokenizeParams,
     isValidPayorInfo,
