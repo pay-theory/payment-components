@@ -85,23 +85,13 @@ export default async(
 
     let isReady = false
 
-    const fetchPtToken = async() => {
-        for(let i = 0; i < 5; i++) {
-            let token = await common.getData(`${common.transactionEndpoint()}`, apiKey)
-            if (token['pt-token']) {
-                return token
-            }
-        }
-        return {}
-    }
-
     let ptToken = {}
-    ptToken.token = await fetchPtToken()
+    ptToken.token = await common.fetchPtToken(apiKey)
     ptToken.isUsed = false
 
     const resetHostToken = async() => {
         let transacting = common.getTransactingElement()
-        let token = await fetchPtToken()
+        let token = await common.fetchPtToken(apiKey)
         common.postMessageToHostedField(common.hostedFieldMap[transacting], {
             type: `pt-static:reset_host`,
             token: token['pt-token']
@@ -123,7 +113,7 @@ export default async(
                 }
                 let token;
                 if (ptToken.isUsed) {
-                    token = await fetchPtToken()
+                    token = await common.fetchPtToken(apiKey)
                 }
                 else {
                     ptToken.isUsed = true
@@ -207,7 +197,7 @@ export default async(
             processedElements.card.length === 0 &&
             processedElements.cash.length === 0 &&
             processedElements.cardPresent.length === 0) {
-            return common.handleError('NO_FIELDS: There are no PayTheory fields')
+            return common.handleError('NO_FIELDS: There are no PayTheory fields on the DOM to mount')
         }
 
         let processed = [{

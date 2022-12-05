@@ -5,6 +5,7 @@ export const TRANSACTING = 'pt-transacting'
 export const ENVIRONMENT = 'pt-environment'
 export const STAGE = 'pt-stage'
 export const INITIALIZE = 'pt-initialize'
+export const SESSION = 'pt-session'
 export const defaultStyles = {
     default: {},
     success: {},
@@ -50,6 +51,9 @@ export const cashFields = {
 export const cardPresentFields = {
     CARD_PRESENT: 'pay-theory-card-present'
 }
+
+export const checkoutButtonField = 'pay-theory-checkout-button'
+export const payTheoryOverlay = 'pay-theory-overlay'
 
 export const achFieldTypes = [
     'account-name',
@@ -142,7 +146,6 @@ export const setEnvironment = environment => {
 export const getStage = () => {
     return localStorage.getItem(STAGE)
 }
-
 export const setStage = stage => {
     return localStorage.setItem(STAGE, stage)
 }
@@ -155,21 +158,27 @@ export const setReady = ready => {
 export const removeReady = () => {
     return localStorage.removeItem(READY)
 }
-
 export const getInitialize = () => {
     return localStorage.getItem(INITIALIZE)
 }
-
 export const setInitialize = init => {
     return localStorage.setItem(INITIALIZE, init)
 }
-
 export const removeInitialize = () => {
     return localStorage.removeItem(INITIALIZE)
 }
-
+export const getSession = () => {
+    return localStorage.getItem(SESSION)
+}
+export const setSession = session => {
+    return localStorage.setItem(SESSION, session)
+}
+export const removeSession = () => {
+    return localStorage.removeItem(SESSION)
+}
 export const removeAll = (allowRetry) => {
     removeAutofill()
     removeTransactingElement()
+    removeSession()
     if(allowRetry) removeInitialize()
 }

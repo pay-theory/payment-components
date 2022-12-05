@@ -1,6 +1,7 @@
 /* global navigator */
 import * as data from './data'
 import * as message from './message'
+import common from "./index";
 
 export const getData = async(url, apiKey) => {
     const options = {
@@ -41,6 +42,20 @@ export const transactionEndpoint = () => {
 
 export const hostedFieldsEndpoint = () => {
     return `https://${data.getEnvironment()}.tags.static.${data.getStage()}.com`
+}
+
+export const hostedCheckoutEndpoint = () => {
+    return `https://${data.getEnvironment()}.checkout.${data.getStage()}.com`
+}
+
+export const fetchPtToken = async(apiKey) => {
+    for(let i = 0; i < 5; i++) {
+        let token = await getData(`${transactionEndpoint()}`, apiKey)
+        if (token['pt-token']) {
+            return token
+        }
+    }
+    return {}
 }
 
 export const generateTokenize = (cb) => {
