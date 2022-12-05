@@ -196,7 +196,7 @@ const handleAttestation = async challengeOptions => {
     }
 }
 
-const parseInputParams = (inputParams) => {
+export const parseInputParams = (inputParams) => {
     let { payorId, invoiceId, recurringId, fee, metadata = {} } = inputParams
     let payTheoryData = {
         account_code: inputParams.accountCode || metadata["pay-theory-account-code"],

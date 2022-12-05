@@ -1,24 +1,25 @@
 /* global HTMLElement */
 import common from "../../common";
-import {payTheoryOverlay} from "../../common/data";
 
 class PayTheoryOverlay extends HTMLElement {
     constructor() {
         super();
-        this.defineOverlay = this.defineOverlay.bind(this);
+        this._onFocus = () => {}
+        this._onCancel = () => {}
     }
 
-    defineOverlay() {
+    connectedCallback() {
+        super.connectedCallback && super.connectedCallback();
+
+        // Creating the iFrame for the overlay
         const overlayFrame = document.createElement('iframe')
         overlayFrame.setAttribute('src', `${common.hostedFieldsEndpoint()}/overlay`)
         overlayFrame.setAttribute('frameBorder', '0')
         overlayFrame.setAttribute('name', `pay-theory-overlay-iframe`)
         overlayFrame.setAttribute('id', common.payTheoryOverlay)
-        document.body.append(overlayFrame)
-    }
+        this.append(overlayFrame)
 
-    connectedCallback() {
-        super.connectedCallback && super.connectedCallback();
+        // Adding the event listeners for the overlay
         this._clearCancelListener = common.handleHostedFieldMessage(common.overlayCancelTypeMessage, this._onCancel)
         this._clearFocusListener = common.handleHostedFieldMessage(common.overlayRelaunchTypeMessage, this._onFocus)
     }
@@ -29,39 +30,24 @@ class PayTheoryOverlay extends HTMLElement {
         this._clearFocusListener()
     }
 
-    get onCancel() {
-        return this._onCancel
-    }
-
+    // Only want to allow event listeners to be set from outside the class
+    // If they have been set before there should be a clear listener function so we want to clear it and reset the listener
     set onCancel(cancelFunc) {
         this._onCancel = cancelFunc
-    }
-
-    set clearCancelListener(clearCancelFunc) {
-        this._clearCancelListener = clearCancelFunc
-    }
-
-    get clearCancelListener() {
-        return this._clearCancelListener
+        if(this._clearCancelListener) {
+            this._clearCancelListener()
+            this._clearCancelListener = common.handleHostedFieldMessage(common.overlayCancelTypeMessage, this._onCancel)
+        }
     }
 
     set onFocus(focusFunc) {
         this._onFocus = focusFunc
+        if(this._clearFocusListener) {
+            this._clearFocusListener()
+            this._clearFocusListener = common.handleHostedFieldMessage(common.overlayRelaunchTypeMessage, this._onFocus)
+        }
     }
-
-    get onFocus() {
-        return this._onFocus
-    }
-
-    set clearFocusListener(clearFocusFunc) {
-        this._clearFocusListener =  clearFocusFunc
-    }
-
-    get clearFocusListener() {
-        return this._clearFocusListener
-    }
-
 
 }
 
-window.customElements.define("pay-theory-overlay", PayTheoryOverlay);
+window.customElements.define(common.payTheoryOverlay, PayTheoryOverlay);

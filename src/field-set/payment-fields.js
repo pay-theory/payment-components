@@ -253,20 +253,8 @@ export default async(
     }
 
     const handleInitialized = (amount, payorInfo, payTheoryData, metadata, feeMode, confirmation) => {
-        //validate the input param types
-        if(!valid.isvalidTransactParams(amount, payorInfo, metadata)) return false
-        //validate the amount
-        if(!valid.isValidAmount(amount)) return false
-        //validate the payorInfo
-        if(!valid.isValidPayorInfo(payorInfo)) return false
-        // validate the payorId
-        if(!valid.isValidPayorDetails(payorInfo, payTheoryData.payorId)) return false
-        // validate the fee mode
-        if(!valid.isValidFeeMode(feeMode || fee_mode)) return false
-        // validate the invoice and recurring id
-        if(!valid.isValidInvoiceAndRecurringId(payTheoryData)) return false
-        // validate the fee
-        if(!valid.isValidFeeAmount(payTheoryData.fee)) return false
+        // Validate the params
+        if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode, confirmation)) return false
 
         const data = { amount, payorInfo, payTheoryData, metadata, fee_mode: feeMode || fee_mode, confirmation }
         return handleInitMessage('pt-static:payment-detail', data)
