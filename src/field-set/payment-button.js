@@ -21,7 +21,7 @@ export default async(inputParams) => {
     let environment = keyParts[0]
     let stage = keyParts[1]
     let partnerMode = ""
-    if (['new','old'].includes(stage)) {
+    if (['new', 'old'].includes(stage)) {
         partnerMode = stage
         stage = keyParts[2]
     }
@@ -36,9 +36,24 @@ export default async(inputParams) => {
     common.setEnvironment(partner_environment)
     common.setStage(stage)
 
+    // Validate the input parameters
+    const paymentParams = common.parseInputParams(paymentDetails)
+    let {amount, payorInfo, payTheoryData, metadata = {}, feeMode, confirmation = false} = paymentParams
+    let removeErrorListener = () => {}
+    if (onError) removeErrorListener = common.errorObserver(onError)
+    if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode, confirmation))  {
+        removeErrorListener()
+        return false
+    }
+    removeErrorListener()
+
+    // Fetch the PT Token
     let ptToken = await common.fetchPtToken(apiKey)
 
-    window.addEventListener("beforeunload", () => { common.removeReady() })
+    window.addEventListener("beforeunload", () => {
+        common.removeReady()
+        common.removeSession()
+    })
 
     // Adding logic to onReady to receive the session data for redirecting to the hosted checkout page
     const onReadyWrapper = (data) => {
@@ -55,13 +70,14 @@ export default async(inputParams) => {
         if (onClick) {
             onClick()
         }
-
         // Open the hosted checkout page
         const hostedCheckoutUrl = `${common.hostedCheckoutEndpoint()}?sessionId=${common.getSession()}`
         let hostedCheckout = window.open(hostedCheckoutUrl, '_blank')
         hostedCheckout.focus()
 
-        // TODO - This is where we need to set the function to close the window on the overlay
+        // Set checkout window to button element properties
+        const buttonElement = document.getElementById(common.checkoutButtonField)
+        buttonElement.checkoutWindow = hostedCheckout
 
         // Open the overlay
         const overlayElement = document.createElement(common.payTheoryOverlay)
@@ -69,6 +85,10 @@ export default async(inputParams) => {
         overlayElement.onCancel = () => {
             hostedCheckout.close()
             overlayElement.remove()
+            buttonElement.checkoutWindow = null
+            if (onCancel) {
+                onCancel()
+            }
         }
         overlayElement.onFocus = () => {
             hostedCheckout.focus()
@@ -76,51 +96,40 @@ export default async(inputParams) => {
         document.body.appendChild(overlayElement)
     }
 
-    // Adding listeners for the hosted button messaging
-    const removeClick = common.handleHostedFieldMessage(common.buttonClickTypeMessage, onClickWrapper)
-    const removeReady = common.handleHostedFieldMessage(common.readyTypeMessage, onReadyWrapper)
-
     // Adding logic to onCancel to handle hiding the overlay
     const onCancelWrapper = () => {
         if (onCancel) {
             onCancel()
         }
         // Close the overlay
-        const overlay = document.getElementById('pay-theory-overlay')
-        overlay.style.display = 'none'
+        const overlay = document.getElementById(common.payTheoryOverlay)
+        overlay.remove()
+
+        // Close the hosted checkout page
+        const buttonElement = document.getElementById(common.checkoutButtonField)
+        buttonElement?.checkoutWindow?.close()
     }
 
-    // Add listeners for the hosted checkout page
-    const removeError = onError ? common.handleCheckoutMessage(common.checkoutErrorTypeMessage, onError) : () => {}
-    const removeSuccess = onSuccess ? common.handleCheckoutMessage(common.checkoutCompleteTypeMessage, onSuccess) : () => {}
-    const removeCancel = common.handleCheckoutMessage(common.checkoutCancelTypeMessage, onCancelWrapper)
 
+    // Create the button element and add the listeners
+    const tagFrame = document.createElement(common.checkoutButtonField)
+    tagFrame.setAttribute('id', `${common.checkoutButtonField}-iframe`)
+    tagFrame.onCancel = onCancelWrapper
+    tagFrame.onClick = onClickWrapper
+    tagFrame.onReady = onReadyWrapper
+    if (onError) tagFrame.onError = onError
+    if (onSuccess) tagFrame.onSuccess = onSuccess
 
-    // Add the button iFrame to the page
-    const buttonDiv = document.getElementById('pay-theory-checkout-button')
-    const buttonFrame = common.addFrame(buttonDiv, 'pay-theory-checkout-button-tag-frame')
+    // Append the button div to the wrapper div
+    const buttonDiv = document.getElementById(common.checkoutButtonField)
+    buttonDiv.appendChild(tagFrame)
 
-    if(!ptToken['pt-token']) {
+    if (!ptToken['pt-token']) {
         return common.handleError(`NO_TOKEN: No pt-token found`)
     }
 
     //Add the token to the button component so that it can be used to open the button iframe
-    const json = JSON.stringify({ token: ptToken['pt-token'], origin: ptToken.origin, style, paymentDetails})
+    const json = JSON.stringify({token: ptToken['pt-token'], origin: ptToken.origin, style, paymentDetails})
     const encodedJson = window.btoa(json)
-    buttonFrame.token = encodeURI(encodedJson)
-
-    return {
-        removeClick,
-        removeReady,
-        removeError,
-        removeSuccess,
-        removeCancel,
-        clearListeners: () => {
-            removeClick()
-            removeReady()
-            removeError()
-            removeSuccess()
-            removeCancel()
-        }
-    }
+    tagFrame.token = encodeURI(encodedJson)
 }

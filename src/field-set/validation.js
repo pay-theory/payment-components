@@ -310,6 +310,24 @@ const isValidFeeAmount = (fee) => {
     return true
 }
 
+// Validate the details passed in for a transaction or redirect button
+const validTransactionParams = (amount, payorInfo, payTheoryData, metadata, feeMode, confirmation) => {
+    //validate the input param types
+    if(!isvalidTransactParams(amount, payorInfo, metadata)) return false
+    //validate the amount
+    if(!isValidAmount(amount)) return false
+    //validate the payorInfo
+    if(!isValidPayorInfo(payorInfo)) return false
+    // validate the payorId
+    if(!isValidPayorDetails(payorInfo, payTheoryData.payorId)) return false
+    // validate the fee mode
+    if(!isValidFeeMode(feeMode || fee_mode)) return false
+    // validate the invoice and recurring id
+    if(!isValidInvoiceAndRecurringId(payTheoryData)) return false
+    // validate the fee
+    return isValidFeeAmount(payTheoryData.fee);
+}
+
 export {
     checkCreateParams,
     hasValidCard,
@@ -331,5 +349,6 @@ export {
     isValidPayorDetails,
     isValidFeeMode,
     isValidInvoiceAndRecurringId,
-    isValidFeeAmount
+    isValidFeeAmount,
+    validTransactionParams
 }

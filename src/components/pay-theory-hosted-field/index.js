@@ -1,5 +1,6 @@
 /* global HTMLElement */
 import common from '../../common'
+import DOMPurify from 'dompurify'
 class PayTheoryHostedField extends HTMLElement {
 
   constructor() {
@@ -46,6 +47,21 @@ class PayTheoryHostedField extends HTMLElement {
   appendElement(element) {
     const container = document.getElementById(`pay-theory-${this.field}-hosted-field-container`)
     container.appendChild(element)
+  }
+
+  connectedCallback() {
+    this.innerHTML = DOMPurify.sanitize(`<div class="framed">
+            <div id="pay-theory-${this.field}-hosted-field-container" class="pay-theory-field">
+            </div>
+        </div>`)
+  }
+
+  adoptedCallback() {
+
+  }
+
+  disconnectedCallback() {
+
   }
 
   isValidFrame(invalidElement) {
