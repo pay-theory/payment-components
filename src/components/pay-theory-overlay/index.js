@@ -50,7 +50,7 @@ class PayTheoryOverlay extends HTMLElement {
         }
     }
 
-    setToken(urlToken) {
+    set token(urlToken) {
         this._token = urlToken
         this.defineOverlay()
     }
