@@ -2,8 +2,6 @@
 /*global navigator*/
 import common from '../common'
 import * as valid from './validation'
-import * as handler from './handler'
-import * as message from "../common/message";
 
 export default async(inputParams) => {
     const {
@@ -79,7 +77,7 @@ export default async(inputParams) => {
         const buttonElement = document.getElementById(common.checkoutButtonField)
         buttonElement.checkoutWindow = hostedCheckout
 
-        // Open the overlay
+        // Create the overlay and add the properties it needs before showing it
         const overlayElement = document.createElement(common.payTheoryOverlay)
         overlayElement.setAttribute('id', common.payTheoryOverlay)
         overlayElement.onCancel = () => {
@@ -93,6 +91,11 @@ export default async(inputParams) => {
         overlayElement.onFocus = () => {
             hostedCheckout.focus()
         }
+        //Add the token to the button component so that it can be used to open the button iframe
+        const json = JSON.stringify({origin: ptToken.origin})
+        const encodedJson = window.btoa(json)
+        overlayElement.token = encodeURI(encodedJson)
+
         document.body.appendChild(overlayElement)
     }
 

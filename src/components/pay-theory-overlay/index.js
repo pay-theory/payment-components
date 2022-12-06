@@ -13,7 +13,7 @@ class PayTheoryOverlay extends HTMLElement {
 
         // Creating the iFrame for the overlay
         const overlayFrame = document.createElement('iframe')
-        overlayFrame.setAttribute('src', `${common.hostedFieldsEndpoint()}/overlay`)
+        overlayFrame.setAttribute('src', `${common.hostedFieldsEndpoint()}/overlay?token=${this._token}`)
         overlayFrame.setAttribute('frameBorder', '0')
         overlayFrame.setAttribute('name', `pay-theory-overlay-iframe`)
         overlayFrame.setAttribute('id', common.payTheoryOverlay)
@@ -48,6 +48,9 @@ class PayTheoryOverlay extends HTMLElement {
         }
     }
 
+    setToken(tokened) {
+        this._token = tokened
+    }
 }
 
 window.customElements.define(common.payTheoryOverlay, PayTheoryOverlay);
