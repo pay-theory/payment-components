@@ -104,7 +104,7 @@ export default async(
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
-    const mountProcessedElements = async(processedArray, placeholders) => {
+    const mountProcessedElements = async(processedArray, placeholders, session) => {
         for (const processed of processedArray) {
             if (processed.elements.length > 0) {
                 let error = processed.errorCheck(processed.elements, transacting[processed.type])
@@ -124,7 +124,7 @@ export default async(
                     if(!token['pt-token']) {
                         return common.handleError(`NO_TOKEN: No pt-token found`)
                     }
-                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles, apiKey, placeholders})
+                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles, apiKey, placeholders, session})
                     const encodedJson = window.btoa(json)
                     element.frame.token = encodeURI(encodedJson)
                 })
@@ -135,7 +135,7 @@ export default async(
     const mount = async(props = {}) => {
         common.removeInitialize()
 
-        let {placeholders, elements = defaultElementIds} = props
+        let {placeholders, elements = defaultElementIds, session} = props
 
         const achElements = {
             'account-number': elements['account-number'],
@@ -219,7 +219,7 @@ export default async(
             errorCheck: valid.findCardPresentError
         }]
 
-        await mountProcessedElements(processed, placeholders)
+        await mountProcessedElements(processed, placeholders, session)
 
         //returns a function that removes any event handlers that were put on the window during the mount function
         return () => {
