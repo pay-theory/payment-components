@@ -22,6 +22,7 @@ import './style.css'
 
 import createPaymentFieldsLegacy from './field-set/payment-fields'
 import { SURCHARGE, SERVICE_FEE, INTERCHANGE } from './common/data'
+import button from './field-set/payment-button'
 
 const create = (apiKey, styles, metadata, feeMode) => createPaymentFieldsLegacy(apiKey, '', styles, metadata, feeMode)
 const createPaymentFields = (apiKey, clientId, styles, metadata) => {
@@ -32,6 +33,7 @@ const createPaymentFields = (apiKey, clientId, styles, metadata) => {
 window.paytheory = {
     createPaymentFields,
     create,
+    button,
     SURCHARGE,
     SERVICE_FEE,
     INTERCHANGE
