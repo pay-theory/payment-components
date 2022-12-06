@@ -17,6 +17,8 @@ import './components/ach-routing-number'
 import './components/cash-contact'
 import './components/cash-name'
 import './components/card-present'
+import './components/pay-theory-overlay'
+import './components/pay-theory-checkout-button'
 import 'regenerator-runtime'
 import './style.css'
 
