@@ -91,12 +91,12 @@ export default async(inputParams) => {
         overlayElement.onFocus = () => {
             hostedCheckout.focus()
         }
+        document.body.appendChild(overlayElement)
+
         //Add the token to the button component so that it can be used to open the button iframe
         const json = JSON.stringify({origin: ptToken.origin})
         const encodedJson = window.btoa(json)
         overlayElement.token = encodeURI(encodedJson)
-
-        document.body.appendChild(overlayElement)
     }
 
     // Adding logic to onCancel to handle hiding the overlay
