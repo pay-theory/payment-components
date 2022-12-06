@@ -8,9 +8,7 @@ class PayTheoryOverlay extends HTMLElement {
         this._onCancel = () => {}
     }
 
-    connectedCallback() {
-        super.connectedCallback && super.connectedCallback();
-
+    defineOverlay() {
         // Creating the iFrame for the overlay
         const overlayFrame = document.createElement('iframe')
         overlayFrame.setAttribute('src', `${common.hostedFieldsEndpoint()}/overlay?token=${this._token}`)
@@ -18,6 +16,10 @@ class PayTheoryOverlay extends HTMLElement {
         overlayFrame.setAttribute('name', `pay-theory-overlay-iframe`)
         overlayFrame.setAttribute('id', common.payTheoryOverlay)
         this.append(overlayFrame)
+    }
+
+    connectedCallback() {
+        super.connectedCallback && super.connectedCallback();
 
         // Adding the event listeners for the overlay
         this._clearCancelListener = common.handleHostedFieldMessage(common.overlayCancelTypeMessage, this._onCancel)
@@ -48,8 +50,9 @@ class PayTheoryOverlay extends HTMLElement {
         }
     }
 
-    setToken(tokened) {
-        this._token = tokened
+    setToken(urlToken) {
+        this._token = urlToken
+        this.defineOverlay()
     }
 }
 
