@@ -116,7 +116,7 @@ export default async(inputParams) => {
 
     // Create the button element and add the listeners
     const tagFrame = document.createElement(common.checkoutButtonField)
-    tagFrame.setAttribute('id', `${common.checkoutButtonField}-iframe`)
+    tagFrame.setAttribute('id', `${common.checkoutButtonField}-wrapper`)
     tagFrame.onCancel = onCancelWrapper
     tagFrame.onClick = onClickWrapper
     tagFrame.onReady = onReadyWrapper
