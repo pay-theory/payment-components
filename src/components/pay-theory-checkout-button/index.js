@@ -31,7 +31,7 @@ class PayTheoryCheckoutButton extends HTMLElement {
         this._clearSuccessListener = common.handleCheckoutMessage(common.checkoutCompleteTypeMessage, this._onSuccess)
 
         // Creating the listeners from the hosted button page
-        this._clearReadyListener = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, this._onReady)
+        this._clearReadyListener = common.handleHostedFieldMessage(common.buttonReadyTypeMessage, this._onReady)
         this._clearClickListener = common.handleHostedFieldMessage(common.buttonClickTypeMessage, this._onClick)
     }
 

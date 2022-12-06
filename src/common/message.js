@@ -83,6 +83,9 @@ export const cardPresentTypeMessage = message => typeof message.type === 'string
 // Message sent from hosted-fields when a hosted button is clicked
 export const buttonClickTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:button-click'
 
+// Message sent from hosted-fields when a hosted button is clicked
+export const buttonReadyTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:button-ready'
+
 // Message sent from checkout page when payment is cancelled
 export const checkoutCancelTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-checkout:cancel'
 
