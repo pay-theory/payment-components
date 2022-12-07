@@ -3,6 +3,19 @@
 import common from '../common'
 import * as valid from './validation'
 
+const PopupCenter = (url, title, w, h) => {
+    // Fixes dual-screen position                         Most browsers      Firefox
+    const dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
+    const dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+
+    const width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+    const height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+    const left = ((width / 2) - (w / 2)) + dualScreenLeft;
+    const top = ((height / 2) - (h / 2)) + dualScreenTop;
+    return window.open(url, title, 'toolbar=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+}
+
 export default async(inputParams) => {
     const {
         apiKey,
@@ -68,9 +81,11 @@ export default async(inputParams) => {
         if (onClick) {
             onClick()
         }
+
+
         // Open the hosted checkout page
-        const hostedCheckoutUrl = `${common.hostedCheckoutEndpoint()}?sessionId=${common.getSession()}`
-        let hostedCheckout = window.open(hostedCheckoutUrl, '_blank', "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=700px,height=1000px,top=100px,left="+((screen.width / 2) - 350))
+        const hostedCheckoutUrl = `${common.hostedCheckoutEndpoint()}/hosted?sessionId=${common.getSession()}`
+        let hostedCheckout = PopupCenter(hostedCheckoutUrl, "PayTheory Checkout", 700, 1000)
         hostedCheckout.focus()
 
         // Set checkout window to button element properties
