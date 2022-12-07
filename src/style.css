@@ -71,3 +71,16 @@
 	flex-direction: column;
 	height: 100%;
 }
+
+#pay-theory-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+#pay-theory-checkout-button-iframe {
+	width: 100%;
+	height: 48px;
+}
