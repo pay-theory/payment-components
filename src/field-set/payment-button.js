@@ -70,7 +70,7 @@ export default async(inputParams) => {
         }
         // Open the hosted checkout page
         const hostedCheckoutUrl = `${common.hostedCheckoutEndpoint()}?sessionId=${common.getSession()}`
-        let hostedCheckout = window.open(hostedCheckoutUrl, '_blank')
+        let hostedCheckout = window.open(hostedCheckoutUrl, '_blank', "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=980px,height=1000px,top="+(screen.height-400)+",left="+(screen.width-840))
         hostedCheckout.focus()
 
         // Set checkout window to button element properties
