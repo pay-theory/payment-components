@@ -52,7 +52,7 @@ export default async(inputParams) => {
     let {amount, payorInfo, payTheoryData, metadata = {}, feeMode, confirmation = false, paymentName, callToAction, acceptedPaymentMethods } = paymentParams
     let removeErrorListener = () => {}
     if (onError) removeErrorListener = common.errorObserver(onError)
-    if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode, confirmation) ||
+    if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode) ||
         !valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName)) {
         removeErrorListener()
         return false
