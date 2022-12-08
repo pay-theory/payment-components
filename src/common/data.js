@@ -17,6 +17,25 @@ export const SERVICE_FEE = 'service_fee'
 
 export const defaultFeeMode = SURCHARGE
 
+// Call to action constants for the hosted checkout
+export const PAY = 'PAY'
+export const BOOK = 'BOOK'
+export const DONATE = 'DONATE'
+
+export const CTA_TYPES = [PAY, BOOK, DONATE]
+
+// Available Payment Method Constants for the hosted checkout
+export const ALL = 'ALL'
+export const NOT_CASH = 'NOT_CASH'
+export const NOT_CARD = 'NOT_CARD'
+export const NOT_ACH = 'NOT_ACH'
+export const ONLY_CASH = 'ONLY_CASH'
+export const ONLY_CARD = 'ONLY_CARD'
+export const ONLY_ACH = 'ONLY_ACH'
+
+export const PAYMENT_METHOD_CONFIGS = [ALL, NOT_CASH, NOT_CARD, NOT_ACH, ONLY_CASH, ONLY_CARD, ONLY_ACH]
+
+
 export const initialState = {
     isDirty: false,
     isFocused: false,

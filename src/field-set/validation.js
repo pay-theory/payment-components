@@ -310,8 +310,24 @@ const isValidFeeAmount = (fee) => {
     return true
 }
 
+const validateHostedCheckoutParams = (callToAction, acceptedPaymentMethods, paymentName) => {
+    if (callToAction && !common.CTA_TYPES.includes(callToAction)) {
+        message.handleError(`INVALID_PARAM: callToAction must be one of ${common.CTA_TYPES.join(', ')}`)
+        return false
+    }
+    if (acceptedPaymentMethods && !common.PAYMENT_METHOD_CONFIGS.includes(acceptedPaymentMethods)) {
+        message.handleError(`INVALID_PARAM: acceptedPaymentMethods must be one of ${common.PAYMENT_METHOD_CONFIGS.join(', ')}`)
+        return false
+    }
+    if (!validate(paymentName, 'string')) {
+        message.handleError('INVALID_PARAM: paymentName must be a string')
+        return false
+    }
+    return true
+}
+
 // Validate the details passed in for a transaction or redirect button
-const validTransactionParams = (amount, payorInfo, payTheoryData, metadata, feeMode, confirmation) => {
+const validTransactionParams = (amount, payorInfo, payTheoryData, metadata, feeMode) => {
     //validate the input param types
     if(!isvalidTransactParams(amount, payorInfo, metadata)) return false
     //validate the amount
@@ -321,7 +337,7 @@ const validTransactionParams = (amount, payorInfo, payTheoryData, metadata, feeM
     // validate the payorId
     if(!isValidPayorDetails(payorInfo, payTheoryData.payorId)) return false
     // validate the fee mode
-    if(!isValidFeeMode(feeMode || fee_mode)) return false
+    if(!isValidFeeMode(feeMode)) return false
     // validate the invoice and recurring id
     if(!isValidInvoiceAndRecurringId(payTheoryData)) return false
     // validate the fee
@@ -350,5 +366,6 @@ export {
     isValidFeeMode,
     isValidInvoiceAndRecurringId,
     isValidFeeAmount,
-    validTransactionParams
+    validTransactionParams,
+    validateHostedCheckoutParams
 }
