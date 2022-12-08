@@ -49,17 +49,13 @@ export default async(inputParams) => {
 
     // Validate the input parameters
     const paymentParams = common.parseInputParams(paymentDetails)
-    let {amount, payorInfo, payTheoryData, metadata = {}, feeMode, confirmation = false, paymentName, callToAction, acceptedPaymentMethods } = paymentParams
+    let {amount, payorInfo, payTheoryData, metadata = {}, feeMode, paymentName, callToAction, acceptedPaymentMethods } = paymentParams
     let removeErrorListener = () => {}
     if (onError) removeErrorListener = common.errorObserver(onError)
     if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode) ||
         !valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName)) {
-        removeErrorListener()
         return false
     }
-
-
-    removeErrorListener()
 
     // Fetch the PT Token
     let ptToken = await common.fetchPtToken(apiKey)
@@ -74,6 +70,7 @@ export default async(inputParams) => {
         if (onReady) {
             onReady()
         }
+        removeErrorListener()
         if (data && data?.sessionId) {
             common.setSession(data.sessionId)
         }
