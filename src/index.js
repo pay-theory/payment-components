@@ -23,7 +23,7 @@ import 'regenerator-runtime'
 import './style.css'
 
 import createPaymentFieldsLegacy from './field-set/payment-fields'
-import { SURCHARGE, SERVICE_FEE, INTERCHANGE } from './common/data'
+import { SURCHARGE, SERVICE_FEE, INTERCHANGE, PAY, BOOK, DONATE, ALL, NOT_CASH, NOT_CARD, NOT_ACH, ONLY_CASH, ONLY_CARD, ONLY_ACH } from './common/data'
 import button from './field-set/payment-button'
 
 const create = (apiKey, styles, metadata, feeMode) => createPaymentFieldsLegacy(apiKey, '', styles, metadata, feeMode)
@@ -38,7 +38,17 @@ window.paytheory = {
     button,
     SURCHARGE,
     SERVICE_FEE,
-    INTERCHANGE
+    INTERCHANGE,
+    ALL,
+    NOT_CASH,
+    NOT_CARD,
+    NOT_ACH,
+    ONLY_CASH,
+    ONLY_CARD,
+    ONLY_ACH,
+    PAY,
+    BOOK,
+    DONATE
 }
 
 export default window.paytheory

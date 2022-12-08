@@ -49,13 +49,16 @@ export default async(inputParams) => {
 
     // Validate the input parameters
     const paymentParams = common.parseInputParams(paymentDetails)
-    let {amount, payorInfo, payTheoryData, metadata = {}, feeMode, confirmation = false} = paymentParams
+    let {amount, payorInfo, payTheoryData, metadata = {}, feeMode, confirmation = false, paymentName, callToAction, acceptedPaymentMethods } = paymentParams
     let removeErrorListener = () => {}
     if (onError) removeErrorListener = common.errorObserver(onError)
-    if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode, confirmation))  {
+    if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode, confirmation) ||
+        !valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName)) {
         removeErrorListener()
         return false
     }
+
+
     removeErrorListener()
 
     // Fetch the PT Token

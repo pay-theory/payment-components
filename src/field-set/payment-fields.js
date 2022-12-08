@@ -254,7 +254,7 @@ export default async(
 
     const handleInitialized = (amount, payorInfo, payTheoryData, metadata, feeMode, confirmation) => {
         // Validate the params
-        if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode, confirmation)) return false
+        if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode || fee_mode)) return false
 
         const data = { amount, payorInfo, payTheoryData, metadata, fee_mode: feeMode || fee_mode, confirmation }
         return handleInitMessage('pt-static:payment-detail', data)
