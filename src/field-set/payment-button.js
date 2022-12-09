@@ -51,6 +51,7 @@ export default async(inputParams) => {
     const paymentParams = common.parseInputParams(paymentDetails)
     let {amount, payorInfo, payTheoryData, metadata = {}, feeMode, paymentName, callToAction, acceptedPaymentMethods } = paymentParams
     let removeErrorListener = () => {}
+    // Putting error listener on the window object so that it can catch errors in the param validation
     if (onError) removeErrorListener = common.errorObserver(onError)
     if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode) ||
         !valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName)) {
@@ -70,6 +71,7 @@ export default async(inputParams) => {
         if (onReady) {
             onReady()
         }
+        // Remove the error listener because we added it to the button iFrame and do not want it to be called twice
         removeErrorListener()
         if (data && data?.sessionId) {
             common.setSession(data.sessionId)
