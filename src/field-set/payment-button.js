@@ -89,6 +89,9 @@ export default async(inputParams) => {
         const hostedCheckoutUrl = `${common.hostedCheckoutEndpoint()}/hosted?sessionId=${common.getSession()}`
         let hostedCheckout = PopupCenter(hostedCheckoutUrl, "PayTheory Checkout", 700, 1000)
         hostedCheckout.focus()
+        hostedCheckout.addEventListener("pt-checkout:loaded", () => {
+            hostedCheckout.postMessage("loaded", common.hostedCheckoutEndpoint())
+        })
 
         // Set checkout window to button element properties
         const buttonElement = document.getElementById(common.checkoutButtonField)
