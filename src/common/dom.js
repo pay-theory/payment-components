@@ -26,11 +26,12 @@ export const findZip = findField('billing-zip')
 
 export const addFrame = (
     container,
-    frameType = 'pay-theory-credit-card-tag-frame'
+    frameType = 'pay-theory-credit-card-tag-frame',
+    element
 ) => {
     const tagFrame = document.createElement(frameType)
     tagFrame.ready = true
-    tagFrame.setAttribute('id', frameType)
+    tagFrame.setAttribute('id', `${element}-tag-frame`)
     container.appendChild(tagFrame)
     return tagFrame
 }
@@ -43,7 +44,8 @@ const processContainer = (container, elements, processed, type, tagType) => {
             container,
             type === 'credit-card' ?
             `pay-theory-credit-card-tag-frame` :
-            `pay-theory-${tagType ? `${tagType}-` : ''}${type}-tag-frame`)
+            `pay-theory-${tagType ? `${tagType}-` : ''}${type}-tag-frame`,
+            elements[type])
         processed.push({ type, frame })
     }
     else {
