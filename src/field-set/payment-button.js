@@ -89,9 +89,6 @@ export default async(inputParams) => {
         const hostedCheckoutUrl = `${common.hostedCheckoutEndpoint()}/hosted?sessionId=${common.getSession()}`
         let hostedCheckout = PopupCenter(hostedCheckoutUrl, "PayTheory Checkout", 700, 1000)
         hostedCheckout.focus()
-        hostedCheckout.addEventListener("pt-checkout:loaded", () => {
-            hostedCheckout.postMessage("loaded", common.hostedCheckoutEndpoint())
-        })
 
         // Set checkout window to button element properties
         const buttonElement = document.getElementById(common.checkoutButtonField)
@@ -119,10 +116,10 @@ export default async(inputParams) => {
         overlayElement.token = encodeURI(encodedJson)
     }
 
-    // Adding logic to onCancel to handle hiding the overlay
-    const onCancelWrapper = () => {
-        if (onCancel) {
-            onCancel()
+    // Add logic to listener to handle hiding the overlay and closing the popup
+    const closeWindowWrapper = listener => () => {
+        if (listener) {
+            listener()
         }
         // Close the overlay
         const overlay = document.getElementById(common.payTheoryOverlay)
@@ -133,16 +130,20 @@ export default async(inputParams) => {
         buttonElement?.checkoutWindow?.close()
     }
 
+    // Adding logic to onSuccess to handle hiding the overlay
+    const onSuccessWrapper = () => {
+
+    }
+
 
     // Create the button element and add the listeners
     const tagFrame = document.createElement(common.checkoutButtonField)
     tagFrame.setAttribute('id', `${common.checkoutButtonField}-wrapper`)
-    tagFrame.onCancel = onCancelWrapper
     tagFrame.onClick = onClickWrapper
     tagFrame.onReady = onReadyWrapper
+    tagFrame.onCancel = closeWindowWrapper(onCancel)
+    tagFrame.onSuccess = closeWindowWrapper(onSuccess)
     if (onError) tagFrame.onError = onError
-    if (onSuccess) tagFrame.onSuccess = onSuccess
-
     // Append the button div to the wrapper div
     const buttonDiv = document.getElementById(common.checkoutButtonField)
     buttonDiv.appendChild(tagFrame)
