@@ -49,7 +49,7 @@ export default async(inputParams) => {
 
     // Validate the input parameters
     const paymentParams = common.parseInputParams(paymentDetails)
-    let {amount, payorInfo, payTheoryData, metadata = {}, feeMode, paymentName, callToAction, acceptedPaymentMethods } = paymentParams
+    let {amount, payorInfo = {}, payTheoryData, metadata = {}, feeMode, paymentName, callToAction, acceptedPaymentMethods } = paymentParams
     let removeErrorListener = () => {}
     // Putting error listener on the window object so that it can catch errors in the param validation
     if (onError) removeErrorListener = common.errorObserver(onError)
