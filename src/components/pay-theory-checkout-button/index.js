@@ -42,6 +42,7 @@ class PayTheoryCheckoutButton extends HTMLElement {
         this._clearSuccessListener()
         this._clearReadyListener()
         this._clearClickListener()
+        common.removeButtonSuccess()
     }
 
     // Only want to allow event listeners to be set from outside the class

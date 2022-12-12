@@ -6,6 +6,7 @@ export const ENVIRONMENT = 'pt-environment'
 export const STAGE = 'pt-stage'
 export const INITIALIZE = 'pt-initialize'
 export const SESSION = 'pt-session'
+export const BUTTON_SUCCESS = 'pt-button-success'
 export const defaultStyles = {
     default: {},
     success: {},
@@ -195,6 +196,16 @@ export const setSession = session => {
 export const removeSession = () => {
     return localStorage.removeItem(SESSION)
 }
+export const setButtonSuccess = () => {
+    return localStorage.setItem(BUTTON_SUCCESS, "true")
+}
+export const getButtonSuccess = () => {
+    return localStorage.getItem(BUTTON_SUCCESS)
+}
+export const removeButtonSuccess = () => {
+    return localStorage.removeItem(BUTTON_SUCCESS)
+}
+
 export const removeAll = (allowRetry) => {
     removeAutofill()
     removeTransactingElement()
