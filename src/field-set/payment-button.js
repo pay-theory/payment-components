@@ -89,6 +89,11 @@ export default async(inputParams) => {
         const hostedCheckoutUrl = `${common.hostedCheckoutEndpoint()}/hosted?sessionId=${common.getSession()}`
         let hostedCheckout = PopupCenter(hostedCheckoutUrl, "PayTheory Checkout", 700, 1000)
         hostedCheckout.focus()
+        hostedCheckout.addEventListener("beforeunload", () => {
+            // Close the overlay
+            const overlay = document.getElementById(common.payTheoryOverlay)
+            overlay?.remove()
+        })
 
         // Set checkout window to button element properties
         const buttonElement = document.getElementById(common.checkoutButtonField)
@@ -123,7 +128,7 @@ export default async(inputParams) => {
         }
         // Close the overlay
         const overlay = document.getElementById(common.payTheoryOverlay)
-        overlay.remove()
+        overlay?.remove()
 
         // Close the hosted checkout page
         const buttonElement = document.getElementById(common.checkoutButtonField)
