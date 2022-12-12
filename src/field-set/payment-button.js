@@ -72,22 +72,22 @@ export default async(inputParams) => {
 
     // Adding logic to onReady to receive the session data for redirecting to the hosted checkout page
     const onReadyWrapper = (data) => {
-        if (onReady) {
-            onReady()
-        }
         // Remove the error listener because we added it to the button iFrame and do not want it to be called twice
         removeErrorListener()
         removeHostedErrorListener()
         if (data && data?.sessionId) {
             common.setSession(data.sessionId)
         }
+
+        if (onReady) {
+            onReady()
+        }
     }
 
     // Adding logic to onClick to handle opening the page and showing the overlay
     const onClickWrapper = () => {
-        if (onClick) {
-            onClick()
-        }
+        // Remove on success if button is clicked again so that the cancel can clear the overlay
+        common.removeButtonSuccess()
 
         // Open the hosted checkout page
         const hostedCheckoutUrl = `${common.hostedCheckoutEndpoint()}/hosted?sessionId=${common.getSession()}`
@@ -118,6 +118,10 @@ export default async(inputParams) => {
         const json = JSON.stringify({origin: ptToken.origin})
         const encodedJson = window.btoa(json)
         overlayElement.token = encodeURI(encodedJson)
+
+        if (onClick) {
+            onClick()
+        }
     }
 
     const closeOverlay = () => {
@@ -136,21 +140,21 @@ export default async(inputParams) => {
     // Add logic to listener to handle hiding the overlay and closing the popup
     const onSuccessWrapper = message => {
         common.setButtonSuccess()
-        if (onSuccess) {
-            onSuccess(message)
-        }
         closeCheckout()
         closeOverlay()
+        if (onSuccess) {
+            onSuccess(message.data)
+        }
     }
 
-    const onCanceledWrapper = message => {
+    const onCanceledWrapper = () => {
         // Check for button success to ensure the window wasn't closed by the success message
         if(!common.getButtonSuccess()) {
-            if (onCancel) {
-                onCancel(message)
-            }
             closeCheckout()
             closeOverlay()
+            if (onCancel) {
+                onCancel()
+            }
         }
     }
 
