@@ -99,7 +99,7 @@ export default async(inputParams) => {
         let hostedCheckout = PopupCenter(hostedCheckoutUrl, "PayTheory Checkout", 700, 1000)
         hostedCheckout.focus()
         // Call the cancel function if the user closes the window
-        hostedCheckout.addEventListener("beforeunload", onCancelWrapper)
+        hostedCheckout.onbeforeunload = onCancelWrapper
 
         // Set checkout window to button element properties
         const buttonElement = document.getElementById(common.checkoutButtonField)
@@ -138,9 +138,10 @@ export default async(inputParams) => {
 
         // Close the hosted checkout page
         const buttonElement = document.getElementById(common.checkoutButtonField)
+        const checkoutWindow = buttonElement.checkoutWindow
         // Remove the cancel listener because we are closing the window
-        buttonElement?.checkoutWindow?.removeEventListener("beforeunload", onCancelWrapper)
-        buttonElement?.checkoutWindow?.close()
+        checkoutWindow.onbeforeunload = () => {}
+        checkoutWindow.close()
     }
 
 
