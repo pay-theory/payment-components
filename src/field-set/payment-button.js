@@ -130,11 +130,6 @@ export default async(inputParams) => {
         buttonElement?.checkoutWindow?.close()
     }
 
-    // Adding logic to onSuccess to handle hiding the overlay
-    const onSuccessWrapper = () => {
-
-    }
-
 
     // Create the button element and add the listeners
     const tagFrame = document.createElement(common.checkoutButtonField)
