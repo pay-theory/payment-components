@@ -210,5 +210,6 @@ export const removeAll = (allowRetry) => {
     removeAutofill()
     removeTransactingElement()
     removeSession()
+    removeButtonSuccess()
     if(allowRetry) removeInitialize()
 }
