@@ -122,9 +122,9 @@ export default async(inputParams) => {
     }
 
     // Add logic to listener to handle hiding the overlay and closing the popup
-    const closeWindowWrapper = listener => () => {
+    const closeWindowWrapper = listener => message => {
         if (listener) {
-            listener()
+            listener(message)
         }
         // Close the overlay
         const overlay = document.getElementById(common.payTheoryOverlay)
