@@ -98,6 +98,7 @@ export default async(inputParams) => {
         const hostedCheckoutUrl = `${common.hostedCheckoutEndpoint()}/hosted?sessionId=${common.getSession()}`
         let hostedCheckout = PopupCenter(hostedCheckoutUrl, "PayTheory Checkout", 700, 1000)
         hostedCheckout.focus()
+        // Call the cancel function if the user closes the window
         hostedCheckout.addEventListener("beforeunload", onCancelWrapper)
 
         // Set checkout window to button element properties
@@ -137,6 +138,7 @@ export default async(inputParams) => {
 
         // Close the hosted checkout page
         const buttonElement = document.getElementById(common.checkoutButtonField)
+        // Remove the cancel listener because we are closing the window
         buttonElement?.checkoutWindow?.removeEventListener("beforeunload", onCancelWrapper)
         buttonElement?.checkoutWindow?.close()
     }
