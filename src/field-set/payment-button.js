@@ -51,8 +51,12 @@ export default async(inputParams) => {
     const paymentParams = common.parseInputParams(paymentDetails)
     let {amount, payorInfo = {}, payTheoryData, metadata = {}, feeMode, paymentName, callToAction, acceptedPaymentMethods } = paymentParams
     let removeErrorListener = () => {}
-    // Putting error listener on the window object so that it can catch errors in the param validation
-    if (onError) removeErrorListener = common.errorObserver(onError)
+    let removeHostedErrorListener = () => {}
+    // Putting error listener on the window and hosted button so that it can catch errors while it readies the session
+    if (onError) {
+        removeErrorListener = common.errorObserver(onError)
+        removeHostedErrorListener = common.handleHostedFieldMessage(common.socketErrorTypeMessage, onError)
+    }
     if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode) ||
         !valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName)) {
         return false
@@ -73,17 +77,9 @@ export default async(inputParams) => {
         }
         // Remove the error listener because we added it to the button iFrame and do not want it to be called twice
         removeErrorListener()
+        removeHostedErrorListener()
         if (data && data?.sessionId) {
             common.setSession(data.sessionId)
-        }
-    }
-
-    const onCancelWrapper = () => {
-        // Close the overlay
-        const overlay = document.getElementById(common.payTheoryOverlay)
-        overlay?.remove()
-        if(onCancel) {
-            onCancel()
         }
     }
 
@@ -92,7 +88,6 @@ export default async(inputParams) => {
         if (onClick) {
             onClick()
         }
-
 
         // Open the hosted checkout page
         const hostedCheckoutUrl = `${common.hostedCheckoutEndpoint()}/hosted?sessionId=${common.getSession()}`
