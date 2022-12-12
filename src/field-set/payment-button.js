@@ -98,8 +98,6 @@ export default async(inputParams) => {
         const hostedCheckoutUrl = `${common.hostedCheckoutEndpoint()}/hosted?sessionId=${common.getSession()}`
         let hostedCheckout = PopupCenter(hostedCheckoutUrl, "PayTheory Checkout", 700, 1000)
         hostedCheckout.focus()
-        // Call the cancel function if the user closes the window
-        hostedCheckout.onbeforeunload = onCancelWrapper
 
         // Set checkout window to button element properties
         const buttonElement = document.getElementById(common.checkoutButtonField)
@@ -127,21 +125,38 @@ export default async(inputParams) => {
         overlayElement.token = encodeURI(encodedJson)
     }
 
-    // Add logic to listener to handle hiding the overlay and closing the popup
-    const onSuccessWrapper = message => {
-        if (onSuccess) {
-            onSuccess(message)
-        }
+    const closeOverlay = () => {
         // Close the overlay
         const overlay = document.getElementById(common.payTheoryOverlay)
         overlay?.remove()
+    }
 
+    const closeCheckout = () => {
         // Close the hosted checkout page
         const buttonElement = document.getElementById(common.checkoutButtonField)
         const checkoutWindow = buttonElement.checkoutWindow
-        // Remove the cancel listener because we are closing the window
-        checkoutWindow.onbeforeunload = () => {}
         checkoutWindow.close()
+    }
+
+    // Add logic to listener to handle hiding the overlay and closing the popup
+    const onSuccessWrapper = message => {
+        common.setButtonSuccess()
+        if (onSuccess) {
+            onSuccess(message)
+        }
+        closeCheckout()
+        closeOverlay()
+    }
+
+    const onCanceledWrapper = message => {
+        // Check for button success to ensure the window wasn't closed by the success message
+        if(!common.getButtonSuccess()) {
+            if (onCancel) {
+                onCancel(message)
+            }
+            closeCheckout()
+            closeOverlay()
+        }
     }
 
 
@@ -150,7 +165,7 @@ export default async(inputParams) => {
     tagFrame.setAttribute('id', `${common.checkoutButtonField}-wrapper`)
     tagFrame.onClick = onClickWrapper
     tagFrame.onReady = onReadyWrapper
-    // tagFrame.onCancel = closeWindowWrapper(onCancel)
+    tagFrame.onCancel = onCanceledWrapper
     tagFrame.onSuccess = onSuccessWrapper
     if (onError) tagFrame.onError = onError
     // Append the button div to the wrapper div
