@@ -82,5 +82,7 @@
 
 #pay-theory-checkout-button-iframe {
 	width: 100%;
-	height: 48px;
+	max-height: 55px;
+	min-height: 30px;
+	height: auto;
 }
