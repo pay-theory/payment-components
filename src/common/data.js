@@ -18,10 +18,11 @@ export const SERVICE_FEE = 'service_fee'
 
 export const defaultFeeMode = SURCHARGE
 
-// Call to action constants for the hosted checkout
+// Call to action constants for the hosted checkout and button
 export const PAY = 'PAY'
 export const BOOK = 'BOOK'
 export const DONATE = 'DONATE'
+export const CHECKOUT = 'CHECKOUT'
 
 export const CTA_TYPES = [PAY, BOOK, DONATE]
 
@@ -33,6 +34,12 @@ export const NOT_ACH = 'NOT_ACH'
 export const ONLY_CASH = 'ONLY_CASH'
 export const ONLY_CARD = 'ONLY_CARD'
 export const ONLY_ACH = 'ONLY_ACH'
+
+// Color constants for the button
+export const WHITE = 'white'
+export const BLACK = 'black'
+export const GREY = 'grey'
+export const PURPLE = 'purple'
 
 export const PAYMENT_METHOD_CONFIGS = [ALL, NOT_CASH, NOT_CARD, NOT_ACH, ONLY_CASH, ONLY_CARD, ONLY_ACH]
 
