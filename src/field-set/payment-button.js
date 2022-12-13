@@ -55,7 +55,9 @@ export default async(inputParams) => {
     // Putting error listener on the window and hosted button so that it can catch errors while it readies the session
     if (onError) {
         removeErrorListener = common.errorObserver(onError)
-        removeHostedErrorListener = common.handleHostedFieldMessage(common.socketErrorTypeMessage, onError)
+        removeHostedErrorListener = common.handleHostedFieldMessage(common.socketErrorTypeMessage, message => {
+            onError(message.error)
+        })
     }
     if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode) ||
         !valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName)) {
