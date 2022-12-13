@@ -178,7 +178,7 @@ export default async(inputParams) => {
     }
 
     //Add the token to the button component so that it can be used to open the button iframe
-    const json = JSON.stringify({token: ptToken['pt-token'], origin: ptToken.origin, style, paymentDetails})
+    const json = JSON.stringify({token: ptToken['pt-token'], origin: ptToken.origin, style, checkoutDetails})
     const encodedJson = window.btoa(json)
     tagFrame.token = encodeURI(encodedJson)
 }
