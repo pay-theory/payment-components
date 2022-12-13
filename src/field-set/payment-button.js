@@ -20,7 +20,7 @@ export default async(inputParams) => {
     const {
         apiKey,
         style,
-        paymentDetails,
+        checkoutDetails,
         onReady,
         onClick,
         onError,
@@ -48,7 +48,7 @@ export default async(inputParams) => {
     common.setStage(stage)
 
     // Validate the input parameters
-    const paymentParams = common.parseInputParams(paymentDetails)
+    const paymentParams = common.parseInputParams(checkoutDetails)
     let {amount, payorInfo = {}, payTheoryData, metadata = {}, feeMode, paymentName, callToAction, acceptedPaymentMethods } = paymentParams
     let removeErrorListener = () => {}
     let removeHostedErrorListener = () => {}
