@@ -6,7 +6,7 @@ import * as valid from './validation'
 export default async(inputParams) => {
     const {
         apiKey,
-        style,
+        size=128,
         checkoutDetails,
         onReady,
         onError,
@@ -85,7 +85,7 @@ export default async(inputParams) => {
     }
 
     //Add the token to the button component so that it can be used to open the button iframe
-    const json = JSON.stringify({token: ptToken['pt-token'], origin: ptToken.origin, style, checkoutDetails})
+    const json = JSON.stringify({token: ptToken['pt-token'], origin: ptToken.origin, size, checkoutDetails})
     const encodedJson = window.btoa(json)
     tagFrame.token = encodeURI(encodedJson)
 }
