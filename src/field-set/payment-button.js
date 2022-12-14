@@ -179,9 +179,7 @@ export default async(inputParams) => {
     tagFrame.setAttribute('id', `${common.checkoutButtonField}-wrapper`)
     tagFrame.onClick = onClickWrapper
     tagFrame.onReady = onReadyWrapper
-    // tagFrame.onCancel = onCanceledWrapper
     tagFrame.onSuccess = onSuccessWrapper
-    // tagFrame.onBarcode = onBarcodeWrapper
     if (onError) tagFrame.onError = onError
     // Append the button div to the wrapper div
     const buttonDiv = document.getElementById(common.checkoutButtonField)
