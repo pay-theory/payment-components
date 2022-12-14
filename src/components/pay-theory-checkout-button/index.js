@@ -112,6 +112,14 @@ class PayTheoryCheckoutButton extends HTMLElement {
     get checkoutWindow() {
         return this._checkoutWindow
     }
+
+    set closeInterval(interval) {
+        this._closeInterval = interval
+    }
+
+    get closeInterval() {
+        return this._closeInterval
+    }
 }
 
 window.customElements.define(common.checkoutButtonField, PayTheoryCheckoutButton);

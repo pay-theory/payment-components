@@ -102,6 +102,21 @@ export default async(inputParams) => {
         // Set checkout window to button element properties
         const buttonElement = document.getElementById(common.checkoutButtonField)
         buttonElement.checkoutWindow = hostedCheckout
+        buttonElement.closeInterval = setInterval(() => {
+            if (hostedCheckout.closed) {
+                // Clear the interval and remove the overlay
+                clearInterval(buttonElement.closeInterval)
+                buttonElement.closeInterval = null
+                closeOverlay()
+                // Check to see if a barcode response was sent back to tell which callback to call
+                const barcodeReceived = common.getButtonBarcode()
+                if(barcodeReceived) {
+                    if(onBarcode) onBarcode(json.parse(barcodeReceived))
+                } else {
+                    if(onCancel) onCancel()
+                }
+            }
+        }, 1000)
 
         // Create the overlay and add the properties it needs before showing it
         const overlayElement = document.createElement(common.payTheoryOverlay)
@@ -110,6 +125,8 @@ export default async(inputParams) => {
             hostedCheckout.close()
             overlayElement.remove()
             buttonElement.checkoutWindow = null
+            clearInterval(buttonElement.closeInterval)
+            buttonElement.closeInterval = null
             const barcodeReceived = common.getButtonBarcode()
             if (onCancel && !barcodeReceived) {
                 onCancel()
@@ -146,31 +163,35 @@ export default async(inputParams) => {
 
     // Add logic to listener to handle hiding the overlay and closing the popup
     const onSuccessWrapper = message => {
-        common.setButtonSuccess()
+        // Clear the close check interval
+        const buttonElement = document.getElementById(common.checkoutButtonField)
+        clearInterval(buttonElement.closeInterval)
+        buttonElement.closeInterval = null
         closeCheckout()
         closeOverlay()
         if (onSuccess) {
             onSuccess(message.data)
         }
+
     }
 
-    const onCanceledWrapper = () => {
-        // Check for button success to ensure the window wasn't closed by the success message
-        if(!common.getButtonSuccess()) {
-            closeCheckout()
-            closeOverlay()
-            if (onCancel) {
-                onCancel()
-            }
-        }
-    }
+    // const onCanceledWrapper = () => {
+    //     // Check for button success to ensure the window wasn't closed by the success message
+    //     if(!common.getButtonSuccess()) {
+    //         closeCheckout()
+    //         closeOverlay()
+    //         if (onCancel) {
+    //             onCancel()
+    //         }
+    //     }
+    // }
 
-    const onBarcodeWrapper = message => {
-        closeOverlay()
-        if (onBarcode) {
-            onBarcode(message.data)
-        }
-    }
+    // const onBarcodeWrapper = message => {
+    //     closeOverlay()
+    //     if (onBarcode) {
+    //         onBarcode(message.data)
+    //     }
+    // }
 
 
     // Create the button element and add the listeners
@@ -178,9 +199,9 @@ export default async(inputParams) => {
     tagFrame.setAttribute('id', `${common.checkoutButtonField}-wrapper`)
     tagFrame.onClick = onClickWrapper
     tagFrame.onReady = onReadyWrapper
-    tagFrame.onCancel = onCanceledWrapper
+    // tagFrame.onCancel = onCanceledWrapper
     tagFrame.onSuccess = onSuccessWrapper
-    tagFrame.onBarcode = onBarcodeWrapper
+    // tagFrame.onBarcode = onBarcodeWrapper
     if (onError) tagFrame.onError = onError
     // Append the button div to the wrapper div
     const buttonDiv = document.getElementById(common.checkoutButtonField)
