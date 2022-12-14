@@ -214,8 +214,8 @@ export const getButtonSuccess = () => {
 export const removeButtonSuccess = () => {
     return localStorage.removeItem(BUTTON_SUCCESS)
 }
-export const setButtonBarcode = () => {
-    return localStorage.setItem(BUTTON_BARCODE, "true")
+export const setButtonBarcode = (data) => {
+    return localStorage.setItem(BUTTON_BARCODE, data)
 }
 export const getButtonBarcode = () => {
     return localStorage.getItem(BUTTON_BARCODE)

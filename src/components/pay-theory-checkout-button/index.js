@@ -31,7 +31,10 @@ class PayTheoryCheckoutButton extends HTMLElement {
         this._clearErrorListener = common.handleCheckoutMessage(common.checkoutErrorTypeMessage, this._onError)
         this._clearSuccessListener = common.handleCheckoutMessage(common.checkoutCompleteTypeMessage, this._onSuccess)
         this._clearBarcodeCompleteListener = common.handleCheckoutMessage(common.checkoutBarcodeCompleteTypeMessage, this._onBarcode)
-        this._clearBarcodeReceivedListener = common.handleCheckoutMessage(common.checkoutBarcodeReceivedTypeMessage, common.setButtonBarcode)
+        this._clearBarcodeReceivedListener = common.handleCheckoutMessage(common.checkoutBarcodeReceivedTypeMessage, message => {
+            const data = JSON.stringify(message.data)
+            common.setButtonSuccess(data)
+        })
 
         // Creating the listeners from the hosted button page
         this._clearReadyListener = common.handleHostedFieldMessage(common.buttonReadyTypeMessage, this._onReady)
