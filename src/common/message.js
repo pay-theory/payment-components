@@ -107,6 +107,11 @@ export const overlayCancelTypeMessage = message => typeof message.type === 'stri
 // Message from the overlay when the user clicks the relaunch button
 export const overlayRelaunchTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-overlay:relaunch'
 
+// Message from the qr code when it is ready
+export const qrCodeReadyTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:qr-ready'
+
+// Message from the qr code when it is completes a successful transaction
+export const qrCodeCompleteTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:qr-checkout-success'
 
 
 export const postMessageToHostedField = (id, message) => {
