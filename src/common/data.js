@@ -82,6 +82,7 @@ export const cardPresentFields = {
 }
 
 export const checkoutButtonField = 'pay-theory-checkout-button'
+export const checkoutQRField = 'pay-theory-checkout-qr'
 export const payTheoryOverlay = 'pay-theory-overlay'
 
 export const achFieldTypes = [
