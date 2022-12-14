@@ -89,6 +89,16 @@ export default async(inputParams) => {
         }
     }
 
+    const cancelOrBarcode = () => {
+        // Check to see if a barcode response was sent back to tell which callback to call
+        const barcodeReceived = common.getButtonBarcode()
+        if(barcodeReceived) {
+            if(onBarcode) onBarcode(JSON.parse(barcodeReceived))
+        } else {
+            if(onCancel) onCancel()
+        }
+    }
+
     // Adding logic to onClick to handle opening the page and showing the overlay
     const onClickWrapper = () => {
         // Remove on success if button is clicked again so that the cancel can clear the overlay
@@ -108,13 +118,8 @@ export default async(inputParams) => {
                 clearInterval(buttonElement.closeInterval)
                 buttonElement.closeInterval = null
                 closeOverlay()
-                // Check to see if a barcode response was sent back to tell which callback to call
-                const barcodeReceived = common.getButtonBarcode()
-                if(barcodeReceived) {
-                    if(onBarcode) onBarcode(JSON.parse(barcodeReceived))
-                } else {
-                    if(onCancel) onCancel()
-                }
+                // Call to either trigger cancel or barcode callback
+                cancelOrBarcode()
             }
         }, 500)
 
@@ -127,10 +132,8 @@ export default async(inputParams) => {
             buttonElement.checkoutWindow = null
             clearInterval(buttonElement.closeInterval)
             buttonElement.closeInterval = null
-            const barcodeReceived = common.getButtonBarcode()
-            if (onCancel && !barcodeReceived) {
-                onCancel()
-            }
+            // Call to either trigger cancel or barcode callback
+            cancelOrBarcode()
         }
         overlayElement.onFocus = () => {
             hostedCheckout.focus()
