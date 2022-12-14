@@ -25,8 +25,8 @@ class PayTheoryCheckoutQR extends HTMLElement {
         super.connectedCallback && super.connectedCallback();
 
         // Creating the listeners from the hosted qr page
-        this._clearReadyListener = common.handleHostedFieldMessage(common.buttonReadyTypeMessage, this._onReady)
-        this._clearSuccessListener = common.handleHostedFieldMessage(common.checkoutCompleteTypeMessage, this._onSuccess)
+        this._clearReadyListener = common.handleHostedFieldMessage(common.qrCodeReadyTypeMessage, this._onReady)
+        this._clearSuccessListener = common.handleHostedFieldMessage(common.qrCodeCompleteTypeMessage, this._onSuccess)
     }
 
     disconnectedCallback() {
@@ -41,7 +41,7 @@ class PayTheoryCheckoutQR extends HTMLElement {
         this._onReady = readyFunc
         if(this._clearReadyListener) {
             this._clearReadyListener()
-            this._clearReadyListener = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, this._onReady)
+            this._clearReadyListener = common.handleHostedFieldMessage(common.qrCodeReadyTypeMessage, this._onReady)
         }
     }
 
@@ -49,7 +49,7 @@ class PayTheoryCheckoutQR extends HTMLElement {
         this._onSuccess = successFunc
         if(this._clearSuccessListener) {
             this._clearSuccessListener()
-            this._clearSuccessListener = common.handleCheckoutMessage(common.checkoutCompleteTypeMessage, this._onSuccess)
+            this._clearSuccessListener = common.handleHostedFieldMessage(common.qrCodeCompleteTypeMessage, this._onSuccess)
         }
     }
 
