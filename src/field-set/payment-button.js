@@ -111,7 +111,7 @@ export default async(inputParams) => {
                 // Check to see if a barcode response was sent back to tell which callback to call
                 const barcodeReceived = common.getButtonBarcode()
                 if(barcodeReceived) {
-                    if(onBarcode) onBarcode(json.parse(barcodeReceived))
+                    if(onBarcode) onBarcode(JSON.parse(barcodeReceived))
                 } else {
                     if(onCancel) onCancel()
                 }
@@ -172,27 +172,7 @@ export default async(inputParams) => {
         if (onSuccess) {
             onSuccess(message.data)
         }
-
     }
-
-    // const onCanceledWrapper = () => {
-    //     // Check for button success to ensure the window wasn't closed by the success message
-    //     if(!common.getButtonSuccess()) {
-    //         closeCheckout()
-    //         closeOverlay()
-    //         if (onCancel) {
-    //             onCancel()
-    //         }
-    //     }
-    // }
-
-    // const onBarcodeWrapper = message => {
-    //     closeOverlay()
-    //     if (onBarcode) {
-    //         onBarcode(message.data)
-    //     }
-    // }
-
 
     // Create the button element and add the listeners
     const tagFrame = document.createElement(common.checkoutButtonField)
