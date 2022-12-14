@@ -94,6 +94,7 @@ export default async(inputParams) => {
         const barcodeReceived = common.getButtonBarcode()
         if(barcodeReceived) {
             if(onBarcode) onBarcode(JSON.parse(barcodeReceived))
+            common.removeButtonBarcode()
         } else {
             if(onCancel) onCancel()
         }
