@@ -116,7 +116,7 @@ export default async(inputParams) => {
                     if(onCancel) onCancel()
                 }
             }
-        }, 1000)
+        }, 500)
 
         // Create the overlay and add the properties it needs before showing it
         const overlayElement = document.createElement(common.payTheoryOverlay)
