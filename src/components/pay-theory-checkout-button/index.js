@@ -10,6 +10,7 @@ class PayTheoryCheckoutButton extends HTMLElement {
         this._onClick = () => {}
         this._onError = () => {}
         this._onSuccess = () => {}
+        this._onBarcode = () => {}
     }
 
     defineButton() {
@@ -29,6 +30,8 @@ class PayTheoryCheckoutButton extends HTMLElement {
         this._clearCancelListener = common.handleCheckoutMessage(common.checkoutCancelTypeMessage, this._onCancel)
         this._clearErrorListener = common.handleCheckoutMessage(common.checkoutErrorTypeMessage, this._onError)
         this._clearSuccessListener = common.handleCheckoutMessage(common.checkoutCompleteTypeMessage, this._onSuccess)
+        this._clearBarcodeCompleteListener = common.handleCheckoutMessage(common.checkoutBarcodeCompleteTypeMessage, this._onBarcode)
+        this._clearBarcodeReceivedListener = common.handleCheckoutMessage(common.checkoutBarcodeReceivedTypeMessage, common.setButtonBarcode)
 
         // Creating the listeners from the hosted button page
         this._clearReadyListener = common.handleHostedFieldMessage(common.buttonReadyTypeMessage, this._onReady)
@@ -42,6 +45,8 @@ class PayTheoryCheckoutButton extends HTMLElement {
         this._clearSuccessListener()
         this._clearReadyListener()
         this._clearClickListener()
+        this._clearBarcodeReceivedListener()
+        this._clearBarcodeCompleteListener()
         common.removeButtonSuccess()
     }
 
@@ -84,6 +89,14 @@ class PayTheoryCheckoutButton extends HTMLElement {
         if(this._clearSuccessListener) {
             this._clearSuccessListener()
             this._clearSuccessListener = common.handleCheckoutMessage(common.checkoutCompleteTypeMessage, this._onSuccess)
+        }
+    }
+
+    set onBarcode(barcodeFunc) {
+        this._onBarcode = barcodeFunc
+        if(this._clearBarcodeCompleteListener) {
+            this._clearBarcodeCompleteListener()
+            this._clearBarcodeCompleteListener = common.handleCheckoutMessage(common.checkoutBarcodeReceivedTypeMessage, this._onBarcode)
         }
     }
 

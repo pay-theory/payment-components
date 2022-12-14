@@ -25,7 +25,8 @@ export default async(inputParams) => {
         onClick,
         onError,
         onCancel,
-        onSuccess
+        onSuccess,
+        onBarcode
     } = inputParams
 
     const keyParts = apiKey.split("-")
@@ -70,6 +71,8 @@ export default async(inputParams) => {
     window.addEventListener("beforeunload", () => {
         common.removeReady()
         common.removeSession()
+        common.removeButtonBarcode()
+        common.removeButtonSuccess()
     })
 
     // Adding logic to onReady to receive the session data for redirecting to the hosted checkout page
@@ -107,7 +110,8 @@ export default async(inputParams) => {
             hostedCheckout.close()
             overlayElement.remove()
             buttonElement.checkoutWindow = null
-            if (onCancel) {
+            const barcodeReceived = common.getButtonBarcode()
+            if (onCancel && !barcodeReceived) {
                 onCancel()
             }
         }
@@ -136,7 +140,8 @@ export default async(inputParams) => {
         // Close the hosted checkout page
         const buttonElement = document.getElementById(common.checkoutButtonField)
         const checkoutWindow = buttonElement.checkoutWindow
-        checkoutWindow.close()
+        checkoutWindow?.close()
+        buttonElement.checkoutWindow = null
     }
 
     // Add logic to listener to handle hiding the overlay and closing the popup
@@ -160,6 +165,13 @@ export default async(inputParams) => {
         }
     }
 
+    const onBarcodeWrapper = message => {
+        closeOverlay()
+        if (onBarcode) {
+            onBarcode(message.data)
+        }
+    }
+
 
     // Create the button element and add the listeners
     const tagFrame = document.createElement(common.checkoutButtonField)
@@ -168,6 +180,7 @@ export default async(inputParams) => {
     tagFrame.onReady = onReadyWrapper
     tagFrame.onCancel = onCanceledWrapper
     tagFrame.onSuccess = onSuccessWrapper
+    tagFrame.onBarcode = onBarcodeWrapper
     if (onError) tagFrame.onError = onError
     // Append the button div to the wrapper div
     const buttonDiv = document.getElementById(common.checkoutButtonField)
