@@ -95,6 +95,12 @@ export const checkoutErrorTypeMessage = message => typeof message.type === 'stri
 // Message sent from the checkout page when the payment is complete
 export const checkoutCompleteTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-checkout:complete'
 
+// Message sent from the checkout page when the barcode is received
+export const checkoutBarcodeReceivedTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-checkout:barcode-received'
+
+// Message sent from the checkout page when the barcode interaction is complete
+export const checkoutBarcodeCompleteTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-checkout:barcode-complete'
+
 // Message from the overlay when the user clicks the close button
 export const overlayCancelTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-overlay:cancel'
 

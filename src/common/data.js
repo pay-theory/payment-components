@@ -7,6 +7,8 @@ export const STAGE = 'pt-stage'
 export const INITIALIZE = 'pt-initialize'
 export const SESSION = 'pt-session'
 export const BUTTON_SUCCESS = 'pt-button-success'
+export const BUTTON_BARCODE = 'pt-button-barcode'
+
 export const defaultStyles = {
     default: {},
     success: {},
@@ -212,11 +214,21 @@ export const getButtonSuccess = () => {
 export const removeButtonSuccess = () => {
     return localStorage.removeItem(BUTTON_SUCCESS)
 }
+export const setButtonBarcode = () => {
+    return localStorage.setItem(BUTTON_BARCODE, "true")
+}
+export const getButtonBarcode = () => {
+    return localStorage.getItem(BUTTON_BARCODE)
+}
+export const removeButtonBarcode = () => {
+    return localStorage.removeItem(BUTTON_BARCODE)
+}
 
 export const removeAll = (allowRetry) => {
     removeAutofill()
     removeTransactingElement()
     removeSession()
     removeButtonSuccess()
+    removeButtonBarcode()
     if(allowRetry) removeInitialize()
 }
