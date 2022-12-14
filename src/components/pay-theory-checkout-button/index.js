@@ -45,6 +45,9 @@ class PayTheoryCheckoutButton extends HTMLElement {
         this._clearClickListener()
         this._clearBarcodeReceivedListener()
         common.removeButtonSuccess()
+        if(this._closeInterval) {
+            clearInterval(this._closeInterval)
+        }
     }
 
     // Only want to allow event listeners to be set from outside the class
