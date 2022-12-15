@@ -344,6 +344,14 @@ const validTransactionParams = (amount, payorInfo, payTheoryData, metadata, feeM
     return isValidFeeAmount(payTheoryData.fee);
 }
 
+const validQRSize = (size) => {
+    if (!validate(size, 'number')) {
+        message.handleError('INVALID_PARAM: size must be a number')
+        return false
+    }
+    return true
+}
+
 export {
     checkCreateParams,
     hasValidCard,
@@ -367,5 +375,6 @@ export {
     isValidInvoiceAndRecurringId,
     isValidFeeAmount,
     validTransactionParams,
-    validateHostedCheckoutParams
+    validateHostedCheckoutParams,
+    validQRSize
 }

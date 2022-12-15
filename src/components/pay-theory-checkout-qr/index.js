@@ -18,6 +18,10 @@ class PayTheoryCheckoutQR extends HTMLElement {
         qrFrame.setAttribute('frameBorder', '0')
         qrFrame.setAttribute('name', common.checkoutQRField)
         qrFrame.setAttribute('id', `${common.checkoutQRField}-iframe`)
+        if(this._size) {
+            qrFrame.height = `${this._size}px`
+            qrFrame.width = `${this._size}px`
+        }
         this.append(qrFrame)
     }
 
@@ -56,6 +60,15 @@ class PayTheoryCheckoutQR extends HTMLElement {
     set token(urlToken) {
         this._token = urlToken
         this.defineQR()
+    }
+
+    set size(passedSize) {
+        this._size = passedSize
+        const iframe = document.getElementById(`${common.checkoutQRField}-iframe`)
+        if(iframe) {
+            iframe.height = `${this._size}px`
+            iframe.width = `${this._size}px`
+        }
     }
 }
 
