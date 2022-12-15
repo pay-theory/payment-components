@@ -46,9 +46,12 @@ export default async(inputParams) => {
         })
     }
     if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode) ||
-        !valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName)) {
+        !valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName) ||
+        !valid.validQRSize(size)) {
         return false
     }
+
+    const finalSize = size < 128 ? 128 : size > 300 ? 300 : size
 
     // Fetch the PT Token
     let ptToken = await common.fetchPtToken(apiKey)
@@ -73,6 +76,7 @@ export default async(inputParams) => {
     // Create the button element and add the listeners
     const tagFrame = document.createElement(common.checkoutQRField)
     tagFrame.setAttribute('id', `${common.checkoutQRField}-wrapper`)
+    tagFrame.size = finalSize
     tagFrame.onReady = onReadyWrapper
     if (onSuccess) tagFrame.onSuccess = onSuccess
     if (onError) tagFrame.onError = onError
@@ -85,7 +89,7 @@ export default async(inputParams) => {
     }
 
     //Add the token to the button component so that it can be used to open the button iframe
-    const json = JSON.stringify({token: ptToken['pt-token'], origin: ptToken.origin, size, checkoutDetails})
+    const json = JSON.stringify({token: ptToken['pt-token'], origin: ptToken.origin, size: finalSize, checkoutDetails})
     const encodedJson = window.btoa(json)
     tagFrame.token = encodeURI(encodedJson)
 }
