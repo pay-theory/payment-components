@@ -78,7 +78,7 @@ export default async(inputParams) => {
     tagFrame.setAttribute('id', `${common.checkoutQRField}-wrapper`)
     tagFrame.size = finalSize
     tagFrame.onReady = onReadyWrapper
-    if (onSuccess) tagFrame.onSuccess = onSuccess
+    if (onSuccess) tagFrame.onSuccess = message => onSuccess(message.data)
     if (onError) tagFrame.onError = onError
     // Append the button div to the wrapper div
     const qrDiv = document.getElementById(common.checkoutQRField)
