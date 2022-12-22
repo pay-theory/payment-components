@@ -310,6 +310,48 @@ const isValidFeeAmount = (fee) => {
     return true
 }
 
+const validateHostedCheckoutParams = (callToAction, acceptedPaymentMethods, paymentName) => {
+    if (callToAction && !common.CTA_TYPES.includes(callToAction)) {
+        message.handleError(`INVALID_PARAM: callToAction must be one of ${common.CTA_TYPES.join(', ')}`)
+        return false
+    }
+    if (acceptedPaymentMethods && !common.PAYMENT_METHOD_CONFIGS.includes(acceptedPaymentMethods)) {
+        message.handleError(`INVALID_PARAM: acceptedPaymentMethods must be one of ${common.PAYMENT_METHOD_CONFIGS.join(', ')}`)
+        return false
+    }
+    if (!validate(paymentName, 'string')) {
+        message.handleError('INVALID_PARAM: paymentName must be a string')
+        return false
+    }
+    return true
+}
+
+// Validate the details passed in for a transaction or redirect button
+const validTransactionParams = (amount, payorInfo, payTheoryData, metadata, feeMode) => {
+    //validate the input param types
+    if(!isvalidTransactParams(amount, payorInfo, metadata)) return false
+    //validate the amount
+    if(!isValidAmount(amount)) return false
+    //validate the payorInfo
+    if(!isValidPayorInfo(payorInfo)) return false
+    // validate the payorId
+    if(!isValidPayorDetails(payorInfo, payTheoryData.payorId)) return false
+    // validate the fee mode
+    if(!isValidFeeMode(feeMode)) return false
+    // validate the invoice and recurring id
+    if(!isValidInvoiceAndRecurringId(payTheoryData)) return false
+    // validate the fee
+    return isValidFeeAmount(payTheoryData.fee);
+}
+
+const validQRSize = (size) => {
+    if (!validate(size, 'number')) {
+        message.handleError('INVALID_PARAM: size must be a number')
+        return false
+    }
+    return true
+}
+
 export {
     checkCreateParams,
     hasValidCard,
@@ -331,5 +373,8 @@ export {
     isValidPayorDetails,
     isValidFeeMode,
     isValidInvoiceAndRecurringId,
-    isValidFeeAmount
+    isValidFeeAmount,
+    validTransactionParams,
+    validateHostedCheckoutParams,
+    validQRSize
 }
