@@ -85,23 +85,13 @@ export default async(
 
     let isReady = false
 
-    const fetchPtToken = async() => {
-        for(let i = 0; i < 5; i++) {
-            let token = await common.getData(`${common.transactionEndpoint()}`, apiKey)
-            if (token['pt-token']) {
-                return token
-            }
-        }
-        return {}
-    }
-
     let ptToken = {}
-    ptToken.token = await fetchPtToken()
+    ptToken.token = await common.fetchPtToken(apiKey)
     ptToken.isUsed = false
 
     const resetHostToken = async() => {
         let transacting = common.getTransactingElement()
-        let token = await fetchPtToken()
+        let token = await common.fetchPtToken(apiKey)
         common.postMessageToHostedField(common.hostedFieldMap[transacting], {
             type: `pt-static:reset_host`,
             token: token['pt-token']
@@ -114,7 +104,7 @@ export default async(
 
     window.addEventListener("beforeunload", () => { common.removeReady() })
 
-    const mountProcessedElements = async(processedArray, placeholders) => {
+    const mountProcessedElements = async(processedArray, placeholders, session) => {
         for (const processed of processedArray) {
             if (processed.elements.length > 0) {
                 let error = processed.errorCheck(processed.elements, transacting[processed.type])
@@ -123,7 +113,7 @@ export default async(
                 }
                 let token;
                 if (ptToken.isUsed) {
-                    token = await fetchPtToken()
+                    token = await common.fetchPtToken(apiKey)
                 }
                 else {
                     ptToken.isUsed = true
@@ -134,7 +124,7 @@ export default async(
                     if(!token['pt-token']) {
                         return common.handleError(`NO_TOKEN: No pt-token found`)
                     }
-                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles, apiKey, placeholders})
+                    const json = JSON.stringify({ token: token['pt-token'], origin: token.origin, styles, apiKey, placeholders, session})
                     const encodedJson = window.btoa(json)
                     element.frame.token = encodeURI(encodedJson)
                 })
@@ -145,7 +135,7 @@ export default async(
     const mount = async(props = {}) => {
         common.removeInitialize()
 
-        let {placeholders, elements = defaultElementIds} = props
+        let {placeholders, elements = defaultElementIds, session} = props
 
         const achElements = {
             'account-number': elements['account-number'],
@@ -207,7 +197,7 @@ export default async(
             processedElements.card.length === 0 &&
             processedElements.cash.length === 0 &&
             processedElements.cardPresent.length === 0) {
-            return common.handleError('NO_FIELDS: There are no PayTheory fields')
+            return common.handleError('NO_FIELDS: There are no PayTheory fields on the DOM to mount')
         }
 
         let processed = [{
@@ -229,7 +219,7 @@ export default async(
             errorCheck: valid.findCardPresentError
         }]
 
-        await mountProcessedElements(processed, placeholders)
+        await mountProcessedElements(processed, placeholders, session)
 
         //returns a function that removes any event handlers that were put on the window during the mount function
         return () => {
@@ -263,20 +253,8 @@ export default async(
     }
 
     const handleInitialized = (amount, payorInfo, payTheoryData, metadata, feeMode, confirmation) => {
-        //validate the input param types
-        if(!valid.isvalidTransactParams(amount, payorInfo, metadata)) return false
-        //validate the amount
-        if(!valid.isValidAmount(amount)) return false
-        //validate the payorInfo
-        if(!valid.isValidPayorInfo(payorInfo)) return false
-        // validate the payorId
-        if(!valid.isValidPayorDetails(payorInfo, payTheoryData.payorId)) return false
-        // validate the fee mode
-        if(!valid.isValidFeeMode(feeMode || fee_mode)) return false
-        // validate the invoice and recurring id
-        if(!valid.isValidInvoiceAndRecurringId(payTheoryData)) return false
-        // validate the fee
-        if(!valid.isValidFeeAmount(payTheoryData.fee)) return false
+        // Validate the params
+        if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode || fee_mode)) return false
 
         const data = { amount, payorInfo, payTheoryData, metadata, fee_mode: feeMode || fee_mode, confirmation }
         return handleInitMessage('pt-static:payment-detail', data)

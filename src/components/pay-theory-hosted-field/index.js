@@ -49,22 +49,11 @@ class PayTheoryHostedField extends HTMLElement {
     container.appendChild(element)
   }
 
-  isValidFrame(invalidElement) {
-    return typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
-  }
-
-  findEventMessage(event) {
-    return typeof event.data === 'object' ? event.data : { type: 'unknown' }
-  }
-
-
   connectedCallback() {
     this.innerHTML = DOMPurify.sanitize(`<div class="framed">
             <div id="pay-theory-${this.field}-hosted-field-container" class="pay-theory-field">
             </div>
         </div>`)
-
-
   }
 
   adoptedCallback() {
@@ -75,10 +64,8 @@ class PayTheoryHostedField extends HTMLElement {
 
   }
 
-  attributeChangedCallback(attrName, oldValue, newValue) {
-    if (newValue !== oldValue) {
-      this[attrName.toString()] = this.hasAttribute(attrName)
-    }
+  isValidFrame(invalidElement) {
+    return typeof invalidElement === 'undefined' ? invalidElement : !invalidElement
   }
 
   get connected() {
@@ -105,14 +92,6 @@ class PayTheoryHostedField extends HTMLElement {
     this.fielded = _fielded
   }
 
-  get loaded() {
-    return this.isLoaded
-  }
-
-  set loaded(_isLoaded) {
-    this.isLoaded = _isLoaded
-  }
-
   get token() {
     return this.tokened
   }
@@ -120,15 +99,6 @@ class PayTheoryHostedField extends HTMLElement {
   set token(_tokened) {
     this.tokened = _tokened
     this.defineFields()
-  }
-
-
-  get env() {
-    return typeof this.environment === 'undefined' ? common.defaultEnvironment : this.environment
-  }
-
-  set env(_env) {
-    this.environment = _env
   }
 
   get ready() {
