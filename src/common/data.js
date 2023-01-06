@@ -5,6 +5,10 @@ export const TRANSACTING = 'pt-transacting'
 export const ENVIRONMENT = 'pt-environment'
 export const STAGE = 'pt-stage'
 export const INITIALIZE = 'pt-initialize'
+export const SESSION = 'pt-session'
+export const BUTTON_SUCCESS = 'pt-button-success'
+export const BUTTON_BARCODE = 'pt-button-barcode'
+
 export const defaultStyles = {
     default: {},
     success: {},
@@ -15,6 +19,32 @@ export const INTERCHANGE = 'interchange'
 export const SERVICE_FEE = 'service_fee'
 
 export const defaultFeeMode = SURCHARGE
+
+// Call to action constants for the hosted checkout and button
+export const PAY = 'PAY'
+export const BOOK = 'BOOK'
+export const DONATE = 'DONATE'
+export const CHECKOUT = 'CHECKOUT'
+
+export const CTA_TYPES = [PAY, BOOK, DONATE]
+
+// Available Payment Method Constants for the hosted checkout
+export const ALL = 'ALL'
+export const NOT_CASH = 'NOT_CASH'
+export const NOT_CARD = 'NOT_CARD'
+export const NOT_ACH = 'NOT_ACH'
+export const ONLY_CASH = 'ONLY_CASH'
+export const ONLY_CARD = 'ONLY_CARD'
+export const ONLY_ACH = 'ONLY_ACH'
+
+// Color constants for the button
+export const WHITE = 'white'
+export const BLACK = 'black'
+export const GREY = 'grey'
+export const PURPLE = 'purple'
+
+export const PAYMENT_METHOD_CONFIGS = [ALL, NOT_CASH, NOT_CARD, NOT_ACH, ONLY_CASH, ONLY_CARD, ONLY_ACH]
+
 
 export const initialState = {
     isDirty: false,
@@ -50,6 +80,10 @@ export const cashFields = {
 export const cardPresentFields = {
     CARD_PRESENT: 'pay-theory-card-present'
 }
+
+export const checkoutButtonField = 'pay-theory-checkout-button'
+export const checkoutQRField = 'pay-theory-checkout-qr'
+export const payTheoryOverlay = 'pay-theory-overlay'
 
 export const achFieldTypes = [
     'account-name',
@@ -142,7 +176,6 @@ export const setEnvironment = environment => {
 export const getStage = () => {
     return localStorage.getItem(STAGE)
 }
-
 export const setStage = stage => {
     return localStorage.setItem(STAGE, stage)
 }
@@ -155,21 +188,48 @@ export const setReady = ready => {
 export const removeReady = () => {
     return localStorage.removeItem(READY)
 }
-
 export const getInitialize = () => {
     return localStorage.getItem(INITIALIZE)
 }
-
 export const setInitialize = init => {
     return localStorage.setItem(INITIALIZE, init)
 }
-
 export const removeInitialize = () => {
     return localStorage.removeItem(INITIALIZE)
+}
+export const getSession = () => {
+    return localStorage.getItem(SESSION)
+}
+export const setSession = session => {
+    return localStorage.setItem(SESSION, session)
+}
+export const removeSession = () => {
+    return localStorage.removeItem(SESSION)
+}
+export const setButtonSuccess = () => {
+    return localStorage.setItem(BUTTON_SUCCESS, "true")
+}
+export const getButtonSuccess = () => {
+    return localStorage.getItem(BUTTON_SUCCESS)
+}
+export const removeButtonSuccess = () => {
+    return localStorage.removeItem(BUTTON_SUCCESS)
+}
+export const setButtonBarcode = (data) => {
+    return localStorage.setItem(BUTTON_BARCODE, data)
+}
+export const getButtonBarcode = () => {
+    return localStorage.getItem(BUTTON_BARCODE)
+}
+export const removeButtonBarcode = () => {
+    return localStorage.removeItem(BUTTON_BARCODE)
 }
 
 export const removeAll = (allowRetry) => {
     removeAutofill()
     removeTransactingElement()
+    removeSession()
+    removeButtonSuccess()
+    removeButtonBarcode()
     if(allowRetry) removeInitialize()
 }

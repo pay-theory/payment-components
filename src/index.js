@@ -17,11 +17,16 @@ import './components/ach-routing-number'
 import './components/cash-contact'
 import './components/cash-name'
 import './components/card-present'
+import './components/pay-theory-overlay'
+import './components/pay-theory-checkout-button'
+import './components/pay-theory-checkout-qr'
 import 'regenerator-runtime'
 import './style.css'
 
 import createPaymentFieldsLegacy from './field-set/payment-fields'
-import { SURCHARGE, SERVICE_FEE, INTERCHANGE } from './common/data'
+import { SURCHARGE, SERVICE_FEE, INTERCHANGE, PAY, BOOK, DONATE, CHECKOUT, WHITE, GREY, BLACK, PURPLE, ALL, NOT_CASH, NOT_CARD, NOT_ACH, ONLY_CASH, ONLY_CARD, ONLY_ACH } from './common/data'
+import button from './field-set/payment-button'
+import qrCode from './field-set/payment-qr'
 
 const create = (apiKey, styles, metadata, feeMode) => createPaymentFieldsLegacy(apiKey, '', styles, metadata, feeMode)
 const createPaymentFields = (apiKey, clientId, styles, metadata) => {
@@ -32,9 +37,26 @@ const createPaymentFields = (apiKey, clientId, styles, metadata) => {
 window.paytheory = {
     createPaymentFields,
     create,
+    button,
+    qrCode,
     SURCHARGE,
     SERVICE_FEE,
-    INTERCHANGE
+    INTERCHANGE,
+    ALL,
+    NOT_CASH,
+    NOT_CARD,
+    NOT_ACH,
+    ONLY_CASH,
+    ONLY_CARD,
+    ONLY_ACH,
+    PAY,
+    BOOK,
+    DONATE,
+    CHECKOUT,
+    WHITE,
+    GREY,
+    BLACK,
+    PURPLE
 }
 
 export default window.paytheory
