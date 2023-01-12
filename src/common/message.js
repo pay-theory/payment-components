@@ -3,7 +3,7 @@ import {hostedCheckoutEndpoint, hostedFieldsEndpoint} from './network'
 const windowListenerHandler = (validTarget, handleMessage, event) => {
     // If payTheory is not set to true on the event then ignore as it is not from one of our listeners
     if (!event.payTheory) return
-    Z
+
     let message = event.data
     if (typeof message !== "object") {
         try {
