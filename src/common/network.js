@@ -1,6 +1,6 @@
 /* global navigator */
 import * as data from './data'
-import * as message from './message'
+import {postMessageToHostedField} from './message'
 import common from "./index";
 
 export const getData = async(url, apiKey) => {
@@ -174,7 +174,7 @@ const sendTransactingMessage = () => {
     types.forEach(field => {
         let iframe = document.getElementsByName(`${field}-iframe`)[0]
         if (iframe) {
-            message.postMessageToHostedField(`${field}-iframe`, {
+            postMessageToHostedField(`${field}-iframe`, {
                 type: "pt-static:transact",
                 element: field
             })
@@ -189,7 +189,7 @@ const handleAttestation = async challengeOptions => {
         const transacting = data.getTransactingElement()
         const response = { clientDataJSON: attested.response.clientDataJSON, attestationObject: attested.response.attestationObject }
         const attestation = { response, id: attested.id, type: attested.type }
-        message.postMessageToHostedField(data.hostedFieldMap[transacting], {
+        postMessageToHostedField(data.hostedFieldMap[transacting], {
             type: `pt-static:attestation`,
             attestation
         })
