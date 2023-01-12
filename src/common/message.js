@@ -1,20 +1,7 @@
-import {hostedCheckoutEndpoint, hostedFieldsEndpoint} from './network';
+import {hostedCheckoutEndpoint, hostedFieldsEndpoint} from './network'
 
 const windowListenerHandler = (validTarget, handleMessage, event) => {
-    // If payTheory is not set to true on the event then ignore as it is not from one of our listeners
-    if (!event.payTheory) return
-
-    let message = event.data
-    if (typeof message !== "object") {
-        try {
-            // Parse the message as JSON.
-            // All PT messages have either an object or a stringified object as the data
-            message = JSON.parse(message)
-        } catch (e) {
-            // Do nothing
-            return
-        }
-    }
+    let message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
     if (validTarget(message)) {
         handleMessage(message)
     }
@@ -23,7 +10,6 @@ const windowListenerHandler = (validTarget, handleMessage, event) => {
 const generateWindowListener = (validTarget, handleMessage) => {
     return event => {
         if ([window.location.origin].includes(event.origin)) {
-            event.payTheory = true
             windowListenerHandler(validTarget, handleMessage, event)
         }
     }
@@ -32,7 +18,6 @@ const generateWindowListener = (validTarget, handleMessage) => {
 const generateiFrameWindowListener = (validTarget, handleMessage) => {
     return event => {
         if (event.origin === hostedFieldsEndpoint()) {
-            event.payTheory = true
             windowListenerHandler(validTarget, handleMessage, event)
         }
     }
@@ -41,7 +26,6 @@ const generateiFrameWindowListener = (validTarget, handleMessage) => {
 const generateCheckoutWindowListener = (validTarget, handleMessage) => {
     return event => {
         if (event.origin === hostedCheckoutEndpoint()) {
-            event.payTheory = true
             windowListenerHandler(validTarget, handleMessage, event)
         }
     }
