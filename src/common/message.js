@@ -1,7 +1,20 @@
-import { hostedFieldsEndpoint } from './network'
+import {hostedCheckoutEndpoint, hostedFieldsEndpoint} from './network'
 
 const windowListenerHandler = (validTarget, handleMessage, event) => {
-    const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+    // If payTheory is not set to true on the event then ignore as it is not from one of our listeners
+    if (!event.payTheory) return
+
+    let message = event.data
+    if (typeof message !== "object") {
+        try {
+            // Parse the message as JSON.
+            // All PT messages have either an object or a stringified object as the data
+            message = JSON.parse(message)
+        } catch (e) {
+            // Do nothing
+            return
+        }
+    }
     if (validTarget(message)) {
         handleMessage(message)
     }
@@ -10,6 +23,7 @@ const windowListenerHandler = (validTarget, handleMessage, event) => {
 const generateWindowListener = (validTarget, handleMessage) => {
     return event => {
         if ([window.location.origin].includes(event.origin)) {
+            event.payTheory = true
             windowListenerHandler(validTarget, handleMessage, event)
         }
     }
@@ -18,6 +32,16 @@ const generateWindowListener = (validTarget, handleMessage) => {
 const generateiFrameWindowListener = (validTarget, handleMessage) => {
     return event => {
         if (event.origin === hostedFieldsEndpoint()) {
+            event.payTheory = true
+            windowListenerHandler(validTarget, handleMessage, event)
+        }
+    }
+}
+
+const generateCheckoutWindowListener = (validTarget, handleMessage) => {
+    return event => {
+        if (event.origin === hostedCheckoutEndpoint()) {
+            event.payTheory = true
             windowListenerHandler(validTarget, handleMessage, event)
         }
     }
@@ -31,6 +55,12 @@ export const handleMessage = (validTarget, handleMessage) => {
 
 export const handleHostedFieldMessage = (validTarget, handleMessage) => {
     const func = generateiFrameWindowListener(validTarget, handleMessage)
+    window.addEventListener('message', func)
+    return () => { window.removeEventListener('message', func) }
+}
+
+export const handleCheckoutMessage = (validTarget, handleMessage) => {
+    const func = generateCheckoutWindowListener(validTarget, handleMessage)
     window.addEventListener('message', func)
     return () => { window.removeEventListener('message', func) }
 }
@@ -65,6 +95,40 @@ export const cashCompleteTypeMessage = message => typeof message.type === 'strin
 
 //Message sent from hosted-fields with data when a card present device is activated or response is received from processor
 export const cardPresentTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:card-present'
+
+// Message sent from hosted-fields when a hosted button is clicked
+export const buttonClickTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:button-click'
+
+// Message sent from hosted-fields when a hosted button is clicked
+export const buttonReadyTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:button-ready'
+
+// Message sent from checkout page when payment is cancelled
+export const checkoutCancelTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-checkout:cancel'
+
+// Message sent from the checkout page when there is an error
+export const checkoutErrorTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-checkout:error'
+
+// Message sent from the checkout page when the payment is complete
+export const checkoutCompleteTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-checkout:complete'
+
+// Message sent from the checkout page when the barcode is received
+export const checkoutBarcodeReceivedTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-checkout:barcode-received'
+
+// Message sent from the checkout page when the barcode interaction is complete
+export const checkoutBarcodeCompleteTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-checkout:barcode-complete'
+
+// Message from the overlay when the user clicks the close button
+export const overlayCancelTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-overlay:cancel'
+
+// Message from the overlay when the user clicks the relaunch button
+export const overlayRelaunchTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-overlay:relaunch'
+
+// Message from the qr code when it is ready
+export const qrCodeReadyTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:qr-ready'
+
+// Message from the qr code when it is completes a successful transaction
+export const qrCodeCompleteTypeMessage = message => typeof message.type === 'string' && message.type === 'pt-static:qr-checkout-success'
+
 
 export const postMessageToHostedField = (id, message) => {
     return document.getElementsByName(id) ? 
