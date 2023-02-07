@@ -256,7 +256,9 @@ export default async(
         // Validate the params
         if (!valid.validTransactionParams(amount, payorInfo, payTheoryData, metadata, feeMode || fee_mode)) return false
 
-        const data = { amount, payorInfo, payTheoryData, metadata, fee_mode: feeMode || fee_mode, confirmation }
+        const formattedPayor = valid.formatPayorObject(payorInfo)
+
+        const data = { amount, payorInfo: formattedPayor, payTheoryData, metadata, fee_mode: feeMode || fee_mode, confirmation }
         return handleInitMessage('pt-static:payment-detail', data)
     }
 
@@ -276,7 +278,9 @@ export default async(
         // validate the payorId
         if(!valid.isValidPayorDetails(payorInfo, payorId)) return false
 
-        const data = { payorInfo, metadata, payorId }
+        const formattedPayor = valid.formatPayorObject(payorInfo)
+
+        const data = { payorInfo: formattedPayor, metadata, payorId }
         return handleInitMessage('pt-static:tokenize-detail', data)
     }
 
@@ -302,6 +306,9 @@ export default async(
         if(!valid.isValidFeeAmount(fee)) return false
 
         input.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
+        //format the payorInfo
+        input.payorInfo = valid.formatPayorObject(payorInfo)
 
         let iframe = document.getElementsByName(`card-present-iframe`)[0]
         if (iframe) {
