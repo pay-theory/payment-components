@@ -109,7 +109,7 @@ export default async(
             if (processed.elements.length > 0) {
                 let error = processed.errorCheck(processed.elements, transacting[processed.type])
                 if (error) {
-                    common.handleError(`FIELD_ERROR: ${error}`);
+                    return common.handleError(`FIELD_ERROR: ${error}`);
                 }
                 let token;
                 if (ptToken.isUsed) {
