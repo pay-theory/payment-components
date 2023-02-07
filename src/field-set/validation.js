@@ -191,6 +191,18 @@ const findCardPresentError = (processedElements) => {
     return error
 }
 
+const validateEmail = email => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    return re.test(String(email).toLowerCase())
+}
+
+const validatePhone = phone => {
+    // strip out all non-numeric characters
+    const stripped = phone.replace(/\D/g, '')
+    // check if the number is between 5 and 15 digits
+    return stripped.length >= 5 && stripped.length <= 15
+}
+
 const isValidPayorInfo = (payorInfo) => {
     if (!validate(payorInfo, 'object')) {
         message.handleError('INVALID_PARAM: payor_info is not an object')
@@ -206,7 +218,51 @@ const isValidPayorInfo = (payorInfo) => {
             }
         }
     }
+    if(payorInfo.email) {
+        if (!validate(payorInfo.email, 'string')) {
+            message.handleError('INVALID_PARAM: payor_info.email is not a string')
+            return false
+        }
+        if (!validateEmail(payorInfo.email)) {
+            message.handleError('INVALID_PARAM: payor_info.email is not a valid email')
+            return false
+        }
+    }
+    if(payorInfo.phone) {
+        if (!validate(payorInfo.phone, 'string')) {
+            message.handleError('INVALID_PARAM: payor_info.phone is not a string')
+            return false
+        }
+        if (!validatePhone(payorInfo.phone)) {
+            message.handleError('INVALID_PARAM: payor_info.phone is not a valid phone number')
+            return false
+        }
+    }
     return true
+}
+
+const nullifyEmptyStrings = (params) => {
+    let newParams = {...params};
+    Object.keys(newParams).forEach(key => {
+        if (newParams[key] === "") {
+            newParams[key] = null;
+        } else if (typeof newParams[key] === "object") {
+            nullifyEmptyStrings(newParams[key]);
+        }
+    });
+    return newParams;
+}
+
+const formatPayorObject = (payorInfo) => {
+    // Make a deep copy of the payorInfo object
+    let payorCopy = JSON.parse(JSON.stringify(payorInfo))
+    // Nullify any empty strings
+    payorCopy = nullifyEmptyStrings(payorCopy)
+    // Strip out any non-numeric characters from the phone number
+    if (payorCopy.phone) {
+        payorCopy.phone = payorCopy.phone.replace(/\D/g, '')
+    }
+    return payorCopy
 }
 
 const validTypeMessage = elements => message => {
@@ -352,6 +408,8 @@ const validQRSize = (size) => {
     return true
 }
 
+
+
 export {
     checkCreateParams,
     hasValidCard,
@@ -363,6 +421,7 @@ export {
     findCardError,
     findCashError,
     findCardPresentError,
+    formatPayorObject,
     validTypeMessage,
     validate,
     isValidAmount,
