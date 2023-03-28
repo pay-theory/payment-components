@@ -432,7 +432,7 @@ const PAYOR_INFO = {
   }
 }
 
-const FEE_MODE = window.paytheory.INTERCHANGE
+const FEE_MODE = window.paytheory.MERCHANT_FEE
 
 // optionally provide custom metadata to help track payments
 const PAYMENT_METADATA = {
@@ -540,7 +540,7 @@ The only required key is `amount`.
 
 
 * feeMode: (String)
-  * Defaults to `window.paytheory.INTERCHANGE`. If available to merchant and set to `window.paytheory.SERVICE_FEE` the fee will be added to the amount and charged to the payor. More details about the fee modes in your PayTheory Portal.
+  * Defaults to `window.paytheory.MERCHANT_FEE`. If available to merchant and set to `window.paytheory.SERVICE_FEE` the fee will be added to the amount and charged to the payor. More details about the fee modes in your PayTheory Portal.
 
 * fee: (Int)
   * Represents the fee to be charged in cents. 
