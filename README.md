@@ -322,14 +322,14 @@ const SESSION_METADATA = {
 
 /**
 * optionally set the fee mode for Card and ACH
-* by default INTERCHANGE mode is used
+* by default MERCHANT_FEE mode is used
 * SERVICE_FEE mode is available only when enabled by Pay Theory
-* INTERCHANGE mode applies a fee of 2.9% + $0.30 
+* MERCHANT_FEE mode applies a fee of 2.9% + $0.30 
 * to be deducted from original amount
 * SERVICE FEE mode calculates a fee based on predetermined parameters 
 * and adds it to the original amount
 **/
-const FEE_MODE = window.paytheory.INTERCHANGE
+const FEE_MODE = window.paytheory.MERCHANT_FEE
 
 // create a place to store the SDK details
 let myPayTheory
@@ -447,7 +447,7 @@ const PAYOR_INFO = {
   }
 }
 
-const FEE_MODE = window.paytheory.INTERCHANGE
+const FEE_MODE = window.paytheory.MERCHANT_FEE
 
 // optionally provide custom metadata to help track payments
 const PAYMENT_METADATA = {
@@ -547,7 +547,7 @@ The only required key is `amount`.
 
 
 * feeMode: (String)
-  * Defaults to `window.paytheory.INTERCHANGE`. If available to merchant and set to `window.paytheory.SERVICE_FEE` the fee will be added to the amount and charged to the payor. More details about the fee modes in your PayTheory Portal.
+  * Defaults to `window.paytheory.MERCHANT_FEE`. If available to merchant and set to `window.paytheory.SERVICE_FEE` the fee will be added to the amount and charged to the payor. More details about the fee modes in your PayTheory Portal.
 
 * fee: (Int)
   * Represents the fee to be charged in cents.
