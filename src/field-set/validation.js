@@ -22,8 +22,8 @@ const validate = (value, type) => {
 }
 
 const checkFeeMode = mode => {
-    if (!validate(mode, 'string') || ![common.INTERCHANGE, common.SERVICE_FEE].includes(mode)) {
-        console.error(`Fee Mode should be either 'interchange' or 'service_fee' which are also available as constants at window.paytheory.INTERCHANGE and window.paytheory.SERVICE_FEE`)
+    if (!validate(mode, 'string') || ![common.MERCHANT_FEE, common.SERVICE_FEE].includes(mode)) {
+        console.error(`Fee Mode should be either 'merchant_fee' or 'service_fee' which are also available as constants at window.paytheory.MERCHANT_FEE and window.paytheory.SERVICE_FEE`)
     }
 }
 
@@ -351,8 +351,8 @@ const isValidInvoiceAndRecurringId = payTheoryInfo => {
 }
 
 const isValidFeeMode = (feeMode) => {
-    if (![common.INTERCHANGE, common.SERVICE_FEE].includes(feeMode)) {
-        message.handleError('INVALID_PARAM: feeMode must be either INTERCHANGE or SERVICE_FEE')
+    if (![common.MERCHANT_FEE, common.SERVICE_FEE].includes(feeMode)) {
+        message.handleError('INVALID_PARAM: feeMode must be either MERCHANT_FEE or SERVICE_FEE')
         return false
     }
     return true
