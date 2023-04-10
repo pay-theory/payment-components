@@ -152,7 +152,6 @@ export {
 
 const getLocalStorage = key => () => {
     try {
-        console.debug(`Getting Local Storage, ${key}, ${localStorage.getItem(key)}`)
         return localStorage.getItem(key)
     } catch (e) {
         window.postMessage({
@@ -167,7 +166,6 @@ const getLocalStorage = key => () => {
 
 const setLocalStorage = key => value => {
     try {
-        console.debug(`Setting Local Storage, ${key}, ${value}`)
         return localStorage.setItem(key, value)
     } catch (e) {
         window.postMessage({
