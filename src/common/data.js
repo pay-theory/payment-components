@@ -1,6 +1,4 @@
 /* global localStorage */
-import {handleError} from './message';
-
 export const AUTOFILL = 'pt-autofill'
 export const READY = 'pt-ready'
 export const TRANSACTING = 'pt-transacting'
@@ -152,13 +150,17 @@ export {
     combinedCardTypes
 }
 
-const LOCAL_STORAGE_ERROR = "LOCAL_STORAGE_ERROR: Error getting data from local storage"
-
 const getLocalStorage = key => () => {
     try {
         return localStorage.getItem(key)
     } catch (e) {
-        handleError("LOCAL_STORAGE_ERROR: Error getting data from local storage")
+        window.postMessage({
+                type: 'pt:error',
+                throws: true,
+                error: "LOCAL_STORAGE_ERROR: Error getting data from local storage",
+            },
+            window.location.origin,
+        );
     }
 }
 
@@ -166,7 +168,13 @@ const setLocalStorage = key => value => {
     try {
         return localStorage.setItem(key, value)
     } catch (e) {
-        handleError("LOCAL_STORAGE_ERROR: Error setting data in local storage")
+        window.postMessage({
+                type: 'pt:error',
+                throws: true,
+                error: "LOCAL_STORAGE_ERROR: Error setting data in local storage",
+            },
+            window.location.origin,
+        );
     }
 }
 
@@ -174,7 +182,13 @@ const removeLocalStorage = key => () => {
     try {
         return localStorage.removeItem(key)
     } catch (e) {
-        handleError("LOCAL_STORAGE_ERROR: Error removing data from local storage")
+        window.postMessage({
+                type: 'pt:error',
+                throws: true,
+                error: "LOCAL_STORAGE_ERROR: Error removing data from local storage",
+            },
+            window.location.origin,
+        );
     }
 }
 
