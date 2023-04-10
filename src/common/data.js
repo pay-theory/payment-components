@@ -197,7 +197,9 @@ export const setAutofill = setLocalStorage(AUTOFILL)
 export const removeAutofill = removeLocalStorage(AUTOFILL)
 
 export const getTransactingElement = getLocalStorage(TRANSACTING)
-export const setTransactingElement = setLocalStorage(TRANSACTING)
+export const setTransactingElement = element => {
+    return setLocalStorage(TRANSACTING)(element.id)
+}
 export const removeTransactingElement = removeLocalStorage(TRANSACTING)
 
 export const getEnvironment = getLocalStorage(ENVIRONMENT)
