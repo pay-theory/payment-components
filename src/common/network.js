@@ -17,25 +17,6 @@ export const getData = async(url, apiKey) => {
     return await response.json()
 }
 
-// deprecated environment is always derived from API key
-export const defaultEnvironment = (() => {
-
-    switch (process.env.BUILD_ENV) {
-    case 'prod':
-        {
-            return 'prod'
-        }
-    case 'stage':
-        {
-            return 'demo'
-        }
-    default:
-        {
-            return typeof data.getEnvironment() === 'string' ? data.getEnvironment() : 'dev'
-        }
-    }
-})()
-
 export const transactionEndpoint = () => {
     return `https://${data.getEnvironment()}.${data.getStage()}.com/pt-token-service/`
 }
