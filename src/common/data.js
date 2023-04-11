@@ -157,6 +157,7 @@ const getLocalStorage = key => () => {
         window.postMessage({
                 type: 'pt:error',
                 throws: true,
+                localStorage: true,
                 error: "LOCAL_STORAGE_ERROR: Error getting data from local storage",
             },
             window.location.origin,
@@ -171,6 +172,7 @@ const setLocalStorage = key => value => {
         window.postMessage({
                 type: 'pt:error',
                 throws: true,
+                localStorage: true,
                 error: "LOCAL_STORAGE_ERROR: Error setting data in local storage",
             },
             window.location.origin,
@@ -185,6 +187,7 @@ const removeLocalStorage = key => () => {
         window.postMessage({
                 type: 'pt:error',
                 throws: true,
+                localStorage: true,
                 error: "LOCAL_STORAGE_ERROR: Error removing data from local storage",
             },
             window.location.origin,
