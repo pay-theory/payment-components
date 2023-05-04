@@ -258,7 +258,9 @@ export default async(
 
         const formattedPayor = valid.formatPayorObject(payorInfo)
 
-        const data = { amount, payorInfo: formattedPayor, payTheoryData, metadata, fee_mode: feeMode || fee_mode, confirmation }
+        let newFeeMode = feeMode || fee_mode
+        newFeeMode = newFeeMode !== 'interchange' ? newFeeMode : common.MERCHANT_FEE
+        const data = { amount, payorInfo: formattedPayor, payTheoryData, metadata, fee_mode: newFeeMode, confirmation }
         return handleInitMessage('pt-static:payment-detail', data)
     }
 
