@@ -31,12 +31,8 @@ export interface processedElement<T extends cashElementIds | cardElementIds | ac
     containerId: string
 }
 
-export const findField = (type: elementTypes) => (element: false | { type: string, frame: HTMLElement}, cv: any) => {
-    return element === false ?
-        (cv?.type === type) ?
-        cv?.frame :
-        false :
-        element
+export const findField = (type: elementTypes) => (element: PayTheoryHostedField | false, currentElement: PayTheoryHostedField) => {
+    return element ? element : currentElement.field === type ? currentElement : false
 }
 
 export const findCVV = findField('card-cvv')
