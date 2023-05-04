@@ -68,6 +68,8 @@
         "@open-wc/testing-karma": "^4.0.9",
         "babel-loader": "^8.2.5",
         "babel-minify": "^0.5.2",
+        "babel-plugin-transform-custom-element-classes": "^0.1.0",
+        "babel-plugin-transform-es2015-classes": "^6.24.1",
         "babel-preset-minify": "^0.5.2",
         "deepmerge": "^4.2.2",
         "eslint": "^8.18.0",
