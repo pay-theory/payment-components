@@ -80,5 +80,10 @@ module.exports = {
         APP_ID: JSON.stringify(process.env.APP_ID),
       },
     }),
+    new webpack.ProvidePlugin({
+      'process.env.ENV': JSON.stringify(process.env.ENV),
+      'process.env.STAGE': JSON.stringify(process.env.STAGE),
+      'process.env.TARGET_MODE': JSON.stringify(process.env.TARGET_MODE),
+    })
   ],
 };
