@@ -90,72 +90,96 @@ const mountProcessedElements = async(props: {
     }
 }
 
-export default async({apiKey, styles = common.defaultStyles, metadata = {}, placeholders = {}, elementIds= common.defaultElementIds, session, feeMode}: PayTheoryPaymentFieldsInput) => {
-    // Map the elementIds to objects that can be passed into the processElements function
-    const achElements: achElementIds  = {
-        'account-number': elementIds['account-number'],
-        'account-name': elementIds['ach-name'],
-        'routing-number': elementIds['routing-number'],
-        'account-type': elementIds['account-type'],
-    }
-
-    const cardElements: cardElementIds = {
-        'credit-card': elementIds['credit-card'],
-        'card-number': elementIds.number,
-        'card-exp': elementIds.exp,
-        'card-cvv': elementIds.cvv,
-        'card-name': elementIds['account-name'],
-        'billing-line1': elementIds['address-1'],
-        'billing-line2': elementIds['address-2'],
-        'billing-city': elementIds.city,
-        'billing-state': elementIds.state,
-        'billing-zip': elementIds.zip,
-    }
-
-    const cashElements: cashElementIds = {
-        'cash-name': elementIds['cash-name'],
-        'cash-contact': elementIds['cash-contact']
-    }
-
-    const removeRelay = common.handleHostedFieldMessage(common.relayTypeMessage, handler.relayHandler)
-    const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, handler.stateUpdater)
-    const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler)
-
-    const removeEventListeners = () => {
-        removeState()
-        removeHostedError()
-        removeRelay()
-    }
-
-    // Creates the web component elements, so they can be added to the dom
-    const cardProcessed = common.processElements(cardElements, common.cardFieldTypes)
-    const achProcessed = common.processElements(achElements, common.achFieldTypes)
-    const cashProcessed = common.processElements(cashElements, common.cashFieldTypes)
-
-    // Throw an error if there are no elements to mount
-    if (cardProcessed.transacting.length === 0 &&
-        cardProcessed.siblings.length === 0 &&
-        cashProcessed.transacting.length === 0 &&
-        cashProcessed.siblings.length === 0 &&
-        achProcessed.transacting.length === 0 &&
-        achProcessed.siblings.length === 0) {
-        return common.handleError('NO_FIELDS: There are no PayTheory fields on the DOM to mount')
-    }
-
-    const processed: ProcessedObject = {
-        card: {
-            elements: cardProcessed,
-            errorCheck: valid.findCardError
-        },
-        ach: {
-            elements: achProcessed,
-            errorCheck: valid.findAchError
-        },
-        cash: {
-            elements: cashProcessed,
-            errorCheck: valid.findCashError
+const payTheoryFields = async(props: PayTheoryPaymentFieldsInput) => {
+    if (document.readyState === "complete") {
+        const {
+            apiKey,
+            styles = common.defaultStyles,
+            metadata = {},
+            placeholders = {},
+            elementIds = common.defaultElementIds,
+            session,
+            feeMode
+        } = props
+        // Map the elementIds to objects that can be passed into the processElements function
+        const achElements: achElementIds = {
+            'account-number': elementIds['account-number'],
+            'account-name': elementIds['ach-name'],
+            'routing-number': elementIds['routing-number'],
+            'account-type': elementIds['account-type'],
         }
+
+        const cardElements: cardElementIds = {
+            'credit-card': elementIds['credit-card'],
+            'card-number': elementIds.number,
+            'card-exp': elementIds.exp,
+            'card-cvv': elementIds.cvv,
+            'card-name': elementIds['account-name'],
+            'billing-line1': elementIds['address-1'],
+            'billing-line2': elementIds['address-2'],
+            'billing-city': elementIds.city,
+            'billing-state': elementIds.state,
+            'billing-zip': elementIds.zip,
+        }
+
+        const cashElements: cashElementIds = {
+            'cash-name': elementIds['cash-name'],
+            'cash-contact': elementIds['cash-contact']
+        }
+
+        const removeRelay = common.handleHostedFieldMessage(common.relayTypeMessage, handler.relayHandler)
+        const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, handler.stateUpdater)
+        const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler)
+
+        const removeEventListeners = () => {
+            removeState()
+            removeHostedError()
+            removeRelay()
+        }
+
+        // Creates the web component elements, so they can be added to the dom
+        const cardProcessed = common.processElements(cardElements, common.cardFieldTypes)
+        const achProcessed = common.processElements(achElements, common.achFieldTypes)
+        const cashProcessed = common.processElements(cashElements, common.cashFieldTypes)
+
+        // Throw an error if there are no elements to mount
+        if (cardProcessed.transacting.length === 0 &&
+            cardProcessed.siblings.length === 0 &&
+            cashProcessed.transacting.length === 0 &&
+            cashProcessed.siblings.length === 0 &&
+            achProcessed.transacting.length === 0 &&
+            achProcessed.siblings.length === 0) {
+            return common.handleError('NO_FIELDS: There are no PayTheory fields on the DOM to mount')
+        }
+
+        const processed: ProcessedObject = {
+            card: {
+                elements: cardProcessed,
+                errorCheck: valid.findCardError
+            },
+            ach: {
+                elements: achProcessed,
+                errorCheck: valid.findAchError
+            },
+            cash: {
+                elements: cashProcessed,
+                errorCheck: valid.findCashError
+            }
+        }
+        // Mount the elements to the DOM
+        await mountProcessedElements({
+            processed,
+            apiKey,
+            styles,
+            placeholders,
+            session,
+            metadata,
+            removeEventListeners,
+            feeMode
+        })
+    } else {
+        setTimeout(() => payTheoryFields(props), 100)
     }
-    // Mount the elements to the DOM
-    await mountProcessedElements({processed, apiKey, styles, placeholders, session, metadata, removeEventListeners, feeMode})
 }
+
+export default payTheoryFields
