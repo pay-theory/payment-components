@@ -2,6 +2,7 @@
 import common from '../common'
 import * as message from "../common/message";
 import {TransactProps} from "../common/format";
+import PayTheoryHostedField from "../components/pay-theory-hosted-field";
 
 // partner mode is used to indicate migration builds
 const checkApiKey = (key: string | any, partnerMode: string) => {
@@ -62,7 +63,7 @@ const checkCreateParams = (key: any, mode: any, metadata: any, styles: any, env:
 }
 
 // Checks the dom for elements and returns errors if there are missing elements or conflicting elements
-const findCardNumberError = (processedElements: HTMLElement[]): false | string => {
+const findCardNumberError = (processedElements: PayTheoryHostedField[]): false | string => {
     if (processedElements.reduce(common.findExp, false) === false) {
         return  'missing credit card expiration field required for payments'
     }
@@ -81,7 +82,7 @@ const findCardNumberError = (processedElements: HTMLElement[]): false | string =
     return false
 }
 
-const findCombinedCardError = (processedElements: HTMLElement[]) => {
+const findCombinedCardError = (processedElements: PayTheoryHostedField[]) => {
     if (processedElements.reduce(common.findExp, false)) {
         return  'expiration is not allowed when using combined credit card'
     }
@@ -114,7 +115,7 @@ const achCheck = [{
     error: 'missing ACH routing number field required for payments'
 }, ]
 
-const findAchError = (processedElements: HTMLElement[]): string | false => {
+const findAchError = (processedElements: PayTheoryHostedField[]): string | false => {
     if (processedElements.length === 0) {
         return false
     }
@@ -129,7 +130,7 @@ const findAchError = (processedElements: HTMLElement[]): string | false => {
     return false
 }
 
-const findCardError = (processedElements: HTMLElement[], transacting: HTMLElement[]) => {
+const findCardError = (processedElements: PayTheoryHostedField[], transacting: PayTheoryHostedField[]) => {
     let error: false | string = false
     if (processedElements.length === 0) {
         return error
@@ -147,7 +148,7 @@ const findCardError = (processedElements: HTMLElement[], transacting: HTMLElemen
     return error
 }
 
-const findCashError = (processedElements: HTMLElement[]): string | false => {
+const findCashError = (processedElements: PayTheoryHostedField[]): string | false => {
     let error: string | false = false
     if (processedElements.length === 0) {
         return error
@@ -164,7 +165,7 @@ const findCashError = (processedElements: HTMLElement[]): string | false => {
     return error
 }
 
-const findCardPresentError = (processedElements: HTMLElement[]): string | false => {
+const findCardPresentError = (processedElements: PayTheoryHostedField[]): string | false => {
     if (processedElements.length === 0) {
         return false
     }

@@ -23,7 +23,7 @@ export type styleObject = {
 export type placeholderObject = Partial<Record<elementTypes, string>>
 
 class PayTheoryHostedField extends HTMLElement {
-  protected field: elementTypes | undefined
+  protected _field: elementTypes | undefined
   protected _styles: styleObject = common.defaultStyles
   protected fields: Partial<Array<elementTypes>>
   protected _placeholders: placeholderObject = {}
@@ -41,7 +41,11 @@ class PayTheoryHostedField extends HTMLElement {
   }
 
   setFieldName(name: elementTypes) {
-    this.field = name
+    this._field = name
+  }
+
+  get field() {
+    return this._field
   }
 
   createToken() {
