@@ -145,7 +145,7 @@ export const qrCodeReadyTypeMessage = (message: { type: any }) => typeof message
 export const qrCodeCompleteTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt-static:qr-checkout-success'
 
 
-export const postMessageToHostedField = (id: string, message: object, port?: ) => {
+export const postMessageToHostedField = (id: string, message: object) => {
     const elements = document.getElementsByName(id)
     if (elements.length) {
         let element = elements[0] as HTMLIFrameElement

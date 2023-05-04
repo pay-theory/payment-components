@@ -28,7 +28,7 @@ class PayTheoryCheckoutButton extends HTMLElement {
     defineButton() {
         // Creating the iFrame for the Button
         const buttonFrame = document.createElement('iframe')
-        buttonFrame.setAttribute('src', `${common.hostedFieldsEndpoint()}/checkout_button?token=${this._token}`)
+        buttonFrame.setAttribute('src', `${common.hostedFieldsEndpoint}/checkout_button?token=${this._token}`)
         buttonFrame.setAttribute('frameBorder', '0')
         buttonFrame.setAttribute('name', common.checkoutButtonField)
         buttonFrame.setAttribute('id', `${common.checkoutButtonField}-iframe`)
