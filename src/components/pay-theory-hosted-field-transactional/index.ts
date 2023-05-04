@@ -1,0 +1,424 @@
+// @ts-ignore
+import DOMPurify from 'dompurify'
+import PayTheoryHostedField from '../pay-theory-hosted-field'
+import common from '../../common'
+import {ACH_IFRAME, CARD_IFRAME, CASH_IFRAME, defaultFeeMode, elementTypes, TransactingType, transactingWebComponentMap} from "../../common/data";
+import {handleError} from "../../common/message";
+import {PayorInfo, PayTheoryDataObject, SuccessfulTransactionObject} from "../../common/format";
+
+export type stateObject = {
+    isFocused: boolean
+    isDirty: boolean
+    errorMessages: string[]
+    element?: elementTypes
+    isConnected?: boolean
+}
+
+export type mainStateObject = Partial<Record<elementTypes, stateObject>>
+
+export type TransactDataObject = {
+    amount: number,
+    payorInfo: PayorInfo,
+    payTheoryData: PayTheoryDataObject,
+    metadata?: {[keys: string | number]: string | number | boolean },
+    fee_mode?: typeof common.MERCHANT_FEE | typeof common.SERVICE_FEE,
+    confirmation?: boolean
+}
+
+export type TokenizeDataObject = {
+    payorInfo?: PayorInfo,
+    metadata?: {[keys: string | number]: string | number | boolean },
+    payorId?: string,
+}
+
+type ConstructorProps = {
+    fieldTypes: Array<elementTypes>,
+    requiredValidFields: Array<elementTypes>,
+    transactingIFrameId: typeof CARD_IFRAME | typeof ACH_IFRAME | typeof CASH_IFRAME,
+    stateGroup: mainStateObject,
+    transactingType: TransactingType
+}
+
+type AsyncMessage = {
+    type: string,
+    data?: any,
+    async: true
+}
+
+class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
+    // Used to fetch the pt-token attribute to initialize the hosted field
+    protected _apiKey: string | undefined
+    protected _token: string | undefined
+    protected _origin: string | undefined
+    protected _challengeOptions: object | undefined
+
+    // Used to store the session id for a connected session from our hosted checkout
+    protected _session: string | undefined
+
+    // Used to track the metadata that is passed in for a session
+    protected _metadata: { [key: string | number]: string | number | boolean } | undefined
+
+    // Used to track if the transact or tokenize function has been called, and we are awaiting a response
+    protected _initialized: boolean = false
+
+    // Used to track if the element was the one that was used when transact was called
+    protected _isTransactingElement: boolean = false
+
+    // Used to track if the element is ready to be
+    protected _isReady: boolean = false
+
+    // List of fields that are a part of this group used to transact for this transactional element
+    protected _fieldTypes: Array<elementTypes>
+
+    // Used to track what elements are being used for the transaction
+    protected _processedElements: Partial<Array<elementTypes>> = []
+
+    // Used to track the state of the elements that are being used for the transaction of this transactional element
+    protected _stateGroup: mainStateObject
+
+    // Used to track the error message for the element
+    protected _error: string | undefined
+
+    // Used to track if the transactional element is valid
+    protected _requiredValidFields: Array<elementTypes>
+    protected _isValid: boolean = false
+
+    // Help to track the transacting type of the transactional element
+    protected _transactingIFrameId: typeof CARD_IFRAME | typeof ACH_IFRAME | typeof CASH_IFRAME
+    protected _transactingType: TransactingType
+
+    // Function used to remove event listeners
+    protected _removeEventListeners: () => void = () => {}
+
+    // Used for backwards compatibility with feeMode
+    protected _feeMode: typeof common.SERVICE_FEE | typeof common.MERCHANT_FEE | undefined
+
+    constructor(props: ConstructorProps) {
+        super()
+        this.createToken = this.createToken.bind(this)
+        this.transact = this.transact.bind(this)
+        this.resetToken = this.resetToken.bind(this)
+        this.capture = this.capture.bind(this)
+        this.cancel = this.cancel.bind(this)
+        this.tokenize = this.tokenize.bind(this)
+        this.sendValidMessage = this.sendValidMessage.bind(this)
+        this.sendStateMessage = this.sendStateMessage.bind(this)
+        this.sendValidMessage = this.sendValidMessage.bind(this)
+        this.sendAsyncPostMessage = this.sendAsyncPostMessage.bind(this)
+        this._fieldTypes = props.fieldTypes
+        this._requiredValidFields = props.requiredValidFields
+        this._transactingIFrameId = props.transactingIFrameId
+        this._stateGroup = props.stateGroup
+        this._transactingType = props.transactingType
+    }
+
+    resetToken = async() => {
+        const ptToken = await common.fetchPtToken(this._apiKey!)
+        if (ptToken){
+            const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
+            if (transactingIFrame) {
+                transactingIFrame.contentWindow!.postMessage({
+                    type: `pt-static:reset_host`,
+                    token: ptToken['pt-token']
+                }, this._origin!)
+                // Return true because it successfully sent the reset token message
+                return true
+            } else {
+                // Return false because it failed to find the transacting iframe
+                return false
+            }
+        } else {
+            // Return false because it failed to fetch the pt-token
+            return false
+        }
+    }
+
+    createToken() {
+        const token = {
+            origin: this._origin,
+            styles: this._styles,
+            placeholders: this._placeholders,
+            apiKey: this._apiKey,
+            session: this._session,
+            token: this._token
+        }
+        const json = JSON.stringify(token)
+        const encodedJson = window.btoa(json)
+        return encodeURI(encodedJson)
+    }
+
+    connectedCallback = async() => {
+        this.innerHTML = DOMPurify.sanitize(`<div class="framed">
+            <div id="pay-theory-${this.field}-hosted-field-container" class="pay-theory-field">
+            </div>
+        </div>`)
+        const ptToken = await common.fetchPtToken(this._apiKey!)
+        if (ptToken) {
+            this._token = ptToken['pt-token']
+            this._origin = ptToken['origin']
+            this._challengeOptions = ptToken['challengeOptions']
+            const token = this.createToken()
+            this.defineFields(token)
+        } else {
+            // TODO: Better Error Handling
+            handleError('Unable to fetch pt-token')
+        }
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this._removeEventListeners()
+    }
+
+    sendAsyncPostMessage = <T>(message: AsyncMessage) => new Promise<T>((resolve, reject) => {
+        // Opening a new message channel so we can await the response from the hosted field
+        const channel = new MessageChannel()
+
+        channel.port1.onmessage = ({data}) => {
+            channel.port1.close();
+            if (data.error) {
+                reject(data.error);
+            }else {
+                resolve(data.result);
+            }
+        };
+
+        const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
+        if (transactingIFrame) {
+            transactingIFrame.contentWindow!.postMessage(message, this._origin!, [channel.port2])
+        } else {
+            reject('Unable to find transacting iframe')
+        }
+    })
+
+    transact(data: TransactDataObject, element: PayTheoryHostedFieldTransactional) {
+        data.fee_mode = data.fee_mode || this._feeMode || defaultFeeMode
+        this._isTransactingElement = true
+        common.sendTransactingMessage(element)
+        //TODO: Add attestation call here
+        let message: AsyncMessage = {
+            type: 'pt-static:payment-detail',
+            data: data,
+            async: true
+        }
+        return this.sendAsyncPostMessage<SuccessfulTransactionObject>(message)
+    }
+
+    capture() {
+        let message: AsyncMessage =  {
+            type: 'pt-static:confirm',
+            async: true
+        }
+        return this.sendAsyncPostMessage<SuccessfulTransactionObject>(message)
+    }
+
+
+    cancel = async() => {
+        const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
+        if (transactingIFrame) {
+            transactingIFrame.contentWindow!.postMessage({
+                type: `pt-static:cancel`
+            }, this._origin!)
+            let result = await this.resetToken()
+            if (result) {
+                this._isTransactingElement = false
+                this.initialized = false
+                // Successfully sent the cancel message and reset the token
+                return true
+            } else {
+                // Successfully sent the cancel message but failed to reset the token
+                return false
+            }
+        } else {
+            // Failed to find the transacting iframe to send the cancel message
+            return false
+        }
+    }
+
+    tokenize(data: TokenizeDataObject, element: PayTheoryHostedFieldTransactional) {
+        this._isTransactingElement = true
+        this._initialized = true
+        common.sendTransactingMessage(element)
+        //TODO: Add attestation call here
+
+        let message: AsyncMessage =  {
+            type: 'pt-static:tokenize-detail',
+            data: data,
+            async: true
+        }
+        return this.sendAsyncPostMessage<SuccessfulTransactionObject>(message)
+    }
+
+    sendStateMessage() {
+        // Make a copy of the state group
+        const newState = {
+            ...this._stateGroup
+        }
+        // Loop through all the other transacting elements and add their state to the state group or use the default state
+        for(let [key, value] of Object.entries(transactingWebComponentMap)) {
+            if (key !== this._transactingType) {
+                let transactingTypesState = value.ids.reduce((acc: any, id: string) => {
+                    let element = document.getElementById(id) as PayTheoryHostedFieldTransactional
+                    if (element) {
+                        return element.stateGroup
+                    } else {
+                        return acc
+                    }
+                }, value.defaultState)
+                Object.assign(newState, transactingTypesState)
+            }
+        }
+        // Send the state message
+        window.postMessage({
+                type: 'pt:state',
+                data: newState
+            },
+            window.location.origin,
+        );
+    }
+
+    sendValidMessage() {
+
+
+    }
+
+    sendReadyMessage() {
+        let sendReadyMessage = true
+        // Check to see if all other transacting elements are ready
+        for(let [key, value] of Object.entries(transactingWebComponentMap)) {
+            if (key !== this._transactingType) {
+                value.ids.forEach((id: string) => {
+                    let element = document.getElementById(id) as PayTheoryHostedFieldTransactional
+                    if (element && !element?.ready) {
+                        sendReadyMessage = false
+                    }
+                })
+            }
+
+        }
+        // If all other transacting elements are ready, send the ready message
+        if (sendReadyMessage) {
+            window.postMessage({
+                    type: 'pt:ready',
+                    data: true
+                },
+                window.location.origin,
+            )
+        }
+    }
+
+
+    set session(value: string | undefined) {
+        this._session = value
+    }
+
+    set apiKey(value: string) {
+      this._apiKey = value
+    }
+
+    get metadata() {
+        return this._metadata
+    }
+
+    set metadata(value: { [key: string | number]: string | number | boolean } | undefined) {
+        this._metadata = value
+    }
+
+    get initialized() {
+        return this._initialized
+    }
+
+    set initialized(value: boolean) {
+        this._initialized = value
+    }
+
+    get isTransactingElement() {
+        return this._isTransactingElement
+    }
+
+    set isTransactingElement(value: boolean) {
+        this._isTransactingElement = value
+    }
+
+    get processedElements() {
+        return this._processedElements
+    }
+
+    set processedElements(value: Partial<Array<elementTypes>>) {
+        this._processedElements = value
+    }
+
+    get ready() {
+        return this._isReady
+    }
+
+    get stateGroup() {
+        return this._stateGroup
+    }
+
+    set state(value: stateObject | undefined) {
+        // Check to see if the state object has an element property and if it is in the state group
+        if (value && value.element && value.element in this._stateGroup) {
+            // Update the state group with the new state
+            this._stateGroup[value.element] = value
+            this.sendStateMessage()
+
+            // Check to see if the field has error messages and if so set the error message or clear it if the field is dirty
+            const invalid = value.errorMessages.length > 0
+            if (value.isDirty && invalid) {
+                this.error = value.errorMessages[0]
+            } else if (value.isDirty) {
+                this.error = ""
+            }
+
+            // If the state message shows the field is connected, set the ready message to true and try sending the ready message
+            if (value.isConnected) {
+                this._isReady = true
+                this.sendReadyMessage()
+            }
+
+            // Check for update to field validity and if there is an update, update the isValid property and send the valid message
+            let calculatedValid = this._requiredValidFields.reduce((acc, curr) => {
+                return acc && this._stateGroup[curr]!.isDirty && this._stateGroup[curr]!.errorMessages.length === 0
+            }, true)
+            if(this._isValid !== calculatedValid) {
+                this._isValid = calculatedValid
+                this.sendValidMessage()
+            }
+        }
+    }
+
+    get error() {
+        return this._error;
+    }
+
+    set error(value) {
+        if (this._error !== value) {
+            this._error = value;
+            window.postMessage({
+                    type: 'pt:error',
+                    error: value,
+                },
+                window.location.origin,
+            );
+        }
+    }
+
+    get fieldTypes() {
+        return this._fieldTypes
+    }
+
+    set removeEventListeners(value: () => void) {
+        this._removeEventListeners = value
+    }
+
+    set feeMode(value: typeof common.SERVICE_FEE | typeof common.MERCHANT_FEE | undefined) {
+        this._feeMode = value
+    }
+
+    get valid() {
+        return this._isValid
+    }
+}
+
+export default PayTheoryHostedFieldTransactional
