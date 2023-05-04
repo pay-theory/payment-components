@@ -27,8 +27,6 @@ class PayTheoryHostedField extends HTMLElement {
   protected _styles: styleObject = common.defaultStyles
   protected fields: Partial<Array<elementTypes>>
   protected _placeholders: placeholderObject = {}
-
-
   constructor() {
     super()
     this.defineFields = this.defineFields.bind(this)
