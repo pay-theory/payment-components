@@ -23,6 +23,8 @@ import './components/pay-theory-checkout-qr'
 import 'regenerator-runtime'
 import './style.css'
 
+import payTheoryFields from './field-set/payment-fields-v2'
+import {transact, confirm, cancel, tokenizePaymentMethod} from './field-set/actions';
 import createPaymentFieldsLegacy from './field-set/payment-fields'
 import { SURCHARGE, SERVICE_FEE, INTERCHANGE, MERCHANT_FEE, PAY, BOOK, DONATE, CHECKOUT, WHITE, GREY, BLACK, PURPLE, ALL, NOT_CASH, NOT_CARD, NOT_ACH, ONLY_CASH, ONLY_CARD, ONLY_ACH } from './common/data'
 import button from './field-set/payment-button'
@@ -41,6 +43,11 @@ window.paytheory = {
     button,
     qrCode,
     errorObserver,
+    payTheoryFields,
+    transact,
+    confirm,
+    cancel,
+    tokenizePaymentMethod,
     SURCHARGE,
     SERVICE_FEE,
     INTERCHANGE,
