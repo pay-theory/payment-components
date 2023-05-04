@@ -178,7 +178,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             channel.port1.close();
             if (data.error) {
                 reject(data.error);
-            }else {
+            } else {
                 resolve(data.result);
             }
         };

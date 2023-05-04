@@ -27,8 +27,8 @@ import payTheoryFields from './field-set/payment-fields-v2'
 import {transact, confirm, cancel, tokenizePaymentMethod} from './field-set/actions';
 import createPaymentFieldsLegacy from './field-set/payment-fields'
 import { SURCHARGE, SERVICE_FEE, INTERCHANGE, MERCHANT_FEE, PAY, BOOK, DONATE, CHECKOUT, WHITE, GREY, BLACK, PURPLE, ALL, NOT_CASH, NOT_CARD, NOT_ACH, ONLY_CASH, ONLY_CARD, ONLY_ACH } from './common/data'
-import button from './field-set/payment-button'
-import qrCode from './field-set/payment-qr'
+// import button from './field-set/payment-button'
+// import qrCode from './field-set/payment-qr'
 import { errorObserver } from './common/observe';
 
 const create = (apiKey, styles, metadata, feeMode) => createPaymentFieldsLegacy(apiKey, '', styles, metadata, feeMode)
@@ -40,8 +40,8 @@ const createPaymentFields = (apiKey, clientId, styles, metadata) => {
 window.paytheory = {
     createPaymentFields, // deprecated
     create,
-    button,
-    qrCode,
+    // button,
+    // qrCode,
     errorObserver,
     payTheoryFields,
     transact,

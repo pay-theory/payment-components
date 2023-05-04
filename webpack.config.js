@@ -5,6 +5,7 @@ const devtool = 'inline-source-map'
 module.exports = {
   devtool,
   resolve: {
+    extensions: ['.js', '.ts'],
     fallback: {
       util: require.resolve('util/')
     }
@@ -60,7 +61,12 @@ module.exports = {
     }, {
       test: /\.svg$/,
       loader: 'svg-inline-loader'
-    }],
+    },
+      {
+        test: /\.ts?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      }],
   },
   plugins: [
     new webpack.DefinePlugin({

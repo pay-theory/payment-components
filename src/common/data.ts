@@ -35,7 +35,11 @@ export const PURPLE = 'purple'
 export const PAYMENT_METHOD_CONFIGS = [ALL, NOT_CASH, NOT_CARD, NOT_ACH, ONLY_CASH, ONLY_CARD, ONLY_ACH]
 
 
-export const initialState = {
+export const initialState: {
+    isDirty: boolean,
+    isFocused: boolean,
+    errorMessages: string[]
+} = {
     isDirty: false,
     isFocused: false,
     errorMessages: []
@@ -142,7 +146,10 @@ export const cashFieldTypes: {
     ]
 }
 
-export const cardPresentFieldTypes = {
+export const cardPresentFieldTypes: {
+    transacting: Array<'card-present'>,
+    siblings: Array<string>
+} = {
     transacting: [
         'card-present'
     ],
