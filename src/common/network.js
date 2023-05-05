@@ -201,7 +201,7 @@ export const generateInitialization = (handleInitialized, challengeOptions) => {
         // Adding line for backwards compatibility
         // TODO add some logging to SDK to see usage of deprecated variables and functions
         payorInfo = payorInfo || customerInfo || shippingDetails || {}
-        const newFeeMode = feeMode.toLowerCase() === "interchange" ? common.MERCHANT_FEE : feeMode
+        const newFeeMode = feeMode?.toLowerCase() === "interchange" ? common.MERCHANT_FEE : feeMode
         let initialize = data.getInitialize()
         if (initialize !== 'init') {
             data.setInitialize('init')
