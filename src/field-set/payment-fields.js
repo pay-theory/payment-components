@@ -185,7 +185,7 @@
 //
 //         const removeSibling = common.handleHostedFieldMessage(common.siblingTypeMessage, handler.siblingHandler(processedElements))
 //
-//         const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, handler.stateUpdater)
+//         const removeState = common.handleHostedFieldMessage(common.hostedStateTypeMessage, handler.stateUpdater)
 //
 //         const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler)
 //
@@ -401,7 +401,7 @@
 //             }
 //         })
 //
-//     const stateObserver = cb => common.handleHostedFieldMessage(common.stateTypeMessage, message => {
+//     const stateObserver = cb => common.handleHostedFieldMessage(common.hostedStateTypeMessage, message => {
 //         const state = {...message.state}
 //         delete state.element
 //         elementStates[message.element] = state

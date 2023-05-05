@@ -128,7 +128,7 @@ const payTheoryFields = async(props: PayTheoryPaymentFieldsInput) => {
         }
 
         const removeRelay = common.handleHostedFieldMessage(common.relayTypeMessage, handler.relayHandler)
-        const removeState = common.handleHostedFieldMessage(common.stateTypeMessage, handler.stateUpdater)
+        const removeState = common.handleHostedFieldMessage(common.hostedStateTypeMessage, handler.stateUpdater)
         const removeHostedError = common.handleHostedFieldMessage(common.socketErrorTypeMessage, handler.hostedErrorHandler)
 
         const removeEventListeners = () => {

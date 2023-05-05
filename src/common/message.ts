@@ -82,11 +82,15 @@ export const handleCheckoutMessage = (validTarget: validTargetFunc, handleMessag
 
 export const errorTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt:error'
 
-export const readyTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type.endsWith(':ready')
+export const readyTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pay-theory:ready'
+
+export const stateTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pay-theory:state'
+
+export const validTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pay-theory:valid'
 
 export const hostedReadyTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type.endsWith(':ready') && message.type.startsWith('pt-static:')
 
-export const stateTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt-static:state'
+export const hostedStateTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt-static:state'
 
 export const relayTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt-static:relay'
 

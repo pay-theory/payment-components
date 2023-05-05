@@ -1,4 +1,5 @@
 import * as messaging from './message'
+import {mainStateObject} from "../components/pay-theory-hosted-field-transactional";
 
 export const errorObserver = (cb: (error: string) => void) => messaging.handleMessage(messaging.errorTypeMessage, (message: {
     error: string;
@@ -11,13 +12,11 @@ export const errorObserver = (cb: (error: string) => void) => messaging.handleMe
     }
 })
 
-export const stateObserver = () => {
+export const stateObserver = (cb: (value: mainStateObject) => void) => messaging.handleMessage(messaging.stateTypeMessage, cb)
 
-}
+export const validObserver = (cb: (value: string) => void) => messaging.handleMessage(messaging.validTypeMessage, cb)
 
-export const validObserver = () => {
-
-}
+export const readyObserver = (cb: () => void) => messaging.handleMessage(messaging.readyTypeMessage, cb)
 
 export const tokenizeObserver = (cb: (value: any) => void) => messaging.handleHostedFieldMessage(
     messaging.confirmTypeMessage,
