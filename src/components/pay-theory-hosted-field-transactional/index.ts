@@ -147,19 +147,18 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         return encodeURI(encodedJson)
     }
 
-    async connectedCallback() {
-        super.connectedCallback();
-        this.innerHTML = DOMPurify.sanitize(`<div class="framed">
-            <div id="pay-theory-${this.field}-hosted-field-container" class="pay-theory-field">
-            </div>
-        </div>`)
+    async setiFrameSrc() {
         const ptToken = await common.fetchPtToken(this._apiKey!)
         if (ptToken) {
             this._token = ptToken['pt-token']
             this._origin = ptToken['origin']
             this._challengeOptions = ptToken['challengeOptions']
             const token = this.createToken()
-            this.defineFields(token)
+            this.fields.forEach(field => {
+                const iframeUrl = `${common.hostedFieldsEndpoint}/${field}?token=${token}`
+                const iframe = document.getElementById(`${field}-iframe`)
+                iframe?.setAttribute('src', iframeUrl)
+            })
         } else {
             // TODO: Better Error Handling
             handleError('Unable to fetch pt-token')
