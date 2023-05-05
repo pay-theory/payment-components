@@ -259,7 +259,7 @@ export default async(
         const formattedPayor = valid.formatPayorObject(payorInfo)
 
         let newFeeMode = feeMode || fee_mode
-        newFeeMode = newFeeMode !== 'interchange' ? newFeeMode : common.MERCHANT_FEE
+        newFeeMode = newFeeMode?.toLowerCase() !== 'interchange' ? newFeeMode : common.MERCHANT_FEE
         const data = { amount, payorInfo: formattedPayor, payTheoryData, metadata, fee_mode: newFeeMode, confirmation }
         return handleInitMessage('pt-static:payment-detail', data)
     }
@@ -269,7 +269,7 @@ export default async(
     const initTransaction = (amount, payorInfo, confirmation) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
         //Passing in the session metadata from create because those used to be the only metadata that were passed in
-        transact({amount, payorInfo, metadata: sessionMetadata, confirmation})
+        transact({amount, payorInfo, metadata: sessionMetadata, confirmation, feeMode: fee_mode})
     }
 
     const handleTokenize = (payorInfo, payorId, metadata) => {
