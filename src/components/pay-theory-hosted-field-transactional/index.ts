@@ -147,7 +147,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         return encodeURI(encodedJson)
     }
 
-    connectedCallback = async() => {
+    async connectedCallback() {
+        super.connectedCallback();
         this.innerHTML = DOMPurify.sanitize(`<div class="framed">
             <div id="pay-theory-${this.field}-hosted-field-container" class="pay-theory-field">
             </div>
