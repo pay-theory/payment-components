@@ -114,7 +114,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     resetToken = async() => {
         const ptToken = await common.fetchPtToken(this._apiKey!)
-        if (ptToken){
+        if (ptToken) {
             const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
             if (transactingIFrame) {
                 transactingIFrame.contentWindow!.postMessage({
@@ -133,36 +133,29 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         }
     }
 
-    createToken() {
-        const token = {
-            origin: this._origin,
-            styles: this._styles,
-            placeholders: this._placeholders,
-            apiKey: this._apiKey,
-            session: this._session,
-            token: this._token
-        }
-        const json = JSON.stringify(token)
-        const encodedJson = window.btoa(json)
-        return encodeURI(encodedJson)
-    }
-
-    async setiFrameSrc() {
+    async sendPtToken() {
         const ptToken = await common.fetchPtToken(this._apiKey!)
         if (ptToken) {
-            this._token = ptToken['pt-token']
-            this._origin = ptToken['origin']
             this._challengeOptions = ptToken['challengeOptions']
-            const token = this.createToken()
-            this.fields.forEach(field => {
-                const iframeUrl = `${common.hostedFieldsEndpoint}/${field}?token=${token}`
-                const iframe = document.getElementById(`${field}-iframe`)
-                iframe?.setAttribute('src', iframeUrl)
-            })
+            const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
+            if (transactingIFrame) {
+                transactingIFrame.contentWindow!.postMessage({
+                    type: `pt-static:connection_token`,
+                    token: ptToken['pt-token']
+                }, this._origin!)
+            } else {
+                // TODO: Better Error Handling
+                handleError('Unable to fetch find transacting iframe')
+            }
         } else {
             // TODO: Better Error Handling
             handleError('Unable to fetch pt-token')
         }
+    }
+
+    async connectedCallback() {
+        super.connectedCallback();
+        await this.sendPtToken()
     }
 
     disconnectedCallback() {
@@ -213,7 +206,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
 
 
-    cancel = async() => {
+    async cancel() {
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
         if (transactingIFrame) {
             transactingIFrame.contentWindow!.postMessage({
@@ -270,7 +263,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         }
         // Send the state message
         window.postMessage({
-                type: 'pt:state',
+                type: 'pay-theory:state',
                 data: newState
             },
             window.location.origin,
@@ -278,8 +271,27 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
 
     sendValidMessage() {
-
-
+        // If element is valid include it in the valid string
+        let valid: string = this._isValid ? this._transactingType : ""
+        // Check to see if all other transacting elements are valid
+        for(let [key, value] of Object.entries(transactingWebComponentMap)) {
+            if(key !== this._transactingType) {
+                value.ids.forEach((id: string) => {
+                    let element = document.getElementById(id) as PayTheoryHostedFieldTransactional
+                    if (element && element?.valid) {
+                        // If other transacting elements are valid include them in the valid string
+                        valid = valid + ' ' + element._transactingType
+                    }
+                })
+            }
+        }
+        // Send the updated valid string
+        window.postMessage({
+                type: 'pay-theory:valid',
+                data: valid
+            },
+            window.location.origin,
+        )
     }
 
     sendReadyMessage() {
@@ -299,7 +311,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         // If all other transacting elements are ready, send the ready message
         if (sendReadyMessage) {
             window.postMessage({
-                    type: 'pt:ready',
+                    type: 'pay-theory:ready',
                     data: true
                 },
                 window.location.origin,
