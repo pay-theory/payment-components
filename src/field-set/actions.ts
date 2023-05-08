@@ -21,7 +21,7 @@ export const transact = async (props: TransactProps): Promise<any> => {
             if (validity) {
                 return common.handleError('INVALID_TRANSACTION_PARAMS: The transaction params are invalid')
             }
-            let {amount, payTheoryData, metadata, feeMode, confirmation} = newProps
+            let {amount, payTheoryData, metadata = {}, feeMode, confirmation = false} = newProps
             let formattedPayor = valid.formatPayorObject(newProps.payorInfo ?? {})
 
             try {
