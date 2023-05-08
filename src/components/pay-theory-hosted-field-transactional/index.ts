@@ -105,6 +105,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this.sendStateMessage = this.sendStateMessage.bind(this)
         this.sendValidMessage = this.sendValidMessage.bind(this)
         this.sendAsyncPostMessage = this.sendAsyncPostMessage.bind(this)
+        this.sendTokenMessage = this.sendTokenMessage.bind(this)
         this._fieldTypes = props.fieldTypes
         this._requiredValidFields = props.requiredValidFields
         this._transactingIFrameId = props.transactingIFrameId
@@ -112,16 +113,24 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this._transactingType = props.transactingType
     }
 
+    sendTokenMessage(iframe: HTMLIFrameElement, message: object) {
+        if (iframe.contentDocument.readyState === 'complete') {
+            iframe.contentWindow.postMessage(message, common.hostedFieldsEndpoint)
+        } else {
+            setTimeout(() => this.sendTokenMessage(iframe, message), 100)
+        }
+    }
+
     resetToken = async() => {
         const ptToken = await common.fetchPtToken(this._apiKey!)
         if (ptToken) {
             const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
             if (transactingIFrame) {
-                transactingIFrame.contentWindow!.postMessage({
+                this.sendTokenMessage(transactingIFrame, {
                     type: `pt-static:reset_host`,
                     token: ptToken['pt-token'],
                     origin: ptToken['origin']
-                }, common.hostedFieldsEndpoint)
+                })
                 // Return true because it successfully sent the reset token message
                 return true
             } else {
@@ -140,11 +149,11 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             this._challengeOptions = ptToken['challengeOptions']
             const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
             if (transactingIFrame) {
-                transactingIFrame.contentWindow!.postMessage({
+                this.sendTokenMessage(transactingIFrame, {
                     type: `pt-static:connection_token`,
                     token: ptToken['pt-token'],
                     origin: ptToken['origin']
-                }, common.hostedFieldsEndpoint)
+                })
             } else {
                 // TODO: Better Error Handling
                 handleError('Unable to fetch find transacting iframe')
