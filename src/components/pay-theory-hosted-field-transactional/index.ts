@@ -164,7 +164,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
 
     sendAsyncPostMessage = <T>(message: AsyncMessage) => new Promise<T>((resolve, reject) => {
-        // Opening a new message channel so we can await the response from the hosted field
+        // Opening a new message channel, so we can await the response from the hosted field
         const channel = new MessageChannel()
 
         channel.port1.onmessage = ({data}) => {
