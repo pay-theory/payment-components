@@ -9,9 +9,13 @@ export const transact = async (props: TransactProps): Promise<any> => {
     let transactingElement = findTransactingElement()
     if(transactingElement) {
         if(transactingElement.initialized) {
-            return common.handleError('TRANSACTION_IN_PROGRESS: There is already a transaction in progress')
+            let errorString = 'TRANSACTION_IN_PROGRESS: There is already a transaction in progress'
+            common.handleError(errorString)
+            return errorString
         } else if(transactingElement.valid == false) {
-            return common.handleError('INVALID_TRANSACTION_ELEMENT: The transaction element is invalid')
+            let errorString = 'INVALID_TRANSACTION_ELEMENT: The transaction element is invalid'
+            common.handleError(errorString)
+            return errorString
         } else {
             // Setting to true so that the transact function can't be called again until the transaction is complete
             transactingElement.initialized = true
