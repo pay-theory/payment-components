@@ -1,9 +1,10 @@
 import {hostedCheckoutEndpoint, hostedFieldsEndpoint} from './network'
+import {elementTypes} from "./data";
 
 interface PayTheoryEvent extends MessageEvent {
     payTheory: boolean
 }
-type validTargetFunc = (message: { type: any }) => boolean
+type validTargetFunc = (message: { type: any, element?: elementTypes }) => boolean
 type handleMessageFunc = (message: any) => void
 
 const windowListenerHandler = (validTarget: validTargetFunc, handleMessage: handleMessageFunc, event: PayTheoryEvent) => {

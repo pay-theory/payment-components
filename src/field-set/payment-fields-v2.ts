@@ -66,6 +66,7 @@ const mountProcessedElements = async(props: {
                 let container = document.getElementById(sibling.containerId)
                 sibling.frame.styles = styles
                 sibling.frame.placeholders = placeholders
+                sibling.frame.session = session
                 if (container) {
                     container.appendChild(sibling.frame)
                 }
@@ -75,10 +76,10 @@ const mountProcessedElements = async(props: {
                 element.frame.apiKey = apiKey
                 element.frame.styles = styles
                 element.frame.placeholders = placeholders
-                element.frame.session = session
                 element.frame.metadata = metadata
                 element.frame.removeEventListeners = removeEventListeners
                 element.frame.feeMode = feeMode
+                element.frame.session = session
                 const processedElementTypes = value.elements.siblings.map((sibling) => sibling.type)
                 const transactingElementType = value.elements.transacting.map((transacting) => transacting.type)
                 element.frame.processedElements = [...processedElementTypes, ...transactingElementType]
