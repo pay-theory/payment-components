@@ -169,7 +169,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this._removeHostTokenListener()
     }
 
-    sendAsyncPostMessage = <T>(message: AsyncMessage) => new Promise<T>((resolve, reject) => {
+    sendAsyncPostMessage = <T>(message: AsyncMessage, iframe: HTMLIFrameElement) => new Promise<T>((resolve, reject) => {
         // Opening a new message channel, so we can await the response from the hosted field
         const channel = new MessageChannel()
 
@@ -181,13 +181,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                 resolve(data.result);
             }
         };
-
-        const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
-        if (transactingIFrame) {
-            transactingIFrame.contentWindow!.postMessage(message, common.hostedFieldsEndpoint, [channel.port2])
-        } else {
-            reject('Unable to find transacting iframe')
-        }
+        iframe.contentWindow.postMessage(message, common.hostedFieldsEndpoint, [channel.port2])
     })
 
     transact(data: TransactDataObject, element: PayTheoryHostedFieldTransactional) {
@@ -200,7 +194,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             data: data,
             async: true
         }
-        return this.sendAsyncPostMessage<SuccessfulTransactionObject>(message)
+        const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
+        return this.sendAsyncPostMessage<SuccessfulTransactionObject>(message, transactingIFrame)
     }
 
     capture() {
@@ -208,7 +203,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             type: 'pt-static:confirm',
             async: true
         }
-        return this.sendAsyncPostMessage<SuccessfulTransactionObject>(message)
+        const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
+        return this.sendAsyncPostMessage<SuccessfulTransactionObject>(message, transactingIFrame)
     }
 
 
@@ -244,7 +240,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             data: data,
             async: true
         }
-        return this.sendAsyncPostMessage<SuccessfulTransactionObject>(message)
+        const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
+        return this.sendAsyncPostMessage<SuccessfulTransactionObject>(message, transactingIFrame)
     }
 
     sendStateMessage() {
