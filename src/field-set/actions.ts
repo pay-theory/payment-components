@@ -8,7 +8,11 @@ import {TokenizeProps, TransactProps} from "../common/format";
 export const transact = async (props: TransactProps): Promise<any> => {
     let transactingElement = findTransactingElement()
     if(transactingElement) {
-        if(!transactingElement.initialized) {
+        if(transactingElement.initialized) {
+            return common.handleError('TRANSACTION_IN_PROGRESS: There is already a transaction in progress')
+        } else if(transactingElement.valid == false) {
+            return common.handleError('INVALID_TRANSACTION_ELEMENT: The transaction element is invalid')
+        } else {
             // Setting to true so that the transact function can't be called again until the transaction is complete
             transactingElement.initialized = true
             let newProps = common.parseInputParams(props)
@@ -41,8 +45,6 @@ export const transact = async (props: TransactProps): Promise<any> => {
                 return e
             }
         }
-    } else {
-        return common.handleError('NO_TRANSACTING_ELEMENT: There is no transacting element on the DOM to transact')
     }
 }
 
@@ -76,7 +78,11 @@ export const cancel = async () => {
 export const tokenizePaymentMethod = async (props: TokenizeProps) => {
     let transactingElement = findTransactingElement()
     if(transactingElement) {
-        if(!transactingElement.initialized) {
+        if(transactingElement.initialized) {
+            return common.handleError('TRANSACTION_IN_PROGRESS: There is already a transaction in progress')
+        } else if(transactingElement.valid == false) {
+            return common.handleError('INVALID_TRANSACTION_ELEMENT: The transaction element is invalid')
+        } else  {
             transactingElement.initialized = true
             let {payorInfo = {}, payorId, metadata = {}} = props
             //validate the input param types
@@ -100,8 +106,6 @@ export const tokenizePaymentMethod = async (props: TokenizeProps) => {
                 return e
             }
 
-        } else {
-            return common.handleError('TRANSACTION_ALREADY_INITIALIZED: The transaction has already been initialized')
         }
     } else {
         return common.handleError('NO_TRANSACTING_ELEMENT: There is no transacting element on the DOM to transact')

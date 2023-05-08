@@ -8,7 +8,7 @@ export const errorObserver = (cb: (error: string) => void) => messaging.handleMe
 }) => {
     cb(message.error)
     if (message.throws) {
-        throw new Error(message.error)
+        console.error(message.error)
     }
 })
 
