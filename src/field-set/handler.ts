@@ -78,7 +78,7 @@ export const hostedErrorHandler = (message: {
 }) => {
     transactingWebComponentIds.forEach((id) => {
         let element = document.getElementById(id) as payTheoryHostedFieldTransactional
-        if (element) {
+        if (element && element.initialized) {
             element.initialized = false
             element.resetToken()
         }
