@@ -101,6 +101,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this.sendStateMessage = this.sendStateMessage.bind(this)
         this.sendValidMessage = this.sendValidMessage.bind(this)
         this.sendAsyncPostMessage = this.sendAsyncPostMessage.bind(this)
+        this.sendPtToken = this.sendPtToken.bind(this)
         this._fieldTypes = props.fieldTypes
         this._requiredValidFields = props.requiredValidFields
         this._transactingIFrameId = props.transactingIFrameId
@@ -152,7 +153,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
 
     async connectedCallback() {
-        await super.connectedCallback();
         // Set up a listener for the hosted field to message saying it is ready for the pt-token to be sent
         this._removeHostTokenListener = common.handleHostedFieldMessage((event: {
             type: any,
@@ -160,6 +160,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         }) => {
             return event.type === 'pt-static:pt_token_ready' && this._transactingIFrameId.includes(event.element)
         }, this.sendPtToken)
+        await super.connectedCallback();
     }
 
     disconnectedCallback() {
