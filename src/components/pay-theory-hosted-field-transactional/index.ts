@@ -119,7 +119,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             if (transactingIFrame) {
                 transactingIFrame.contentWindow!.postMessage({
                     type: `pt-static:reset_host`,
-                    token: ptToken['pt-token']
+                    token: ptToken['pt-token'],
+                    origin: ptToken['origin']
                 }, common.hostedFieldsEndpoint)
                 // Return true because it successfully sent the reset token message
                 return true
@@ -141,7 +142,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             if (transactingIFrame) {
                 transactingIFrame.contentWindow!.postMessage({
                     type: `pt-static:connection_token`,
-                    token: ptToken['pt-token']
+                    token: ptToken['pt-token'],
+                    origin: ptToken['origin']
                 }, common.hostedFieldsEndpoint)
             } else {
                 // TODO: Better Error Handling
