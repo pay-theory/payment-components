@@ -18,7 +18,7 @@ export const transact = async (props: TransactProps): Promise<any> => {
             // @ts-ignore Adding line for backwards compatibility
             newProps.feeMode = newProps.feeMode === 'interchange' ? MERCHANT_FEE : newProps.feeMode
             let validity = valid.validTransactionParams(newProps)
-            if (validity) {
+            if (validity === false) {
                 return common.handleError('INVALID_TRANSACTION_PARAMS: The transaction params are invalid')
             }
             let {amount, payTheoryData, metadata = {}, feeMode, confirmation = false} = newProps
