@@ -120,7 +120,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                 transactingIFrame.contentWindow!.postMessage({
                     type: `pt-static:reset_host`,
                     token: ptToken['pt-token']
-                }, this._origin!)
+                }, common.hostedFieldsEndpoint)
                 // Return true because it successfully sent the reset token message
                 return true
             } else {
@@ -142,7 +142,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                 transactingIFrame.contentWindow!.postMessage({
                     type: `pt-static:connection_token`,
                     token: ptToken['pt-token']
-                }, this._origin!)
+                }, common.hostedFieldsEndpoint)
             } else {
                 // TODO: Better Error Handling
                 handleError('Unable to fetch find transacting iframe')
@@ -178,7 +178,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
         if (transactingIFrame) {
-            transactingIFrame.contentWindow!.postMessage(message, this._origin!, [channel.port2])
+            transactingIFrame.contentWindow!.postMessage(message, common.hostedFieldsEndpoint, [channel.port2])
         } else {
             reject('Unable to find transacting iframe')
         }
@@ -211,7 +211,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         if (transactingIFrame) {
             transactingIFrame.contentWindow!.postMessage({
                 type: `pt-static:cancel`
-            }, this._origin!)
+            }, common.hostedFieldsEndpoint)
             let result = await this.resetToken()
             if (result) {
                 this._isTransactingElement = false
