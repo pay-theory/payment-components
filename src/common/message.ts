@@ -30,10 +30,8 @@ const windowListenerHandler = (validTarget: validTargetFunc, handleMessage: hand
 const generateWindowListener = (validTarget: validTargetFunc, handleMessage: handleMessageFunc) => {
     return (event: MessageEvent) => {
         if ([window.location.origin].includes(event.origin)) {
-            let newEvent: PayTheoryEvent = {
-                ...event,
-                payTheory: true
-            }
+            let newEvent: PayTheoryEvent = event as PayTheoryEvent
+            newEvent.payTheory = true
             windowListenerHandler(validTarget, handleMessage, newEvent)
         }
     }
@@ -42,10 +40,8 @@ const generateWindowListener = (validTarget: validTargetFunc, handleMessage: han
 const generateiFrameWindowListener = (validTarget: validTargetFunc, handleMessage: handleMessageFunc) => {
     return (event: MessageEvent) => {
         if (event.origin === hostedFieldsEndpoint) {
-            let newEvent: PayTheoryEvent = {
-                ...event,
-                payTheory: true
-            }
+            let newEvent: PayTheoryEvent = event as PayTheoryEvent
+            newEvent.payTheory = true
             windowListenerHandler(validTarget, handleMessage, newEvent)
         }
     }
@@ -54,10 +50,8 @@ const generateiFrameWindowListener = (validTarget: validTargetFunc, handleMessag
 const generateCheckoutWindowListener = (validTarget: validTargetFunc, handleMessage: handleMessageFunc) => {
     return (event: MessageEvent) => {
         if (event.origin === hostedCheckoutEndpoint) {
-            let newEvent: PayTheoryEvent = {
-                ...event,
-                payTheory: true
-            }
+            let newEvent: PayTheoryEvent = event as PayTheoryEvent
+            newEvent.payTheory = true
             windowListenerHandler(validTarget, handleMessage, newEvent)
         }
     }
