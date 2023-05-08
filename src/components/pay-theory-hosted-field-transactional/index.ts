@@ -48,12 +48,7 @@ type AsyncMessage = {
 class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     // Used to fetch the pt-token attribute to initialize the hosted field
     protected _apiKey: string | undefined
-    protected _token: string | undefined
-    protected _origin: string | undefined
     protected _challengeOptions: object | undefined
-
-    // Used to store the session id for a connected session from our hosted checkout
-    protected _session: string | undefined
 
     // Used to track the metadata that is passed in for a session
     protected _metadata: { [key: string | number]: string | number | boolean } | undefined
@@ -89,6 +84,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     // Function used to remove event listeners
     protected _removeEventListeners: () => void = () => {}
+    protected _removeHostTokenListener: () => void = () => {}
 
     // Used for backwards compatibility with feeMode
     protected _feeMode: typeof common.SERVICE_FEE | typeof common.MERCHANT_FEE | undefined
@@ -105,7 +101,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this.sendStateMessage = this.sendStateMessage.bind(this)
         this.sendValidMessage = this.sendValidMessage.bind(this)
         this.sendAsyncPostMessage = this.sendAsyncPostMessage.bind(this)
-        this.sendTokenMessage = this.sendTokenMessage.bind(this)
         this._fieldTypes = props.fieldTypes
         this._requiredValidFields = props.requiredValidFields
         this._transactingIFrameId = props.transactingIFrameId
@@ -113,24 +108,16 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this._transactingType = props.transactingType
     }
 
-    sendTokenMessage(iframe: HTMLIFrameElement, message: object) {
-        if (iframe.contentDocument.readyState === 'complete') {
-            iframe.contentWindow.postMessage(message, common.hostedFieldsEndpoint)
-        } else {
-            setTimeout(() => this.sendTokenMessage(iframe, message), 100)
-        }
-    }
-
     resetToken = async() => {
         const ptToken = await common.fetchPtToken(this._apiKey!)
         if (ptToken) {
             const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
             if (transactingIFrame) {
-                this.sendTokenMessage(transactingIFrame, {
+                transactingIFrame.contentWindow!.postMessage({
                     type: `pt-static:reset_host`,
                     token: ptToken['pt-token'],
                     origin: ptToken['origin']
-                })
+                }, common.hostedFieldsEndpoint)
                 // Return true because it successfully sent the reset token message
                 return true
             } else {
@@ -149,11 +136,11 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             this._challengeOptions = ptToken['challengeOptions']
             const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
             if (transactingIFrame) {
-                this.sendTokenMessage(transactingIFrame, {
+                transactingIFrame.contentWindow!.postMessage({
                     type: `pt-static:connection_token`,
                     token: ptToken['pt-token'],
                     origin: ptToken['origin']
-                })
+                }, common.hostedFieldsEndpoint)
             } else {
                 // TODO: Better Error Handling
                 handleError('Unable to fetch find transacting iframe')
@@ -166,12 +153,19 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     async connectedCallback() {
         await super.connectedCallback();
-        await this.sendPtToken()
+        // Set up a listener for the hosted field to message saying it is ready for the pt-token to be sent
+        this._removeHostTokenListener = common.handleHostedFieldMessage((event: {
+            type: any,
+            element: elementTypes,
+        }) => {
+            return event.type === 'pt-static:pt_token_ready' && this._transactingIFrameId.includes(event.element)
+        }, this.sendPtToken)
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
         this._removeEventListeners()
+        this._removeHostTokenListener()
     }
 
     sendAsyncPostMessage = <T>(message: AsyncMessage) => new Promise<T>((resolve, reject) => {
@@ -244,7 +238,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this._initialized = true
         common.sendTransactingMessage(element)
         //TODO: Add attestation call here
-
         let message: AsyncMessage =  {
             type: 'pt-static:tokenize-detail',
             data: data,
@@ -328,11 +321,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                 window.location.origin,
             )
         }
-    }
-
-
-    set session(value: string | undefined) {
-        this._session = value
     }
 
     set apiKey(value: string) {

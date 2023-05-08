@@ -27,6 +27,10 @@ class PayTheoryHostedField extends HTMLElement {
   protected _styles: styleObject = common.defaultStyles
   protected fields: Partial<Array<elementTypes>>
   protected _placeholders: placeholderObject = {}
+
+  // Used to store the session id for a connected session from our hosted checkout
+  protected _session: string | undefined
+
   constructor() {
     super()
     this.defineFields = this.defineFields.bind(this)
@@ -52,7 +56,8 @@ class PayTheoryHostedField extends HTMLElement {
     const token = {
       origin: window.location.origin,
       styles: this._styles,
-      placeholders: this._placeholders
+      placeholders: this._placeholders,
+      session: this._session
     }
     const json = JSON.stringify(token)
     const encodedJson = window.btoa(json)
@@ -92,6 +97,10 @@ class PayTheoryHostedField extends HTMLElement {
 
   disconnectedCallback() {
 
+  }
+
+  set session(value: string) {
+    this._session = value
   }
 
   set styles(value: styleObject) {
