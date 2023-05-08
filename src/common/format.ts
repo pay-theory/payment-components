@@ -77,6 +77,7 @@ export const parseInputParams = (inputParams: TransactProps) => {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         fee: fee
     }
+    inputParams.metadata = metadata
     return inputParams
 }
 
