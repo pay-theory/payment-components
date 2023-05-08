@@ -178,7 +178,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             if (data.error) {
                 reject(data.error);
             } else {
-                resolve(data.result);
+                resolve(data);
             }
         };
         iframe.contentWindow.postMessage(message, common.hostedFieldsEndpoint, [channel.port2])
