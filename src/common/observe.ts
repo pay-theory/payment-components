@@ -16,8 +16,8 @@ export const stateObserver = (cb: (value: mainStateObject) => void) => messaging
   cb(event.data)
 })
 
-export const validObserver = (cb: (value: string) => void) => messaging.handleMessage(messaging.validTypeMessage, (message: { type: string, data: string }) => {
-    cb(message.data)
+export const validObserver = (cb: (value: string) => void) => messaging.handleMessage(messaging.validTypeMessage, (event: { type: string, data: string }) => {
+    cb(event.data)
 })
 
 export const readyObserver = (cb: () => void) => messaging.handleMessage(messaging.readyTypeMessage, () => {
