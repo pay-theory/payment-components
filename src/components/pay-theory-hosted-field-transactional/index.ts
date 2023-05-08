@@ -154,7 +154,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
 
     async connectedCallback() {
-        super.connectedCallback();
+        await super.connectedCallback();
         await this.sendPtToken()
     }
 
