@@ -80,7 +80,7 @@ class PayTheoryHostedField extends HTMLElement {
     container?.appendChild(element)
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     this.innerHTML = DOMPurify.sanitize(`<div class="framed">
             <div id="pay-theory-${this.field}-hosted-field-container" class="pay-theory-field">
             </div>
