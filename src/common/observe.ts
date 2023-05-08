@@ -12,11 +12,17 @@ export const errorObserver = (cb: (error: string) => void) => messaging.handleMe
     }
 })
 
-export const stateObserver = (cb: (value: mainStateObject) => void) => messaging.handleMessage(messaging.stateTypeMessage, cb)
+export const stateObserver = (cb: (value: mainStateObject) => void) => messaging.handleMessage(messaging.stateTypeMessage, (event: {type: string, data: mainStateObject}) => {
+  cb(event.data)
+})
 
-export const validObserver = (cb: (value: string) => void) => messaging.handleMessage(messaging.validTypeMessage, cb)
+export const validObserver = (cb: (value: string) => void) => messaging.handleMessage(messaging.validTypeMessage, (message: { type: string, data: string }) => {
+    cb(message.data)
+})
 
-export const readyObserver = (cb: () => void) => messaging.handleMessage(messaging.readyTypeMessage, cb)
+export const readyObserver = (cb: () => void) => messaging.handleMessage(messaging.readyTypeMessage, () => {
+    cb()
+})
 
 export const tokenizeObserver = (cb: (value: any) => void) => messaging.handleHostedFieldMessage(
     messaging.confirmTypeMessage,
