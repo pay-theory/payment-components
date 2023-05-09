@@ -1,5 +1,4 @@
-import * as message from './message'
-import {handleTypedError} from './message'
+import { handleTypedError } from './message'
 import {
     achElementIds,
     cardElementIds,
@@ -11,7 +10,7 @@ import {
 } from "./data";
 import PayTheoryHostedField from "../components/pay-theory-hosted-field";
 import PayTheoryHostedFieldTransactional from "../components/pay-theory-hosted-field-transactional";
-import {ErrorType} from "./pay_theory_types";
+import { ErrorType } from "./pay_theory_types";
 
 export const findTransactingElement = (): PayTheoryHostedFieldTransactional | false => {
     let result: PayTheoryHostedFieldTransactional | false = false
@@ -38,18 +37,6 @@ export interface processedElement<T extends cashElementIds | cardElementIds | ac
     frame: F,
     containerId: string
 }
-
-export const findField = (type: ElementTypes) => (element: PayTheoryHostedField | false, currentElement: PayTheoryHostedField) => {
-    return element ? element : currentElement.field === type ? currentElement : false
-}
-
-export const findCVV = findField('card-cvv')
-export const findExp = findField('card-exp')
-export const findAccountNumber = findField('account-number')
-export const findBankCode = findField('routing-number')
-export const findAccountType = findField('account-type')
-export const findAccountName = findField('account-name')
-export const findZip = findField('billing-zip')
 
 export const addFrame = (
     frameType: webComponentIds,
@@ -108,7 +95,7 @@ export const processElements = <ET extends cashElementIds | cardElementIds | ach
                 }
             }
             if (error) {
-                return message.handleTypedError(ErrorType.FIELD_ERROR, error)
+                return handleTypedError(ErrorType.FIELD_ERROR, error)
             }
         })
     }
