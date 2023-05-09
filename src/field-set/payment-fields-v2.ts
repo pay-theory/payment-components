@@ -3,20 +3,11 @@
 import common from '../common'
 import * as valid from './validation'
 import {achElementIds, cardElementIds, cashElementIds, MERCHANT_FEE, SERVICE_FEE} from "../common/data";
-import PayTheoryHostedField, {placeholderObject, styleObject} from "../components/pay-theory-hosted-field";
+import PayTheoryHostedField from "../components/pay-theory-hosted-field";
 import {processedElement} from "../common/dom";
 import PayTheoryHostedFieldTransactional from "../components/pay-theory-hosted-field-transactional";
 import * as handler from "./handler";
-
-type PayTheoryPaymentFieldsInput = {
-    apiKey: string;
-    styles?: styleObject;
-    metadata?: { [key: string | number]: string | number | boolean };
-    placeholders?: { [key: string]: string };
-    elementIds?: { [key: string]: string };
-    session?: string;
-    feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE;
-}
+import {ErrorType, PayTheoryPaymentFieldsInput, PlaceholderObject, StyleObject} from "../common/pay_theory_types";
 
 type ProcessedObject = {
     card: {
@@ -45,8 +36,8 @@ type ProcessedObject = {
 const mountProcessedElements = async(props: {
     processed: ProcessedObject,
     apiKey: string,
-    styles: styleObject,
-    placeholders: placeholderObject,
+    styles: StyleObject,
+    placeholders: PlaceholderObject,
     session: string | undefined,
     metadata: { [key: string | number]: string | number | boolean },
     removeEventListeners: () => void
@@ -60,7 +51,7 @@ const mountProcessedElements = async(props: {
         if (allElements.length > 0) {
             let error = value.errorCheck(allElements, transactingElements)
             if (error) {
-                return common.handleError(`FIELD_ERROR: ${error}`);
+                return common.handleTypedError(ErrorType.FIELD_ERROR, error);
             }
             value.elements.siblings.forEach((sibling) => {
                 let container = document.getElementById(sibling.containerId)
@@ -150,7 +141,7 @@ const payTheoryFields = async(props: PayTheoryPaymentFieldsInput) => {
             cashProcessed.siblings.length === 0 &&
             achProcessed.transacting.length === 0 &&
             achProcessed.siblings.length === 0) {
-            return common.handleError('NO_FIELDS: There are no PayTheory fields on the DOM to mount')
+            return common.handleTypedError(ErrorType.NO_FIELDS, 'There are no PayTheory fields on the DOM to mount')
         }
 
         const processed: ProcessedObject = {

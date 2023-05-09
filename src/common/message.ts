@@ -1,10 +1,25 @@
 import {hostedCheckoutEndpoint, hostedFieldsEndpoint} from './network'
-import {elementTypes} from "./data";
+import {ElementTypes} from "./data";
+import {
+    CASH_MESSAGE,
+    CashBarcodeResponse,
+    CONFIRMATION_MESSAGE,
+    ConfirmationResponse,
+    ERROR_MESSAGE,
+    ErrorResponse,
+    ErrorType,
+    FAILED_MESSAGE,
+    FailedTransactionResponse,
+    SUCCESS_MESSAGE,
+    SuccessfulTransactionResponse,
+    TOKENIZED_MESSAGE,
+    TokenizedPaymentMethodResponse
+} from "./pay_theory_types";
 
 interface PayTheoryEvent extends MessageEvent {
     payTheory: boolean
 }
-type validTargetFunc = (message: { type: any, element?: elementTypes }) => boolean
+type validTargetFunc = (message: { type: any, element?: ElementTypes }) => boolean
 type handleMessageFunc = (message: any) => void
 
 const windowListenerHandler = (validTarget: validTargetFunc, handleMessage: handleMessageFunc, event: PayTheoryEvent) => {
@@ -76,36 +91,29 @@ export const handleCheckoutMessage = (validTarget: validTargetFunc, handleMessag
 }
 
 export const errorTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt:error'
-
 export const readyTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pay-theory:ready'
-
 export const stateTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pay-theory:state'
-
 export const validTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pay-theory:valid'
 
 export const hostedReadyTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type.endsWith(':ready') && message.type.startsWith('pt-static:')
-
 export const hostedStateTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt-static:state'
-
 export const relayTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt-static:relay'
 
-//passes idempotency from hosted fields to SDK
-export const confirmTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt-static:confirm'
-
-//passes transfer-complete from hosted fields to SDK
-export const completeTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt-static:complete'
-
-//passes confirmation-complete from hosted fields to SDK
-export const confirmationCompleteTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt-static:confirmation-complete'
+//Sends message to the tokenize observer
+export const confirmString = "pt:confirm"
+export const confirmTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === confirmString
+//Sends message to the transacted observer
+export const completeString = "pt:complete"
+export const completeTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === completeString
+//Sends message to the capture observer
+export const captureString = "pt:capture"
+export const confirmationCompleteTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === captureString
+//Sends message to the cash observer
+export const cashString = "pt:cash"
+export const cashTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === cashString
 
 //passes socket error from the hosted fields to SDK
 export const socketErrorTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt-static:error'
-
-//passes session info to sibling fields
-export const siblingTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === `pt-static:siblings`
-
-//Message sent from hosted-fields with data when a cash barcode is sent back
-export const cashCompleteTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === `pt-static:cash-complete`
 
 //Message sent from hosted-fields with data when a card present device is activated or response is received from processor
 export const cardPresentTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt-static:card-present'
@@ -153,7 +161,7 @@ export const postMessageToHostedField = (id: string, message: object) => {
     return console.log('Hosted Field not found')
 }
 
-export const handleError = (error: string) => {
+export const handleError = (error: string): ErrorResponse => {
     window.postMessage({
             type: 'pt:error',
             throws: true,
@@ -161,4 +169,48 @@ export const handleError = (error: string) => {
         },
         window.location.origin,
     );
+    return {
+        type: ERROR_MESSAGE,
+        error,
+    }
+}
+
+export const handleTypedError = (type: ErrorType, error: string): ErrorResponse => {
+    let errorString = `${type}: ${error}`
+    return handleError(errorString)
+}
+
+
+// This function is used for backwards compatibility with the observer functions that were used before the SDK was set up with async functions using MessageChannel
+export const sendObserverMessage = (message: SuccessfulTransactionResponse | FailedTransactionResponse | ErrorResponse | CashBarcodeResponse | TokenizedPaymentMethodResponse | ConfirmationResponse,
+                                    confirmationResponse: boolean = false) => {
+    switch (message.type) {
+        case SUCCESS_MESSAGE:
+        case TOKENIZED_MESSAGE:
+        case FAILED_MESSAGE:
+            let messageType = confirmationResponse ? captureString : completeString
+            window.postMessage({
+                type: messageType,
+                data: message.body
+            }, window.location.origin)
+            break
+        case CASH_MESSAGE:
+            window.postMessage({
+                type: cashString,
+                data: message.body
+            }, window.location.origin)
+            break
+        case CONFIRMATION_MESSAGE:
+            window.postMessage({
+                type: confirmString,
+                data: message.body
+            }, window.location.origin)
+            break
+        case ERROR_MESSAGE:
+            // Do nothing. Error message should have already been sent
+            break
+        default:
+            // Do nothing
+            break
+    }
 }

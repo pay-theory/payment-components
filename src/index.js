@@ -57,7 +57,8 @@ import {
     cardPresentObserver,
     stateObserver,
     validObserver,
-    readyObserver
+    readyObserver,
+    cashObserver
 } from './common/observe';
 
 const create = (apiKey, styles, metadata, feeMode) => createPaymentFieldsLegacy(apiKey, '', styles, metadata, feeMode);
@@ -85,6 +86,7 @@ window.paytheory = {
     stateObserver,
     validObserver,
     readyObserver,
+    cashObserver,
     SURCHARGE,
     SERVICE_FEE,
     INTERCHANGE,

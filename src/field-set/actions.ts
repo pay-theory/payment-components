@@ -3,32 +3,39 @@ import common from "../common";
 import {MERCHANT_FEE} from "../common/data";
 import * as valid from "./validation";
 import {TokenizeDataObject, TransactDataObject} from "../components/pay-theory-hosted-field-transactional";
-import {TokenizeProps, TransactProps} from "../common/format";
+import {
+    CASH_MESSAGE,
+    CashBarcodeResponse,
+    ConfirmationResponse,
+    ERROR_MESSAGE,
+    ErrorResponse,
+    ErrorType,
+    FailedTransactionResponse,
+    SuccessfulTransactionResponse, TokenizedPaymentMethodResponse,
+    TokenizeProps,
+    TransactProps
+} from "../common/pay_theory_types";
+import {localizeCashBarcodeUrl, parseResponse} from "../common/format";
+import {sendObserverMessage} from "../common/message";
 
-export const transact = async (props: TransactProps): Promise<any> => {
+export const transact = async (props: TransactProps): Promise<ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse> => {
     let transactingElement = findTransactingElement()
     if(transactingElement) {
         if(transactingElement.initialized) {
-            let errorString = 'TRANSACTION_IN_PROGRESS: There is already a transaction in progress'
-            common.handleError(errorString)
-            return errorString
+            return common.handleTypedError(ErrorType.ALREADY_INITIALIZED, 'this function has already been called')
         } else if(transactingElement.valid == false) {
-            let errorString = 'INVALID_TRANSACTION_ELEMENT: The transaction element is invalid'
-            common.handleError(errorString)
-            return errorString
+            return common.handleTypedError(ErrorType.NOT_VALID, "The transaction element is invalid")
         } else {
             // Setting to true so that the transact function can't be called again until the transaction is complete
             transactingElement.initialized = true
             let newProps = common.parseInputParams(props)
-            // @ts-ignore Adding line for backwards compatibility
             let {payorInfo, customerInfo, shippingDetails} = newProps
-            newProps.payorInfo = payorInfo || customerInfo || shippingDetails || {}
+            newProps.payorInfo = payorInfo || customerInfo || shippingDetails
             // @ts-ignore Adding line for backwards compatibility
             newProps.feeMode = newProps.feeMode === 'interchange' ? MERCHANT_FEE : newProps.feeMode
+            // Check
             let validity = valid.validTransactionParams(newProps)
-            if (validity === false) {
-                return common.handleError('INVALID_TRANSACTION_PARAMS: The transaction params are invalid')
-            }
+            if (validity) return validity
             let {amount, payTheoryData, metadata = {}, feeMode, confirmation = false} = newProps
             let formattedPayor = valid.formatPayorObject(newProps.payorInfo ?? {})
 
@@ -41,77 +48,82 @@ export const transact = async (props: TransactProps): Promise<any> => {
                     fee_mode: feeMode,
                     confirmation
                 }
-                let response = await transactingElement.transact(data, transactingElement)
-                // TODO: Add logic to check what type the response is and return the appropriate data
-                return response
+                const response = await transactingElement.transact(data, transactingElement)
+                let parsedResponse = parseResponse(response) as ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse
+                if(parsedResponse.type === CASH_MESSAGE) {
+                    return await localizeCashBarcodeUrl(parsedResponse)
+                }
+                return parsedResponse
             } catch (e) {
-                // TODO: Add error handling
-                return e
+                return common.handleError(e?.error || e?.message || e)
             }
         }
+    } else {
+        return common.handleTypedError(ErrorType.TRANSACTING_FIELD_ERROR, "No transacting fields found")
     }
 }
 
-export const confirm = async () => {
+export const confirm = async (): Promise<ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse> => {
     let transactingElement = findTransactingElement()
     if(transactingElement) {
         try {
             let response = await transactingElement.capture()
-            // TODO: Add logic to check what type the response is and return the appropriate data
-            return response
+            return parseResponse(response) as ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse
         } catch (e) {
-            // TODO: Add error handling
-            return e
+            return common.handleError(e?.error || e?.message || e)
         }
+    } else {
+        return common.handleTypedError(ErrorType.TRANSACTING_FIELD_ERROR, "No transacting fields found")
     }
 }
 
-export const cancel = async () => {
+export const cancel = async (): Promise<true | ErrorResponse> => {
     let transactingElement = findTransactingElement()
     if(transactingElement) {
         try {
-            await transactingElement.cancel()
-            return true
+            return await transactingElement.cancel()
         } catch (e) {
-            // TODO: Add error handling
-            return e
+            return common.handleError(e?.error || e?.message || e)
         }
     }
 }
 
-export const tokenizePaymentMethod = async (props: TokenizeProps) => {
+export const tokenizePaymentMethod = async (props: TokenizeProps): Promise<TokenizedPaymentMethodResponse | ErrorResponse> => {
     let transactingElement = findTransactingElement()
     if(transactingElement) {
         if(transactingElement.initialized) {
-            return common.handleError('TRANSACTION_IN_PROGRESS: There is already a transaction in progress')
+            return common.handleTypedError(ErrorType.ALREADY_INITIALIZED, 'this function has already been called')
         } else if(transactingElement.valid == false) {
-            return common.handleError('INVALID_TRANSACTION_ELEMENT: The transaction element is invalid')
+            return common.handleTypedError(ErrorType.NOT_VALID, "The transaction element is invalid")
         } else  {
             transactingElement.initialized = true
             let {payorInfo = {}, payorId, metadata = {}} = props
             //validate the input param types
-            if(!valid.isValidTokenizeParams(payorInfo, metadata)) {
-                return false
-            }
+            let error = valid.isValidTokenizeParams(payorInfo, metadata)
+            if (error) return error
             //validate the payorInfo
-            if(!valid.isValidPayorInfo(payorInfo)) {
-                return false
-            }
+            error = valid.isValidPayorInfo(payorInfo)
+            if (error) return error
             // validate the payorId
-            if(!valid.isValidPayorDetails(payorInfo, payorId)) {
-                return false
-            }
+            error = valid.isValidPayorDetails(payorInfo, payorId)
+            if(error) return error
             const formattedPayor = valid.formatPayorObject(payorInfo)
             try {
                 const data: TokenizeDataObject = {payorInfo: formattedPayor, metadata, payorId}
-                return await transactingElement.tokenize(data, transactingElement)
+                let result = await transactingElement.tokenize(data, transactingElement)
+                let parsedResult = parseResponse(result)
+                sendObserverMessage(parsedResult)
+                return parsedResult as TokenizedPaymentMethodResponse | ErrorResponse
             } catch (e) {
-                // TODO: Add error handling
-                return e
+                return common.handleError(e?.error || e?.message || e)
             }
 
         }
     } else {
-        return common.handleError('NO_TRANSACTING_ELEMENT: There is no transacting element on the DOM to transact')
+        return common.handleTypedError(ErrorType.TRANSACTING_FIELD_ERROR, "No transacting fields found")
     }
+}
+
+export const activateCardPresentDevice = async (): Promise<ErrorResponse | true> => {
+    return true
 }

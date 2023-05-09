@@ -1,11 +1,11 @@
 import common from '../common'
-import {elementTypes, transactingWebComponentIds} from "../common/data";
+import {ElementTypes, transactingWebComponentIds} from "../common/data";
 import payTheoryHostedFieldTransactional from "../components/pay-theory-hosted-field-transactional";
 
 type relayMessage = {
     type: string,
     value: string | object,
-    element: elementTypes| "card-autofill" | "address-autofill"
+    element: ElementTypes| "card-autofill" | "address-autofill"
 }
 
 //relays state to the hosted fields to tokenize the instrument
@@ -49,7 +49,7 @@ export const relayHandler = (message: relayMessage) => {
 
 //Handles state messages and sets state on the web components
 export const stateUpdater = (message: {
-    element: elementTypes,
+    element: ElementTypes,
     state: {
         isFocused: boolean,
         isDirty: boolean,
@@ -74,7 +74,7 @@ export const stateUpdater = (message: {
 export const hostedErrorHandler = (message: {
     type: string,
     error: string
-    field: elementTypes
+    field: ElementTypes
 }) => {
     transactingWebComponentIds.forEach((id) => {
         let element = document.getElementById(id) as payTheoryHostedFieldTransactional

@@ -1,8 +1,9 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import common from '../common'
-import * as message from "../common/message";
-import {TransactProps} from "../common/format";
+import {handleTypedError} from "../common/message";
 import PayTheoryHostedField from "../components/pay-theory-hosted-field";
+import {ErrorResponse, ErrorType, PayorInfo} from "../common/pay_theory_types";
+import {ModifiedTransactProps} from "../common/format";
 
 // partner mode is used to indicate migration builds
 const checkApiKey = (key: string | any, partnerMode: string) => {
@@ -205,42 +206,36 @@ type payorInfo = {
     }
 }
 
-const isValidPayorInfo = (payorInfo: payorInfo) => {
+const isValidPayorInfo = (payorInfo: payorInfo): ErrorResponse | null => {
     if (!validate(payorInfo, 'object')) {
-        message.handleError('INVALID_PARAM: payor_info is not an object')
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'payor_info is not an object')
     }
     if(payorInfo.same_as_billing === true) {
         const allowedKeys = ['same_as_billing', 'email', 'phone']
         const keys = Object.keys(payorInfo)
         for (let key of keys) {
             if (!allowedKeys.includes(key)) {
-                message.handleError(`INVALID_PARAM: if payor_info is same_as_billing, only the following keys are allowed: ${allowedKeys.join(', ')}`)
-                return false
+                return handleTypedError(ErrorType.INVALID_PARAM, `if payor_info is same_as_billing, only the following keys are allowed: ${allowedKeys.join(', ')}`)
             }
         }
     }
     if(payorInfo.email) {
         if (!validate(payorInfo.email, 'string')) {
-            message.handleError('INVALID_PARAM: payor_info.email is not a string')
-            return false
+            return handleTypedError(ErrorType.INVALID_PARAM, 'payor_info.email is not a string')
         }
         if (!validateEmail(payorInfo.email)) {
-            message.handleError('INVALID_PARAM: payor_info.email is not a valid email')
-            return false
+            return handleTypedError(ErrorType.INVALID_PARAM, 'payor_info.email is not a valid email')
         }
     }
     if(payorInfo.phone) {
         if (!validate(payorInfo.phone, 'string')) {
-            message.handleError('INVALID_PARAM: payor_info.phone is not a string')
-            return false
+            return handleTypedError(ErrorType.INVALID_PARAM, 'payor_info.phone is not a string')
         }
         if (!validatePhone(payorInfo.phone)) {
-            message.handleError('INVALID_PARAM: payor_info.phone is not a valid phone number')
-            return false
+            return handleTypedError(ErrorType.INVALID_PARAM, 'payor_info.phone is not a valid phone number')
         }
     }
-    return true
+    return null
 }
 
 const nullifyEmptyStrings = (params: object) => {
@@ -256,7 +251,7 @@ const nullifyEmptyStrings = (params: object) => {
     return newParams;
 }
 
-const formatPayorObject = (payorInfo: payorInfo) => {
+const formatPayorObject = (payorInfo: payorInfo): PayorInfo => {
     // Make a deep copy of the payorInfo object
     let payorCopy = JSON.parse(JSON.stringify(payorInfo))
     // Nullify any empty strings
@@ -268,129 +263,120 @@ const formatPayorObject = (payorInfo: payorInfo) => {
     return payorCopy
 }
 
-const isvalidTransactParams = (amount: any, payorInfo: any, metadata: any) => {
+const isvalidTransactParams = (amount: any, payorInfo: any, metadata: any): ErrorResponse | null => {
     //Make sure that we have the base required settings
     if (!validate(amount, 'number') || !validate(metadata, 'object') || !validate(payorInfo, 'object')) {
         const missing = `${!validate(amount, 'number') ? 'amount ' : ''}${!validate(metadata, 'object') ? 'metadata ' : ''}${!validate(payorInfo, 'object') ? 'payorInfo ' : ''}`
-        message.handleError('INVALID_PARAM: Some required fields are missing or invalid: ' + missing)
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'Some required fields are missing or invalid: ' + missing)
     }
-    return true
+    return null
 }
 
-const isValidTokenizeParams = (payorInfo: any, metadata: any) => {
+const isValidTokenizeParams = (payorInfo: any, metadata: any): ErrorResponse | null => {
     //Make sure that we have the base required settings
     if (!validate(metadata, 'object') || !validate(payorInfo, 'object')) {
         const missing = `${!validate(metadata, 'object') ? 'metadata ' : ''}${!validate(payorInfo, 'object') ? 'payorInfo ' : ''}`
-        message.handleError('INVALID_PARAM: Some required fields are missing or invalid: ' + missing)
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'Some required fields are missing or invalid: ' + missing)
     }
-    return true
+    return null
 }
 
-const isValidAmount = (amount: any) => {
+const isValidAmount = (amount: any): ErrorResponse | null => {
     if (!validate(amount, 'number')) {
-        message.handleError('INVALID_PARAM: amount must be a positive integer')
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'amount must be a positive integer')
     }
-    return true
+    return null
 }
 
-const isValidDeviceId = (deviceId: any) => {
+const isValidDeviceId = (deviceId: any): ErrorResponse | null => {
     if (!validate(deviceId, 'string')) {
-        message.handleError('INVALID_PARAM: deviceId is required and must be a string')
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'deviceId is required and must be a string')
     }
-    return true
+    return null
 }
 
-const isValidPayorDetails = (payorInfo: any, payorId: any) => {
+const isValidPayorDetails = (payorInfo: any, payorId: any): ErrorResponse | null => {
     let keys  = Object.keys(payorInfo)
     // Verify both id and info aren't passed in
     if (payorId && keys.length > 0) {
-        message.handleError('INVALID_PARAM: Unable to process when both payorId and payorInfo are provided')
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'Unable to process when both payorId and payorInfo are provided')
     } else if(payorId && !validate(payorId, 'string')) { // Verify payorId is a string if present
-        message.handleError('INVALID_PARAM: payorId must be a string')
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'payorId must be a string')
     }
-    return true
+    return null
 }
 
-const isValidInvoiceAndRecurringId = (payTheoryInfo: any) => {
+const isValidInvoiceAndRecurringId = (payTheoryInfo: any): ErrorResponse | null => {
     const { invoiceId, recurringId } = payTheoryInfo
     if (invoiceId && !validate(invoiceId, 'string')) {
-        message.handleError('INVALID_PARAM: invoiceId must be a string')
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'invoiceId must be a string')
     }
     if (recurringId && !validate(recurringId, 'string')) {
-        message.handleError('INVALID_PARAM: recurringId must be a string')
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'recurringId must be a string')
     }
     if (invoiceId && recurringId) {
-        message.handleError('INVALID_PARAM: invoiceId and recurringId cannot both be present')
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'invoiceId and recurringId cannot both be present')
     }
-    return true
+    return null
 }
 
-const isValidFeeMode = (feeMode: any) => {
+const isValidFeeMode = (feeMode: any): ErrorResponse | null => {
     if (![common.MERCHANT_FEE, common.SERVICE_FEE].includes(feeMode)) {
-        message.handleError('INVALID_PARAM: feeMode must be either MERCHANT_FEE or SERVICE_FEE')
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'feeMode must be either MERCHANT_FEE or SERVICE_FEE')
     }
-    return true
+    return null
 }
 
-const isValidFeeAmount = (fee: any) => {
+const isValidFeeAmount = (fee: any): ErrorResponse | null => {
     if ((fee || typeof fee === 'number') && !validate(fee, 'number')) {
-        message.handleError('INVALID_PARAM: fee must be a positive integer')
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'fee must be a positive integer')
     }
-    return true
+    return null
 }
 
-const validateHostedCheckoutParams = (callToAction: any, acceptedPaymentMethods: any, paymentName: any) => {
+const validateHostedCheckoutParams = (callToAction: any, acceptedPaymentMethods: any, paymentName: any): ErrorResponse | null => {
     if (callToAction && !common.CTA_TYPES.includes(callToAction)) {
-        message.handleError(`INVALID_PARAM: callToAction must be one of ${common.CTA_TYPES.join(', ')}`)
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, `callToAction must be one of ${common.CTA_TYPES.join(', ')}`)
     }
     if (acceptedPaymentMethods && !common.PAYMENT_METHOD_CONFIGS.includes(acceptedPaymentMethods)) {
-        message.handleError(`INVALID_PARAM: acceptedPaymentMethods must be one of ${common.PAYMENT_METHOD_CONFIGS.join(', ')}`)
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, `acceptedPaymentMethods must be one of ${common.PAYMENT_METHOD_CONFIGS.join(', ')}`)
     }
     if (!validate(paymentName, 'string')) {
-        message.handleError('INVALID_PARAM: paymentName must be a string')
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'paymentName must be a string')
     }
-    return true
+    return null
 }
 
 // Validate the details passed in for a transaction or redirect button
-const validTransactionParams = (props: TransactProps) => {
+const validTransactionParams = (props: ModifiedTransactProps): ErrorResponse | null => {
     const { amount, payorInfo, metadata, payTheoryData, feeMode } = props
     //validate the input param types
-    if(!isvalidTransactParams(amount, payorInfo, metadata)) return false
+    let error = isvalidTransactParams(amount, payorInfo, metadata)
+    if(error) return error
     //validate the amount
-    if(!isValidAmount(amount)) return false
+    error = isValidAmount(amount)
+    if(error) return error
     //validate the payorInfo
-    if(!isValidPayorInfo(payorInfo ?? {})) return false
+    error = isValidPayorInfo(payorInfo)
+    if(error) return error
     // validate the payorId
-    if(!isValidPayorDetails(payorInfo, payTheoryData?.payor_id)) return false
+    error = isValidPayorDetails(payorInfo, payTheoryData?.payor_id)
+    if(error) return error
     // validate the fee mode
-    if(!isValidFeeMode(feeMode)) return false
+    error = isValidFeeMode(feeMode)
+    if(error) return error
     // validate the invoice and recurring id
-    if(!isValidInvoiceAndRecurringId(payTheoryData)) return false
+    error = isValidInvoiceAndRecurringId(payTheoryData)
+    if(error) return error
     // validate the fee
     return isValidFeeAmount(payTheoryData?.fee);
 }
 
-const validQRSize = (size: any) => {
+const validQRSize = (size: any): ErrorResponse | null => {
     if (!validate(size, 'number')) {
-        message.handleError('INVALID_PARAM: size must be a number')
-        return false
+        return handleTypedError(ErrorType.INVALID_PARAM, 'size must be a number')
     }
-    return true
+    return null
 }
 
 
