@@ -61,9 +61,8 @@ import {
     cashObserver
 } from './common/observe';
 
-const create = (apiKey, styles, metadata, feeMode) => createPaymentFieldsLegacy(apiKey, '', styles, metadata, feeMode);
-const createPaymentFields = (apiKey, clientId, styles, metadata) =>
-{
+const create = (apiKey, styles, metadata, feeMode) => createPaymentFieldsLegacy(apiKey, undefined, styles, metadata, feeMode);
+const createPaymentFields = (apiKey, clientId, styles, metadata) => {
     console.warn('createPaymentFields has been deprecated');
     return createPaymentFieldsLegacy(apiKey, clientId, styles, metadata, MERCHANT_FEE);
 };
