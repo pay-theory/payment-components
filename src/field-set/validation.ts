@@ -4,6 +4,19 @@ import {handleTypedError} from "../common/message";
 import PayTheoryHostedField from "../components/pay-theory-hosted-field";
 import {ErrorResponse, ErrorType, PayorInfo} from "../common/pay_theory_types";
 import {ModifiedTransactProps} from "../common/format";
+import {ElementTypes} from "../common/data";
+
+const findField = (type: ElementTypes) => (element: PayTheoryHostedField | false, currentElement: PayTheoryHostedField) => {
+    return element ? element : currentElement.field === type ? currentElement : false
+}
+
+const findCVV = findField('card-cvv')
+const findExp = findField('card-exp')
+const findAccountNumber = findField('account-number')
+const findBankCode = findField('routing-number')
+const findAccountType = findField('account-type')
+const findAccountName = findField('account-name')
+const findZip = findField('billing-zip')
 
 // partner mode is used to indicate migration builds
 const checkApiKey = (key: string | any, partnerMode: string) => {
@@ -65,15 +78,15 @@ const checkCreateParams = (key: any, mode: any, metadata: any, styles: any, env:
 
 // Checks the dom for elements and returns errors if there are missing elements or conflicting elements
 const findCardNumberError = (processedElements: PayTheoryHostedField[]): false | string => {
-    if (processedElements.reduce(common.findExp, false) === false) {
+    if (processedElements.reduce(findExp, false) === false) {
         return  'missing credit card expiration field required for payments'
     }
 
-    if (processedElements.reduce(common.findCVV, false) === false) {
+    if (processedElements.reduce(findCVV, false) === false) {
         return  'missing credit card CVV field required for payments'
     }
 
-    if(processedElements.reduce(common.findZip, false) === false) {
+    if(processedElements.reduce(findZip, false) === false) {
         return  'missing billing zip field required for payments'
     }
 
@@ -84,15 +97,15 @@ const findCardNumberError = (processedElements: PayTheoryHostedField[]): false |
 }
 
 const findCombinedCardError = (processedElements: PayTheoryHostedField[]) => {
-    if (processedElements.reduce(common.findExp, false)) {
+    if (processedElements.reduce(findExp, false)) {
         return  'expiration is not allowed when using combined credit card'
     }
 
-    if (processedElements.reduce(common.findCVV, false)) {
+    if (processedElements.reduce(findCVV, false)) {
         return  'cvv is not allowed when using combined credit card'
     }
 
-    if(processedElements.reduce(common.findZip, false) === false) {
+    if(processedElements.reduce(findZip, false) === false) {
         return  'missing billing zip field required for payments'
     }
 
@@ -103,16 +116,16 @@ const findCombinedCardError = (processedElements: PayTheoryHostedField[]) => {
 }
 
 const achCheck = [{
-    check: common.findAccountName,
+    check: findAccountName,
     error: 'missing ACH account name field required for payments'
 }, {
-    check: common.findAccountNumber,
+    check: findAccountNumber,
     error: 'missing ACH account number field required for payments'
 }, {
-    check: common.findAccountType,
+    check: findAccountType,
     error: 'missing ACH account type field required for payments'
 }, {
-    check: common.findBankCode,
+    check: findBankCode,
     error: 'missing ACH routing number field required for payments'
 }, ]
 
@@ -155,11 +168,11 @@ const findCashError = (processedElements: PayTheoryHostedField[]): string | fals
         return error
     }
 
-    if (processedElements.reduce(common.findField('cash-name'), false) === false) {
+    if (processedElements.reduce(findField('cash-name'), false) === false) {
         error = 'missing Cash name field required for payments'
     }
 
-    if (processedElements.reduce(common.findField('cash-contact'), false) === false) {
+    if (processedElements.reduce(findField('cash-contact'), false) === false) {
         error = 'missing Cash Contact info field required for payments'
     }
 
@@ -171,7 +184,7 @@ const findCardPresentError = (processedElements: PayTheoryHostedField[]): string
         return false
     }
     // @ts-ignore
-    if (processedElements.reduce(common.findField('card-present'), false) === false) {
+    if (processedElements.reduce(findField('card-present'), false) === false) {
         return 'missing Card Present field required for payments'
     }
 
