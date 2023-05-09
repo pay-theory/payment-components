@@ -1,6 +1,8 @@
 import common from '../common'
 import {ElementTypes, transactingWebComponentIds} from "../common/data";
-import payTheoryHostedFieldTransactional from "../components/pay-theory-hosted-field-transactional";
+import payTheoryHostedFieldTransactional, {
+    IncomingFieldState
+} from "../components/pay-theory-hosted-field-transactional";
 
 type relayMessage = {
     type: string,
@@ -50,12 +52,7 @@ export const relayHandler = (message: relayMessage) => {
 //Handles state messages and sets state on the web components
 export const stateUpdater = (message: {
     element: ElementTypes,
-    state: {
-        isFocused: boolean,
-        isDirty: boolean,
-        errorMessages: string[],
-        isConnected?: boolean
-    }
+    state: IncomingFieldState
     type: string
 }) => {
     transactingWebComponentIds.forEach((id) => {
