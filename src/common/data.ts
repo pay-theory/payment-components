@@ -45,7 +45,7 @@ export const initialState: {
     errorMessages: []
 }
 
-export const initialCardState: Partial<Record<elementTypes, typeof initialState>> = {
+export const initialCardState: Partial<Record<ElementTypes, typeof initialState>> = {
     'card-number': initialState,
     'card-exp': initialState,
     'card-cvv': initialState,
@@ -57,14 +57,14 @@ export const initialCardState: Partial<Record<elementTypes, typeof initialState>
     'billing-zip': initialState
 }
 
-export const initialAchState: Partial<Record<elementTypes, typeof initialState>> = {
+export const initialAchState: Partial<Record<ElementTypes, typeof initialState>> = {
     'account-number': initialState,
     'account-type': initialState,
     'account-name': initialState,
     'routing-number': initialState
 }
 
-export const initialCashState: Partial<Record<elementTypes, typeof initialState>> = {
+export const initialCashState: Partial<Record<ElementTypes, typeof initialState>> = {
     'cash-name': initialState,
     'cash-contact': initialState,
 }
@@ -114,7 +114,7 @@ export type cashElementIds = {
     'cash-contact': string
 }
 
-export type elementTypes = keyof achElementIds | keyof cardElementIds | keyof cashElementIds
+export type ElementTypes = keyof achElementIds | keyof cardElementIds | keyof cashElementIds
 
 export const checkoutButtonField = 'pay-theory-checkout-button'
 export const checkoutQRField = 'pay-theory-checkout-qr'
@@ -187,11 +187,11 @@ export const hostedFieldMap: Record<TransactingType, string> = {
     'ach': ACH_IFRAME
 }
 
-const isCardField = (string: elementTypes) => string.startsWith("card") || string.startsWith('billing')
-const isCashField = (string: elementTypes) => string.startsWith("cash")
-const isACHField = (string: elementTypes) => string.startsWith("account") || string.startsWith('routing')
+const isCardField = (string: ElementTypes) => string.startsWith("card") || string.startsWith('billing')
+const isCashField = (string: ElementTypes) => string.startsWith("cash")
+const isACHField = (string: ElementTypes) => string.startsWith("account") || string.startsWith('routing')
 
-const isFieldType = (type: elementTypes): TransactingType | false => {
+const isFieldType = (type: ElementTypes): TransactingType | false => {
     if (isCardField(type)) return 'card'
     if (isCashField(type)) return 'cash'
     if (isACHField(type)) return 'ach'
@@ -232,7 +232,7 @@ export const cardWebComponentIds = [COMBINED_CARD, CARD_NAME, CARD_BILLING_LINE1
 
 export type webComponentIds = typeof transactingWebComponentIds[number] | typeof achWebComponentIds[number] | typeof cashWebComponentIds[number] | typeof cardWebComponentIds[number]
 
-export const webComponentMap: Record<elementTypes, webComponentIds> = {
+export const webComponentMap: Record<ElementTypes, webComponentIds> = {
     'account-name': ACH_ACCOUNT_NAME,
     'account-number': ACH_ACCOUNT_NUMBER,
     'account-type': ACH_ACCOUNT_TYPE,

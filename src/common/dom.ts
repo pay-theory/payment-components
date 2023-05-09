@@ -1,12 +1,20 @@
 import * as message from './message'
-import {achElementIds, cardElementIds, cashElementIds, elementTypes, webComponentIds, webComponentMap, transactingWebComponentIds} from "./data";
+import {handleTypedError} from './message'
+import {
+    achElementIds,
+    cardElementIds,
+    cashElementIds,
+    ElementTypes,
+    transactingWebComponentIds,
+    webComponentIds,
+    webComponentMap
+} from "./data";
 import PayTheoryHostedField from "../components/pay-theory-hosted-field";
 import PayTheoryHostedFieldTransactional from "../components/pay-theory-hosted-field-transactional";
-import {handleError} from "./message";
+import {ErrorType} from "./pay_theory_types";
 
 export const findTransactingElement = (): PayTheoryHostedFieldTransactional | false => {
     let result: PayTheoryHostedFieldTransactional | false = false
-    // @ts-ignore
     transactingWebComponentIds.forEach((id) => {
         let element = document.getElementsByName(id)
         if (element.length > 0) {
@@ -15,7 +23,7 @@ export const findTransactingElement = (): PayTheoryHostedFieldTransactional | fa
                 if(result == false) {
                     result = transactingElement as PayTheoryHostedFieldTransactional
                 } else {
-                    handleError("Multiple transacting elements found")
+                    handleTypedError(ErrorType.TRANSACTING_FIELD_ERROR, "There can only be one transacting element visible on the page.")
                     return false
                 }
             }
@@ -31,7 +39,7 @@ export interface processedElement<T extends cashElementIds | cardElementIds | ac
     containerId: string
 }
 
-export const findField = (type: elementTypes) => (element: PayTheoryHostedField | false, currentElement: PayTheoryHostedField) => {
+export const findField = (type: ElementTypes) => (element: PayTheoryHostedField | false, currentElement: PayTheoryHostedField) => {
     return element ? element : currentElement.field === type ? currentElement : false
 }
 
@@ -58,7 +66,7 @@ const processContainer = <T extends cashElementIds | cardElementIds | achElement
     processedElement<T, F> | string => {
     const contained = document.getElementById(`${elements[type]}-tag-frame`)
     if (contained === null) {
-        const frameType = webComponentMap[type as elementTypes]
+        const frameType = webComponentMap[type as ElementTypes]
         const frame = addFrame(frameType, elements[type] as string) as F
         return { type, frame, containerId: elements[type] as string }
     }
@@ -100,7 +108,7 @@ export const processElements = <ET extends cashElementIds | cardElementIds | ach
                 }
             }
             if (error) {
-                return message.handleError(`FIELD_ERROR: ${error}`)
+                return message.handleTypedError(ErrorType.FIELD_ERROR, error)
             }
         })
     }

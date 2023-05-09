@@ -2,19 +2,37 @@
 import DOMPurify from 'dompurify'
 import PayTheoryHostedField from '../pay-theory-hosted-field'
 import common from '../../common'
-import {ACH_IFRAME, CARD_IFRAME, CASH_IFRAME, defaultFeeMode, elementTypes, TransactingType, transactingWebComponentMap} from "../../common/data";
-import {handleError} from "../../common/message";
-import {PayorInfo, PayTheoryDataObject, SuccessfulTransactionObject} from "../../common/format";
+import {
+    ACH_IFRAME,
+    CARD_IFRAME,
+    CASH_IFRAME,
+    defaultFeeMode,
+    ElementTypes,
+    TransactingType,
+    transactingWebComponentMap
+} from "../../common/data";
+import {handleTypedError} from "../../common/message";
+import {
+    CashBarcodeMessage,
+    ConfirmationMessage,
+    ErrorMessage,
+    FailedTransactionMessage,
+    PayTheoryDataObject,
+    SuccessfulTransactionMessage,
+    TokenizedPaymentMethodMessage
+} from "../../common/format";
+import {
+    ErrorResponse,
+    ErrorType,
+    FieldState,
+    PayorInfo,
+    StateObject
+} from "../../common/pay_theory_types";
 
-export type stateObject = {
-    isFocused: boolean
-    isDirty: boolean
-    errorMessages: string[]
-    element?: elementTypes
+export interface IncomingFieldState extends FieldState {
+    element?: ElementTypes
     isConnected?: boolean
 }
-
-export type mainStateObject = Partial<Record<elementTypes, stateObject>>
 
 export type TransactDataObject = {
     amount: number,
@@ -32,10 +50,10 @@ export type TokenizeDataObject = {
 }
 
 type ConstructorProps = {
-    fieldTypes: Array<elementTypes>,
-    requiredValidFields: Array<elementTypes>,
+    fieldTypes: Array<ElementTypes>,
+    requiredValidFields: Array<ElementTypes>,
     transactingIFrameId: typeof CARD_IFRAME | typeof ACH_IFRAME | typeof CASH_IFRAME,
-    stateGroup: mainStateObject,
+    stateGroup: Partial<StateObject>,
     transactingType: TransactingType
 }
 
@@ -63,19 +81,19 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     protected _isReady: boolean = false
 
     // List of fields that are a part of this group used to transact for this transactional element
-    protected _fieldTypes: Array<elementTypes>
+    protected _fieldTypes: Array<ElementTypes>
 
     // Used to track what elements are being used for the transaction
-    protected _processedElements: Partial<Array<elementTypes>> = []
+    protected _processedElements: Partial<Array<ElementTypes>> = []
 
     // Used to track the state of the elements that are being used for the transaction of this transactional element
-    protected _stateGroup: mainStateObject
+    protected _stateGroup: Partial<StateObject>
 
     // Used to track the error message for the element
     protected _error: string | undefined
 
     // Used to track if the transactional element is valid
-    protected _requiredValidFields: Array<elementTypes>
+    protected _requiredValidFields: Array<ElementTypes>
     protected _isValid: boolean = false
 
     // Help to track the transacting type of the transactional element
@@ -143,12 +161,10 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                     origin: ptToken['origin']
                 }, common.hostedFieldsEndpoint)
             } else {
-                // TODO: Better Error Handling
-                handleError('Unable to fetch find transacting iframe')
+                handleTypedError(ErrorType.NO_TOKEN, 'Unable to find transacting iframe')
             }
         } else {
-            // TODO: Better Error Handling
-            handleError('Unable to fetch pt-token')
+            handleTypedError(ErrorType.NO_TOKEN, 'Unable to fetch pt-token')
         }
     }
 
@@ -156,7 +172,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         // Set up a listener for the hosted field to message saying it is ready for the pt-token to be sent
         this._removeHostTokenListener = common.handleHostedFieldMessage((event: {
             type: any,
-            element: elementTypes,
+            element: ElementTypes,
         }) => {
             return event.type === 'pt-static:pt_token_ready' && this._transactingIFrameId.includes(event.element)
         }, this.sendPtToken)
@@ -176,7 +192,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         channel.port1.onmessage = ({data}) => {
             channel.port1.close();
             if (data.error) {
-                reject(data.error);
+                reject(data);
             } else {
                 resolve(data);
             }
@@ -195,7 +211,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             async: true
         }
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
-        return this.sendAsyncPostMessage<SuccessfulTransactionObject>(message, transactingIFrame)
+        return this.sendAsyncPostMessage<ConfirmationMessage | SuccessfulTransactionMessage | FailedTransactionMessage | CashBarcodeMessage | ErrorMessage>(message, transactingIFrame)
     }
 
     capture() {
@@ -204,11 +220,11 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             async: true
         }
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
-        return this.sendAsyncPostMessage<SuccessfulTransactionObject>(message, transactingIFrame)
+        return this.sendAsyncPostMessage<SuccessfulTransactionMessage | FailedTransactionMessage | ErrorMessage>(message, transactingIFrame)
     }
 
 
-    async cancel() {
+    async cancel(): Promise<true | ErrorResponse> {
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
         if (transactingIFrame) {
             transactingIFrame.contentWindow!.postMessage({
@@ -222,15 +238,15 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                 return true
             } else {
                 // Successfully sent the cancel message but failed to reset the token
-                return false
+                return handleTypedError(ErrorType.CANCEL_FAILED, 'Failed to reset token')
             }
         } else {
             // Failed to find the transacting iframe to send the cancel message
-            return false
+            return handleTypedError(ErrorType.CANCEL_FAILED, 'Failed to find transacting iframe')
         }
     }
 
-    tokenize(data: TokenizeDataObject, element: PayTheoryHostedFieldTransactional) {
+    tokenize(data: TokenizeDataObject, element: PayTheoryHostedFieldTransactional): Promise<TokenizedPaymentMethodMessage | ErrorMessage> {
         this._isTransactingElement = true
         this._initialized = true
         common.sendTransactingMessage(element)
@@ -241,7 +257,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             async: true
         }
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
-        return this.sendAsyncPostMessage<SuccessfulTransactionObject>(message, transactingIFrame)
+        return this.sendAsyncPostMessage<TokenizedPaymentMethodMessage | ErrorMessage>(message, transactingIFrame)
     }
 
     sendStateMessage() {
@@ -341,19 +357,11 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this._initialized = value
     }
 
-    get isTransactingElement() {
-        return this._isTransactingElement
-    }
-
-    set isTransactingElement(value: boolean) {
-        this._isTransactingElement = value
-    }
-
     get processedElements() {
         return this._processedElements
     }
 
-    set processedElements(value: Partial<Array<elementTypes>>) {
+    set processedElements(value: Partial<Array<ElementTypes>>) {
         this._processedElements = value
     }
 
@@ -365,7 +373,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         return this._stateGroup
     }
 
-    set state(value: stateObject | undefined) {
+    set state(value: IncomingFieldState | undefined) {
         // Check to see if the state object has an element property and if it is in the state group
         if (value && value.element && value.element in this._stateGroup) {
             // Update the state group with the new state

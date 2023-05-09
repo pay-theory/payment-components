@@ -2,30 +2,17 @@
 import common from '../../common'
 // @ts-ignore
 import DOMPurify from 'dompurify'
-import {elementTypes} from "../../common/data";
+import {ElementTypes} from "../../common/data";
+import {StyleObject} from "../../common/pay_theory_types";
 
-export type styleObject = {
-  default: object;
-  success: object;
-  error: object;
-  radio?: {
-    width: number;
-    fill: string;
-    stroke: string;
-    text: {
-      fontSize: string;
-      color: string;
-    }
-  }
-  hidePlaceholder?: boolean;
-}
 
-export type placeholderObject = Partial<Record<elementTypes, string>>
+
+export type placeholderObject = Partial<Record<ElementTypes, string>>
 
 class PayTheoryHostedField extends HTMLElement {
-  protected _field: elementTypes | undefined
-  protected _styles: styleObject = common.defaultStyles
-  protected fields: Partial<Array<elementTypes>>
+  protected _field: ElementTypes | undefined
+  protected _styles: StyleObject = common.defaultStyles
+  protected fields: Partial<Array<ElementTypes>>
   protected _placeholders: placeholderObject = {}
 
   // Used to store the session id for a connected session from our hosted checkout
@@ -40,11 +27,11 @@ class PayTheoryHostedField extends HTMLElement {
     this.fields = []
   }
 
-  setFields(fieldArray: Array<elementTypes>) {
+  setFields(fieldArray: Array<ElementTypes>) {
     this.fields = fieldArray
   }
 
-  setFieldName(name: elementTypes) {
+  setFieldName(name: ElementTypes) {
     this._field = name
   }
 
@@ -103,7 +90,7 @@ class PayTheoryHostedField extends HTMLElement {
     this._session = value
   }
 
-  set styles(value: styleObject) {
+  set styles(value: StyleObject) {
     if (value) {
       this._styles = value;
     }

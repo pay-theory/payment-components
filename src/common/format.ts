@@ -1,30 +1,31 @@
-import {MERCHANT_FEE, SERVICE_FEE} from "./data";
 import * as data from "./data";
+import {MERCHANT_FEE, SERVICE_FEE} from "./data";
+import {
+    CASH_MESSAGE,
+    CashBarcodeObject,
+    CashBarcodeResponse,
+    CONFIRMATION_MESSAGE,
+    ConfirmationResponse,
+    ErrorResponse,
+    FAILED_MESSAGE,
+    FailedTransactionResponse,
+    PayorInfo,
+    SUCCESS_MESSAGE,
+    SuccessfulTransactionResponse,
+    TOKENIZED_MESSAGE,
+    TokenizedPaymentMethodObject,
+    TokenizedPaymentMethodResponse,
+    TransactProps
+} from "./pay_theory_types";
+import {handleError} from "./message";
+import common from "./index";
 
 // Message Types that would come back from the iframe for async messages
-export const CONFIRMATION_STEP = "confirmation-step"
-export const ERROR = "error"
-export const SUCCESSFUL_TRANSACTION = "successful-transaction"
-export const FAILED_TRANSACTION = "failed-transaction"
-export const CANCELLED_TRANSACTION = "cancelled-transaction"
-export const CASH_BARCODE = "cash-barcode"
-export const PAYMENT_METHOD_TOKENIZED = "payment-method-tokenized"
-export type MessageType = typeof CONFIRMATION_STEP | typeof ERROR | typeof SUCCESSFUL_TRANSACTION | typeof FAILED_TRANSACTION | typeof CANCELLED_TRANSACTION | typeof CASH_BARCODE | typeof PAYMENT_METHOD_TOKENIZED
+export const CONFIRMATION_STEP = "pt-static:confirm"
+export const CASH_BARCODE_STEP = "pt-static:cash-complete"
+export const COMPLETE_STEP = "pt-static:complete"
+export const ERROR_STEP = "pt-static:error"
 
-export type PayorInfo = {
-    first_name: string,
-    last_name: string,
-    email: string,
-    phone: string,
-    personal_address: {
-        line1: string,
-        line2: string,
-        city: string,
-        region: string,
-        postal_code: string,
-        country: string
-    }
-}
 
 export type PayTheoryDataObject = {
     account_code: string | number,
@@ -39,33 +40,16 @@ export type PayTheoryDataObject = {
     fee?: number
 }
 
-export type TokenizeProps = {
-    payorInfo?: PayorInfo,
-    payorId?: string,
-    metadata?: {[keys: string | number]: string | number | boolean },
+export interface ModifiedTransactProps extends TransactProps {
+    payTheoryData: PayTheoryDataObject,
+    customerInfo?: PayorInfo,
+    shippingDetails?: PayorInfo
 }
 
-export type TransactProps = {
-    amount: number,
-    payorInfo?: PayorInfo,
-    payorId?: string,
-    metadata?: {[keys: string | number]: string | number | boolean },
-    feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE,
-    fee?: number,
-    confirmation?: boolean,
-    accountCode?: string
-    reference?: string,
-    paymentParameters?: string,
-    invoiceId?: string,
-    sendReceipt?: boolean,
-    receiptDescription?: string,
-    recurringId?: string,
-    payTheoryData?: PayTheoryDataObject
-}
-
-export const parseInputParams = (inputParams: TransactProps) => {
-    let { payorId, invoiceId, recurringId, fee, metadata = {} } = inputParams
-    inputParams.payTheoryData = {
+export const parseInputParams = (inputParams: TransactProps): ModifiedTransactProps => {
+    let {payorId, invoiceId, recurringId, fee, metadata = {}} = inputParams
+    let inputCopy = JSON.parse(JSON.stringify(inputParams)) as ModifiedTransactProps
+    inputCopy.payTheoryData = {
         account_code: inputParams.accountCode || metadata["pay-theory-account-code"] as string,
         reference: inputParams.reference || metadata["pay-theory-reference"] as string,
         payment_parameters: inputParams.paymentParameters || metadata["payment-parameters-name"] as string,
@@ -77,17 +61,13 @@ export const parseInputParams = (inputParams: TransactProps) => {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         fee: fee
     }
-    inputParams.metadata = metadata
-    return inputParams
+    inputCopy.metadata = metadata
+    return inputCopy
 }
 
-export type ConfirmationObject = {
-    first_six: string,
-    last_four: string,
-    brand: string,
-    receipt_number: string,
-    amount: number,
-    service_fee: number
+export type ErrorMessage = {
+    type: typeof ERROR_STEP,
+    error: string
 }
 
 export type ConfirmationMessage = {
@@ -103,9 +83,11 @@ export type ConfirmationMessage = {
     }
 }
 
-export const parseConfirmationMessage = (message: ConfirmationMessage): ConfirmationObject => {
-        const fee = message.body.fee_mode === data.SERVICE_FEE ? message.body.fee : 0
-        return {
+export const parseConfirmationMessage = (message: ConfirmationMessage): ConfirmationResponse => {
+    const fee = message.body.fee_mode === data.SERVICE_FEE ? message.body.fee : 0
+    return {
+        type: CONFIRMATION_MESSAGE,
+        body: {
             "first_six": message.body.first_six,
             "last_four": message.body.last_four,
             "brand": message.body.brand,
@@ -113,25 +95,12 @@ export const parseConfirmationMessage = (message: ConfirmationMessage): Confirma
             "amount": message.body.amount,
             "service_fee": fee
         }
-}
-
-export type SuccessfulTransactionObject = {
-    receipt_number: string,
-    last_four: string,
-    brand: string,
-    created_at: string,
-    amount: number,
-    service_fee: number,
-    state: string,
-    // Keeping tags in the response for backwards compatibility
-    tags: {[keys: string | number]: string | number | boolean },
-    metadata: {[keys: string | number]: string | number | boolean },
-    payor_id: string,
-    payment_method_id: string
+    }
 }
 
 export type SuccessfulTransactionMessage = {
-    type: typeof SUCCESSFUL_TRANSACTION
+    type: typeof COMPLETE_STEP
+    paymentType: "transfer"
     body: {
         receipt_number: string,
         last_four: string,
@@ -139,60 +108,116 @@ export type SuccessfulTransactionMessage = {
         created_at: string,
         amount: number,
         service_fee: number,
-        state: string,
-        metadata: {[keys: string | number]: string | number | boolean },
+        state: "PENDING" | "SUCCESS",
+        metadata: { [keys: string | number]: string | number | boolean },
         payor_id: string,
         payment_method_id: string
     }
 }
 
-export const parseSuccessfulTransactionMessage = (message: SuccessfulTransactionMessage): SuccessfulTransactionObject => {
+export const parseSuccessfulTransactionMessage = (message: SuccessfulTransactionMessage): SuccessfulTransactionResponse => {
     return {
-        "receipt_number": message.body.receipt_number,
-        "last_four": message.body.last_four,
-        "brand": message.body.brand,
-        "created_at": message.body.created_at,
-        "amount": message.body.amount,
-        "service_fee": message.body.service_fee,
-        "state": message.body.state,
-        // Keeping tags in the response for backwards compatibility
-        "tags": message.body.metadata,
-        "metadata": message.body.metadata,
-        "payor_id": message.body.payor_id,
-        "payment_method_id": message.body.payment_method_id
+        type: SUCCESS_MESSAGE,
+        body: {
+            "receipt_number": message.body.receipt_number,
+            "last_four": message.body.last_four,
+            "brand": message.body.brand,
+            "created_at": message.body.created_at,
+            "amount": message.body.amount,
+            "service_fee": message.body.service_fee,
+            "state": message.body.state,
+            // Keeping tags in the response for backwards compatibility
+            "tags": message.body.metadata,
+            "metadata": message.body.metadata,
+            "payor_id": message.body.payor_id,
+            "payment_method_id": message.body.payment_method_id
+        }
     }
 }
 
-export type FailedTransactionObject = {
-    receipt_number: string,
-    last_four: string,
-    brand: string,
-    state: string,
-    type: string,
-    payor_id: string
-}
-
 export type FailedTransactionMessage = {
-    type: typeof FAILED_TRANSACTION
+    type: typeof COMPLETE_STEP
+    paymentType: "transfer"
     body: {
         receipt_number: string,
         last_four: string,
         brand: string,
-        state: string,
+        state: "FAILURE",
         type: string,
         payor_id: string
     }
 }
 
-export const parseFailedTransactionMessage = (message: FailedTransactionMessage): FailedTransactionObject => {
+export const parseFailedTransactionMessage = (message: FailedTransactionMessage): FailedTransactionResponse => {
     return {
-        "receipt_number": message.body.receipt_number,
-        "last_four": message.body.last_four,
-        "brand": message.body.brand,
-        "state": message.body.state,
-        "type": message.body.type,
-        "payor_id": message.body.payor_id,
+        type: FAILED_MESSAGE,
+        body: {
+            "receipt_number": message.body.receipt_number,
+            "last_four": message.body.last_four,
+            "brand": message.body.brand,
+            "state": message.body.state,
+            "type": message.body.type,
+            "payor_id": message.body.payor_id,
+        }
     }
 }
 
-//TODO: Add type for cash barcode, errors, tokenization
+export type CashBarcodeMessage = {
+    type: typeof CASH_BARCODE_STEP
+    body: CashBarcodeObject
+}
+
+export type TokenizedPaymentMethodMessage = {
+    type: typeof COMPLETE_STEP
+    paymentType: "tokenize"
+    body: TokenizedPaymentMethodObject
+}
+
+export const parseResponse = (message: ConfirmationMessage | SuccessfulTransactionMessage | FailedTransactionMessage | CashBarcodeMessage | TokenizedPaymentMethodMessage | ErrorMessage): ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse | TokenizedPaymentMethodResponse | ErrorResponse => {
+    switch (message.type) {
+        case CONFIRMATION_STEP:
+            return parseConfirmationMessage(message)
+        case COMPLETE_STEP:
+            if (message.paymentType === "tokenize") {
+                return {
+                    type: TOKENIZED_MESSAGE,
+                    body: message.body
+                }
+            } else {
+                if (message.body.state === "FAILURE") {
+                    return parseFailedTransactionMessage(message as FailedTransactionMessage)
+                } else {
+                    return parseSuccessfulTransactionMessage(message as SuccessfulTransactionMessage)
+                }
+            }
+        case CASH_BARCODE_STEP:
+            return {
+                type: CASH_MESSAGE,
+                body: message.body
+            }
+        case ERROR_STEP:
+            return handleError(message.error)
+        default:
+            return message
+    }
+}
+
+export const localizeCashBarcodeUrl = (response: CashBarcodeResponse): Promise<CashBarcodeResponse> => new Promise((resolve, _) => {{
+        const options = {
+            timeout: 5000,
+            maximumAge: 0
+        };
+
+        const success: PositionCallback = (pos) => {
+            const crd = pos.coords;
+            response.body.mapUrl = `https://map.payithere.com/biller/4b8033458847fec15b9c840c5b574584/?lat=${crd.latitude}&lng=${crd.longitude}`
+            resolve(response)
+        }
+
+        function error() {
+            resolve(response)
+        }
+
+        navigator.geolocation.getCurrentPosition(success, error, options);
+    }
+})
