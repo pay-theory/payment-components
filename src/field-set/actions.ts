@@ -50,8 +50,9 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
                 const response = await transactingElement.transact(data, transactingElement)
                 let parsedResponse = parseResponse(response) as ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse
                 if(parsedResponse.type === CASH_MESSAGE) {
-                    return await localizeCashBarcodeUrl(parsedResponse)
+                    parsedResponse = await localizeCashBarcodeUrl(parsedResponse)
                 }
+                sendObserverMessage(parsedResponse)
                 return parsedResponse
             } catch (e) {
                 return common.handleError(e?.error || e?.message || e)
@@ -67,7 +68,9 @@ export const confirm = async (): Promise<ErrorResponse | SuccessfulTransactionRe
     if(transactingElement) {
         try {
             let response = await transactingElement.capture()
-            return parseResponse(response) as ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse
+            const parsedResult = parseResponse(response) as ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse
+            sendObserverMessage(parsedResult)
+            return parsedResult
         } catch (e) {
             return common.handleError(e?.error || e?.message || e)
         }
