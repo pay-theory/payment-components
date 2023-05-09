@@ -191,19 +191,19 @@ export const sendObserverMessage = (message: SuccessfulTransactionResponse | Fai
             let messageType = confirmationResponse ? captureString : completeString
             window.postMessage({
                 type: messageType,
-                data: message.body
+                body: message.body
             }, window.location.origin)
             break
         case CASH_MESSAGE:
             window.postMessage({
                 type: cashString,
-                data: message.body
+                body: message.body
             }, window.location.origin)
             break
         case CONFIRMATION_MESSAGE:
             window.postMessage({
                 type: confirmString,
-                data: message.body
+                body: message.body
             }, window.location.origin)
             break
         case ERROR_MESSAGE:
