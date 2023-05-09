@@ -56,10 +56,11 @@ export const stateUpdater = (message: {
     type: string
 }) => {
     transactingWebComponentIds.forEach((id) => {
-      let element = document.getElementById(id) as payTheoryHostedFieldTransactional
-        if (element) {
+        let element = document.getElementsByName(id)
+        if (element.length > 0) {
+            let transactingElement = element[0] as payTheoryHostedFieldTransactional
             let state = message.state
-            element.state = {
+            transactingElement.state = {
                 ...state,
                 element: message.element,
             }
@@ -74,10 +75,13 @@ export const hostedErrorHandler = (message: {
     field: ElementTypes
 }) => {
     transactingWebComponentIds.forEach((id) => {
-        let element = document.getElementById(id) as payTheoryHostedFieldTransactional
-        if (element && element.initialized) {
-            element.initialized = false
-            element.resetToken()
+        let element = document.getElementsByName(id)
+        if (element.length > 0) {
+            let transactingElement = element[0] as payTheoryHostedFieldTransactional
+            if (transactingElement.initialized) {
+                transactingElement.initialized = false
+                transactingElement.resetToken()
+            }
         }
     })
     common.handleError(message.error)
