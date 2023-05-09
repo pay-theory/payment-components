@@ -103,6 +103,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     // Function used to remove event listeners
     protected _removeEventListeners: () => void = () => {}
     protected _removeHostTokenListener: () => void = () => {}
+    protected _removeReadyListener: () => void = () => {}
 
     // Used for backwards compatibility with feeMode
     protected _feeMode: typeof common.SERVICE_FEE | typeof common.MERCHANT_FEE | undefined
@@ -176,13 +177,26 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         }) => {
             return event.type === 'pt-static:pt_token_ready' && this._transactingIFrameId.includes(event.element)
         }, this.sendPtToken)
+
+        // Set up a listener for the hosted field to message saying it is connected to the socket and send a ready message
+        this._removeHostTokenListener = common.handleHostedFieldMessage((event: {
+            type: any,
+            element: ElementTypes,
+        }) => {
+            return event.type === 'pt-static:connected' && this._transactingIFrameId.includes(event.element)
+        }, () => {
+            this._isReady = true
+            this.sendReadyMessage()
+        })
+
         await super.connectedCallback();
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
-        this._removeEventListeners()
-        this._removeHostTokenListener()
+        this._removeEventListeners();
+        this._removeHostTokenListener();
+        this._removeReadyListener();
     }
 
     sendAsyncPostMessage = <T>(message: AsyncMessage, iframe: HTMLIFrameElement) => new Promise<T>((resolve, reject) => {
@@ -386,12 +400,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                 this.error = value.errorMessages[0]
             } else if (value.isDirty) {
                 this.error = ""
-            }
-
-            // If the state message shows the field is connected, set the ready message to true and try sending the ready message
-            if (value.isConnected) {
-                this._isReady = true
-                this.sendReadyMessage()
             }
 
             // Check for update to field validity and if there is an update, update the isValid property and send the valid message
