@@ -104,7 +104,8 @@ export const processElements = <ET extends cashElementIds | cardElementIds | ach
 
 export const isHidden = (element: HTMLElement): boolean => {
     if (!element) return true;
-    if (element.style.display === 'none') {
+    let style = window.getComputedStyle(element);
+    if (style.display === 'none') {
         return true;
     } else if (element.parentElement) {
         return isHidden(element.parentElement);
