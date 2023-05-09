@@ -9,19 +9,22 @@ export const FAILED_MESSAGE = "FAILED"
 export const CASH_MESSAGE = "CASH"
 export const TOKENIZED_MESSAGE = "TOKENIZED"
 
+export type AddressObject = {
+    line1: string,
+    line2: string,
+    city: string,
+    region: string,
+    postal_code: string,
+    country: string
+}
+
 export type PayorInfo = {
     first_name: string,
     last_name: string,
     email: string,
     phone: string,
-    personal_address: {
-        line1: string,
-        line2: string,
-        city: string,
-        region: string,
-        postal_code: string,
-        country: string
-    }
+    personal_address: AddressObject,
+    billing_address: AddressObject
 }
 
 export type ConfirmationObject = {

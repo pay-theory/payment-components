@@ -82,10 +82,6 @@ const findCardNumberError = (processedElements: PayTheoryHostedField[]): false |
         return  'missing credit card expiration field required for payments'
     }
 
-    if (processedElements.reduce(findCVV, false) === false) {
-        return  'missing credit card CVV field required for payments'
-    }
-
     if(processedElements.reduce(findZip, false) === false) {
         return  'missing billing zip field required for payments'
     }
@@ -99,10 +95,6 @@ const findCardNumberError = (processedElements: PayTheoryHostedField[]): false |
 const findCombinedCardError = (processedElements: PayTheoryHostedField[]) => {
     if (processedElements.reduce(findExp, false)) {
         return  'expiration is not allowed when using combined credit card'
-    }
-
-    if (processedElements.reduce(findCVV, false)) {
-        return  'cvv is not allowed when using combined credit card'
     }
 
     if(processedElements.reduce(findZip, false) === false) {
@@ -252,7 +244,7 @@ const isValidPayorInfo = (payorInfo: payorInfo): ErrorResponse | null => {
 }
 
 const nullifyEmptyStrings = (params: object) => {
-    let newParams = {...params};
+    let newParams = JSON.parse(JSON.stringify(params));
     Object.keys(newParams).forEach((key) => {
         if (newParams[key as keyof typeof newParams] === "") {
             // @ts-ignore
