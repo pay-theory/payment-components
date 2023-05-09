@@ -7,7 +7,6 @@ import {
     CASH_MESSAGE,
     CashBarcodeResponse,
     ConfirmationResponse,
-    ERROR_MESSAGE,
     ErrorResponse,
     ErrorType,
     FailedTransactionResponse,
@@ -32,8 +31,8 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
             let {payorInfo, customerInfo, shippingDetails} = newProps
             newProps.payorInfo = payorInfo || customerInfo || shippingDetails
             // @ts-ignore Adding line for backwards compatibility
-            newProps.feeMode = newProps.feeMode === 'interchange' ? MERCHANT_FEE : newProps.feeMode
-            // Check
+            newProps.feeMode = newProps.feeMode === 'interchange' || !newProps.feeMode ? MERCHANT_FEE : newProps.feeMode
+            // Check for validity of the transaction parameters
             let validity = valid.validTransactionParams(newProps)
             if (validity) return validity
             let {amount, payTheoryData, metadata = {}, feeMode, confirmation = false} = newProps
@@ -43,7 +42,7 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
                 const data: TransactDataObject = {
                     amount,
                     payorInfo: formattedPayor,
-                    payTheoryData: payTheoryData!,
+                    payTheoryData: payTheoryData,
                     metadata,
                     fee_mode: feeMode,
                     confirmation

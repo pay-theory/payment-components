@@ -31,7 +31,7 @@ export default async(
     const initTransaction = (amount: number, payorInfo: PayorInfo, confirmation: boolean = false) => {
         console.warn('initTransaction is deprecated. Please use transact instead.')
         //Passing in the session metadata from create because those used to be the only metadata that were passed in
-        transact({amount, payorInfo, confirmation})
+        transact({amount, payorInfo, confirmation, feeMode: fee_mode})
     }
 
     return common.generateReturn(mount, initTransaction)
