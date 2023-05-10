@@ -339,15 +339,15 @@ const isValidFeeAmount = (fee: any): ErrorResponse | null => {
     return null
 }
 
-const isValidBillingDetails = (billingDetails: any): ErrorResponse | null => {
-    if (billingDetails && !validate(billingDetails, 'object')) {
-        return handleTypedError(ErrorType.INVALID_PARAM, 'billingDetails must be an object')
+const isValidBillingInfo = (billingInfo: any): ErrorResponse | null => {
+    if (billingInfo && !validate(billingInfo, 'object')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'billingInfo must be an object')
     }
-    if(billingDetails && billingDetails.address && !validate(billingDetails.address, 'object')) {
-        return handleTypedError(ErrorType.INVALID_PARAM, 'billingDetails.address must be an object')
+    if(billingInfo && billingInfo.address && !validate(billingInfo.address, 'object')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'billingInfo.address must be an object')
     }
-    if(billingDetails && billingDetails.address && !validate(billingDetails.address.postal_code, 'string')) {
-        return handleTypedError(ErrorType.INVALID_PARAM, 'billingDetails.address.postal_code is required when passing in billingDetails')
+    if(billingInfo && billingInfo.address && !validate(billingInfo.address.postal_code, 'string')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'billingInfo.address.postal_code is required when passing in billingInfo')
     }
     return null
 }
@@ -387,7 +387,7 @@ const validTransactionParams = (props: ModifiedTransactProps): ErrorResponse | n
     error = isValidInvoiceAndRecurringId(payTheoryData)
     if(error) return error
     // validate the billing info
-    error = isValidBillingDetails(payTheoryData.billing_info)
+    error = isValidBillingInfo(payTheoryData.billing_info)
     if(error) return error
     // validate the fee
     return isValidFeeAmount(payTheoryData?.fee);
@@ -421,6 +421,7 @@ export {
     isValidFeeMode,
     isValidInvoiceAndRecurringId,
     isValidFeeAmount,
+    isValidBillingInfo,
     validTransactionParams,
     validateHostedCheckoutParams,
     validQRSize

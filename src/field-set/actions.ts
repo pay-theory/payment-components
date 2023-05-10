@@ -99,7 +99,7 @@ export const tokenizePaymentMethod = async (props: TokenizeProps): Promise<Token
             return common.handleTypedError(ErrorType.NOT_VALID, "The transaction element is invalid")
         } else  {
             transactingElement.initialized = true
-            let {payorInfo = {}, payorId, metadata = {}} = props
+            let {payorInfo = {}, payorId, metadata = {}, billingInfo} = props
             //validate the input param types
             let error = valid.isValidTokenizeParams(payorInfo, metadata)
             if (error) return error
@@ -109,9 +109,12 @@ export const tokenizePaymentMethod = async (props: TokenizeProps): Promise<Token
             // validate the payorId
             error = valid.isValidPayorDetails(payorInfo, payorId)
             if(error) return error
+            // validate the billingInfo
+            error = valid.isValidBillingInfo(billingInfo)
+            if(error) return error
             const formattedPayor = valid.formatPayorObject(payorInfo)
             try {
-                const data: TokenizeDataObject = {payorInfo: formattedPayor, metadata, payorId}
+                const data: TokenizeDataObject = {payorInfo: formattedPayor, metadata, payorId, billingInfo}
                 let result = await transactingElement.tokenize(data, transactingElement)
                 let parsedResult = parseResponse(result)
                 sendObserverMessage(parsedResult)

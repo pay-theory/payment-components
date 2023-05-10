@@ -128,6 +128,7 @@ export type TokenizeProps = {
     payorInfo?: PayorInfo,
     payorId?: string,
     metadata?: {[keys: string | number]: string | number | boolean },
+    billingInfo?: BillingInfo,
 }
 
 export type TransactProps = {
