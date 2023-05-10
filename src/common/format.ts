@@ -1,6 +1,7 @@
 import * as data from "./data";
 import {MERCHANT_FEE, SERVICE_FEE} from "./data";
 import {
+    BillingInfo,
     CASH_MESSAGE,
     CashBarcodeObject,
     CashBarcodeResponse,
@@ -37,7 +38,8 @@ export type PayTheoryDataObject = {
     invoice_id?: string,
     recurring_id?: string,
     timezone?: string,
-    fee?: number
+    fee?: number,
+    billing_info?: BillingInfo
 }
 
 export interface ModifiedTransactProps extends TransactProps {
@@ -47,7 +49,7 @@ export interface ModifiedTransactProps extends TransactProps {
 }
 
 export const parseInputParams = (inputParams: TransactProps): ModifiedTransactProps => {
-    let {payorId, invoiceId, recurringId, fee, metadata = {}} = inputParams
+    let {payorId, invoiceId, recurringId, fee, metadata = {}, billingInfo} = inputParams
     let inputCopy = JSON.parse(JSON.stringify(inputParams)) as ModifiedTransactProps
     inputCopy.payTheoryData = {
         account_code: inputParams.accountCode || metadata["pay-theory-account-code"] as string,
@@ -59,7 +61,8 @@ export const parseInputParams = (inputParams: TransactProps): ModifiedTransactPr
         invoice_id: invoiceId,
         recurring_id: recurringId,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        fee: fee
+        fee: fee,
+        billing_info: billingInfo
     }
     inputCopy.metadata = metadata
     return inputCopy
