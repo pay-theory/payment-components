@@ -22,6 +22,7 @@ import {
     TokenizedPaymentMethodMessage
 } from "../../common/format";
 import {
+    BillingInfo,
     ErrorResponse,
     ErrorType,
     FieldState,
@@ -47,6 +48,7 @@ export type TokenizeDataObject = {
     payorInfo?: PayorInfo,
     metadata?: {[keys: string | number]: string | number | boolean },
     payorId?: string,
+    billingInfo?: BillingInfo,
 }
 
 type ConstructorProps = {
