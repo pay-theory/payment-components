@@ -339,6 +339,19 @@ const isValidFeeAmount = (fee: any): ErrorResponse | null => {
     return null
 }
 
+const isValidBillingDetails = (billingDetails: any): ErrorResponse | null => {
+    if (billingDetails && !validate(billingDetails, 'object')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'billingDetails must be an object')
+    }
+    if(billingDetails && billingDetails.address && !validate(billingDetails.address, 'object')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'billingDetails.address must be an object')
+    }
+    if(billingDetails && billingDetails.address && !validate(billingDetails.address.postal_code, 'string')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'billingDetails.address.postal_code is required when passing in billingDetails')
+    }
+    return null
+}
+
 const validateHostedCheckoutParams = (callToAction: any, acceptedPaymentMethods: any, paymentName: any): ErrorResponse | null => {
     if (callToAction && !common.CTA_TYPES.includes(callToAction)) {
         return handleTypedError(ErrorType.INVALID_PARAM, `callToAction must be one of ${common.CTA_TYPES.join(', ')}`)
@@ -372,6 +385,9 @@ const validTransactionParams = (props: ModifiedTransactProps): ErrorResponse | n
     if(error) return error
     // validate the invoice and recurring id
     error = isValidInvoiceAndRecurringId(payTheoryData)
+    if(error) return error
+    // validate the billing info
+    error = isValidBillingDetails(payTheoryData.billing_info)
     if(error) return error
     // validate the fee
     return isValidFeeAmount(payTheoryData?.fee);

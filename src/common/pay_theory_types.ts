@@ -23,8 +23,12 @@ export type PayorInfo = {
     last_name: string,
     email: string,
     phone: string,
-    personal_address: AddressObject,
-    billing_address: AddressObject
+    personal_address: AddressObject
+}
+
+export type BillingInfo = {
+    name: string,
+    address: AddressObject
 }
 
 export type ConfirmationObject = {
@@ -129,6 +133,7 @@ export type TokenizeProps = {
 export type TransactProps = {
     amount: number,
     payorInfo?: PayorInfo,
+    billingInfo?: BillingInfo,
     payorId?: string,
     metadata?: {[keys: string | number]: string | number | boolean },
     feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE,
