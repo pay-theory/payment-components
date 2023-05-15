@@ -10,25 +10,25 @@ export const CASH_MESSAGE = "CASH"
 export const TOKENIZED_MESSAGE = "TOKENIZED"
 
 export type AddressObject = {
-    line1: string,
-    line2: string,
-    city: string,
-    region: string,
-    postal_code: string,
-    country: string
+    line1?: string,
+    line2?: string,
+    city?: string,
+    region?: string,
+    postal_code?: string,
+    country?: string
 }
 
 export type PayorInfo = {
-    first_name: string,
-    last_name: string,
-    email: string,
-    phone: string,
-    personal_address: AddressObject
+    first_name?: string,
+    last_name?: string,
+    email?: string,
+    phone?: string,
+    personal_address?: AddressObject
 }
 
 export type BillingInfo = {
-    name: string,
-    address: AddressObject
+    name?: string,
+    address?: AddressObject
 }
 
 export type ConfirmationObject = {
