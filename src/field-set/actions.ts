@@ -29,7 +29,7 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
             transactingElement.initialized = true
             let newProps = common.parseInputParams(props)
             let {payorInfo, customerInfo, shippingDetails} = newProps
-            newProps.payorInfo = payorInfo || customerInfo || shippingDetails
+            newProps.payorInfo = payorInfo || customerInfo || shippingDetails || {}
             // @ts-ignore Adding line for backwards compatibility
             newProps.feeMode = newProps.feeMode === 'interchange' || !newProps.feeMode ? MERCHANT_FEE : newProps.feeMode
             // Check for validity of the transaction parameters
