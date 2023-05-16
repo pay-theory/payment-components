@@ -14,8 +14,9 @@ export const defaultStyles = {
     success: {},
     error: {},
 }
-export const SURCHARGE = 'interchange'
-export const INTERCHANGE = 'interchange'
+export const SURCHARGE = 'merchant_fee'
+export const INTERCHANGE = 'merchant_fee'
+export const MERCHANT_FEE = 'merchant_fee'
 export const SERVICE_FEE = 'service_fee'
 
 export const defaultFeeMode = SURCHARGE
@@ -149,81 +150,87 @@ export {
     combinedCardTypes
 }
 
-export const isAutofill = () => {
-    return localStorage.getItem(AUTOFILL)
+const getLocalStorage = key => () => {
+    try {
+        return localStorage.getItem(key)
+    } catch (e) {
+        window.postMessage({
+                type: 'pt:error',
+                throws: true,
+                localStorage: true,
+                error: "LOCAL_STORAGE_ERROR: Error getting data from local storage",
+            },
+            window.location.origin,
+        );
+    }
 }
-export const setAutofill = isAutofill => {
-    return localStorage.setItem(AUTOFILL, isAutofill)
+
+const setLocalStorage = key => value => {
+    try {
+        return localStorage.setItem(key, value)
+    } catch (e) {
+        window.postMessage({
+                type: 'pt:error',
+                throws: true,
+                localStorage: true,
+                error: "LOCAL_STORAGE_ERROR: Error setting data in local storage",
+            },
+            window.location.origin,
+        );
+    }
 }
-export const removeAutofill = () => {
-    return localStorage.removeItem(AUTOFILL)
+
+const removeLocalStorage = key => () => {
+    try {
+        return localStorage.removeItem(key)
+    } catch (e) {
+        window.postMessage({
+                type: 'pt:error',
+                throws: true,
+                localStorage: true,
+                error: "LOCAL_STORAGE_ERROR: Error removing data from local storage",
+            },
+            window.location.origin,
+        );
+    }
 }
-export const getTransactingElement = () => {
-    return localStorage.getItem(TRANSACTING)
-}
+
+export const isAutofill = getLocalStorage(AUTOFILL)
+export const setAutofill = setLocalStorage(AUTOFILL)
+export const removeAutofill = removeLocalStorage(AUTOFILL)
+
+export const getTransactingElement = getLocalStorage(TRANSACTING)
 export const setTransactingElement = element => {
-    return localStorage.setItem(TRANSACTING, element.id)
+    return setLocalStorage(TRANSACTING)(element.id)
 }
-export const removeTransactingElement = () => {
-    return localStorage.removeItem(TRANSACTING)
-}
-export const getEnvironment = () => {
-    return localStorage.getItem(ENVIRONMENT)
-}
-export const setEnvironment = environment => {
-    return localStorage.setItem(ENVIRONMENT, environment)
-}
-export const getStage = () => {
-    return localStorage.getItem(STAGE)
-}
-export const setStage = stage => {
-    return localStorage.setItem(STAGE, stage)
-}
-export const getReady = () => {
-    return localStorage.getItem(READY)
-}
-export const setReady = ready => {
-    return localStorage.setItem(READY, ready)
-}
-export const removeReady = () => {
-    return localStorage.removeItem(READY)
-}
-export const getInitialize = () => {
-    return localStorage.getItem(INITIALIZE)
-}
-export const setInitialize = init => {
-    return localStorage.setItem(INITIALIZE, init)
-}
-export const removeInitialize = () => {
-    return localStorage.removeItem(INITIALIZE)
-}
-export const getSession = () => {
-    return localStorage.getItem(SESSION)
-}
-export const setSession = session => {
-    return localStorage.setItem(SESSION, session)
-}
-export const removeSession = () => {
-    return localStorage.removeItem(SESSION)
-}
-export const setButtonSuccess = () => {
-    return localStorage.setItem(BUTTON_SUCCESS, "true")
-}
-export const getButtonSuccess = () => {
-    return localStorage.getItem(BUTTON_SUCCESS)
-}
-export const removeButtonSuccess = () => {
-    return localStorage.removeItem(BUTTON_SUCCESS)
-}
-export const setButtonBarcode = (data) => {
-    return localStorage.setItem(BUTTON_BARCODE, data)
-}
-export const getButtonBarcode = () => {
-    return localStorage.getItem(BUTTON_BARCODE)
-}
-export const removeButtonBarcode = () => {
-    return localStorage.removeItem(BUTTON_BARCODE)
-}
+export const removeTransactingElement = removeLocalStorage(TRANSACTING)
+
+export const getEnvironment = getLocalStorage(ENVIRONMENT)
+export const setEnvironment = setLocalStorage(ENVIRONMENT)
+
+export const getStage = getLocalStorage(STAGE)
+export const setStage = setLocalStorage(STAGE)
+
+export const getReady = getLocalStorage(READY)
+export const setReady = setLocalStorage(READY)
+export const removeReady = removeLocalStorage(READY)
+
+export const getInitialize = getLocalStorage(INITIALIZE)
+export const setInitialize = setLocalStorage(INITIALIZE)
+export const removeInitialize = removeLocalStorage(INITIALIZE)
+
+export const getSession = getLocalStorage(SESSION)
+export const setSession = setLocalStorage(SESSION)
+export const removeSession = removeLocalStorage(SESSION)
+
+export const setButtonSuccess = setLocalStorage(BUTTON_SUCCESS)
+export const getButtonSuccess = getLocalStorage(BUTTON_SUCCESS)
+export const removeButtonSuccess = removeLocalStorage(BUTTON_SUCCESS)
+
+export const setButtonBarcode = setLocalStorage(BUTTON_BARCODE)
+export const getButtonBarcode = getLocalStorage(BUTTON_BARCODE)
+export const removeButtonBarcode = removeLocalStorage(BUTTON_BARCODE)
+
 
 export const removeAll = (allowRetry) => {
     removeAutofill()
