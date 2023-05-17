@@ -42,7 +42,7 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
                 const data: TransactDataObject = {
                     amount,
                     payorInfo: formattedPayor,
-                    payTheoryData: payTheoryData,
+                    payTheoryData,
                     metadata,
                     fee_mode: feeMode,
                     confirmation

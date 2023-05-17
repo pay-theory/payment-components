@@ -36,8 +36,8 @@ export default async(inputParams: PayTheoryQRInput) => {
     // common.setStage(stage)
 
     // Validate the input parameters
-    const paymentParams = common.parseInputParams(checkoutDetails) as ModifiedCheckoutDetails
-    let {paymentName, callToAction, acceptedPaymentMethods} = paymentParams
+    const modifiedCheckoutDetails = common.parseInputParams(checkoutDetails) as ModifiedCheckoutDetails
+    let {paymentName, callToAction, acceptedPaymentMethods} = modifiedCheckoutDetails
     let removeErrorListener = () => {}
     let removeHostedErrorListener = () => {}
     // Putting error listener on the window and hosted button so that it can catch errors while it readies the session
@@ -49,7 +49,7 @@ export default async(inputParams: PayTheoryQRInput) => {
     }
 
     // Validate the input parameters
-    let error = valid.validTransactionParams(paymentParams)
+    let error = valid.validTransactionParams(modifiedCheckoutDetails)
     if (error) return false
     error = valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName)
     if (error) return false
@@ -87,7 +87,7 @@ export default async(inputParams: PayTheoryQRInput) => {
     }
 
     //Add the token to the button component so that it can be used to open the button iframe
-    const json = JSON.stringify({token: ptToken['pt-token'], origin: ptToken.origin, size: finalSize, checkoutDetails})
+    const json = JSON.stringify({token: ptToken['pt-token'], origin: ptToken.origin, size: finalSize, checkoutDetails: modifiedCheckoutDetails})
     const encodedJson = window.btoa(json)
     tagFrame.token = encodeURI(encodedJson)
 }
