@@ -178,7 +178,7 @@ export default async(inputParams: PayTheoryButtonInput) => {
     }
 
     // Create the button element and add the listeners
-    const tagFrame = getCheckoutButton()
+    const tagFrame = document.createElement(common.checkoutButtonField) as PayTheoryCheckoutButton
     tagFrame.setAttribute('id', `${common.checkoutButtonField}-wrapper`)
     tagFrame.onClick = onClickWrapper
     tagFrame.onReady = onReadyWrapper
