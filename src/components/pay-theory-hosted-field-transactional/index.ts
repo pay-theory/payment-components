@@ -406,7 +406,11 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
             // Check for update to field validity and if there is an update, update the isValid property and send the valid message
             let calculatedValid = this._requiredValidFields.reduce((acc, curr) => {
-                return acc && this._stateGroup[curr]!.isDirty && this._stateGroup[curr]!.errorMessages.length === 0
+                if(this._processedElements.includes(curr)) {
+                    return acc && this._stateGroup[curr]!.isDirty && this._stateGroup[curr]!.errorMessages.length === 0
+                } else {
+                    return acc
+                }
             }, true)
             if(this._isValid !== calculatedValid) {
                 this._isValid = calculatedValid
