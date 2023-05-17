@@ -8,9 +8,9 @@ class PayTheoryCheckoutQR extends HTMLElement {
     protected _onClick: (message: any) => void
     protected _onError: (message: any) => void
     protected _onSuccess: (message: any) => void
-    protected _clearReadyListener: () => void = () => {}
-    protected _clearSuccessListener: () => void = () => {}
-    protected _clearErrorListener: () => void = () => {}
+    protected _clearReadyListener: () => void | undefined
+    protected _clearSuccessListener: () => void | undefined
+    protected _clearErrorListener: () => void | undefined
 
     constructor() {
         super();
@@ -38,37 +38,27 @@ class PayTheoryCheckoutQR extends HTMLElement {
         // Creating the listeners from the hosted qr page
         this._clearReadyListener = common.handleHostedFieldMessage(common.qrCodeReadyTypeMessage, this._onReady)
         this._clearSuccessListener = common.handleHostedFieldMessage(common.qrCodeCompleteTypeMessage, this._onSuccess)
+        this._clearErrorListener = common.handleHostedFieldMessage(common.errorTypeMessage, this._onError)
     }
 
     disconnectedCallback() {
         this._clearSuccessListener()
         this._clearReadyListener()
+        this._clearErrorListener()
     }
 
     // Only want to allow event listeners to be set from outside the class
     // If they have been set before there should be a clear listener function so we want to clear it and reset the listener
     set onReady(readyFunc: (message: any) => void) {
         this._onReady = readyFunc
-        if(this._clearReadyListener) {
-            this._clearReadyListener()
-            this._clearReadyListener = common.handleHostedFieldMessage(common.qrCodeReadyTypeMessage, this._onReady)
-        }
     }
 
     set onSuccess(successFunc: (message: any) => void) {
         this._onSuccess = successFunc
-        if(this._clearSuccessListener) {
-            this._clearSuccessListener()
-            this._clearSuccessListener = common.handleHostedFieldMessage(common.qrCodeCompleteTypeMessage, this._onSuccess)
-        }
     }
 
     set onError(errorFunc: (message: any) => void) {
         this._onError = errorFunc
-        if(this._clearErrorListener) {
-            this._clearErrorListener()
-            this._clearErrorListener = common.handleHostedFieldMessage(common.errorTypeMessage, this._onError)
-        }
     }
 
     set token(value: string) {

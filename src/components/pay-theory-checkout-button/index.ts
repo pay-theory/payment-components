@@ -8,11 +8,11 @@ class PayTheoryCheckoutButton extends HTMLElement {
     protected _onClick: () => void
     protected _onError: (error: string) => void
     protected _onSuccess: (message: {data: SuccessfulTransactionObject}) => void
-    protected _clearReadyListener: () => void = () => {}
-    protected _clearClickListener: () => void = () => {}
-    protected _clearErrorListener: () => void = () => {}
-    protected _clearSuccessListener: () => void = () => {}
-    protected _clearBarcodeReceivedListener: () => void = () => {}
+    protected _clearReadyListener: () => void | undefined
+    protected _clearClickListener: () => void | undefined
+    protected _clearErrorListener: () => void | undefined
+    protected _clearSuccessListener: () => void | undefined
+    protected _clearBarcodeReceivedListener: () => void | undefined
     protected _closeInterval: ReturnType<typeof setInterval> | undefined
     protected _checkoutWindow: Window | undefined
     protected _buttonBarcode: string | undefined
@@ -64,34 +64,18 @@ class PayTheoryCheckoutButton extends HTMLElement {
     // If they have been set before there should be a clear listener function so we want to clear it and reset the listener
     set onReady(readyFunc: (ready: { sessionId?: string }) => void) {
         this._onReady = readyFunc
-        if(this._clearReadyListener) {
-            this._clearReadyListener()
-            this._clearReadyListener = common.handleHostedFieldMessage(common.hostedReadyTypeMessage, this._onReady)
-        }
     }
 
     set onClick(clickFunc: () => void) {
         this._onClick = clickFunc
-        if(this._clearClickListener) {
-            this._clearClickListener()
-            this._clearClickListener = common.handleHostedFieldMessage(common.buttonClickTypeMessage, this._onClick)
-        }
     }
 
     set onError(errorFunc: (error: string) => void) {
         this._onError = errorFunc
-        if(this._clearErrorListener) {
-            this._clearErrorListener()
-            this._clearErrorListener = common.handleCheckoutMessage(common.checkoutErrorTypeMessage, this._onError)
-        }
     }
 
     set onSuccess(successFunc: (message: {data: SuccessfulTransactionObject}) => void) {
         this._onSuccess = successFunc
-        if(this._clearSuccessListener) {
-            this._clearSuccessListener()
-            this._clearSuccessListener = common.handleCheckoutMessage(common.checkoutCompleteTypeMessage, this._onSuccess)
-        }
     }
 
     set token(value: string | undefined) {
