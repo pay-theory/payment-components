@@ -1,21 +1,22 @@
 /* global HTMLElement */
 import common from "../../common";
+import {SuccessfulTransactionObject} from "../../common/pay_theory_types";
 
 class PayTheoryCheckoutButton extends HTMLElement {
     protected _token: string | undefined
-    protected _onReady: () => void
+    protected _onReady: (ready: { sessionId?: string }) => void
     protected _onClick: () => void
-    protected _onError: () => void
-    protected _onSuccess: () => void
+    protected _onError: (error: string) => void
+    protected _onSuccess: (message: {data: SuccessfulTransactionObject}) => void
     protected _clearReadyListener: () => void = () => {}
     protected _clearClickListener: () => void = () => {}
     protected _clearErrorListener: () => void = () => {}
     protected _clearSuccessListener: () => void = () => {}
     protected _clearBarcodeReceivedListener: () => void = () => {}
-    protected _closeInterval: number | undefined
+    protected _closeInterval: ReturnType<typeof setInterval> | undefined
     protected _checkoutWindow: Window | undefined
     protected _buttonBarcode: string | undefined
-    protected _buttonSuccess: boolean | undefined
+    protected _session: string | undefined
 
     constructor() {
         super();
@@ -61,7 +62,7 @@ class PayTheoryCheckoutButton extends HTMLElement {
 
     // Only want to allow event listeners to be set from outside the class
     // If they have been set before there should be a clear listener function so we want to clear it and reset the listener
-    set onReady(readyFunc: () => void) {
+    set onReady(readyFunc: (ready: { sessionId?: string }) => void) {
         this._onReady = readyFunc
         if(this._clearReadyListener) {
             this._clearReadyListener()
@@ -77,7 +78,7 @@ class PayTheoryCheckoutButton extends HTMLElement {
         }
     }
 
-    set onError(errorFunc: () => void) {
+    set onError(errorFunc: (error: string) => void) {
         this._onError = errorFunc
         if(this._clearErrorListener) {
             this._clearErrorListener()
@@ -85,7 +86,7 @@ class PayTheoryCheckoutButton extends HTMLElement {
         }
     }
 
-    set onSuccess(successFunc: () => void) {
+    set onSuccess(successFunc: (message: {data: SuccessfulTransactionObject}) => void) {
         this._onSuccess = successFunc
         if(this._clearSuccessListener) {
             this._clearSuccessListener()
@@ -113,6 +114,24 @@ class PayTheoryCheckoutButton extends HTMLElement {
     get closeInterval() {
         return this._closeInterval
     }
+
+    get session() {
+        return this._session
+    }
+
+    set session(value: string | undefined) {
+        this._session = value
+    }
+
+    get buttonBarcode() {
+        return this._buttonBarcode
+    }
+
+    set buttonBarcode(value: string | undefined) {
+        this._buttonBarcode = value
+    }
 }
 
 window.customElements.define(common.checkoutButtonField, PayTheoryCheckoutButton);
+
+export default PayTheoryCheckoutButton

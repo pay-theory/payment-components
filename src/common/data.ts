@@ -14,6 +14,7 @@ export const PAY = 'PAY'
 export const BOOK = 'BOOK'
 export const DONATE = 'DONATE'
 export const CHECKOUT = 'CHECKOUT'
+export type CALL_TO_ACTION = typeof PAY | typeof BOOK  | typeof DONATE | typeof CHECKOUT
 
 export const CTA_TYPES = [PAY, BOOK, DONATE]
 

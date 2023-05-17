@@ -1,10 +1,10 @@
 import * as data from "./data";
-import {MERCHANT_FEE, SERVICE_FEE} from "./data";
+import {CHECKOUT, MERCHANT_FEE, SERVICE_FEE} from "./data";
 import {
     BillingInfo,
     CASH_MESSAGE,
     CashBarcodeObject,
-    CashBarcodeResponse,
+    CashBarcodeResponse, CheckoutDetails,
     CONFIRMATION_MESSAGE,
     ConfirmationResponse,
     ErrorResponse,
@@ -48,21 +48,27 @@ export interface ModifiedTransactProps extends TransactProps {
     shippingDetails?: PayorInfo
 }
 
-export const parseInputParams = (inputParams: TransactProps): ModifiedTransactProps => {
+export interface ModifiedCheckoutDetails extends CheckoutDetails {
+    payTheoryData: PayTheoryDataObject,
+    payorInfo: undefined
+}
+
+export const parseInputParams = (inputParams: TransactProps | CheckoutDetails): ModifiedTransactProps | ModifiedCheckoutDetails => {
+    //@ts-ignore this will just set billingInfo and fee to undefined if they don't exist
     let {payorId, invoiceId, recurringId, fee, metadata = {}, billingInfo} = inputParams
     let inputCopy = JSON.parse(JSON.stringify(inputParams)) as ModifiedTransactProps
     inputCopy.payTheoryData = {
         account_code: inputParams.accountCode || metadata["pay-theory-account-code"] as string,
-        reference: inputParams.reference || metadata["pay-theory-reference"] as string,
-        payment_parameters: inputParams.paymentParameters || metadata["payment-parameters-name"] as string,
-        payor_id: payorId,
-        send_receipt: inputParams.sendReceipt || metadata["pay-theory-receipt"] as boolean,
-        receipt_description: inputParams.receiptDescription || metadata["pay-theory-receipt-description"] as string,
-        invoice_id: invoiceId,
-        recurring_id: recurringId,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        billing_info: billingInfo,
         fee: fee,
-        billing_info: billingInfo
+        invoice_id: invoiceId,
+        payment_parameters: inputParams.paymentParameters || metadata["payment-parameters-name"] as string,
+        payor_id: payorId, // @ts-ignore this will just set receipt description to undefined if it doesn't exist
+        receipt_description: inputParams.receiptDescription || metadata["pay-theory-receipt-description"] as string,
+        recurring_id: recurringId, //@ts-ignore this will just set reference to undefined if it doesn't exist
+        reference: inputParams.reference || metadata["pay-theory-reference"] as string, //@ts-ignore  this will just set send receipt to undefined if it doesn't exist
+        send_receipt: inputParams.sendReceipt || metadata["pay-theory-receipt"] as boolean,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
     }
     inputCopy.metadata = metadata
     return inputCopy

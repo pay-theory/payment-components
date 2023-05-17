@@ -47,8 +47,8 @@ import {
     ONLY_CARD,
     ONLY_ACH
 } from './common/data';
-// import button from './field-set/payment-button'
-// import qrCode from './field-set/payment-qr'
+import button from './field-set/payment-button'
+import qrCode from './field-set/payment-qr'
 import {
     errorObserver,
     transactedObserver,
@@ -70,8 +70,8 @@ const createPaymentFields = (apiKey, clientId, styles, metadata) => {
 window.paytheory = {
     createPaymentFields, // deprecated
     create,
-    // button,
-    // qrCode,
+    button,
+    qrCode,
     errorObserver,
     payTheoryFields,
     transact,

@@ -4,12 +4,13 @@ import common from "../../common";
 class PayTheoryCheckoutQR extends HTMLElement {
     protected _token: string | undefined
     protected _size: number | undefined
-    protected _onReady: () => void
-    protected _onClick: () => void
-    protected _onError: () => void
-    protected _onSuccess: () => void
+    protected _onReady: (message: any) => void
+    protected _onClick: (message: any) => void
+    protected _onError: (message: any) => void
+    protected _onSuccess: (message: any) => void
     protected _clearReadyListener: () => void = () => {}
     protected _clearSuccessListener: () => void = () => {}
+    protected _clearErrorListener: () => void = () => {}
 
     constructor() {
         super();
@@ -46,7 +47,7 @@ class PayTheoryCheckoutQR extends HTMLElement {
 
     // Only want to allow event listeners to be set from outside the class
     // If they have been set before there should be a clear listener function so we want to clear it and reset the listener
-    set onReady(readyFunc: () => void) {
+    set onReady(readyFunc: (message: any) => void) {
         this._onReady = readyFunc
         if(this._clearReadyListener) {
             this._clearReadyListener()
@@ -54,11 +55,19 @@ class PayTheoryCheckoutQR extends HTMLElement {
         }
     }
 
-    set onSuccess(successFunc: () => void) {
+    set onSuccess(successFunc: (message: any) => void) {
         this._onSuccess = successFunc
         if(this._clearSuccessListener) {
             this._clearSuccessListener()
             this._clearSuccessListener = common.handleHostedFieldMessage(common.qrCodeCompleteTypeMessage, this._onSuccess)
+        }
+    }
+
+    set onError(errorFunc: (message: any) => void) {
+        this._onError = errorFunc
+        if(this._clearErrorListener) {
+            this._clearErrorListener()
+            this._clearErrorListener = common.handleHostedFieldMessage(common.errorTypeMessage, this._onError)
         }
     }
 
@@ -78,3 +87,5 @@ class PayTheoryCheckoutQR extends HTMLElement {
 }
 
 window.customElements.define(common.checkoutQRField, PayTheoryCheckoutQR);
+
+export default PayTheoryCheckoutQR

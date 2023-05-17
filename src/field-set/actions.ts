@@ -14,7 +14,7 @@ import {
     TokenizeProps,
     TransactProps
 } from "../common/pay_theory_types";
-import {localizeCashBarcodeUrl, parseResponse} from "../common/format";
+import {localizeCashBarcodeUrl, ModifiedTransactProps, parseResponse} from "../common/format";
 import {sendObserverMessage} from "../common/message";
 
 export const transact = async (props: TransactProps): Promise<ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse> => {
@@ -27,7 +27,7 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
         } else {
             // Setting to true so that the transact function can't be called again until the transaction is complete
             transactingElement.initialized = true
-            let newProps = common.parseInputParams(props)
+            let newProps = common.parseInputParams(props) as ModifiedTransactProps
             let {payorInfo, customerInfo, shippingDetails} = newProps
             newProps.payorInfo = payorInfo || customerInfo || shippingDetails || {}
             // @ts-ignore Adding line for backwards compatibility
