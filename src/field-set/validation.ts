@@ -82,8 +82,8 @@ const findCardNumberError = (processedElements: PayTheoryHostedField[]): false |
         return  'missing credit card expiration field required for payments'
     }
 
-    if(processedElements.reduce(findZip, false) === false) {
-        return  'missing billing zip field required for payments'
+    if(processedElements.reduce(findCVV, false) === false) {
+        return  'missing CVV field required for payments'
     }
 
     if (document.getElementById(`pay-theory-credit-card`)) {
@@ -97,8 +97,8 @@ const findCombinedCardError = (processedElements: PayTheoryHostedField[]) => {
         return  'expiration is not allowed when using combined credit card'
     }
 
-    if(processedElements.reduce(findZip, false) === false) {
-        return  'missing billing zip field required for payments'
+    if(processedElements.reduce(findCVV, false)) {
+        return  'CVV is not allowed when using combined credit card'
     }
 
     if (document.getElementById(`pay-theory-credit-card-number`)) {
