@@ -92,21 +92,6 @@ export const fetchPtToken = async(apiKey: string): Promise<{
 //     }
 // }
 //
-export const sendTransactingMessage = (transacting: PayTheoryHostedFieldTransactional) => {
-    const types = transacting.fieldTypes
-    const processedElements = transacting.processedElements
-    types.forEach(field => {
-        let iframe = document.getElementsByName(`${field}-iframe`)[0]
-        if (iframe) {
-            postMessageToHostedField(`${field}-iframe`, {
-                type: "pt-static:transact",
-                element: field,
-                processedElements
-            })
-        }
-    })
-}
-//
 // export const handleAttestation = async (challengeOptions: any) => {
 //     const attested = await attestBrowser(challengeOptions)
 //
@@ -121,46 +106,19 @@ export const sendTransactingMessage = (transacting: PayTheoryHostedFieldTransact
 //     }
 // }
 
-// export const generateInitialization = (handleInitialized, challengeOptions) => {
-//     return async(inputParameters) => {
-//         let {amount, payorInfo, payTheoryData, shippingDetails, customerInfo, metadata = {}, feeMode, confirmation = false} = parseInputParams(inputParameters)
-//         // Adding line for backwards compatibility
-//         // TODO add some logging to SDK to see usage of deprecated variables and functions
-//         payorInfo = payorInfo || customerInfo || shippingDetails || {}
-//         let initialize = data.getInitialize()
-//         if (initialize !== 'init') {
-//             data.setInitialize('init')
-//             const success = await handleInitialized(amount, payorInfo, payTheoryData, metadata, feeMode, confirmation)
-//             if (success) {
-//                 await handleAttestation(challengeOptions)
-//                 sendTransactingMessage()
-//             }
-//         }
-//     }
-// }
-//
-// export const generateTokenization = (handleTokenize, challengeOptions) => {
-//     return async(inputParameters) => {
-//         let {payorInfo = {}, payorId, metadata = {}} = inputParameters
-//         let initialize = data.getInitialize()
-//         if (initialize !== 'init') {
-//             data.setInitialize('init')
-//             const success = await handleTokenize(payorInfo, payorId, metadata)
-//             if (success) {
-//                 await handleAttestation(challengeOptions)
-//                 sendTransactingMessage()
-//             }
-//         }
-//     }
-// }
-//
-// export const generateActivation = (handleActivate, challengeOptions) => {
-//     return async(inputParameters) => {
-//         let initialize = data.getInitialize()
-//         if (initialize !== 'init') {
-//             data.setInitialize('init')
-//             await handleAttestation(challengeOptions)
-//             handleActivate(inputParameters)
-//         }
-//     }
-// }
+
+export const sendTransactingMessage = (transacting: PayTheoryHostedFieldTransactional) => {
+    const types = transacting.fieldTypes
+    const processedElements = transacting.processedElements
+    types.forEach(field => {
+        let iframe = document.getElementsByName(`${field}-iframe`)[0]
+        if (iframe) {
+            postMessageToHostedField(`${field}-iframe`, {
+                type: "pt-static:transact",
+                element: field,
+                processedElements
+            })
+        }
+    })
+}
+
