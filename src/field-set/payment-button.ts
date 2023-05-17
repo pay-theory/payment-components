@@ -65,10 +65,12 @@ export default async(inputParams: PayTheoryButtonInput) => {
             onError(message.error)
         })
     }
-    if (!valid.validTransactionParams(paymentParams) ||
-        !valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName)) {
-        return false
-    }
+
+    // Validate the input parameters
+    let error = valid.validTransactionParams(paymentParams)
+    if (error) return false
+    error = valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName)
+    if (error) return false
 
     // Fetch the PT Token
     let ptToken = await common.fetchPtToken(apiKey)
