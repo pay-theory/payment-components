@@ -159,6 +159,76 @@ export type PayTheoryPaymentFieldsInput = {
     feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE;
 }
 
+export enum AcceptedPaymentMethods {
+    ALL = "ALL",
+    NOT_CASH = "NOT_CASH",
+    NOT_CARD = "NOT_CARD",
+    NOT_ACH = "NOT_ACH",
+    ONLY_CASH = "ONLY_CASH",
+    ONLY_CARD = "ONLY_CARD",
+    ONLY_ACH = "ONLY_ACH"
+}
+
+export enum CallToAction {
+    PAY = "PAY",
+    DONATE = "DONATE",
+    BOOK = "BOOK",
+    CHECKOUT = "CHECKOUT"
+}
+
+export enum ButtonColor {
+    PURPLE = "PURPLE",
+    WHITE = "WHITE",
+    BLACK = "BLACK",
+    GREY = "GREY",
+}
+
+export type CheckoutDetails = {
+    amount: number,
+    paymentName: string,
+    paymentDescription?: string,
+    requirePhone?: boolean,
+    callToAction?: CallToAction,
+    acceptedPaymentMethods?: AcceptedPaymentMethods,
+    payorId?: string,
+    metadata?: {[keys: string | number]: string | number | boolean },
+    feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE,
+    accountCode?: string,
+    paymentParameters?: string,
+    invoiceId?: string,
+    recurringId?: string,
+}
+
+export type PayTheoryQRInput = {
+    apiKey: string,
+    checkoutDetails: CheckoutDetails,
+    size: number,
+    onReady: (ready: true) => void,
+    onError: (error: string) => void,
+    onSuccess: (result: SuccessfulTransactionObject) => void
+}
+
+export type ButtonStyle = {
+    color: ButtonColor,
+    callToAction: CallToAction,
+    pill: boolean,
+    height: number,
+}
+
+export type PayTheoryButtonInput = {
+    apiKey: string,
+    checkoutDetails: CheckoutDetails,
+    style: ButtonStyle,
+    onReady: (ready: true) => void,
+    onClick: () => void,
+    onError: (error: string) => void,
+    onCancel: () => void,
+    onSuccess: (result: SuccessfulTransactionObject) => void,
+    onBarcode: (result: CashBarcodeObject) => void
+}
+
+
+
 export type FieldState = {
     isFocused: boolean
     isDirty: boolean

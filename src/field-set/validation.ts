@@ -3,7 +3,7 @@ import common from '../common'
 import {handleTypedError} from "../common/message";
 import PayTheoryHostedField from "../components/pay-theory-hosted-field";
 import {ErrorResponse, ErrorType, PayorInfo} from "../common/pay_theory_types";
-import {ModifiedTransactProps} from "../common/format";
+import {ModifiedCheckoutDetails, ModifiedTransactProps} from "../common/format";
 import {ElementTypes} from "../common/data";
 
 const findField = (type: ElementTypes) => (element: PayTheoryHostedField | false, currentElement: PayTheoryHostedField) => {
@@ -366,8 +366,8 @@ const validateHostedCheckoutParams = (callToAction: any, acceptedPaymentMethods:
 }
 
 // Validate the details passed in for a transaction or redirect button
-const validTransactionParams = (props: ModifiedTransactProps): ErrorResponse | null => {
-    const { amount, payorInfo, metadata, payTheoryData, feeMode } = props
+const validTransactionParams = (props: ModifiedTransactProps | ModifiedCheckoutDetails): ErrorResponse | null => {
+    const { amount, payorInfo = {}, metadata, payTheoryData, feeMode } = props
     //validate the input param types
     let error = isvalidTransactParams(amount, payorInfo, metadata)
     if(error) return error

@@ -60,3 +60,5 @@ class PayTheoryOverlay extends HTMLElement {
 }
 
 window.customElements.define(common.payTheoryOverlay, PayTheoryOverlay);
+
+export default PayTheoryOverlay;
