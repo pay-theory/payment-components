@@ -47,11 +47,14 @@ export default async(inputParams: PayTheoryQRInput) => {
             onError(message.error)
         })
     }
-    if (!valid.validTransactionParams(paymentParams) ||
-        !valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName) ||
-        !valid.validQRSize(size)) {
-        return false
-    }
+
+    // Validate the input parameters
+    let error = valid.validTransactionParams(paymentParams)
+    if (error) return false
+    error = valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName)
+    if (error) return false
+    error = valid.validQRSize(size)
+    if (error) return false
 
     const finalSize = size < 128 ? 128 : size > 300 ? 300 : size
 
