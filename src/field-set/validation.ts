@@ -274,6 +274,9 @@ const isvalidTransactParams = (amount: any, payorInfo: any, metadata: any): Erro
         const missing = `${!validate(amount, 'number') ? 'amount ' : ''}${!validate(metadata, 'object') ? 'metadata ' : ''}${!validate(payorInfo, 'object') ? 'payorInfo ' : ''}`
         return handleTypedError(ErrorType.INVALID_PARAM, 'Some required fields are missing or invalid: ' + missing)
     }
+    if (amount <= 0) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'amount must be a positive integer')
+    }
     return null
 }
 
