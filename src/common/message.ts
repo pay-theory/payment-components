@@ -90,6 +90,27 @@ export const handleCheckoutMessage = (validTarget: validTargetFunc, handleMessag
     return () => { window.removeEventListener('message', func) }
 }
 
+export type AsyncMessage = {
+    type: string,
+    data?: any,
+    async: true
+}
+
+export const sendAsyncPostMessage = <T>(message: AsyncMessage, iframe: HTMLIFrameElement) => new Promise<T>((resolve, reject) => {
+    // Opening a new message channel, so we can await the response from the hosted field
+    const channel = new MessageChannel()
+
+    channel.port1.onmessage = ({data}) => {
+        channel.port1.close();
+        if (data.error) {
+            reject(data);
+        } else {
+            resolve(data);
+        }
+    };
+    iframe.contentWindow.postMessage(message, hostedFieldsEndpoint, [channel.port2]);
+})
+
 export const errorTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt:error'
 export const readyTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pay-theory:ready'
 export const stateTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pay-theory:state'
@@ -152,13 +173,17 @@ export const qrCodeReadyTypeMessage = (message: { type: any }) => typeof message
 export const qrCodeCompleteTypeMessage = (message: { type: any }) => typeof message.type === 'string' && message.type === 'pt-static:qr-checkout-success'
 
 
-export const postMessageToHostedField = (id: string, message: object) => {
+export const postMessageToHostedField = (id: string, message: object, channel?: MessagePort) => {
     const elements = document.getElementsByName(id)
     if (elements.length) {
         let element = elements[0] as HTMLIFrameElement
-        return element?.contentWindow?.postMessage(message, hostedFieldsEndpoint)
+        if (channel) {
+            element.contentWindow.postMessage(message, hostedFieldsEndpoint, [channel])
+        } else {
+            element?.contentWindow?.postMessage(message, hostedFieldsEndpoint)
+        }
     }
-    return console.log('Hosted Field not found')
+    console.log('Hosted Field not found')
 }
 
 export const handleError = (error: string): ErrorResponse => {

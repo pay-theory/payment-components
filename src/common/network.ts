@@ -1,8 +1,8 @@
 /* global navigator */
-import * as data from './data'
 import {postMessageToHostedField} from './message'
-import {findTransactingElement} from "./dom";
 import PayTheoryHostedFieldTransactional from "../components/pay-theory-hosted-field-transactional";
+import {BillingInfo} from "./pay_theory_types";
+import {ErrorMessage, FieldsReadyMessage} from "./format";
 
 export const getData = async(url: string, apiKey: string) => {
     const options: RequestInit = {
@@ -107,18 +107,29 @@ export const fetchPtToken = async(apiKey: string): Promise<{
 // }
 
 
-export const sendTransactingMessage = (transacting: PayTheoryHostedFieldTransactional) => {
+export const sendTransactingMessage = (transacting: PayTheoryHostedFieldTransactional, billingInfo: BillingInfo) => new Promise<ErrorMessage | FieldsReadyMessage>((resolve, reject) => {
+    // Opening a new message channel, so we can await the response from the hosted field
+    const channel = new MessageChannel()
+
+    channel.port1.onmessage = ({data}) => {
+        channel.port1.close();
+        if (data.error) {
+            reject(data);
+        } else {
+            resolve(data);
+        }
+    };
+
     const types = transacting.fieldTypes
-    const processedElements = transacting.processedElements
     types.forEach(field => {
         let iframe = document.getElementsByName(`${field}-iframe`)[0]
         if (iframe) {
             postMessageToHostedField(`${field}-iframe`, {
                 type: "pt-static:transact",
                 element: field,
-                processedElements
-            })
+                billingInfo
+            }, channel.port2)
         }
     })
-}
+})
 
