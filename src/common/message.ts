@@ -182,8 +182,9 @@ export const postMessageToHostedField = (id: string, message: object, channel?: 
         } else {
             element?.contentWindow?.postMessage(message, hostedFieldsEndpoint)
         }
+    } else {
+        console.log('Hosted Field not found')
     }
-    console.log('Hosted Field not found')
 }
 
 export const handleError = (error: string): ErrorResponse => {
