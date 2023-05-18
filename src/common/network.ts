@@ -3,6 +3,7 @@ import {postMessageToHostedField} from './message'
 import PayTheoryHostedFieldTransactional from "../components/pay-theory-hosted-field-transactional";
 import {BillingInfo} from "./pay_theory_types";
 import {ErrorMessage, FieldsReadyMessage} from "./format";
+import {ACH_IFRAME, CARD_IFRAME, CASH_IFRAME} from "./data";
 
 export const getData = async(url: string, apiKey: string) => {
     const options: RequestInit = {
@@ -122,13 +123,22 @@ export const sendTransactingMessage = (transacting: PayTheoryHostedFieldTransact
 
     const types = transacting.fieldTypes
     types.forEach(field => {
-        let iframe = document.getElementsByName(`${field}-iframe`)[0]
+        let iframeId = `${field}-iframe`
+        let iframe = document.getElementsByName(iframeId)[0]
         if (iframe) {
-            postMessageToHostedField(`${field}-iframe`, {
-                type: "pt-static:transact",
-                element: field,
-                billingInfo
-            }, channel.port2)
+            if([CASH_IFRAME, ACH_IFRAME, CARD_IFRAME].includes(iframeId)) {
+                // Only send the port to the transacting element for the async message
+                postMessageToHostedField(`${field}-iframe`, {
+                    type: "pt-static:transact",
+                    element: field,
+                    billingInfo
+                }, channel.port2)
+            } else {
+                postMessageToHostedField(`${field}-iframe`, {
+                    type: "pt-static:transact",
+                    element: field
+                })
+            }
         }
     })
 })
