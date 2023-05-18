@@ -11,10 +11,10 @@ import {
     TransactingType,
     transactingWebComponentMap
 } from "../../common/data";
-import {handleTypedError} from "../../common/message";
+import {handleTypedError, sendAsyncPostMessage, AsyncMessage} from "../../common/message";
 import {
     CashBarcodeMessage,
-    ConfirmationMessage,
+    ConfirmationMessage, ERROR_STEP,
     ErrorMessage,
     FailedTransactionMessage,
     PayTheoryDataObject,
@@ -59,11 +59,7 @@ type ConstructorProps = {
     transactingType: TransactingType
 }
 
-type AsyncMessage = {
-    type: string,
-    data?: any,
-    async: true
-}
+
 
 class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     // Used to fetch the pt-token attribute to initialize the hosted field
@@ -121,7 +117,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this.sendValidMessage = this.sendValidMessage.bind(this)
         this.sendStateMessage = this.sendStateMessage.bind(this)
         this.sendValidMessage = this.sendValidMessage.bind(this)
-        this.sendAsyncPostMessage = this.sendAsyncPostMessage.bind(this)
         this.sendPtToken = this.sendPtToken.bind(this)
         this._fieldTypes = props.fieldTypes
         this._requiredValidFields = props.requiredValidFields
@@ -161,7 +156,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                 transactingIFrame.contentWindow!.postMessage({
                     type: `pt-static:connection_token`,
                     token: ptToken['pt-token'],
-                    origin: ptToken['origin']
+                    origin: ptToken['origin'],
+                    fields: this._processedElements
                 }, common.hostedFieldsEndpoint)
             } else {
                 handleTypedError(ErrorType.NO_TOKEN, 'Unable to find transacting iframe')
@@ -201,25 +197,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this._removeReadyListener();
     }
 
-    sendAsyncPostMessage = <T>(message: AsyncMessage, iframe: HTMLIFrameElement) => new Promise<T>((resolve, reject) => {
-        // Opening a new message channel, so we can await the response from the hosted field
-        const channel = new MessageChannel()
-
-        channel.port1.onmessage = ({data}) => {
-            channel.port1.close();
-            if (data.error) {
-                reject(data);
-            } else {
-                resolve(data);
-            }
-        };
-        iframe.contentWindow.postMessage(message, common.hostedFieldsEndpoint, [channel.port2])
-    })
-
-    transact(data: TransactDataObject, element: PayTheoryHostedFieldTransactional) {
+    async transact(data: TransactDataObject, element: PayTheoryHostedFieldTransactional) {
         data.fee_mode = data.fee_mode || this._feeMode || defaultFeeMode
         this._isTransactingElement = true
-        common.sendTransactingMessage(element)
+        let response = await common.sendTransactingMessage(element, data.payTheoryData.billing_info)
+        if (response.type === ERROR_STEP) {
+            this._isTransactingElement = false
+            return response
+        }
         //TODO: Add attestation call here
         let message: AsyncMessage = {
             type: 'pt-static:payment-detail',
@@ -227,7 +212,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             async: true
         }
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
-        return this.sendAsyncPostMessage<ConfirmationMessage | SuccessfulTransactionMessage | FailedTransactionMessage | CashBarcodeMessage | ErrorMessage>(message, transactingIFrame)
+        return sendAsyncPostMessage<ConfirmationMessage | SuccessfulTransactionMessage | FailedTransactionMessage | CashBarcodeMessage | ErrorMessage>(message, transactingIFrame)
     }
 
     capture() {
@@ -236,7 +221,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             async: true
         }
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
-        return this.sendAsyncPostMessage<SuccessfulTransactionMessage | FailedTransactionMessage | ErrorMessage>(message, transactingIFrame)
+        return sendAsyncPostMessage<SuccessfulTransactionMessage | FailedTransactionMessage | ErrorMessage>(message, transactingIFrame)
     }
 
 
@@ -262,10 +247,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         }
     }
 
-    tokenize(data: TokenizeDataObject, element: PayTheoryHostedFieldTransactional): Promise<TokenizedPaymentMethodMessage | ErrorMessage> {
+    async tokenize(data: TokenizeDataObject, element: PayTheoryHostedFieldTransactional): Promise<TokenizedPaymentMethodMessage | ErrorMessage> {
         this._isTransactingElement = true
         this._initialized = true
-        common.sendTransactingMessage(element)
+        let response = await common.sendTransactingMessage(element, data.billingInfo)
+        if (response.type === ERROR_STEP) {
+            this._isTransactingElement = false
+            return response
+        }
         //TODO: Add attestation call here
         let message: AsyncMessage =  {
             type: 'pt-static:tokenize-detail',
@@ -273,7 +262,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             async: true
         }
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
-        return this.sendAsyncPostMessage<TokenizedPaymentMethodMessage | ErrorMessage>(message, transactingIFrame)
+        return sendAsyncPostMessage<TokenizedPaymentMethodMessage | ErrorMessage>(message, transactingIFrame)
     }
 
     sendStateMessage() {
@@ -371,10 +360,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     set initialized(value: boolean) {
         this._initialized = value
-    }
-
-    get processedElements() {
-        return this._processedElements
     }
 
     set processedElements(value: Partial<Array<ElementTypes>>) {

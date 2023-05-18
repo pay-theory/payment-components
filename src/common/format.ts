@@ -1,5 +1,5 @@
 import * as data from "./data";
-import {CHECKOUT, MERCHANT_FEE, SERVICE_FEE} from "./data";
+import {MERCHANT_FEE, SERVICE_FEE} from "./data";
 import {
     BillingInfo,
     CASH_MESSAGE,
@@ -26,6 +26,7 @@ export const CONFIRMATION_STEP = "pt-static:confirm"
 export const CASH_BARCODE_STEP = "pt-static:cash-complete"
 export const COMPLETE_STEP = "pt-static:complete"
 export const ERROR_STEP = "pt-static:error"
+export const FIELDS_READY_STEP = "pt-static:fields-ready"
 
 
 export type PayTheoryDataObject = {
@@ -72,6 +73,10 @@ export const parseInputParams = (inputParams: TransactProps | CheckoutDetails): 
     }
     inputCopy.metadata = metadata
     return inputCopy
+}
+
+export type FieldsReadyMessage = {
+    type: typeof FIELDS_READY_STEP
 }
 
 export type ErrorMessage = {
