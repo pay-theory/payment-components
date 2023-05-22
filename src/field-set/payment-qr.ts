@@ -16,25 +16,6 @@ export default async(inputParams: PayTheoryQRInput) => {
         onSuccess
     } = inputParams
 
-    // const keyParts = apiKey.split("-")
-    // let environment = keyParts[0]
-    // let stage = keyParts[1]
-    // let partnerMode = ""
-    // if (['new', 'old'].includes(stage)) {
-    //     partnerMode = stage
-    //     stage = keyParts[2]
-    // }
-    //
-    // common.removeAll(true)
-    // let partner_environment
-    // if (partnerMode === "") {
-    //     partner_environment = `${environment}`
-    // } else {
-    //     partner_environment = `${environment}-${partnerMode}`
-    // }
-    // common.setEnvironment(partner_environment)
-    // common.setStage(stage)
-
     // Validate the input parameters
     const modifiedCheckoutDetails = common.parseInputParams(checkoutDetails) as ModifiedCheckoutDetails
     let {paymentName, callToAction, acceptedPaymentMethods} = modifiedCheckoutDetails
