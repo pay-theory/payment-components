@@ -159,7 +159,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                     origin: ptToken['origin'],
                     fields: this._processedElements
                 }, common.hostedFieldsEndpoint)
-                await common.handleAttestation(ptToken["challengeOptions"], transactingIFrame)
             } else {
                 handleTypedError(ErrorType.NO_TOKEN, 'Unable to find transacting iframe')
             }
@@ -212,6 +211,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             async: true
         }
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
+        await common.handleAttestation(this._challengeOptions, transactingIFrame)
         return sendAsyncPostMessage<ConfirmationMessage | SuccessfulTransactionMessage | FailedTransactionMessage | CashBarcodeMessage | ErrorMessage>(message, transactingIFrame)
     }
 
@@ -261,6 +261,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             async: true
         }
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
+        await common.handleAttestation(this._challengeOptions, transactingIFrame)
         return sendAsyncPostMessage<TokenizedPaymentMethodMessage | ErrorMessage>(message, transactingIFrame)
     }
 
