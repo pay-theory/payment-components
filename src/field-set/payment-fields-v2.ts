@@ -93,6 +93,7 @@ const payTheoryFields = async(props: PayTheoryPaymentFieldsInput) => {
             session,
             feeMode
         } = props
+        valid.checkInitialParams(apiKey, feeMode, metadata, styles)
         // Map the elementIds to objects that can be passed into the processElements function
         const achElements: achElementIds = {
             'account-number': elementIds['account-number'],

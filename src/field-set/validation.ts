@@ -19,17 +19,21 @@ const findAccountName = findField('account-name')
 const findZip = findField('billing-zip')
 
 // partner mode is used to indicate migration builds
-const checkApiKey = (key: string | any, partnerMode: string) => {
-    const stageIndex = partnerMode ? 2 : 1
-    const keySplitLength = partnerMode ? 4 : 3
-    if (typeof key !== 'string') {
-        throw Error('Api key should be a string')
+const checkApiKey = (key: any) => {
+    if (!validate(key, 'string')) {
+        throw Error(`Valid API Key not found. Please provide a valid API Key`)
     }
-    else if (key.split("-").length !== keySplitLength) {
-        throw Error(`Api key should be a string formatted in ${keySplitLength} sections`)
+    const keyParts = key.split("-")
+    let environment = keyParts[0]
+    let stage = keyParts[1]
+    let partnerMode = ""
+    if (['new', 'old'].includes(stage)) {
+        partnerMode = stage
+        stage = keyParts[2]
     }
-    else if (!key.split("-")[stageIndex].includes("paytheory")) {
-        throw Error(`Api key has invalid stage ${key.split("-")[stageIndex]}`)
+
+    if(environment !== common.PARTNER || stage !== common.STAGE) {
+        throw Error(`Valid API Key not found. Please provide a valid API Key`)
     }
 }
 
@@ -67,13 +71,11 @@ const checkStage = (stage: string) => {
     }
 }
 
-const checkCreateParams = (key: any, mode: any, metadata: any, styles: any, env: any, stage: any, partnerMode: any) => {
-    checkApiKey(key,partnerMode)
+const checkInitialParams = (key: any, mode: any, metadata: any, styles: any) => {
+    checkApiKey(key)
     checkFeeMode(mode)
     checkMetadata(metadata)
     checkStyles(styles)
-    checkEnv(env)
-    checkStage(stage)
 }
 
 // Checks the dom for elements and returns errors if there are missing elements or conflicting elements
@@ -406,7 +408,7 @@ const validQRSize = (size: any): ErrorResponse | null => {
 
 
 export {
-    checkCreateParams,
+    checkInitialParams,
     findCardNumberError,
     findCombinedCardError,
     findAchError,
