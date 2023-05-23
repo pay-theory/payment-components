@@ -177,7 +177,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         }, this.sendPtToken)
 
         // Set up a listener for the hosted field to message saying it is connected to the socket and send a ready message
-        this._removeHostTokenListener = common.handleHostedFieldMessage((event: {
+        this._removeReadyListener = common.handleHostedFieldMessage((event: {
             type: any,
             element: ElementTypes,
         }) => {
@@ -199,6 +199,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     async transact(data: TransactDataObject, element: PayTheoryHostedFieldTransactional) {
         data.fee_mode = data.fee_mode || this._feeMode || defaultFeeMode
+        data.metadata = data.metadata || this._metadata
         this._isTransactingElement = true
         let response = await common.sendTransactingMessage(element, data.payTheoryData.billing_info)
         if (response.type === ERROR_STEP) {
@@ -211,7 +212,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             async: true
         }
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
-        await common.handleAttestation(this._challengeOptions, transactingIFrame)
         return sendAsyncPostMessage<ConfirmationMessage | SuccessfulTransactionMessage | FailedTransactionMessage | CashBarcodeMessage | ErrorMessage>(message, transactingIFrame)
     }
 
@@ -261,7 +261,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             async: true
         }
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
-        await common.handleAttestation(this._challengeOptions, transactingIFrame)
         return sendAsyncPostMessage<TokenizedPaymentMethodMessage | ErrorMessage>(message, transactingIFrame)
     }
 
@@ -344,10 +343,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     set apiKey(value: string) {
       this._apiKey = value
-    }
-
-    get metadata() {
-        return this._metadata
     }
 
     set metadata(value: { [key: string | number]: string | number | boolean } | undefined) {

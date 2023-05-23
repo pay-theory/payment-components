@@ -24,6 +24,8 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
             return common.handleTypedError(ErrorType.ALREADY_INITIALIZED, 'this function has already been called')
         } else if(transactingElement.valid == false) {
             return common.handleTypedError(ErrorType.NOT_VALID, "The transaction element is invalid")
+        } else if (transactingElement.ready === false) {
+            return common.handleTypedError(ErrorType.NOT_READY, "The transaction element is not ready")
         } else {
             // Setting to true so that the transact function can't be called again until the transaction is complete
             transactingElement.initialized = true

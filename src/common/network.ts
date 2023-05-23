@@ -44,68 +44,6 @@ export const fetchPtToken = async(apiKey: string): Promise<{
     return false
 }
 
-const createCredentials = async (available: boolean, options: any): Promise<any> => {
-    if (available) {
-        options.challenge = Uint8Array.from(
-            options.challenge,
-            (c: string) => c.charCodeAt(0)
-        );
-
-        options.user.id = Uint8Array.from(
-            options.user.id,
-            (c: string) => c.charCodeAt(0)
-        );
-
-        try {
-            return await navigator.credentials.create({
-                publicKey: options
-            });
-        } catch {
-            return {
-                type: "failed to create credentials"
-            };
-        }
-    }
-
-    return {
-        type: "unavailable"
-    };
-};
-
-
-const attestBrowser = async(challengeOptions: any) => {
-    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) return { type: "safari-bypass" }
-
-    if (navigator.credentials && navigator.credentials.preventSilentAccess) {
-        try {
-            const isAvailable = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
-            return await createCredentials(isAvailable, challengeOptions)
-        }
-        catch {
-            return {
-                type: "prevented"
-            }
-        }
-    }
-
-    return {
-        type: "failed attestation"
-    }
-}
-
-export const handleAttestation = async (challengeOptions: any, transactingField: HTMLIFrameElement) => {
-    const attested = await attestBrowser(challengeOptions)
-
-    if (attested.response) {
-        const response = { clientDataJSON: attested.response.clientDataJSON, attestationObject: attested.response.attestationObject }
-        const attestation = { response, id: attested.id, type: attested.type }
-        transactingField.contentWindow.postMessage({
-            type: `pt-static:attestation`,
-            attestation
-        }, hostedFieldsEndpoint)
-    }
-}
-
 
 export const sendTransactingMessage = (transacting: PayTheoryHostedFieldTransactional, billingInfo: BillingInfo) => new Promise<ErrorMessage | FieldsReadyMessage>((resolve, reject) => {
     // Opening a new message channel, so we can await the response from the hosted field
