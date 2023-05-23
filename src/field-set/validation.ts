@@ -16,7 +16,6 @@ const findAccountNumber = findField('account-number')
 const findBankCode = findField('routing-number')
 const findAccountType = findField('account-type')
 const findAccountName = findField('account-name')
-const findZip = findField('billing-zip')
 
 // partner mode is used to indicate migration builds
 const checkApiKey = (key: any) => {
@@ -26,9 +25,7 @@ const checkApiKey = (key: any) => {
     const keyParts = key.split("-")
     let environment = keyParts[0]
     let stage = keyParts[1]
-    let partnerMode = ""
     if (['new', 'old'].includes(stage)) {
-        partnerMode = stage
         stage = keyParts[2]
     }
 
@@ -59,21 +56,9 @@ const checkStyles = (styles: any) => {
     }
 }
 
-const checkEnv = (env: any) => {
-    if (!validate(env, 'string')) {
-        throw Error(`Environment not found in api key`)
-    }
-}
-const VALID_STAGES = ['paytheory', 'paytheorylab', 'paytheorystudy']
-const checkStage = (stage: string) => {
-    if (!VALID_STAGES.includes(stage)) {
-        throw Error(`Stage variable not found in api key`)
-    }
-}
-
 const checkInitialParams = (key: any, mode: any, metadata: any, styles: any) => {
     checkApiKey(key)
-    checkFeeMode(mode)
+    if(mode) checkFeeMode(mode)
     checkMetadata(metadata)
     checkStyles(styles)
 }
