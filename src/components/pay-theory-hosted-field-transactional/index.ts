@@ -126,6 +126,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
 
     resetToken = async() => {
+        this._isTransactingElement = false
         const ptToken = await common.fetchPtToken(this._apiKey!)
         if (ptToken) {
             const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement

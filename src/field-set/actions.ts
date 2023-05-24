@@ -2,13 +2,13 @@ import {findTransactingElement} from "../common/dom";
 import common from "../common";
 import {MERCHANT_FEE} from "../common/data";
 import * as valid from "./validation";
-import {TokenizeDataObject, TransactDataObject} from "../components/pay-theory-hosted-field-transactional";
+import PayTheoryHostedFieldTransactional, {TokenizeDataObject, TransactDataObject} from "../components/pay-theory-hosted-field-transactional";
 import {
     CASH_MESSAGE,
     CashBarcodeResponse,
-    ConfirmationResponse,
+    ConfirmationResponse, ERROR_MESSAGE,
     ErrorResponse,
-    ErrorType,
+    ErrorType, FAILED_MESSAGE,
     FailedTransactionResponse,
     SuccessfulTransactionResponse, TokenizedPaymentMethodResponse,
     TokenizeProps,
@@ -16,6 +16,14 @@ import {
 } from "../common/pay_theory_types";
 import {localizeCashBarcodeUrl, ModifiedTransactProps, parseResponse} from "../common/format";
 import {sendObserverMessage} from "../common/message";
+
+// Used to reset the host token in the case of a failed transaction or an error
+const resetTransactingElement = (message: ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse | TokenizedPaymentMethodResponse, iframe: PayTheoryHostedFieldTransactional) => {
+    if(message.type === ERROR_MESSAGE || message.type === FAILED_MESSAGE) {
+        iframe.initialized = false
+        iframe.resetToken()
+    }
+}
 
 export const transact = async (props: TransactProps): Promise<ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse> => {
     let transactingElement = findTransactingElement()
@@ -54,6 +62,7 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
                 if(parsedResponse.type === CASH_MESSAGE) {
                     parsedResponse = await localizeCashBarcodeUrl(parsedResponse)
                 }
+                resetTransactingElement(parsedResponse, transactingElement)
                 sendObserverMessage(parsedResponse)
                 return parsedResponse
             } catch (e) {
@@ -71,6 +80,7 @@ export const confirm = async (): Promise<ErrorResponse | SuccessfulTransactionRe
         try {
             let response = await transactingElement.capture()
             const parsedResult = parseResponse(response) as ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse
+            resetTransactingElement(parsedResult, transactingElement)
             sendObserverMessage(parsedResult)
             return parsedResult
         } catch (e) {
@@ -119,6 +129,7 @@ export const tokenizePaymentMethod = async (props: TokenizeProps): Promise<Token
                 const data: TokenizeDataObject = {payorInfo: formattedPayor, metadata, payorId, billingInfo}
                 let result = await transactingElement.tokenize(data, transactingElement)
                 let parsedResult = parseResponse(result)
+                resetTransactingElement(parsedResult, transactingElement)
                 sendObserverMessage(parsedResult)
                 return parsedResult as TokenizedPaymentMethodResponse | ErrorResponse
             } catch (e) {
