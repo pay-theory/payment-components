@@ -2,35 +2,43 @@ import {findTransactingElement} from "../common/dom";
 import common from "../common";
 import {MERCHANT_FEE} from "../common/data";
 import * as valid from "./validation";
-import PayTheoryHostedFieldTransactional, {TokenizeDataObject, TransactDataObject} from "../components/pay-theory-hosted-field-transactional";
+import PayTheoryHostedFieldTransactional, {
+    TokenizeDataObject,
+    TransactDataObject
+} from "../components/pay-theory-hosted-field-transactional";
 import {
-    CASH_MESSAGE,
     CashBarcodeResponse,
-    ConfirmationResponse, ERROR_MESSAGE,
+    ConfirmationResponse,
     ErrorResponse,
-    ErrorType, FAILED_MESSAGE,
+    ErrorType,
     FailedTransactionResponse,
-    SuccessfulTransactionResponse, TokenizedPaymentMethodResponse,
+    ResponseMessageTypes,
+    SuccessfulTransactionResponse,
+    TokenizedPaymentMethodResponse,
     TokenizeProps,
     TransactProps
 } from "../common/pay_theory_types";
 import {localizeCashBarcodeUrl, ModifiedTransactProps, parseResponse} from "../common/format";
 import {sendObserverMessage} from "../common/message";
 
-// Used to reset the host token in the case of a failed transaction or an error
-const resetTransactingElement = (message: ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse | TokenizedPaymentMethodResponse, iframe: PayTheoryHostedFieldTransactional) => {
-    if(message.type === ERROR_MESSAGE || message.type === FAILED_MESSAGE) {
+// Used to element to update the token on error or failure or mark as complete on success
+const updateElementFromAction = (message: ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse | TokenizedPaymentMethodResponse, iframe: PayTheoryHostedFieldTransactional) => {
+    if (message.type === ResponseMessageTypes.ERROR || message.type === ResponseMessageTypes.FAILED) {
         iframe.initialized = false
         iframe.resetToken()
+    } else if(message.type !== ResponseMessageTypes.CONFIRMATION) {
+        iframe.complete = true
     }
 }
 
 export const transact = async (props: TransactProps): Promise<ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse> => {
     let transactingElement = findTransactingElement()
-    if(transactingElement) {
-        if(transactingElement.initialized) {
-            return common.handleTypedError(ErrorType.ALREADY_INITIALIZED, 'this function has already been called')
-        } else if(transactingElement.valid == false) {
+    if (transactingElement) {
+        if (transactingElement.complete) {
+            return common.handleTypedError(ErrorType.ACTION_COMPLETE, 'these fields have already been used to complete an action')
+        } else if (transactingElement.initialized) {
+            return common.handleTypedError(ErrorType.ACTION_IN_PROGRESS, 'this function has already been called')
+        } else if (transactingElement.valid == false) {
             return common.handleTypedError(ErrorType.NOT_VALID, "The transaction element is invalid")
         } else if (transactingElement.ready === false) {
             return common.handleTypedError(ErrorType.NOT_READY, "The transaction element is not ready")
@@ -59,10 +67,10 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
                 }
                 const response = await transactingElement.transact(data, transactingElement)
                 let parsedResponse = parseResponse(response) as ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse
-                if(parsedResponse.type === CASH_MESSAGE) {
+                if (parsedResponse.type === ResponseMessageTypes.CASH) {
                     parsedResponse = await localizeCashBarcodeUrl(parsedResponse)
                 }
-                resetTransactingElement(parsedResponse, transactingElement)
+                updateElementFromAction(parsedResponse, transactingElement)
                 sendObserverMessage(parsedResponse)
                 return parsedResponse
             } catch (e) {
@@ -76,11 +84,11 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
 
 export const confirm = async (): Promise<ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse> => {
     let transactingElement = findTransactingElement()
-    if(transactingElement) {
+    if (transactingElement) {
         try {
             let response = await transactingElement.capture()
             const parsedResult = parseResponse(response) as ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse
-            resetTransactingElement(parsedResult, transactingElement)
+            updateElementFromAction(parsedResult, transactingElement)
             sendObserverMessage(parsedResult)
             return parsedResult
         } catch (e) {
@@ -93,7 +101,7 @@ export const confirm = async (): Promise<ErrorResponse | SuccessfulTransactionRe
 
 export const cancel = async (): Promise<true | ErrorResponse> => {
     let transactingElement = findTransactingElement()
-    if(transactingElement) {
+    if (transactingElement) {
         try {
             return await transactingElement.cancel()
         } catch (e) {
@@ -104,12 +112,14 @@ export const cancel = async (): Promise<true | ErrorResponse> => {
 
 export const tokenizePaymentMethod = async (props: TokenizeProps): Promise<TokenizedPaymentMethodResponse | ErrorResponse> => {
     let transactingElement = findTransactingElement()
-    if(transactingElement) {
-        if(transactingElement.initialized) {
-            return common.handleTypedError(ErrorType.ALREADY_INITIALIZED, 'this function has already been called')
-        } else if(transactingElement.valid == false) {
+    if (transactingElement) {
+        if (transactingElement.complete) {
+            return common.handleTypedError(ErrorType.ACTION_COMPLETE, 'these fields have already been used to complete an action')
+        } else if (transactingElement.initialized) {
+            return common.handleTypedError(ErrorType.ACTION_IN_PROGRESS, 'this function has already been called')
+        } else if (transactingElement.valid == false) {
             return common.handleTypedError(ErrorType.NOT_VALID, "The transaction element is invalid")
-        } else  {
+        } else {
             transactingElement.initialized = true
             let {payorInfo = {}, payorId, metadata = {}, billingInfo} = props
             //validate the input param types
@@ -120,16 +130,16 @@ export const tokenizePaymentMethod = async (props: TokenizeProps): Promise<Token
             if (error) return error
             // validate the payorId
             error = valid.isValidPayorDetails(payorInfo, payorId)
-            if(error) return error
+            if (error) return error
             // validate the billingInfo
             error = valid.isValidBillingInfo(billingInfo)
-            if(error) return error
+            if (error) return error
             const formattedPayor = valid.formatPayorObject(payorInfo)
             try {
                 const data: TokenizeDataObject = {payorInfo: formattedPayor, metadata, payorId, billingInfo}
                 let result = await transactingElement.tokenize(data, transactingElement)
                 let parsedResult = parseResponse(result)
-                resetTransactingElement(parsedResult, transactingElement)
+                updateElementFromAction(parsedResult, transactingElement)
                 sendObserverMessage(parsedResult)
                 return parsedResult as TokenizedPaymentMethodResponse | ErrorResponse
             } catch (e) {

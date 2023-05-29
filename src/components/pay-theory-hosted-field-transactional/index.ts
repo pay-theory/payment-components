@@ -71,6 +71,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     // Used to track if the transact or tokenize function has been called, and we are awaiting a response
     protected _initialized: boolean = false
+    protected _completed: boolean = false
 
     // Used to track if the element was the one that was used when transact was called
     protected _isTransactingElement: boolean = false
@@ -430,6 +431,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     get valid() {
         return this._isValid
+    }
+
+    get complete() {
+        return this._completed
+    }
+
+    set complete(value: boolean) {
+        this._completed = value
     }
 }
 
