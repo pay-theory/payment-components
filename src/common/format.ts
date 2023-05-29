@@ -2,24 +2,20 @@ import * as data from "./data";
 import {MERCHANT_FEE, SERVICE_FEE} from "./data";
 import {
     BillingInfo,
-    CASH_MESSAGE,
     CashBarcodeObject,
-    CashBarcodeResponse, CheckoutDetails,
-    CONFIRMATION_MESSAGE,
+    CashBarcodeResponse,
+    CheckoutDetails,
     ConfirmationResponse,
     ErrorResponse,
-    FAILED_MESSAGE,
     FailedTransactionResponse,
     PayorInfo,
-    SUCCESS_MESSAGE,
+    ResponseMessageTypes,
     SuccessfulTransactionResponse,
-    TOKENIZED_MESSAGE,
     TokenizedPaymentMethodObject,
     TokenizedPaymentMethodResponse,
     TransactProps
 } from "./pay_theory_types";
 import {handleError} from "./message";
-import common from "./index";
 
 // Message Types that would come back from the iframe for async messages
 export const CONFIRMATION_STEP = "pt-static:confirm"
@@ -100,7 +96,7 @@ export type ConfirmationMessage = {
 export const parseConfirmationMessage = (message: ConfirmationMessage): ConfirmationResponse => {
     const fee = message.body.fee_mode === data.SERVICE_FEE ? message.body.fee : 0
     return {
-        type: CONFIRMATION_MESSAGE,
+        type: ResponseMessageTypes.CONFIRMATION,
         body: {
             "first_six": message.body.first_six,
             "last_four": message.body.last_four,
@@ -131,7 +127,7 @@ export type SuccessfulTransactionMessage = {
 
 export const parseSuccessfulTransactionMessage = (message: SuccessfulTransactionMessage): SuccessfulTransactionResponse => {
     return {
-        type: SUCCESS_MESSAGE,
+        type: ResponseMessageTypes.SUCCESS,
         body: {
             "receipt_number": message.body.receipt_number,
             "last_four": message.body.last_four,
@@ -164,7 +160,7 @@ export type FailedTransactionMessage = {
 
 export const parseFailedTransactionMessage = (message: FailedTransactionMessage): FailedTransactionResponse => {
     return {
-        type: FAILED_MESSAGE,
+        type: ResponseMessageTypes.FAILED,
         body: {
             "receipt_number": message.body.receipt_number,
             "last_four": message.body.last_four,
@@ -194,7 +190,7 @@ export const parseResponse = (message: ConfirmationMessage | SuccessfulTransacti
         case COMPLETE_STEP:
             if (message.paymentType === "tokenize") {
                 return {
-                    type: TOKENIZED_MESSAGE,
+                    type: ResponseMessageTypes.TOKENIZED,
                     body: message.body
                 }
             } else {
@@ -206,7 +202,7 @@ export const parseResponse = (message: ConfirmationMessage | SuccessfulTransacti
             }
         case CASH_BARCODE_STEP:
             return {
-                type: CASH_MESSAGE,
+                type: ResponseMessageTypes.CASH,
                 body: message.body
             }
         case ERROR_STEP:
