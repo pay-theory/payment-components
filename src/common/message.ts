@@ -1,18 +1,13 @@
 import {hostedCheckoutEndpoint, hostedFieldsEndpoint} from './network'
 import {ElementTypes} from "./data";
 import {
-    CASH_MESSAGE,
     CashBarcodeResponse,
-    CONFIRMATION_MESSAGE,
     ConfirmationResponse,
-    ERROR_MESSAGE,
     ErrorResponse,
     ErrorType,
-    FAILED_MESSAGE,
     FailedTransactionResponse,
-    SUCCESS_MESSAGE,
+    ResponseMessageTypes,
     SuccessfulTransactionResponse,
-    TOKENIZED_MESSAGE,
     TokenizedPaymentMethodResponse
 } from "./pay_theory_types";
 
@@ -196,7 +191,7 @@ export const handleError = (error: string): ErrorResponse => {
         window.location.origin,
     );
     return {
-        type: ERROR_MESSAGE,
+        type: ResponseMessageTypes.ERROR,
         error,
     }
 }
@@ -211,28 +206,28 @@ export const handleTypedError = (type: ErrorType, error: string): ErrorResponse 
 export const sendObserverMessage = (message: SuccessfulTransactionResponse | FailedTransactionResponse | ErrorResponse | CashBarcodeResponse | TokenizedPaymentMethodResponse | ConfirmationResponse,
                                     confirmationResponse: boolean = false) => {
     switch (message.type) {
-        case SUCCESS_MESSAGE:
-        case TOKENIZED_MESSAGE:
-        case FAILED_MESSAGE:
+        case ResponseMessageTypes.SUCCESS:
+        case ResponseMessageTypes.TOKENIZED:
+        case ResponseMessageTypes.FAILED:
             let messageType = confirmationResponse ? captureString : completeString
             window.postMessage({
                 type: messageType,
                 body: message.body
             }, window.location.origin)
             break
-        case CASH_MESSAGE:
+        case ResponseMessageTypes.CASH:
             window.postMessage({
                 type: cashString,
                 body: message.body
             }, window.location.origin)
             break
-        case CONFIRMATION_MESSAGE:
+        case ResponseMessageTypes.CONFIRMATION:
             window.postMessage({
                 type: confirmString,
                 body: message.body
             }, window.location.origin)
             break
-        case ERROR_MESSAGE:
+        case ResponseMessageTypes.ERROR:
             // Do nothing. Error message should have already been sent
             break
         default:
