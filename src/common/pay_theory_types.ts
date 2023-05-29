@@ -1,13 +1,13 @@
 import {defaultElementIds, ElementTypes, MERCHANT_FEE, SERVICE_FEE} from "./data";
 
-
-// Message Types coming back from the Hosted Fields
-export const SUCCESS_MESSAGE = "SUCCESS"
-export const ERROR_MESSAGE = "ERROR"
-export const CONFIRMATION_MESSAGE = "CONFIRMATION"
-export const FAILED_MESSAGE = "FAILED"
-export const CASH_MESSAGE = "CASH"
-export const TOKENIZED_MESSAGE = "TOKENIZED"
+export enum ResponseMessageTypes {
+    SUCCESS = "SUCCESS",
+    ERROR = "ERROR",
+    CONFIRMATION = "CONFIRMATION",
+    FAILED = "FAILED",
+    CASH = "CASH",
+    TOKENIZED = "TOKENIZED"
+}
 
 export type AddressObject = {
     line1?: string,
@@ -41,7 +41,7 @@ export type ConfirmationObject = {
 }
 
 export type ConfirmationResponse = {
-    type: typeof CONFIRMATION_MESSAGE,
+    type: ResponseMessageTypes.CONFIRMATION,
     body: ConfirmationObject
 }
 
@@ -61,7 +61,7 @@ export type SuccessfulTransactionObject = {
 }
 
 export type SuccessfulTransactionResponse = {
-    type: typeof SUCCESS_MESSAGE,
+    type: ResponseMessageTypes.SUCCESS,
     body: SuccessfulTransactionObject
 }
 
@@ -75,7 +75,7 @@ export type FailedTransactionObject = {
 }
 
 export type FailedTransactionResponse = {
-    type: typeof FAILED_MESSAGE,
+    type: ResponseMessageTypes.FAILED,
     body: FailedTransactionObject
 }
 
@@ -85,7 +85,7 @@ export type CashBarcodeObject = {
 }
 
 export type CashBarcodeResponse = {
-    type: typeof CASH_MESSAGE,
+    type: ResponseMessageTypes.CASH,
     body: CashBarcodeObject
 }
 
@@ -100,7 +100,7 @@ export type TokenizedPaymentMethodObject = {
 }
 
 export type TokenizedPaymentMethodResponse = {
-    type: typeof TOKENIZED_MESSAGE,
+    type: ResponseMessageTypes.TOKENIZED,
     body: TokenizedPaymentMethodObject
 }
 
@@ -113,14 +113,15 @@ export enum ErrorType {
     NO_TOKEN = "NO_TOKEN",
     FIELD_ERROR = "FIELD_ERROR",
     CANCEL_FAILED = "CANCEL_FAILED",
-    ALREADY_INITIALIZED = "ALREADY_INITIALIZED",
+    ACTION_COMPLETE = "ACTION_COMPLETE",
+    ACTION_IN_PROGRESS = "ACTION_IN_PROGRESS",
     TRANSACTING_FIELD_ERROR = "TRANSACTING_FIELD_ERROR",
     SOCKET_ERROR = "SOCKET_ERROR",
     NOT_READY = "NOT_READY"
 }
 
 export type ErrorResponse = {
-    type: typeof ERROR_MESSAGE,
+    type: ResponseMessageTypes.ERROR,
     error: string
 }
 
