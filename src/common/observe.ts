@@ -12,13 +12,9 @@ import {defaultElementIds, ElementTypes} from "./data";
 
 export const errorObserver = (cb: (error: string) => void) => messaging.handleMessage(messaging.errorTypeMessage, (message: {
     error: string;
-    throws: boolean;
     type: string;
 }) => {
     cb(message.error)
-    if (message.throws) {
-        console.error(message.error)
-    }
 })
 
 export const stateObserver = (cb: (value: StateObject) => void) => messaging.handleMessage(messaging.stateTypeMessage, (event: {type: string, data: StateObject}) => {
