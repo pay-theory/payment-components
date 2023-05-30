@@ -1,4 +1,4 @@
-import {defaultElementIds, ElementTypes, MERCHANT_FEE, SERVICE_FEE} from "./data";
+import { defaultElementIds, ElementTypes, MERCHANT_FEE, SERVICE_FEE } from "./data";
 
 export enum ResponseMessageTypes {
     SUCCESS = "SUCCESS",

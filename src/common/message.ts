@@ -185,14 +185,13 @@ export const postMessageToHostedField = (id: string, message: object, channel?: 
 export const handleError = (error: string): ErrorResponse => {
     window.postMessage({
             type: 'pt:error',
-            throws: true,
-            error,
+            error
         },
         window.location.origin,
     );
     return {
         type: ResponseMessageTypes.ERROR,
-        error,
+        error
     }
 }
 
