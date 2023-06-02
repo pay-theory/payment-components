@@ -233,11 +233,12 @@ const isValidPayorInfo = (payorInfo: payorInfo): ErrorResponse | null => {
 const nullifyEmptyStrings = (params: object) => {
     let newParams = JSON.parse(JSON.stringify(params));
     Object.keys(newParams).forEach((key) => {
-        if (newParams[key as keyof typeof newParams] === "") {
+        let value = newParams[key as keyof typeof newParams];
+        if (value === "") {
             // @ts-ignore
             newParams[key as keyof typeof newParams] = null;
-        } else if (typeof newParams[key as keyof typeof newParams] === "object") {
-            nullifyEmptyStrings(newParams[key as keyof typeof newParams]);
+        } else if (value instanceof Object) {
+            nullifyEmptyStrings(value);
         }
     });
     return newParams;
