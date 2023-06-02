@@ -14,7 +14,7 @@
     "plugin:prettier/recommended",
     "prettier/standard",
     "prettier/react",
-    "plugin:security/recommended",
+    "plugin:security/recommended"
   ],
   "env" : {
     "browser" : true,
@@ -140,7 +140,7 @@
     "react/jsx-curly-spacing": "error",
     "react/jsx-equals-spacing": "error",
     "react/jsx-key": "error",
-    "react/jsx-max-depth": [warn, { "max": 4 }],
+    "react/jsx-max-depth": ["warn", { "max": 4 }],
     "react/jsx-no-bind": "error",
     "react/jsx-no-comment-textnodes": "error",
     "react/jsx-no-duplicate-props": "error",
