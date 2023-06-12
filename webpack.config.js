@@ -5,6 +5,7 @@ const devtool = 'inline-source-map'
 module.exports = {
   devtool,
   resolve: {
+    extensions: ['.js', '.ts'],
     fallback: {
       util: require.resolve('util/')
     }
@@ -60,7 +61,12 @@ module.exports = {
     }, {
       test: /\.svg$/,
       loader: 'svg-inline-loader'
-    }],
+    },
+      {
+        test: /\.ts?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      }],
   },
   plugins: [
     new webpack.DefinePlugin({
@@ -72,7 +78,10 @@ module.exports = {
       'process.env': {
         BUILD_ENV: JSON.stringify(process.env.BUILD_ENV),
         APP_ID: JSON.stringify(process.env.APP_ID),
+        ENV: JSON.stringify(process.env.ENV),
+        STAGE: JSON.stringify(process.env.STAGE),
+        TARGET_MODE: JSON.stringify(process.env.TARGET_MODE),
       },
-    }),
+    })
   ],
 };
