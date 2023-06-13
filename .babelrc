@@ -8,7 +8,7 @@
         "corejs": "3.6.5"
       }
     ],
-    ['minify', { builtIns: false }]
+    ["minify", { "builtIns": false }]
   ],
-  plugins: ["@babel/plugin-transform-modules-commonjs"]
+  "plugins": ["transform-custom-element-classes", "transform-es2015-classes", "@babel/plugin-transform-modules-commonjs"]
 }
