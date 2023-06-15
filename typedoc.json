@@ -1,0 +1,5 @@
+{
+  "entryPoints": ["src/common/pay_theory_types.ts"],
+  "out": "docs",
+  "exclude": ["node_modules/**/*", "test/**/*", "dist/**/*"],
+}
