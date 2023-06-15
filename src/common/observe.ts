@@ -25,8 +25,8 @@ export const validObserver = (cb: (value: string) => void) => messaging.handleMe
     cb(event.data)
 })
 
-export const readyObserver = (cb: () => void) => messaging.handleMessage(messaging.readyTypeMessage, () => {
-    cb()
+export const readyObserver = (cb: (ready: true) => void) => messaging.handleMessage(messaging.readyTypeMessage, () => {
+    cb(true)
 })
 
 export const tokenizeObserver = (cb: (value: any) => void) => messaging.handleMessage(
