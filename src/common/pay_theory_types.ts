@@ -71,7 +71,11 @@ export type FailedTransactionObject = {
     brand: string,
     state: string,
     type: string,
-    payor_id: string
+    payor_id: string,
+    reason: {
+        error_code: string,
+        error_text: string
+    }
 }
 
 export type FailedTransactionResponse = {
