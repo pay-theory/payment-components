@@ -59,23 +59,29 @@ export const sendTransactingMessage = (transacting: PayTheoryHostedFieldTransact
     };
 
     const types = transacting.fieldTypes
-    types.forEach(field => {
-        let iframeId = `${field}-iframe`
-        let iframe = document.getElementsByName(iframeId)[0]
+    const transactingField = types.filter(field => [CASH_IFRAME, ACH_IFRAME, CARD_IFRAME].includes(`${field}-iframe`))
+    const siblingFields = types.filter(field => ![CASH_IFRAME, ACH_IFRAME, CARD_IFRAME].includes(`${field}-iframe`))
+    // Sending the message to the hosted field to transact first so that the channel port is saved in state
+    // That will allow it to respond once it receives the message from the sibling fields
+    transactingField.forEach(field => {
+        const iframeId = `${field}-iframe`
+        const iframe = document.getElementsByName(iframeId)[0]
         if (iframe) {
-            if([CASH_IFRAME, ACH_IFRAME, CARD_IFRAME].includes(iframeId)) {
-                // Only send the port to the transacting element for the async message
-                postMessageToHostedField(`${field}-iframe`, {
-                    type: "pt-static:transact",
-                    element: field,
-                    billingInfo
-                }, channel.port2)
-            } else {
-                postMessageToHostedField(`${field}-iframe`, {
-                    type: "pt-static:transact",
-                    element: field
-                })
-            }
+            postMessageToHostedField(`${field}-iframe`, {
+                                type: "pt-static:transact",
+                                element: field,
+                                billingInfo
+                            }, channel.port2)
+        }
+    })
+    siblingFields.forEach(field => {
+        const iframeId = `${field}-iframe`
+        const iframe = document.getElementsByName(iframeId)[0]
+        if (iframe) {
+            postMessageToHostedField(`${field}-iframe`, {
+                                type: "pt-static:transact",
+                                element: field
+                            })
         }
     })
 })
