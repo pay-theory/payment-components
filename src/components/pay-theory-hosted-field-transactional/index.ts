@@ -153,14 +153,17 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         const ptToken = await common.fetchPtToken(this._apiKey!)
         if (ptToken) {
             this._challengeOptions = ptToken['challengeOptions']
-            const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
+            const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement            
             if (transactingIFrame) {
+                const prewidth = transactingIFrame.width
+                transactingIFrame.width = '0'
                 transactingIFrame.contentWindow!.postMessage({
                     type: `pt-static:connection_token`,
                     token: ptToken['pt-token'],
                     origin: ptToken['origin'],
                     fields: this._processedElements
                 }, common.hostedFieldsEndpoint)
+                transactingIFrame.width = prewidth
             } else {
                 handleTypedError(ErrorType.NO_TOKEN, 'Unable to find transacting iframe')
             }
