@@ -62,11 +62,13 @@ class PayTheoryHostedField extends HTMLElement {
       f.setAttribute('src', `${common.hostedFieldsEndpoint}/${field}?token=${token}`)
       f.setAttribute('frameBorder', '0')
       f.setAttribute('name', `${field}-iframe`)
-        f.setAttribute('id', `${field}-iframe`)
+      f.setAttribute('id', `${field}-iframe`)
       wrapperElement.appendChild(f)
       this.appendElement(wrapperElement)
-      f.setAttribute('style', 'display: none;')
-      f.setAttribute('style', 'display: block;')
+      setTimeout(() => {
+        // Ping the iframe to kick listeners and force action in safari
+        f.contentWindow.postMessage("ping", "*")
+      }, 1000)
     })
   }
 
