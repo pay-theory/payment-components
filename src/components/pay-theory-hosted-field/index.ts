@@ -65,16 +65,6 @@ class PayTheoryHostedField extends HTMLElement {
       f.setAttribute('id', `${field}-iframe`)
       wrapperElement.appendChild(f)
       this.appendElement(wrapperElement)
-      setTimeout(() => {
-        const event = new MouseEvent('mouseover', {
-          'view': window,
-          'bubbles': true,
-          'cancelable': true
-        });
-        if (f) {
-          f.dispatchEvent(event)
-        }
-      }, 1000)
     })
   }
 
