@@ -65,6 +65,8 @@ class PayTheoryHostedField extends HTMLElement {
         f.setAttribute('id', `${field}-iframe`)
       wrapperElement.appendChild(f)
       this.appendElement(wrapperElement)
+      f.setAttribute('style', 'display: none;')
+      f.setAttribute('style', 'display: block;')
     })
   }
 
