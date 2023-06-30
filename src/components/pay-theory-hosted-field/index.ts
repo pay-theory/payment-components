@@ -66,8 +66,14 @@ class PayTheoryHostedField extends HTMLElement {
       wrapperElement.appendChild(f)
       this.appendElement(wrapperElement)
       setTimeout(() => {
-        // Ping the iframe to kick listeners and force action in safari
-        f.contentWindow.postMessage("ping", "*")
+        const event = new MouseEvent('mouseover', {
+          'view': window,
+          'bubbles': true,
+          'cancelable': true
+        });
+        if (f) {
+          f.dispatchEvent(event)
+        }
       }, 1000)
     })
   }
