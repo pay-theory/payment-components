@@ -135,7 +135,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                 transactingIFrame.contentWindow!.postMessage({
                     type: `pt-static:reset_host`,
                     token: ptToken['pt-token'],
-                    origin: ptToken['origin']
+                    origin: ptToken['origin'],
+                    fields: this._processedElements
                 }, common.hostedFieldsEndpoint)
                 // Return true because it successfully sent the reset token message
                 return true
