@@ -3,7 +3,7 @@ import {postMessageToHostedField} from './message'
 import PayTheoryHostedFieldTransactional from "../components/pay-theory-hosted-field-transactional";
 import {BillingInfo} from "./pay_theory_types";
 import {ErrorMessage, FieldsReadyMessage} from "./format";
-import {ACH_IFRAME, CARD_IFRAME, CASH_IFRAME} from "./data";
+import {ACH_IFRAME, CARD_IFRAME, CASH_IFRAME, ElementTypes} from "./data";
 
 export const getData = async(url: string, apiKey: string) => {
     const options: RequestInit = {
@@ -44,6 +44,17 @@ export const fetchPtToken = async(apiKey: string): Promise<{
     return false
 }
 
+const sendTransactingMessageToField = (field: ElementTypes, billingInfo: BillingInfo, channel?: MessagePort) => {
+    const iframeId = `${field}-iframe`
+    const iframe = document.getElementsByName(iframeId)[0]
+    if (iframe) {
+        postMessageToHostedField(`${field}-iframe`, {
+            type: "pt-static:transact",
+            element: field,
+            billingInfo
+        }, channel)
+    }
+}
 
 export const sendTransactingMessage = (transacting: PayTheoryHostedFieldTransactional, billingInfo: BillingInfo) => new Promise<ErrorMessage | FieldsReadyMessage>((resolve, reject) => {
     // Opening a new message channel, so we can await the response from the hosted field
@@ -59,24 +70,11 @@ export const sendTransactingMessage = (transacting: PayTheoryHostedFieldTransact
     };
 
     const types = transacting.fieldTypes
-    types.forEach(field => {
-        let iframeId = `${field}-iframe`
-        let iframe = document.getElementsByName(iframeId)[0]
-        if (iframe) {
-            if([CASH_IFRAME, ACH_IFRAME, CARD_IFRAME].includes(iframeId)) {
-                // Only send the port to the transacting element for the async message
-                postMessageToHostedField(`${field}-iframe`, {
-                    type: "pt-static:transact",
-                    element: field,
-                    billingInfo
-                }, channel.port2)
-            } else {
-                postMessageToHostedField(`${field}-iframe`, {
-                    type: "pt-static:transact",
-                    element: field
-                })
-            }
-        }
-    })
+    const transactingField = types.filter(field => [CASH_IFRAME, ACH_IFRAME, CARD_IFRAME].includes(`${field}-iframe`))
+    const siblingFields = types.filter(field => ![CASH_IFRAME, ACH_IFRAME, CARD_IFRAME].includes(`${field}-iframe`))
+    // Sending the message to the hosted field to transact first so that the channel port is saved in state
+    // That will allow it to respond once it receives the message from the sibling fields
+    transactingField.forEach(field => sendTransactingMessageToField(field, billingInfo, channel.port2))
+    siblingFields.forEach(field => sendTransactingMessageToField(field, billingInfo))
 })
 

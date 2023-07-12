@@ -19,7 +19,7 @@ export const findTransactingElement = (): PayTheoryHostedFieldTransactional | fa
         if (element.length > 0) {
             const transactingElement = element[0]
             if(!isHidden(transactingElement)) {
-                if(result == false) {
+                if(result === false) {
                     result = transactingElement as PayTheoryHostedFieldTransactional
                 } else {
                     handleTypedError(ErrorType.TRANSACTING_FIELD_ERROR, "There can only be one transacting element visible on the page.")
