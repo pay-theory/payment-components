@@ -62,7 +62,7 @@ class PayTheoryHostedField extends HTMLElement {
       f.setAttribute('src', `${common.hostedFieldsEndpoint}/${field}?token=${token}`)
       f.setAttribute('frameBorder', '0')
       f.setAttribute('name', `${field}-iframe`)
-        f.setAttribute('id', `${field}-iframe`)
+      f.setAttribute('id', `${field}-iframe`)
       wrapperElement.appendChild(f)
       this.appendElement(wrapperElement)
     })
