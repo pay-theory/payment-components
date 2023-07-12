@@ -155,6 +155,13 @@ export type FailedTransactionMessage = {
         state: "FAILURE",
         type: string,
         payor_id: string
+        status: {
+            result: "FAILED",
+            reason: {
+                error_code: string,
+                error_text: string
+            }
+        }
     }
 }
 
@@ -168,6 +175,10 @@ export const parseFailedTransactionMessage = (message: FailedTransactionMessage)
             "state": message.body.state,
             "type": message.body.type,
             "payor_id": message.body.payor_id,
+            "reason": {
+                "failure_code": message.body.status.reason.error_code,
+                "failure_text": message.body.status.reason.error_text
+            }
         }
     }
 }
