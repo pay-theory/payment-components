@@ -48,8 +48,10 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
             let newProps = common.parseInputParams(props) as ModifiedTransactProps
             let {payorInfo, customerInfo, shippingDetails} = newProps
             newProps.payorInfo = payorInfo || customerInfo || shippingDetails || {}
+            // Adding line for backwards compatability. Default to what was passed into the transact function, then the one passed into create, then the default
+            newProps.feeMode = !!newProps.feeMode ? newProps.feeMode : transactingElement.feeMode ? transactingElement.feeMode : MERCHANT_FEE
             // @ts-ignore Adding line for backwards compatibility
-            newProps.feeMode = newProps.feeMode === 'interchange' || !newProps.feeMode ? MERCHANT_FEE : newProps.feeMode
+            newProps.feeMode = newProps.feeMode === 'interchange' ? MERCHANT_FEE : newProps.feeMode
             // Check for validity of the transaction parameters
             let validity = valid.validTransactionParams(newProps)
             if (validity) return validity
