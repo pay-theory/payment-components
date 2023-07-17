@@ -429,6 +429,10 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this._feeMode = value
     }
 
+    get feeMode() {
+        return this._feeMode
+    }
+
     get valid() {
         return this._isValid
     }
