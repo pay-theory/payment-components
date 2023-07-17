@@ -49,7 +49,8 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
             let {payorInfo, customerInfo, shippingDetails} = newProps
             newProps.payorInfo = payorInfo || customerInfo || shippingDetails || {}
             // @ts-ignore Adding line for backwards compatibility
-            newProps.feeMode = newProps.feeMode === 'interchange' || !newProps.feeMode ? MERCHANT_FEE : newProps.feeMode
+            newProps.feeMode = newProps.feeMode === 'interchange' ? MERCHANT_FEE : newProps.feeMode
+            newProps.feeMode = !newProps.feeMode ? transactingElement.feeMode ? transactingElement.feeMode : MERCHANT_FEE : newProps.feeMode
             // Check for validity of the transaction parameters
             let validity = valid.validTransactionParams(newProps)
             if (validity) return validity
