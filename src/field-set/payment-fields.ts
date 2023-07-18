@@ -9,7 +9,7 @@ export default async(
     legacy: undefined, // this used to be client id, left in place to preserve backwards compatibility
     styles: StyleObject = common.defaultStyles,
     sessionMetadata: { [key: string | number]: string | number | boolean } = {},
-    fee_mode: typeof MERCHANT_FEE | typeof  SERVICE_FEE= common.defaultFeeMode
+    fee_mode: typeof MERCHANT_FEE | typeof  SERVICE_FEE = common.defaultFeeMode
 ) => {
     const mount = async(props: {
         placeholders?: PlaceholderObject,
