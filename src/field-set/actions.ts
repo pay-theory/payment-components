@@ -91,7 +91,7 @@ export const confirm = async (): Promise<ErrorResponse | SuccessfulTransactionRe
             let response = await transactingElement.capture()
             const parsedResult = parseResponse(response) as ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse
             updateElementFromAction(parsedResult, transactingElement)
-            sendObserverMessage(parsedResult)
+            sendObserverMessage(parsedResult, true)
             return parsedResult
         } catch (e) {
             return common.handleError(e?.error || e?.message || e)
