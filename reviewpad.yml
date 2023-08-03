@@ -46,9 +46,6 @@ workflows:
   - name: best-practices
     description: Validate best practices for pull request management
     run:
-      # Warn pull requests that do not have an associated GitHub issue.
-      - if: $hasLinkedIssues() == false
-        then: $warn("Please link an issue to the pull request")
       # Warn pull requests if their description is empty.
       - if: $description() == ""
         then: $warn("Please provide a description for the pull request")
