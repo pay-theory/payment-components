@@ -18,6 +18,7 @@ export default async(inputParams: PayTheoryQRInput) => {
 
     // Validate the input parameters
     const modifiedCheckoutDetails = common.parseInputParams(checkoutDetails) as ModifiedCheckoutDetails
+    modifiedCheckoutDetails.feeMode = modifiedCheckoutDetails.feeMode ? modifiedCheckoutDetails.feeMode : common.defaultFeeMode
     let {paymentName, callToAction, acceptedPaymentMethods} = modifiedCheckoutDetails
     let removeErrorListener = () => {}
     let removeHostedErrorListener = () => {}
