@@ -281,6 +281,9 @@ const isValidAmount = (amount: any): ErrorResponse | null => {
     if (!validate(amount, 'number')) {
         return handleTypedError(ErrorType.INVALID_PARAM, 'amount must be a positive integer')
     }
+    if (amount % 1 !== 0) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'amount cannot have a decimal');
+    }
     return null
 }
 

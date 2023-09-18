@@ -1,5 +1,4 @@
 // @ts-ignore
-import DOMPurify from 'dompurify'
 import PayTheoryHostedField from '../pay-theory-hosted-field'
 import common from '../../common'
 import {
@@ -78,6 +77,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     // Used to track if the element is ready to be
     protected _isReady: boolean = false
+    protected _readyChannel: MessagePort | undefined
 
     // List of fields that are a part of this group used to transact for this transactional element
     protected _fieldTypes: Array<ElementTypes>
@@ -341,6 +341,13 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                 },
                 window.location.origin,
             )
+
+            if(this._readyChannel) {
+                window.postMessage({
+                        type: 'pay-theory:ready-channel',
+                        data: true
+                }, window.location.origin, [this._readyChannel])
+            }
         }
     }
 

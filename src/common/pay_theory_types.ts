@@ -6,7 +6,8 @@ export enum ResponseMessageTypes {
     CONFIRMATION = "CONFIRMATION",
     FAILED = "FAILED",
     CASH = "CASH",
-    TOKENIZED = "TOKENIZED"
+    TOKENIZED = "TOKENIZED",
+    READY = "READY",
 }
 
 export type AddressObject = {
@@ -63,6 +64,11 @@ export type SuccessfulTransactionObject = {
 export type SuccessfulTransactionResponse = {
     type: ResponseMessageTypes.SUCCESS,
     body: SuccessfulTransactionObject
+}
+
+export type ReadyResponse = {
+    type: ResponseMessageTypes.READY,
+    body: true
 }
 
 export type FailedTransactionObject = {
