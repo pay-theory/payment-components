@@ -49,7 +49,8 @@ const mountProcessedElements = async(props: {
     session: string | undefined,
     metadata: { [key: string | number]: string | number | boolean },
     removeEventListeners: () => void
-    feeMode: typeof MERCHANT_FEE | typeof SERVICE_FEE | undefined
+    feeMode: typeof MERCHANT_FEE | typeof SERVICE_FEE | undefined,
+    port: MessagePort
 }) => {
     const {processed, apiKey, styles, placeholders, session, metadata, removeEventListeners, feeMode} = props
     for (const value of Object.values(processed)) {
@@ -82,6 +83,7 @@ const mountProcessedElements = async(props: {
                 const processedElementTypes = value.elements.siblings.map((sibling) => sibling.type)
                 const transactingElementType = value.elements.transacting.map((transacting) => transacting.type)
                 element.frame.processedElements = [...processedElementTypes, ...transactingElementType]
+                element.frame.readyPort = props.port
                 if (container) {
                     container.appendChild(element.frame)
                 }
@@ -175,7 +177,8 @@ const initializeFields = async(props: PayTheoryPaymentFieldsInput, port: Message
             session,
             metadata,
             removeEventListeners,
-            feeMode
+            feeMode,
+            port
         })
 
         if (result) {

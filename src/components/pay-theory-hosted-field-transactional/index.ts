@@ -77,7 +77,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     // Used to track if the element is ready to be
     protected _isReady: boolean = false
-    protected _readyChannel: MessagePort | undefined
+    protected _readyPort: MessagePort | undefined
 
     // List of fields that are a part of this group used to transact for this transactional element
     protected _fieldTypes: Array<ElementTypes>
@@ -342,17 +342,21 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                 window.location.origin,
             )
 
-            if(this._readyChannel) {
+            if(this._readyPort) {
                 window.postMessage({
                         type: 'pay-theory:ready-channel',
                         data: true
-                }, window.location.origin, [this._readyChannel])
+                }, window.location.origin, [this._readyPort])
             }
         }
     }
 
     set apiKey(value: string) {
       this._apiKey = value
+    }
+
+    set readyPort(value: MessagePort) {
+        this._readyPort = value
     }
 
     set metadata(value: { [key: string | number]: string | number | boolean } | undefined) {
