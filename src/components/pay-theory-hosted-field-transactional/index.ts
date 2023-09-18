@@ -343,10 +343,10 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             )
 
             if(this._readyPort) {
-                window.postMessage({
+                this._readyPort.postMessage({
                         type: 'pay-theory:ready-channel',
                         data: true
-                }, window.location.origin, [this._readyPort])
+                })
             }
         }
     }
