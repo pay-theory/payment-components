@@ -7,7 +7,15 @@ import PayTheoryHostedField from "../components/pay-theory-hosted-field";
 import {processedElement} from "../common/dom";
 import PayTheoryHostedFieldTransactional from "../components/pay-theory-hosted-field-transactional";
 import * as handler from "./handler";
-import {ErrorType, PayTheoryPaymentFieldsInput, PlaceholderObject, StyleObject} from "../common/pay_theory_types";
+import {
+    ErrorResponse,
+    ErrorType,
+    PayTheoryPaymentFieldsInput,
+    PlaceholderObject,
+    ReadyResponse,
+    ResponseMessageTypes,
+    StyleObject
+} from "../common/pay_theory_types";
 
 type ProcessedObject = {
     card: {
@@ -82,8 +90,7 @@ const mountProcessedElements = async(props: {
     }
 }
 
-const payTheoryFields = async(props: PayTheoryPaymentFieldsInput) => {
-    if (document.readyState === "complete") {
+const initializeFields = async(props: PayTheoryPaymentFieldsInput, port: MessagePort) => {
         const {
             apiKey,
             styles = common.defaultStyles,
@@ -160,7 +167,7 @@ const payTheoryFields = async(props: PayTheoryPaymentFieldsInput) => {
             }
         }
         // Mount the elements to the DOM
-        await mountProcessedElements({
+        let result =  await mountProcessedElements({
             processed,
             apiKey,
             styles,
@@ -170,9 +177,40 @@ const payTheoryFields = async(props: PayTheoryPaymentFieldsInput) => {
             removeEventListeners,
             feeMode
         })
-    } else {
-        setTimeout(() => payTheoryFields(props), 100)
-    }
+
+        if (result) {
+            return result
+        }
 }
+
+const payTheoryFields = async(inputParams: PayTheoryPaymentFieldsInput) => new Promise<ReadyResponse | ErrorResponse>((resolve, reject) => {
+// Opening a new message channel, so we can await the response from the hosted field
+    const channel = new MessageChannel()
+
+    channel.port1.onmessage = ({data}) => {
+        channel.port1.close();
+        resolve({
+            type: ResponseMessageTypes.READY,
+            body: true
+        })
+    };
+
+    if (document.readyState === 'complete') {
+        initializeFields(inputParams, channel.port2)
+            .then(result =>
+            resolve(result))
+            .catch(error => reject(error));
+    } else {
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const result = await initializeFields(inputParams, channel.port2);
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+})
 
 export default payTheoryFields
