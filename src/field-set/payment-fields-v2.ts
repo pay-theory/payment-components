@@ -197,17 +197,13 @@ const payTheoryFields = async(inputParams: PayTheoryPaymentFieldsInput) => new P
 
     if (document.readyState === 'complete') {
         initializeFields(inputParams, channel.port2)
-            .then(result =>
-            resolve(result))
-            .catch(error => reject(error));
+            .then(result => {
+                if(result) resolve(result)
+            })
     } else {
         document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                const result = await initializeFields(inputParams, channel.port2);
-                resolve(result);
-            } catch (error) {
-                reject(error);
-            }
+            const result = await initializeFields(inputParams, channel.port2);
+            if (result) resolve(result);
         });
     }
 
