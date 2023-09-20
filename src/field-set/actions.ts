@@ -31,6 +31,16 @@ const updateElementFromAction = (message: ErrorResponse | ConfirmationResponse |
     }
 }
 
+const reconnectIfDisconnected = async (iframe: PayTheoryHostedFieldTransactional): Promise<ErrorResponse | null> => {
+    if (transactingElement.ready == false) {
+        let result = await iframe.resetToken()
+        if (result.type === ResponseMessageTypes.ERROR) {
+            return common.handleTypedError(ErrorType.SOCKET_ERROR, result.error)
+        }
+        return null
+    }
+}
+
 export const transact = async (props: TransactProps): Promise<ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse> => {
     let transactingElement = findTransactingElement()
     if (transactingElement) {
@@ -40,9 +50,9 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
             return common.handleTypedError(ErrorType.ACTION_IN_PROGRESS, 'this function has already been called')
         } else if (transactingElement.valid == false) {
             return common.handleTypedError(ErrorType.NOT_VALID, "The transaction element is invalid")
-        } else if (transactingElement.ready === false) {
-            return common.handleTypedError(ErrorType.NOT_READY, "The transaction element is not ready")
         } else {
+            let reconnectError = await reconnectIfDisconnected(transactingElement)
+            if (reconnectError) return reconnectError
             // Setting to true so that the transact function can't be called again until the transaction is complete
             transactingElement.initialized = true
             let newProps = common.parseInputParams(props) as ModifiedTransactProps
@@ -87,6 +97,8 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
 export const confirm = async (): Promise<ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse> => {
     let transactingElement = findTransactingElement()
     if (transactingElement) {
+        let reconnectError = await reconnectIfDisconnected(transactingElement)
+        if (reconnectError) return reconnectError
         try {
             let response = await transactingElement.capture()
             const parsedResult = parseResponse(response) as ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse
@@ -122,6 +134,9 @@ export const tokenizePaymentMethod = async (props: TokenizeProps): Promise<Token
         } else if (transactingElement.valid == false) {
             return common.handleTypedError(ErrorType.NOT_VALID, "The transaction element is invalid")
         } else {
+            let reconnectError = await reconnectIfDisconnected(transactingElement)
+            if (reconnectError) return reconnectError
+
             transactingElement.initialized = true
             let {payorInfo = {}, payorId, metadata = {}, billingInfo} = props
             //validate the input param types

@@ -1,5 +1,5 @@
 import * as data from "./data";
-import {MERCHANT_FEE, SERVICE_FEE} from "./data";
+import {achElementIds, ElementTypes, MERCHANT_FEE, SERVICE_FEE} from "./data";
 import {
     BillingInfo,
     CashBarcodeObject,
@@ -77,7 +77,8 @@ export type FieldsReadyMessage = {
 
 export type ErrorMessage = {
     type: typeof ERROR_STEP,
-    error: string
+    error: string,
+    element: ElementTypes
 }
 
 export type ConfirmationMessage = {
