@@ -1,5 +1,5 @@
 import common from '../common'
-import {ElementTypes, transactingWebComponentIds} from "../common/data";
+import {ElementTypes, transactingWebComponentIds, transactingWebComponentMap} from "../common/data";
 import payTheoryHostedFieldTransactional, {
     IncomingFieldState
 } from "../components/pay-theory-hosted-field-transactional";
@@ -74,15 +74,24 @@ export const hostedErrorHandler = (message: {
     error: string
     field: ElementTypes
 }) => {
-    transactingWebComponentIds.forEach((id) => {
-        let element = document.getElementsByName(id)
-        if (element.length > 0) {
-            let transactingElement = element[0] as payTheoryHostedFieldTransactional
-            if (transactingElement.initialized) {
-                transactingElement.initialized = false
-                transactingElement.resetToken()
+    let fieldType = common.isFieldType(message.field)
+    if (fieldType) {
+        const components = transactingWebComponentMap[fieldType]
+        components.ids.forEach((id) => {
+            let element = document.getElementsByName(id)
+            if (element.length > 0) {
+                let transactingElement = element[0] as payTheoryHostedFieldTransactional
+                if (transactingElement.initialized) {
+                    transactingElement.initialized = false
+                    transactingElement.resetToken()
+                }
+
+                // If the session has expired, set the ready state to false
+                if(message.error.startsWith("SESSION_EXPIRED")) transactingElement.ready = false
             }
-        }
-    })
-    common.handleError(message.error)
+        })
+    }
+
+    // Do not throw an error if the error is a session expired error
+    if(!message.error.startsWith("SESSION_EXPIRED")) common.handleError(message.error)
 }
