@@ -87,7 +87,7 @@ export const hostedErrorHandler = (message: {
                 }
 
                 // If the session has expired, set the ready state to false
-                if(message.error.startsWith("SESSION_EXPIRED")) transactingElement.ready = false
+                if(message.error.startsWith("SESSION_EXPIRED")) transactingElement.connected = false
             }
         })
     }

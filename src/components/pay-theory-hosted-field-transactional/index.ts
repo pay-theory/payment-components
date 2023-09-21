@@ -85,9 +85,12 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     // Used to track if the element was the one that was used when transact was called
     protected _isTransactingElement: boolean = false
 
-    // Used to track if the element is ready to be
+    // Used to track if the element is ready to communicate with the transacting iframe
     protected _isReady: boolean = false
     protected _readyPort: MessagePort | undefined
+
+    // Used to track if the socket is connected
+    protected _isConnected: boolean = false
 
     // List of fields that are a part of this group used to transact for this transactional element
     protected _fieldTypes: Array<ElementTypes>
@@ -154,8 +157,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                 if(response.type === ERROR_STEP) {
                     return handleTypedError(ErrorType.NO_TOKEN, 'Unable validate connection token')
                 }
-                this._isReady = true
-                this.sendReadyMessage()
+
+                // Mark it as ready if it is the transacting element
+                if(!this._isReady) {
+                    this._isReady = true
+                    this.sendReadyMessage()
+                }
+
+                this._isConnected = true
 
                 return {
                     type: 'READY',
@@ -374,8 +383,12 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         return this._isReady
     }
 
-    set ready(value: boolean) {
-        this._isReady = value
+    get connected() {
+        return this._isConnected
+    }
+
+    set connected(value: boolean) {
+        this._isConnected = value
     }
 
     get stateGroup() {
