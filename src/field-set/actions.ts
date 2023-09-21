@@ -32,13 +32,14 @@ const updateElementFromAction = (message: ErrorResponse | ConfirmationResponse |
 }
 
 const reconnectIfDisconnected = async (iframe: PayTheoryHostedFieldTransactional): Promise<ErrorResponse | null> => {
-    if (transactingElement.ready == false) {
+    if (iframe.ready == false) {
         let result = await iframe.resetToken()
         if (result.type === ResponseMessageTypes.ERROR) {
             return common.handleTypedError(ErrorType.SOCKET_ERROR, result.error)
         }
         return null
     }
+    return null
 }
 
 export const transact = async (props: TransactProps): Promise<ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse> => {
