@@ -32,7 +32,7 @@ const updateElementFromAction = (message: ErrorResponse | ConfirmationResponse |
 }
 
 const reconnectIfDisconnected = async (iframe: PayTheoryHostedFieldTransactional): Promise<ErrorResponse | null> => {
-    if (iframe.ready == false) {
+    if (iframe.connected == false) {
         let result = await iframe.resetToken()
         if (result.type === ResponseMessageTypes.ERROR) {
             return common.handleTypedError(ErrorType.SOCKET_ERROR, result.error)
@@ -51,6 +51,8 @@ export const transact = async (props: TransactProps): Promise<ErrorResponse | Co
             return common.handleTypedError(ErrorType.ACTION_IN_PROGRESS, 'this function has already been called')
         } else if (transactingElement.valid == false) {
             return common.handleTypedError(ErrorType.NOT_VALID, "The transaction element is invalid")
+        } else if (transactingElement.ready == false) {
+            return common.handleTypedError(ErrorType.NOT_READY, "The transaction element is not ready")
         } else {
             let reconnectError = await reconnectIfDisconnected(transactingElement)
             if (reconnectError) return reconnectError
@@ -134,6 +136,8 @@ export const tokenizePaymentMethod = async (props: TokenizeProps): Promise<Token
             return common.handleTypedError(ErrorType.ACTION_IN_PROGRESS, 'this function has already been called')
         } else if (transactingElement.valid == false) {
             return common.handleTypedError(ErrorType.NOT_VALID, "The transaction element is invalid")
+        } else if (transactingElement.ready == false) {
+            return common.handleTypedError(ErrorType.NOT_READY, "The transaction element is not ready")
         } else {
             let reconnectError = await reconnectIfDisconnected(transactingElement)
             if (reconnectError) return reconnectError
