@@ -158,7 +158,9 @@ export type TransactProps = {
     invoiceId?: string,
     sendReceipt?: boolean,
     receiptDescription?: string,
-    recurringId?: string
+    recurringId?: string,
+    healthExpenseType?: HealthExpenseType,
+    level3DataSummary?: Level3DataSummary
 }
 
 export type PayTheoryPaymentFieldsInput = {
@@ -209,6 +211,8 @@ export type CheckoutDetails = {
     paymentParameters?: string,
     invoiceId?: string,
     recurringId?: string,
+    healthExpenseType?: HealthExpenseType,
+    level3DataSummary?: Level3DataSummary
 }
 
 export type PayTheoryQRInput = {
@@ -266,3 +270,32 @@ export type StyleObject = {
     }
     hidePlaceholder?: boolean;
 }
+
+export interface Level3DataSummary {
+    tax_amt: number;
+    tax_ind: TaxIndicatorType;
+    purch_idfr: string;
+    order_num: string;
+    discnt_amt: number;
+    frght_amt: number;
+    duty_amt: number;
+    dest_postal_code: string;
+    prod_desc: string[];
+}
+
+enum TaxIndicatorType {
+    TAX_AMOUNT_PROVIDED = "TAX_AMOUNT_PROVIDED",
+    NOT_TAXABLE = "NOT_TAXABLE",
+    NO_TAX_INFO_PROVIDED = "NO_TAX_INFO_PROVIDED"
+}
+
+export enum HealthExpenseType {
+    HEALTHCARE = "HEALTHCARE",
+    RX = "RX",
+    VISION = "VISION",
+    CLINICAL = "CLINICAL",
+    COPAY = "COPAY",
+    DENTAL = "DENTAL",
+    TRANSIT = "TRANSIT"
+}
+

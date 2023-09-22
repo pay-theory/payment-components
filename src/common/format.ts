@@ -13,7 +13,9 @@ import {
     SuccessfulTransactionResponse,
     TokenizedPaymentMethodObject,
     TokenizedPaymentMethodResponse,
-    TransactProps
+    TransactProps,
+    HealthExpenseType,
+    Level3DataSummary
 } from "./pay_theory_types";
 import {handleError} from "./message";
 
@@ -37,6 +39,8 @@ export type PayTheoryDataObject = {
     timezone?: string,
     fee?: number,
     billing_info?: BillingInfo
+    healthExpenseType?: HealthExpenseType,
+    level3DataSummary?: Level3DataSummary
 }
 
 export interface ModifiedTransactProps extends TransactProps {
@@ -65,7 +69,9 @@ export const parseInputParams = (inputParams: TransactProps | CheckoutDetails): 
         recurring_id: recurringId, //@ts-ignore this will just set reference to undefined if it doesn't exist
         reference: inputParams.reference || metadata["pay-theory-reference"] as string, //@ts-ignore  this will just set send receipt to undefined if it doesn't exist
         send_receipt: inputParams.sendReceipt || metadata["pay-theory-receipt"] as boolean,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        healthExpenseType: inputCopy.healthExpenseType,
+        level3DataSummary: inputCopy.level3DataSummary
     }
     inputCopy.metadata = metadata
     return inputCopy
