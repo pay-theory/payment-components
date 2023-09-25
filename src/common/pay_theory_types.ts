@@ -283,7 +283,7 @@ export interface Level3DataSummary {
     prod_desc: string[];
 }
 
-enum TaxIndicatorType {
+export enum TaxIndicatorType {
     TAX_AMOUNT_PROVIDED = "TAX_AMOUNT_PROVIDED",
     NOT_TAXABLE = "NOT_TAXABLE",
     NO_TAX_INFO_PROVIDED = "NO_TAX_INFO_PROVIDED"
