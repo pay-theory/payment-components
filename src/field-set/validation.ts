@@ -2,7 +2,7 @@
 import common from '../common'
 import {handleTypedError} from "../common/message";
 import PayTheoryHostedField from "../components/pay-theory-hosted-field";
-import {ErrorResponse, ErrorType, PayorInfo} from "../common/pay_theory_types";
+import {ErrorResponse, ErrorType, PayorInfo, TaxIndicatorType, HealthExpenseType} from "../common/pay_theory_types";
 import {ModifiedCheckoutDetails, ModifiedTransactProps} from "../common/format";
 import {ElementTypes} from "../common/data";
 
@@ -281,6 +281,9 @@ const isValidAmount = (amount: any): ErrorResponse | null => {
     if (!validate(amount, 'number')) {
         return handleTypedError(ErrorType.INVALID_PARAM, 'amount must be a positive integer')
     }
+    if (amount % 1 !== 0) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'amount cannot have a decimal');
+    }
     return null
 }
 
@@ -343,6 +346,68 @@ const isValidBillingInfo = (billingInfo: any): ErrorResponse | null => {
     return null
 }
 
+const isValidL3DataSummary = (l3DataSummary: any): ErrorResponse | null => {
+    // If null or undefined then return null
+    if (l3DataSummary === null || l3DataSummary === undefined) return null
+
+    if (!validate(l3DataSummary, 'object')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary must be an object')
+    }
+
+    if(l3DataSummary.tax_amt && !validate(l3DataSummary.tax_amt, 'number')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.tax_amt must be a number')
+    }
+    if(l3DataSummary.frght_amt && !validate(l3DataSummary.frght_amt, 'number')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.freight_amt must be a number')
+    }
+    if(l3DataSummary.duty_amt && !validate(l3DataSummary.duty_amt, 'number')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.duty_amt must be a number')
+    }
+    if(l3DataSummary.discnt_amt && !validate(l3DataSummary.discnt_amt, 'number')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.discount_amt must be a number')
+    }
+    if(l3DataSummary.purch_idfr && !validate(l3DataSummary.purch_idfr, 'string')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.ship_from_zip must be a string')
+    }
+    if(l3DataSummary.order_num && !validate(l3DataSummary.order_num, 'string')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.order_num must be a string')
+    }
+    if(l3DataSummary.dest_postal_code && !validate(l3DataSummary.dest_postal_code, 'string')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.dest_postal_code must be a string')
+    }
+    if(l3DataSummary.prod_desc) {
+        if(!validate(l3DataSummary.prod_desc, 'array')) {
+            return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.prod_desc must be an array')
+        }
+        for (let i = 0; i < l3DataSummary.prod_desc.length; i++) {
+            if(!validate(l3DataSummary.prod_desc[i], 'string')) {
+                return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.prod_desc must be an array of strings')
+            }
+        }
+    }
+    if(l3DataSummary.tax_ind) {
+        if(!validate(l3DataSummary.tax_ind, 'string')) {
+            return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.tax_ind must be a string')
+        }
+        if(!Object.values(TaxIndicatorType).includes(l3DataSummary.tax_ind)) {
+            return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.tax_ind must be one of the following: ' + Object.values(TaxIndicatorType).join(', '))
+        }
+    }
+
+    return null
+}
+
+const isValidHealthExpenseType = (healthExpenseType: any): ErrorResponse | null => {
+    if (healthExpenseType === null || healthExpenseType === undefined) return null
+    if (!validate(healthExpenseType, 'string')) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'healthExpenseType must be a string')
+    }
+    if (!Object.values(HealthExpenseType).includes(healthExpenseType)) {
+        return handleTypedError(ErrorType.INVALID_PARAM, 'healthExpenseType must be one of the following: ' + Object.values(HealthExpenseType).join(', '))
+    }
+    return null
+}
+
 const validateHostedCheckoutParams = (callToAction: any, acceptedPaymentMethods: any, paymentName: any): ErrorResponse | null => {
     if (callToAction && !common.CTA_TYPES.includes(callToAction)) {
         return handleTypedError(ErrorType.INVALID_PARAM, `callToAction must be one of ${common.CTA_TYPES.join(', ')}`)
@@ -379,6 +444,12 @@ const validTransactionParams = (props: ModifiedTransactProps | ModifiedCheckoutD
     if(error) return error
     // validate the billing info
     error = isValidBillingInfo(payTheoryData.billing_info)
+    if(error) return error
+    // validate the L3 data summary
+    error = isValidL3DataSummary(props.level3DataSummary)
+    if(error) return error
+    // validate the Health Expense Type
+    error = isValidHealthExpenseType(props.healthExpenseType)
     if(error) return error
     // validate the fee
     return isValidFeeAmount(payTheoryData?.fee);

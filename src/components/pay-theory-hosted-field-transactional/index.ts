@@ -1,5 +1,4 @@
 // @ts-ignore
-import DOMPurify from 'dompurify'
 import PayTheoryHostedField from '../pay-theory-hosted-field'
 import common from '../../common'
 import {
@@ -59,6 +58,16 @@ type ConstructorProps = {
     transactingType: TransactingType
 }
 
+type ConnectedMessage = {
+    type: 'pt-static:connected',
+    element: ElementTypes
+}
+
+type ReadyResponse = {
+    type: 'READY',
+    element: ElementTypes
+}
+
 
 
 class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
@@ -76,8 +85,12 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     // Used to track if the element was the one that was used when transact was called
     protected _isTransactingElement: boolean = false
 
-    // Used to track if the element is ready to be
+    // Used to track if the element is ready to communicate with the transacting iframe
     protected _isReady: boolean = false
+    protected _readyPort: MessagePort | undefined
+
+    // Used to track if the socket is connected
+    protected _isConnected: boolean = false
 
     // List of fields that are a part of this group used to transact for this transactional element
     protected _fieldTypes: Array<ElementTypes>
@@ -102,7 +115,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     // Function used to remove event listeners
     protected _removeEventListeners: () => void = () => {}
     protected _removeHostTokenListener: () => void = () => {}
-    protected _removeReadyListener: () => void = () => {}
 
     // Used for backwards compatibility with feeMode
     protected _feeMode: typeof common.SERVICE_FEE | typeof common.MERCHANT_FEE | undefined
@@ -126,48 +138,52 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this._transactingType = props.transactingType
     }
 
-    resetToken = async() => {
-        this._isTransactingElement = false
-        const ptToken = await common.fetchPtToken(this._apiKey!)
-        if (ptToken) {
-            const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
-            if (transactingIFrame) {
-                transactingIFrame.contentWindow!.postMessage({
-                    type: `pt-static:reset_host`,
-                    token: ptToken['pt-token'],
-                    origin: ptToken['origin'],
-                    fields: this._processedElements
-                }, common.hostedFieldsEndpoint)
-                // Return true because it successfully sent the reset token message
-                return true
-            } else {
-                // Return false because it failed to find the transacting iframe
-                return false
-            }
-        } else {
-            // Return false because it failed to fetch the pt-token
-            return false
-        }
-    }
-
-    async sendPtToken() {
+    async sendTokenAsync(type: `pt-static:connection_token` | `pt-static:reset_host`): Promise<ErrorResponse | ReadyResponse> {
         const ptToken = await common.fetchPtToken(this._apiKey!)
         if (ptToken) {
             this._challengeOptions = ptToken['challengeOptions']
             const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
             if (transactingIFrame) {
-                transactingIFrame.contentWindow!.postMessage({
-                    type: `pt-static:connection_token`,
-                    token: ptToken['pt-token'],
-                    origin: ptToken['origin'],
-                    fields: this._processedElements
-                }, common.hostedFieldsEndpoint)
+                const message: AsyncMessage = {
+                    type: type,
+                    data: {
+                        token: ptToken['pt-token'],
+                        origin: ptToken['origin'],
+                        fields: this._processedElements
+                    },
+                    async: true
+                }
+                let response = await sendAsyncPostMessage<ErrorMessage | ConnectedMessage>(message, transactingIFrame)
+                if(response.type === ERROR_STEP) {
+                    return handleTypedError(ErrorType.NO_TOKEN, 'Unable validate connection token')
+                }
+
+                // Mark it as ready if it is the transacting element
+                if(!this._isReady) {
+                    this._isReady = true
+                    this.sendReadyMessage()
+                }
+
+                this._isConnected = true
+
+                return {
+                    type: 'READY',
+                    element: response.element
+                }
             } else {
-                handleTypedError(ErrorType.NO_TOKEN, 'Unable to find transacting iframe')
+                return handleTypedError(ErrorType.NO_TOKEN, 'Unable to find transacting iframe')
             }
         } else {
-            handleTypedError(ErrorType.NO_TOKEN, 'Unable to fetch pt-token')
+            return handleTypedError(ErrorType.NO_TOKEN, 'Unable to fetch pt-token')
         }
+    }
+
+    async resetToken() {
+        return this.sendTokenAsync(`pt-static:reset_host`)
+    }
+
+    async sendPtToken() {
+        return this.sendTokenAsync(`pt-static:connection_token`)
     }
 
     async connectedCallback() {
@@ -179,17 +195,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             return event.type === 'pt-static:pt_token_ready' && this._transactingIFrameId.includes(event.element)
         }, this.sendPtToken)
 
-        // Set up a listener for the hosted field to message saying it is connected to the socket and send a ready message
-        this._removeReadyListener = common.handleHostedFieldMessage((event: {
-            type: any,
-            element: ElementTypes,
-        }) => {
-            return event.type === 'pt-static:connected' && this._transactingIFrameId.includes(event.element)
-        }, () => {
-            this._isReady = true
-            this.sendReadyMessage()
-        })
-
         await super.connectedCallback();
     }
 
@@ -197,7 +202,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         super.disconnectedCallback();
         this._removeEventListeners();
         this._removeHostTokenListener();
-        this._removeReadyListener();
     }
 
     async transact(data: TransactDataObject, element: PayTheoryHostedFieldTransactional) {
@@ -341,11 +345,22 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                 },
                 window.location.origin,
             )
+
+            if(this._readyPort) {
+                this._readyPort.postMessage({
+                        type: 'pay-theory:ready-channel',
+                        data: true
+                })
+            }
         }
     }
 
     set apiKey(value: string) {
       this._apiKey = value
+    }
+
+    set readyPort(value: MessagePort) {
+        this._readyPort = value
     }
 
     set metadata(value: { [key: string | number]: string | number | boolean } | undefined) {
@@ -366,6 +381,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     get ready() {
         return this._isReady
+    }
+
+    get connected() {
+        return this._isConnected
+    }
+
+    set connected(value: boolean) {
+        this._isConnected = value
     }
 
     get stateGroup() {
