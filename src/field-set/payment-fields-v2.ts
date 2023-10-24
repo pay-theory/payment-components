@@ -7,7 +7,15 @@ import PayTheoryHostedField from "../components/pay-theory-hosted-field";
 import {processedElement} from "../common/dom";
 import PayTheoryHostedFieldTransactional from "../components/pay-theory-hosted-field-transactional";
 import * as handler from "./handler";
-import {ErrorType, PayTheoryPaymentFieldsInput, PlaceholderObject, StyleObject} from "../common/pay_theory_types";
+import {
+    ErrorResponse,
+    ErrorType,
+    PayTheoryPaymentFieldsInput,
+    PlaceholderObject,
+    ReadyResponse,
+    ResponseMessageTypes,
+    StyleObject
+} from "../common/pay_theory_types";
 
 type ProcessedObject = {
     card: {
@@ -41,7 +49,8 @@ const mountProcessedElements = async(props: {
     session: string | undefined,
     metadata: { [key: string | number]: string | number | boolean },
     removeEventListeners: () => void
-    feeMode: typeof MERCHANT_FEE | typeof SERVICE_FEE | undefined
+    feeMode: typeof MERCHANT_FEE | typeof SERVICE_FEE | undefined,
+    port: MessagePort
 }) => {
     const {processed, apiKey, styles, placeholders, session, metadata, removeEventListeners, feeMode} = props
     for (const value of Object.values(processed)) {
@@ -74,6 +83,7 @@ const mountProcessedElements = async(props: {
                 const processedElementTypes = value.elements.siblings.map((sibling) => sibling.type)
                 const transactingElementType = value.elements.transacting.map((transacting) => transacting.type)
                 element.frame.processedElements = [...processedElementTypes, ...transactingElementType]
+                element.frame.readyPort = props.port
                 if (container) {
                     container.appendChild(element.frame)
                 }
@@ -82,8 +92,7 @@ const mountProcessedElements = async(props: {
     }
 }
 
-const payTheoryFields = async(props: PayTheoryPaymentFieldsInput) => {
-    if (document.readyState === "complete") {
+const initializeFields = async(props: PayTheoryPaymentFieldsInput, port: MessagePort) => {
         const {
             apiKey,
             styles = common.defaultStyles,
@@ -160,7 +169,7 @@ const payTheoryFields = async(props: PayTheoryPaymentFieldsInput) => {
             }
         }
         // Mount the elements to the DOM
-        await mountProcessedElements({
+        let result =  await mountProcessedElements({
             processed,
             apiKey,
             styles,
@@ -168,11 +177,39 @@ const payTheoryFields = async(props: PayTheoryPaymentFieldsInput) => {
             session,
             metadata,
             removeEventListeners,
-            feeMode
+            feeMode,
+            port
         })
-    } else {
-        setTimeout(() => payTheoryFields(props), 100)
-    }
+
+        if (result) {
+            return result
+        }
 }
+
+const payTheoryFields = async(inputParams: PayTheoryPaymentFieldsInput) => new Promise<ReadyResponse | ErrorResponse>((resolve, reject) => {
+// Opening a new message channel, so we can await the response from the hosted field
+    const channel = new MessageChannel()
+
+    channel.port1.onmessage = ({data}) => {
+        channel.port1.close();
+        resolve({
+            type: ResponseMessageTypes.READY,
+            body: true
+        })
+    };
+
+    if (document.readyState === 'complete') {
+        initializeFields(inputParams, channel.port2)
+            .then(result => {
+                if(result) resolve(result)
+            })
+    } else {
+        document.addEventListener('DOMContentLoaded', async () => {
+            const result = await initializeFields(inputParams, channel.port2);
+            if (result) resolve(result);
+        });
+    }
+
+})
 
 export default payTheoryFields
