@@ -7,7 +7,7 @@
 
 The Pay Theory Web SDK is a set of fields and components that can be used to collect payment information to tokenize and create payment methods or payments.
 
-For more information on Pay Theory, visit [docs.paytheory.com](https://docs.paytheory.com).
+For documentation on the SDK, visit [docs.paytheory.com](https://docs.paytheory.com).
 
 ## License
 
