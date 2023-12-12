@@ -411,8 +411,15 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             }
 
             // Check for update to field validity and if there is an update, update the isValid property and send the valid message
+            const fieldsToCheck = [...this._processedElements]
+            // Make sure we are checking the state for all the fields in the combined card field
+            if(fieldsToCheck.includes('credit-card')) {
+                fieldsToCheck.push('card-number')
+                fieldsToCheck.push('card-exp')
+                fieldsToCheck.push('card-cvv')
+            }
             let calculatedValid = this._requiredValidFields.reduce((acc, curr) => {
-                if(this._processedElements.includes(curr)) {
+                if(fieldsToCheck.includes(curr)) {
                     return acc && this._stateGroup[curr]!.isDirty && this._stateGroup[curr]!.errorMessages.length === 0
                 } else {
                     return acc
