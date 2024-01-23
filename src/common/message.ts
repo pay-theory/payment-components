@@ -91,17 +91,13 @@ export type AsyncMessage = {
     async: true
 }
 
-export const sendAsyncPostMessage = <T>(message: AsyncMessage, iframe: HTMLIFrameElement) => new Promise<T>((resolve, reject) => {
+export const sendAsyncPostMessage = <T>(message: AsyncMessage, iframe: HTMLIFrameElement) => new Promise<T>((resolve) => {
     // Opening a new message channel, so we can await the response from the hosted field
     const channel = new MessageChannel()
 
     channel.port1.onmessage = ({data}) => {
         channel.port1.close();
-        if (data.error) {
-            reject(data);
-        } else {
-            resolve(data);
-        }
+        resolve(data);
     };
     iframe.contentWindow.postMessage(message, hostedFieldsEndpoint, [channel.port2]);
 })
