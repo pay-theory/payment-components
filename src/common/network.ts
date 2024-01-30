@@ -56,17 +56,13 @@ const sendTransactingMessageToField = (field: ElementTypes, billingInfo: Billing
     }
 }
 
-export const sendTransactingMessage = (transacting: PayTheoryHostedFieldTransactional, billingInfo: BillingInfo) => new Promise<ErrorMessage | FieldsReadyMessage>((resolve, reject) => {
+export const sendTransactingMessage = (transacting: PayTheoryHostedFieldTransactional, billingInfo: BillingInfo) => new Promise<ErrorMessage | FieldsReadyMessage>((resolve) => {
     // Opening a new message channel, so we can await the response from the hosted field
     const channel = new MessageChannel()
 
     channel.port1.onmessage = ({data}) => {
         channel.port1.close();
-        if (data.error) {
-            reject(data);
-        } else {
-            resolve(data);
-        }
+        resolve(data)
     };
 
     const types = transacting.fieldTypes
