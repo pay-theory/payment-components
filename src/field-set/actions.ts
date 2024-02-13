@@ -42,6 +42,15 @@ const reconnectIfDisconnected = async (iframe: PayTheoryHostedFieldTransactional
     return null
 }
 
+/**
+ * This function is used to submit a payment to Pay Theory or generate a barcode using the cash hosted fields.
+ * It returns a Promise with the result or an error.
+ *
+ * @async
+ * @function transact
+ * @returns {Promise} A Promise that will contain an object representing the result of the transaction.
+ * @param {TransactProps} props - Parameters for the transaction.
+ */
 export const transact = async (props: TransactProps): Promise<ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse> => {
     let transactingElement = findTransactingElement()
     if (transactingElement) {

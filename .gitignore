@@ -3,6 +3,7 @@
 /build
 /coverage
 /legacy
+/docs
 .DS_Store
 .idea
 # testing

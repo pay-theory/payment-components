@@ -1,0 +1,18 @@
+{
+  "plugins": [
+    "node_modules/better-docs/typescript"
+  ],
+  "source": {
+    "includePattern": "\\.(jsx|js|ts|tsx)$",
+    "include": ["src/field-set/actions.ts", "src/index.js"],
+    "exclude": ["node_modules"]
+  },
+  "tags": {
+    "allowUnknownTags": ["optional"]
+  },
+  "recurseDepth": 10,
+  "opts": {
+    "destination": "./docs/",
+    "recurse": true
+  }
+}
