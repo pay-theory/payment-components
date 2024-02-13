@@ -12,6 +12,7 @@
   },
   "recurseDepth": 10,
   "opts": {
+    "template": "node_modules/better-docs",
     "destination": "./docs/",
     "recurse": true
   }

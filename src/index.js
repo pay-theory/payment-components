@@ -64,6 +64,7 @@ import {
 /**
  * The create function is used to initialize the Pay Theory object. This function takes two arguments, the API key and the styles object.
  *
+ * @function create
  * @param {string} apiKey - A Pay Theory Api Key.
  * @param {Object[]} styles - A custom style JSON object that allows you to customize text and Pay Theory fields.
  * @param {Object[]} metadata - A custom defined JSON object to be stored with the transaction.

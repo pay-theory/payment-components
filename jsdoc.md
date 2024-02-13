@@ -1,4 +1,14 @@
-# How to Add JSDoc Annotations to Documentation
+# Automated Documentation with JSDoc
+
+## Installation
+
+Install jsdoc and better-docs using npm:
+
+```bash
+npm install
+```
+
+## How to Add JSDoc Annotations to Documentation
 
 JSDoc annotations are written as specially formatted comments preceding the code they document. They begin with `/**` and end with `*/`, with an asterisk `*` at the beginning of each line within the comment block.
 
@@ -23,3 +33,13 @@ JSDoc annotations are written as specially formatted comments preceding the code
  */
 const create = (apiKey, styles, metadata, feeMode) => createPaymentFieldsLegacy(apiKey, undefined, styles, metadata, feeMode);
 ```
+
+## Generating Documentation
+
+After installation run the following command:
+
+```bash
+npm run docs
+```
+
+Documentation will be generated in the `docs` folder.
