@@ -103,7 +103,6 @@
     "dependencies": {
         "core-js": "^3.33.0",
         "css-loader": "^6.8.1",
-        "docdash": "^2.0.2",
         "dompurify": "^3.0.6",
         "style-loader": "^3.3.3",
         "util": "^0.12.5"
