@@ -50,9 +50,10 @@ const mountProcessedElements = async(props: {
     metadata: { [key: string | number]: string | number | boolean },
     removeEventListeners: () => void
     feeMode: typeof MERCHANT_FEE | typeof SERVICE_FEE | undefined,
+    amount: number | undefined,
     port: MessagePort
 }) => {
-    const {processed, apiKey, styles, placeholders, session, metadata, removeEventListeners, feeMode} = props
+    const {processed, apiKey, styles, placeholders, session, metadata, removeEventListeners, feeMode, amount} = props
     for (const value of Object.values(processed)) {
         let transactingElements = value.elements.transacting.map((element) => element.frame)
         let siblingsElements = value.elements.siblings.map((element) => element.frame)
@@ -79,6 +80,7 @@ const mountProcessedElements = async(props: {
                 element.frame.metadata = metadata
                 element.frame.removeEventListeners = removeEventListeners
                 element.frame.feeMode = feeMode
+                element.frame.amount = amount
                 element.frame.session = session
                 const processedElementTypes = value.elements.siblings.map((sibling) => sibling.type)
                 const transactingElementType = value.elements.transacting.map((transacting) => transacting.type)
@@ -100,9 +102,10 @@ const initializeFields = async(props: PayTheoryPaymentFieldsInput, port: Message
             placeholders = {},
             elementIds = common.defaultElementIds,
             session,
-            feeMode
+            feeMode,
+            amount,
         } = props
-        valid.checkInitialParams(apiKey, feeMode, metadata, styles)
+        valid.checkInitialParams(apiKey, feeMode, metadata, styles, amount)
         // Map the elementIds to objects that can be passed into the processElements function
         const achElements: achElementIds = {
             'account-number': elementIds['account-number'],
@@ -178,6 +181,7 @@ const initializeFields = async(props: PayTheoryPaymentFieldsInput, port: Message
             metadata,
             removeEventListeners,
             feeMode,
+            amount,
             port
         })
 
