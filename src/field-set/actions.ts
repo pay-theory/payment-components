@@ -178,32 +178,40 @@ export const activateCardPresentDevice = async (): Promise<ErrorResponse | true>
     return true
 }
 
-export const updateAmount = (amount: number): ErrorResponse | true => {
+export const updateAmount = async (amount: number): Promise<ErrorResponse | true> => {
     const error = valid.isValidAmount(amount);
-
     if(error) {
         return error;
     }
 
-    let fieldsFounds = false;
-
+    let foundFields: PayTheoryHostedFieldTransactional[] = [];
+    // Loop through the hosted fields and check if they are ready and connected. If so add to the foundFields array
     for (let id of Object.values(hostedFieldMap)) {
         const elements = document.getElementsByName(id);
-
         if(elements.length) {
-            fieldsFounds = true;
-            const field = elements[0] as PayTheoryHostedFieldTransactional;
-            if (field.amount !== amount) {
-                // Set the amount to the new amount and reset the fee so it can be recalculated
-                field.amount = amount;
-                field.fee = undefined;
-                postMessageToHostedField(id, {type: 'pt-static:update-amount', amount});
+            const transactingElement = elements[0] as PayTheoryHostedFieldTransactional;
+            if (transactingElement.ready == false) {
+                return common.handleTypedError(ErrorType.NOT_READY, "Not all fields are ready to update the amount")
             }
+            let reconnectError = await reconnectIfDisconnected(transactingElement)
+            if (reconnectError) return reconnectError
+            foundFields.push(transactingElement);
         }
     }
 
-    if(!fieldsFounds) {
+    // Return an error if there are no fields to update the amount for
+    if(foundFields.length === 0) {
         return common.handleTypedError(ErrorType.NO_FIELDS, 'There are no PayTheory fields to update the amount for');
+    }
+
+    // Loop through the foundFields and update the amount for each
+    for (let transactingElement of foundFields) {
+        if (transactingElement.amount !== amount) {
+            // Set the amount to the new amount and reset the fee so it can be recalculated
+            transactingElement.amount = amount;
+            transactingElement.fee = undefined;
+            postMessageToHostedField(transactingElement.id, {type: 'pt-static:update-amount', amount});
+        }
     }
 
     return true;
