@@ -252,7 +252,7 @@ export type FieldState = {
     errorMessages: string[]
 }
 
-export type StateObject = Record<ElementTypes, FieldState> & Record<'service_fee', {ach?: number; card?: number}>
+export type StateObject = Record<ElementTypes, FieldState> & Record<'service_fee', {amount?: number, ach_fee?: number; card_fee?: number}>
 
 export type PlaceholderObject = Partial<Record<ElementTypes, string>>
 

@@ -113,6 +113,10 @@ class PayTheoryHostedField extends HTMLElement {
   set amount(value: number | undefined) {
     this._amount = value
   }
+
+  get amount() {
+      return this._amount
+  }
 }
 
 export default PayTheoryHostedField

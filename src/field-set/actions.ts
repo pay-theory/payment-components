@@ -192,7 +192,13 @@ export const updateAmount = (amount: number): ErrorResponse | true => {
 
         if(elements.length) {
             fieldsFounds = true;
-            postMessageToHostedField(id, {type: 'pt-static:update-amount', amount});
+            const field = elements[0] as PayTheoryHostedFieldTransactional;
+            if (field.amount !== amount) {
+                // Set the amount to the new amount and reset the fee so it can be recalculated
+                field.amount = amount;
+                field.fee = undefined;
+                postMessageToHostedField(id, {type: 'pt-static:update-amount', amount});
+            }
         }
     }
 
