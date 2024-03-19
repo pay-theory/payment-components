@@ -134,6 +134,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this.sendStateMessage = this.sendStateMessage.bind(this)
         this.sendValidMessage = this.sendValidMessage.bind(this)
         this.sendPtToken = this.sendPtToken.bind(this)
+        this.handleFeeMessage = this.handleFeeMessage.bind(this)
         this._fieldTypes = props.fieldTypes
         this._requiredValidFields = props.requiredValidFields
         this._transactingIFrameId = props.transactingIFrameId
@@ -189,7 +190,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         return this.sendTokenAsync(`pt-static:connection_token`)
     }
 
-    async handleFeeMessage(message: {
+    handleFeeMessage(message: {
         type: string;
         body: {
             fee: number;
