@@ -299,13 +299,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         const newState: Partial<StateObject> = {
             ...this._stateGroup,
             service_fee: {
-                card: undefined,
-                ach: undefined,
+                amount: this._amount,
+                card_fee: undefined,
+                ach_fee: undefined,
             }
         }
 
         if(this._fee !== undefined && this._transactingType !== 'cash') {
-            newState.service_fee[this._transactingType] = this._fee
+            newState.service_fee[`${this._transactingType}_fee`] = this._fee
         }
 
         // Loop through all the other transacting elements and add their state to the state group or use the default state
@@ -316,7 +317,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                     if (element) {
                         // Check for service fee and add it to the state group
                         if(element.fee && element.transactingType !== 'cash') {
-                            newState.service_fee[element.transactingType] = element.fee
+                            newState.service_fee[`${element.transactingType}_fee`] = element.fee
                         }
                         return element.stateGroup
                     } else {
@@ -502,6 +503,10 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     get fee() {
         return this._fee
+    }
+
+    set fee(value: number | undefined) {
+        this._fee = value
     }
 
     get transactingType() {
