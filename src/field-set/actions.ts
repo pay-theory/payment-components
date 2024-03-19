@@ -1,6 +1,6 @@
 import {findTransactingElement} from "../common/dom";
 import common from "../common";
-import {MERCHANT_FEE} from "../common/data";
+import {MERCHANT_FEE, transactingWebComponentIds} from "../common/data";
 import * as valid from "./validation";
 import PayTheoryHostedFieldTransactional, {
     TokenizeDataObject,
@@ -19,7 +19,7 @@ import {
     TransactProps
 } from "../common/pay_theory_types";
 import {localizeCashBarcodeUrl, ModifiedTransactProps, parseResponse} from "../common/format";
-import {sendObserverMessage} from "../common/message";
+import {postMessageToHostedField, sendObserverMessage} from "../common/message";
 
 // Used to element to update the token on error or failure or mark as complete on success
 const updateElementFromAction = (message: ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse | TokenizedPaymentMethodResponse, iframe: PayTheoryHostedFieldTransactional) => {
@@ -176,4 +176,29 @@ export const tokenizePaymentMethod = async (props: TokenizeProps): Promise<Token
 
 export const activateCardPresentDevice = async (): Promise<ErrorResponse | true> => {
     return true
+}
+
+export const updateAmount = (amount: number): ErrorResponse | true => {
+    const error = valid.isValidAmount(amount);
+
+    if(error) {
+        return error;
+    }
+
+    let fieldsFounds = false;
+
+    for (let id of transactingWebComponentIds) {
+        const elements = document.getElementsByName(id);
+
+        if(elements.length) {
+            fieldsFounds = true;
+            postMessageToHostedField(id, {type: 'pt-static:update-amount', amount});
+        }
+    }
+
+    if(!fieldsFounds) {
+        return common.handleTypedError(ErrorType.NO_FIELDS, 'There are no PayTheory fields to update the amount for');
+    }
+
+    return true;
 }

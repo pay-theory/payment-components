@@ -24,7 +24,7 @@ import 'regenerator-runtime';
 import './style.css';
 
 import payTheoryFields from './field-set/payment-fields-v2';
-import {transact, confirm, cancel, tokenizePaymentMethod} from './field-set/actions';
+import {transact, confirm, cancel, tokenizePaymentMethod, updateAmount} from './field-set/actions';
 import createPaymentFieldsLegacy from './field-set/payment-fields';
 import {
     SURCHARGE,
@@ -78,6 +78,7 @@ window.paytheory = {
     confirm,
     cancel,
     tokenizePaymentMethod,
+    updateAmount,
     transactedObserver,
     tokenizeObserver,
     captureObserver,
