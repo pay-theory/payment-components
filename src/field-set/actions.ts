@@ -1,6 +1,6 @@
 import {findTransactingElement} from "../common/dom";
 import common from "../common";
-import {MERCHANT_FEE, transactingWebComponentIds} from "../common/data";
+import {hostedFieldMap, MERCHANT_FEE} from "../common/data";
 import * as valid from "./validation";
 import PayTheoryHostedFieldTransactional, {
     TokenizeDataObject,
@@ -187,7 +187,7 @@ export const updateAmount = (amount: number): ErrorResponse | true => {
 
     let fieldsFounds = false;
 
-    for (let id of transactingWebComponentIds) {
+    for (let id of Object.values(hostedFieldMap)) {
         const elements = document.getElementsByName(id);
 
         if(elements.length) {
