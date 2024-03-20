@@ -10,7 +10,7 @@ import {
     TransactingType,
     transactingWebComponentMap
 } from "../../common/data";
-import {handleTypedError, sendAsyncPostMessage, AsyncMessage} from "../../common/message";
+import {handleTypedError, sendAsyncPostMessage, AsyncMessage, postMessageToHostedField} from "../../common/message";
 import {
     CashBarcodeMessage,
     ConfirmationMessage, ERROR_STEP,
@@ -523,6 +523,18 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     set complete(value: boolean) {
         this._completed = value
+    }
+
+    set amount(value: number | undefined) {
+        this._amount = value
+        if(this._isReady) {
+            // If the element is ready, send the amount to the transacting iframe
+            postMessageToHostedField(this._transactingIFrameId, {type: 'pt-static:update-amount', amount: value});
+        }
+    }
+
+    get amount() {
+        return this._amount
     }
 }
 

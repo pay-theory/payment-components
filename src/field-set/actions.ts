@@ -1,6 +1,6 @@
 import {findTransactingElement} from "../common/dom";
 import common from "../common";
-import {hostedFieldMap, MERCHANT_FEE} from "../common/data";
+import {transactingWebComponentIds, MERCHANT_FEE} from "../common/data";
 import * as valid from "./validation";
 import PayTheoryHostedFieldTransactional, {
     TokenizeDataObject,
@@ -19,7 +19,7 @@ import {
     TransactProps
 } from "../common/pay_theory_types";
 import {localizeCashBarcodeUrl, ModifiedTransactProps, parseResponse} from "../common/format";
-import {postMessageToHostedField, sendObserverMessage} from "../common/message";
+import {sendObserverMessage} from "../common/message";
 
 // Used to element to update the token on error or failure or mark as complete on success
 const updateElementFromAction = (message: ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse | TokenizedPaymentMethodResponse, iframe: PayTheoryHostedFieldTransactional) => {
@@ -186,7 +186,7 @@ export const updateAmount = async (amount: number): Promise<ErrorResponse | true
 
     let foundFields: PayTheoryHostedFieldTransactional[] = [];
     // Loop through the hosted fields and check if they are ready and connected. If so add to the foundFields array
-    for (let id of Object.values(hostedFieldMap)) {
+    for (let id of transactingWebComponentIds) {
         const elements = document.getElementsByName(id);
         if(elements.length) {
             const transactingElement = elements[0] as PayTheoryHostedFieldTransactional;
@@ -210,7 +210,6 @@ export const updateAmount = async (amount: number): Promise<ErrorResponse | true
             // Set the amount to the new amount and reset the fee so it can be recalculated
             transactingElement.amount = amount;
             transactingElement.fee = undefined;
-            postMessageToHostedField(transactingElement.id, {type: 'pt-static:update-amount', amount});
         }
     }
 
