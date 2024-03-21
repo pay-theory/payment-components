@@ -69,7 +69,7 @@ const checkInitialParams = (key: any, mode: any, metadata: any, styles: any, amo
     if(mode) checkFeeMode(mode)
     checkMetadata(metadata)
     checkStyles(styles)
-    checkAmount(amount)
+    if(amount !== undefined) checkAmount(amount)
 }
 
 // Checks the dom for elements and returns errors if there are missing elements or conflicting elements
