@@ -10,10 +10,11 @@ import {
     TransactingType,
     transactingWebComponentMap
 } from "../../common/data";
-import {handleTypedError, sendAsyncPostMessage, AsyncMessage, postMessageToHostedField} from "../../common/message";
+import {AsyncMessage, handleTypedError, postMessageToHostedField, sendAsyncPostMessage} from "../../common/message";
 import {
     CashBarcodeMessage,
-    ConfirmationMessage, ERROR_STEP,
+    ConfirmationMessage,
+    ERROR_STEP,
     ErrorMessage,
     FailedTransactionMessage,
     PayTheoryDataObject,
@@ -26,6 +27,7 @@ import {
     ErrorType,
     FieldState,
     PayorInfo,
+    ResponseMessageTypes,
     StateObject
 } from "../../common/pay_theory_types";
 
@@ -116,6 +118,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     protected _removeEventListeners: () => void = () => {}
     protected _removeHostTokenListener: () => void = () => {}
     protected _removeFeeListener: () => void = () => {}
+    protected _removeFeeCalcReconnect: () => void = () => {}
 
     // Used for backwards compatibility with feeMode
     protected _feeMode: typeof common.SERVICE_FEE | typeof common.MERCHANT_FEE | undefined
@@ -135,6 +138,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this.sendValidMessage = this.sendValidMessage.bind(this)
         this.sendPtToken = this.sendPtToken.bind(this)
         this.handleFeeMessage = this.handleFeeMessage.bind(this)
+        this.handleFeeCalcReconnect = this.handleFeeCalcReconnect.bind(this)
         this._fieldTypes = props.fieldTypes
         this._requiredValidFields = props.requiredValidFields
         this._transactingIFrameId = props.transactingIFrameId
@@ -204,6 +208,13 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         }
     }
 
+    async handleFeeCalcReconnect() {
+        const result = await this.resetToken()
+        if (result.type === ResponseMessageTypes.READY) {
+            postMessageToHostedField(this._transactingIFrameId, {type: 'pt-static:update-amount', amount: this._amount});
+        }
+    }
+
     async connectedCallback() {
         // Set up a listener for the hosted field to message saying it is ready for the pt-token to be sent
         this._removeHostTokenListener = common.handleHostedFieldMessage((event: {
@@ -217,6 +228,10 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             type: any,
         }) => event.type === 'pt-static:calculated_fee', this.handleFeeMessage)
 
+        this._removeFeeCalcReconnect = common.handleHostedFieldMessage((event: {
+            type: any,
+        }) => event.type === 'pt-static:fee_calc_reconnect', this.handleFeeCalcReconnect)
+
         await super.connectedCallback();
     }
 
@@ -225,6 +240,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this._removeEventListeners();
         this._removeHostTokenListener();
         this._removeFeeListener();
+        this._removeFeeCalcReconnect();
     }
 
     async transact(data: TransactDataObject, element: PayTheoryHostedFieldTransactional) {
