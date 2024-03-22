@@ -208,10 +208,18 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         }
     }
 
-    async handleFeeCalcReconnect() {
-        const result = await this.resetToken()
-        if (result.type === ResponseMessageTypes.READY) {
-            postMessageToHostedField(this._transactingIFrameId, {type: 'pt-static:update-amount', amount: this._amount});
+    async handleFeeCalcReconnect(message: {
+        type: string;
+        field: ElementTypes;
+    }) {
+        if (this._fieldTypes.includes(message.field)) {
+            const result = await this.resetToken()
+            if (result.type === ResponseMessageTypes.READY) {
+                postMessageToHostedField(this._transactingIFrameId, {
+                    type: 'pt-static:update-amount',
+                    amount: this._amount
+                });
+            }
         }
     }
 
