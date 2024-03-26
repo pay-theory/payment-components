@@ -371,7 +371,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
                     let elements = document.getElementsByName(id)
                     if (elements.length > 0) {
                         let transactingElement = elements[0] as PayTheoryHostedFieldTransactional
-                        if (!transactingElement.valid) {
+                        if (transactingElement.valid) {
                             // If other transacting elements are valid include them in the valid string
                             valid = valid + ' ' + transactingElement._transactingType
                         }
