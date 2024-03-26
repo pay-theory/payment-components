@@ -337,13 +337,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         for(let [key, value] of Object.entries(transactingWebComponentMap)) {
             if (key !== this._transactingType) {
                 let transactingTypesState = value.ids.reduce((acc: any, id: string) => {
-                    let element = document.getElementById(id) as PayTheoryHostedFieldTransactional
-                    if (element) {
+                    let element = document.getElementsByName(id)
+                    if (element.length > 0) {
+                        let transactingElement = element[0] as PayTheoryHostedFieldTransactional
                         // Check for service fee and add it to the state group
-                        if(element.fee && element.transactingType !== 'cash') {
-                            newState.service_fee[`${element.transactingType}_fee`] = element.fee
+                        if(transactingElement.fee && transactingElement.transactingType !== 'cash') {
+                            newState.service_fee[`${transactingElement.transactingType}_fee`] = transactingElement.fee
                         }
-                        return element.stateGroup
+                        return transactingElement.stateGroup
                     } else {
                         return acc
                     }
@@ -367,10 +368,13 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         for(let [key, value] of Object.entries(transactingWebComponentMap)) {
             if(key !== this._transactingType) {
                 value.ids.forEach((id: string) => {
-                    let element = document.getElementById(id) as PayTheoryHostedFieldTransactional
-                    if (element && element?.valid) {
-                        // If other transacting elements are valid include them in the valid string
-                        valid = valid + ' ' + element._transactingType
+                    let elements = document.getElementsByName(id)
+                    if (elements.length > 0) {
+                        let transactingElement = elements[0] as PayTheoryHostedFieldTransactional
+                        if (transactingElement.valid) {
+                            // If other transacting elements are valid include them in the valid string
+                            valid = valid + ' ' + transactingElement._transactingType
+                        }
                     }
                 })
             }
@@ -390,9 +394,12 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         for(let [key, value] of Object.entries(transactingWebComponentMap)) {
             if (key !== this._transactingType) {
                 value.ids.forEach((id: string) => {
-                    let element = document.getElementById(id) as PayTheoryHostedFieldTransactional
-                    if (element && !element?.ready) {
-                        sendReadyMessage = false
+                    let element = document.getElementsByName(id)
+                    if (element.length > 0) {
+                        let transactingElement = element[0] as PayTheoryHostedFieldTransactional
+                        if (!transactingElement?.ready) {
+                            sendReadyMessage = false
+                        }
                     }
                 })
             }
