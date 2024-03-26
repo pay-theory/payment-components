@@ -337,13 +337,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         for(let [key, value] of Object.entries(transactingWebComponentMap)) {
             if (key !== this._transactingType) {
                 let transactingTypesState = value.ids.reduce((acc: any, id: string) => {
-                    let element = document.getElementById(id) as PayTheoryHostedFieldTransactional
-                    if (element) {
+                    let element = document.getElementsByName(id)
+                    if (element.length > 0) {
+                        let transactingElement = element[0] as PayTheoryHostedFieldTransactional
                         // Check for service fee and add it to the state group
-                        if(element.fee && element.transactingType !== 'cash') {
-                            newState.service_fee[`${element.transactingType}_fee`] = element.fee
+                        if(transactingElement.fee && transactingElement.transactingType !== 'cash') {
+                            newState.service_fee[`${transactingElement.transactingType}_fee`] = transactingElement.fee
                         }
-                        return element.stateGroup
+                        return transactingElement.stateGroup
                     } else {
                         return acc
                     }
