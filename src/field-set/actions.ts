@@ -1,6 +1,6 @@
 import {findTransactingElement} from "../common/dom";
 import common from "../common";
-import {MERCHANT_FEE} from "../common/data";
+import {transactingWebComponentIds, MERCHANT_FEE} from "../common/data";
 import * as valid from "./validation";
 import PayTheoryHostedFieldTransactional, {
     TokenizeDataObject,
@@ -176,4 +176,42 @@ export const tokenizePaymentMethod = async (props: TokenizeProps): Promise<Token
 
 export const activateCardPresentDevice = async (): Promise<ErrorResponse | true> => {
     return true
+}
+
+export const updateAmount = async (amount: number): Promise<ErrorResponse | true> => {
+    const error = valid.isValidAmount(amount);
+    if(error) {
+        return error;
+    }
+
+    let foundFields: PayTheoryHostedFieldTransactional[] = [];
+    // Loop through the hosted fields and check if they are ready and connected. If so add to the foundFields array
+    for (let id of transactingWebComponentIds) {
+        const elements = document.getElementsByName(id);
+        if(elements.length) {
+            const transactingElement = elements[0] as PayTheoryHostedFieldTransactional;
+            if (transactingElement.ready == false) {
+                return common.handleTypedError(ErrorType.NOT_READY, "Not all fields are ready to update the amount")
+            }
+            let reconnectError = await reconnectIfDisconnected(transactingElement)
+            if (reconnectError) return reconnectError
+            foundFields.push(transactingElement);
+        }
+    }
+
+    // Return an error if there are no fields to update the amount for
+    if(foundFields.length === 0) {
+        return common.handleTypedError(ErrorType.NO_FIELDS, 'There are no PayTheory fields to update the amount for');
+    }
+
+    // Loop through the foundFields and update the amount for each
+    for (let transactingElement of foundFields) {
+        if (transactingElement.amount !== amount) {
+            // Set the amount to the new amount and reset the fee so it can be recalculated
+            transactingElement.amount = amount;
+            transactingElement.fee = undefined;
+        }
+    }
+
+    return true;
 }

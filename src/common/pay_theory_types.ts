@@ -171,6 +171,7 @@ export type PayTheoryPaymentFieldsInput = {
     elementIds?: typeof defaultElementIds;
     session?: string;
     feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE;
+    amount?: number;
 }
 
 export enum AcceptedPaymentMethods {
@@ -251,7 +252,7 @@ export type FieldState = {
     errorMessages: string[]
 }
 
-export type StateObject = Record<ElementTypes, FieldState>
+export type StateObject = Record<ElementTypes, FieldState> & Record<'service_fee', {amount?: number, ach_fee?: number; card_fee?: number}>
 
 export type PlaceholderObject = Partial<Record<ElementTypes, string>>
 
