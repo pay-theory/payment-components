@@ -538,6 +538,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     set fee(value: number | undefined) {
         this._fee = value
+        // Send the state message if the fee is updated
+        this.sendStateMessage()
     }
 
     get transactingType() {
