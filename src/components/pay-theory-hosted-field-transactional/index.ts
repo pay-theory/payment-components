@@ -10,10 +10,11 @@ import {
     TransactingType,
     transactingWebComponentMap
 } from "../../common/data";
-import {handleTypedError, sendAsyncPostMessage, AsyncMessage} from "../../common/message";
+import {AsyncMessage, handleTypedError, postMessageToHostedField, sendAsyncPostMessage} from "../../common/message";
 import {
     CashBarcodeMessage,
-    ConfirmationMessage, ERROR_STEP,
+    ConfirmationMessage,
+    ERROR_STEP,
     ErrorMessage,
     FailedTransactionMessage,
     PayTheoryDataObject,
@@ -26,6 +27,7 @@ import {
     ErrorType,
     FieldState,
     PayorInfo,
+    ResponseMessageTypes,
     StateObject
 } from "../../common/pay_theory_types";
 
@@ -115,9 +117,13 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     // Function used to remove event listeners
     protected _removeEventListeners: () => void = () => {}
     protected _removeHostTokenListener: () => void = () => {}
+    protected _removeFeeListener: () => void = () => {}
+    protected _removeFeeCalcReconnect: () => void = () => {}
 
     // Used for backwards compatibility with feeMode
     protected _feeMode: typeof common.SERVICE_FEE | typeof common.MERCHANT_FEE | undefined
+
+    protected _fee: number | undefined;
 
     constructor(props: ConstructorProps) {
         super()
@@ -131,6 +137,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         this.sendStateMessage = this.sendStateMessage.bind(this)
         this.sendValidMessage = this.sendValidMessage.bind(this)
         this.sendPtToken = this.sendPtToken.bind(this)
+        this.handleFeeMessage = this.handleFeeMessage.bind(this)
+        this.handleFeeCalcReconnect = this.handleFeeCalcReconnect.bind(this)
         this._fieldTypes = props.fieldTypes
         this._requiredValidFields = props.requiredValidFields
         this._transactingIFrameId = props.transactingIFrameId
@@ -186,6 +194,35 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         return this.sendTokenAsync(`pt-static:connection_token`)
     }
 
+    handleFeeMessage(message: {
+        type: string;
+        body: {
+            fee: number;
+            payment_type: string;
+        };
+        field: ElementTypes;
+    }) {
+        if(this._fieldTypes.includes(message.field)) {
+            this._fee = message.body.fee
+            this.sendStateMessage()
+        }
+    }
+
+    async handleFeeCalcReconnect(message: {
+        type: string;
+        field: ElementTypes;
+    }) {
+        if (this._fieldTypes.includes(message.field)) {
+            const result = await this.resetToken()
+            if (result.type === ResponseMessageTypes.READY) {
+                postMessageToHostedField(this._transactingIFrameId, {
+                    type: 'pt-static:update-amount',
+                    amount: this._amount
+                });
+            }
+        }
+    }
+
     async connectedCallback() {
         // Set up a listener for the hosted field to message saying it is ready for the pt-token to be sent
         this._removeHostTokenListener = common.handleHostedFieldMessage((event: {
@@ -195,6 +232,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             return event.type === 'pt-static:pt_token_ready' && this._transactingIFrameId.includes(event.element)
         }, this.sendPtToken)
 
+        this._removeFeeListener = common.handleHostedFieldMessage((event: {
+            type: any,
+        }) => event.type === 'pt-static:calculated_fee', this.handleFeeMessage)
+
+        this._removeFeeCalcReconnect = common.handleHostedFieldMessage((event: {
+            type: any,
+        }) => event.type === 'pt-static:fee_calc_reconnect', this.handleFeeCalcReconnect)
+
         await super.connectedCallback();
     }
 
@@ -202,6 +247,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         super.disconnectedCallback();
         this._removeEventListeners();
         this._removeHostTokenListener();
+        this._removeFeeListener();
+        this._removeFeeCalcReconnect();
     }
 
     async transact(data: TransactDataObject, element: PayTheoryHostedFieldTransactional) {
@@ -273,16 +320,31 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     sendStateMessage() {
         // Make a copy of the state group
-        const newState = {
-            ...this._stateGroup
+        const newState: Partial<StateObject> = {
+            ...this._stateGroup,
+            service_fee: {
+                amount: this._amount,
+                card_fee: undefined,
+                ach_fee: undefined,
+            }
         }
+
+        if(this._fee !== undefined && this._transactingType !== 'cash') {
+            newState.service_fee[`${this._transactingType}_fee`] = this._fee
+        }
+
         // Loop through all the other transacting elements and add their state to the state group or use the default state
         for(let [key, value] of Object.entries(transactingWebComponentMap)) {
             if (key !== this._transactingType) {
                 let transactingTypesState = value.ids.reduce((acc: any, id: string) => {
-                    let element = document.getElementById(id) as PayTheoryHostedFieldTransactional
-                    if (element) {
-                        return element.stateGroup
+                    let element = document.getElementsByName(id)
+                    if (element.length > 0) {
+                        let transactingElement = element[0] as PayTheoryHostedFieldTransactional
+                        // Check for service fee and add it to the state group
+                        if(transactingElement.fee && transactingElement.transactingType !== 'cash') {
+                            newState.service_fee[`${transactingElement.transactingType}_fee`] = transactingElement.fee
+                        }
+                        return transactingElement.stateGroup
                     } else {
                         return acc
                     }
@@ -306,10 +368,13 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         for(let [key, value] of Object.entries(transactingWebComponentMap)) {
             if(key !== this._transactingType) {
                 value.ids.forEach((id: string) => {
-                    let element = document.getElementById(id) as PayTheoryHostedFieldTransactional
-                    if (element && element?.valid) {
-                        // If other transacting elements are valid include them in the valid string
-                        valid = valid + ' ' + element._transactingType
+                    let elements = document.getElementsByName(id)
+                    if (elements.length > 0) {
+                        let transactingElement = elements[0] as PayTheoryHostedFieldTransactional
+                        if (transactingElement.valid) {
+                            // If other transacting elements are valid include them in the valid string
+                            valid = valid + ' ' + transactingElement._transactingType
+                        }
                     }
                 })
             }
@@ -329,9 +394,12 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         for(let [key, value] of Object.entries(transactingWebComponentMap)) {
             if (key !== this._transactingType) {
                 value.ids.forEach((id: string) => {
-                    let element = document.getElementById(id) as PayTheoryHostedFieldTransactional
-                    if (element && !element?.ready) {
-                        sendReadyMessage = false
+                    let element = document.getElementsByName(id)
+                    if (element.length > 0) {
+                        let transactingElement = element[0] as PayTheoryHostedFieldTransactional
+                        if (!transactingElement?.ready) {
+                            sendReadyMessage = false
+                        }
                     }
                 })
             }
@@ -464,6 +532,20 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         return this._feeMode
     }
 
+    get fee() {
+        return this._fee
+    }
+
+    set fee(value: number | undefined) {
+        this._fee = value
+        // Send the state message if the fee is updated
+        this.sendStateMessage()
+    }
+
+    get transactingType() {
+        return this._transactingType
+    }
+
     get valid() {
         return this._isValid
     }
@@ -474,6 +556,18 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
     set complete(value: boolean) {
         this._completed = value
+    }
+
+    set amount(value: number | undefined) {
+        this._amount = value
+        if(this._isReady) {
+            // If the element is ready, send the amount to the transacting iframe
+            postMessageToHostedField(this._transactingIFrameId, {type: 'pt-static:update-amount', amount: value});
+        }
+    }
+
+    get amount() {
+        return this._amount
     }
 }
 
