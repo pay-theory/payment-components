@@ -24,88 +24,95 @@ import 'regenerator-runtime';
 import './style.css';
 
 import payTheoryFields from './field-set/payment-fields-v2';
-import {transact, confirm, cancel, tokenizePaymentMethod, updateAmount} from './field-set/actions';
+import {
+  transact,
+  confirm,
+  cancel,
+  tokenizePaymentMethod,
+  updateAmount,
+} from './field-set/actions';
 import createPaymentFieldsLegacy from './field-set/payment-fields';
 import {
-    SURCHARGE,
-    SERVICE_FEE,
-    INTERCHANGE,
-    MERCHANT_FEE,
-    PAY,
-    BOOK,
-    DONATE,
-    CHECKOUT,
-    WHITE,
-    GREY,
-    BLACK,
-    PURPLE,
-    ALL,
-    NOT_CASH,
-    NOT_CARD,
-    NOT_ACH,
-    ONLY_CASH,
-    ONLY_CARD,
-    ONLY_ACH
+  SURCHARGE,
+  SERVICE_FEE,
+  INTERCHANGE,
+  MERCHANT_FEE,
+  PAY,
+  BOOK,
+  DONATE,
+  CHECKOUT,
+  WHITE,
+  GREY,
+  BLACK,
+  PURPLE,
+  ALL,
+  NOT_CASH,
+  NOT_CARD,
+  NOT_ACH,
+  ONLY_CASH,
+  ONLY_CARD,
+  ONLY_ACH,
 } from './common/data';
-import button from './field-set/payment-button'
-import qrCode from './field-set/payment-qr'
+import button from './field-set/payment-button';
+import qrCode from './field-set/payment-qr';
 import {
-    errorObserver,
-    transactedObserver,
-    tokenizeObserver,
-    captureObserver,
-    cardPresentObserver,
-    stateObserver,
-    validObserver,
-    readyObserver,
-    cashObserver
+  errorObserver,
+  transactedObserver,
+  tokenizeObserver,
+  captureObserver,
+  cardPresentObserver,
+  stateObserver,
+  validObserver,
+  readyObserver,
+  cashObserver,
 } from './common/observe';
 
-const create = (apiKey, styles, metadata, feeMode) => createPaymentFieldsLegacy(apiKey, undefined, styles, metadata, feeMode);
+const create = (apiKey, styles, metadata, feeMode) =>
+  createPaymentFieldsLegacy(apiKey, undefined, styles, metadata, feeMode);
 const createPaymentFields = (apiKey, clientId, styles, metadata) => {
-    console.warn('createPaymentFields has been deprecated');
-    return createPaymentFieldsLegacy(apiKey, clientId, styles, metadata, MERCHANT_FEE);
+  console.warn('createPaymentFields has been deprecated');
+  return createPaymentFieldsLegacy(apiKey, clientId, styles, metadata, MERCHANT_FEE);
 };
 
 window.paytheory = {
-    createPaymentFields, // deprecated
-    create,
-    button,
-    qrCode,
-    errorObserver,
-    payTheoryFields,
-    transact,
-    confirm,
-    cancel,
-    tokenizePaymentMethod,
-    updateAmount,
-    transactedObserver,
-    tokenizeObserver,
-    captureObserver,
-    cardPresentObserver,
-    stateObserver,
-    validObserver,
-    readyObserver,
-    cashObserver,
-    SURCHARGE,
-    SERVICE_FEE,
-    INTERCHANGE,
-    MERCHANT_FEE,
-    ALL,
-    NOT_CASH,
-    NOT_CARD,
-    NOT_ACH,
-    ONLY_CASH,
-    ONLY_CARD,
-    ONLY_ACH,
-    PAY,
-    BOOK,
-    DONATE,
-    CHECKOUT,
-    WHITE,
-    GREY,
-    BLACK,
-    PURPLE
+  createPaymentFields, // deprecated
+  create,
+  button,
+  qrCode,
+  errorObserver,
+  payTheoryFields,
+  transact,
+  confirm,
+  cancel,
+  tokenizePaymentMethod,
+  updateAmount,
+  transactedObserver,
+  tokenizeObserver,
+  captureObserver,
+  cardPresentObserver,
+  stateObserver,
+  validObserver,
+  readyObserver,
+  cashObserver,
+  SURCHARGE,
+  SERVICE_FEE,
+  INTERCHANGE,
+  MERCHANT_FEE,
+  ALL,
+  NOT_CASH,
+  NOT_CARD,
+  NOT_ACH,
+  ONLY_CASH,
+  ONLY_CARD,
+  ONLY_ACH,
+  PAY,
+  BOOK,
+  DONATE,
+  CHECKOUT,
+  WHITE,
+  GREY,
+  BLACK,
+  PURPLE,
 };
 
 export default window.paytheory;
