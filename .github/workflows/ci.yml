@@ -32,7 +32,7 @@ jobs:
           npm install
 
       - name: Check linting
-        run: npm run lint
+        run: npm run lint:eslint
 
       - name: Check TS
         run: npm run check-ts
