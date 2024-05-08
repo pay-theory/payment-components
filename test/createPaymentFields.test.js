@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { html, fixture, expect, assert } from '@open-wc/testing';
 import { aTimeout } from '@open-wc/testing-helpers';
 import sinon from 'sinon';

@@ -1,4 +1,5 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 /*global navigator*/
 import common from '../common';
 import * as valid from './validation';

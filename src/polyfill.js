@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 /* global Blob globalThis global */
 /*eslint no-extend-native: ["error", { "exceptions": ["String", "Array"] }]*/
 //https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
@@ -571,6 +572,7 @@ Response.redirect = function (url, status) {
 
 export var DOMException = global.DOMException;
 try {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const hasDomException = new DOMException();
 } catch (err) {
   DOMException = function (message, name) {

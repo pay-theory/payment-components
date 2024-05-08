@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 /*global navigator*/
 import common from '../common';

@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import sinon from 'sinon';
 
 export const api = 'pt-sandbox-demo-89f9afeeb9953508186f7cd1a721c269';

@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 /* global navigator */
 import { postMessageToHostedField } from './message';
 import PayTheoryHostedFieldTransactional from '../components/pay-theory-hosted-field-transactional';
