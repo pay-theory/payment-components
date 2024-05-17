@@ -5,7 +5,7 @@ import {BillingInfo} from "./pay_theory_types";
 import {ErrorMessage, FieldsReadyMessage} from "./format";
 import {ACH_IFRAME, CARD_IFRAME, CASH_IFRAME, ElementTypes} from "./data";
 
-const session_id = self.crypto.randomUUID()
+const sessionKey = self.crypto.randomUUID()
 
 export const getData = async(url: string, apiKey: string) => {
     const options: RequestInit = {
@@ -14,7 +14,7 @@ export const getData = async(url: string, apiKey: string) => {
         cache: 'no-cache',
         headers: {
             'x-api-key': apiKey,
-            'session_id': session_id
+            'x-session-key': sessionKey
         }
     }
     /* global fetch */
