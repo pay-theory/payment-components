@@ -45,9 +45,11 @@ const reconnectIfDisconnected = async (iframe: PayTheoryHostedFieldTransactional
 export const transact = async (props: TransactProps): Promise<ErrorResponse | ConfirmationResponse | SuccessfulTransactionResponse | FailedTransactionResponse | CashBarcodeResponse> => {
     let transactingElement = findTransactingElement()
     if (transactingElement) {
+        let isInitialized = transactingElement.initialized
+        transactingElement.initialized = true
         if (transactingElement.complete) {
             return common.handleTypedError(ErrorType.ACTION_COMPLETE, 'these fields have already been used to complete an action')
-        } else if (transactingElement.initialized) {
+        } else if (isInitialized) {
             return common.handleTypedError(ErrorType.ACTION_IN_PROGRESS, 'this function has already been called')
         } else if (transactingElement.valid == false) {
             return common.handleTypedError(ErrorType.NOT_VALID, "The transaction element is invalid")
