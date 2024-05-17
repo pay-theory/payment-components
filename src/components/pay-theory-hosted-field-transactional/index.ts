@@ -147,41 +147,45 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
 
     async sendTokenAsync(type: `pt-static:connection_token` | `pt-static:reset_host`): Promise<ErrorResponse | ReadyResponse> {
-        const ptToken = await common.fetchPtToken(this._apiKey!)
-        if (ptToken) {
-            this._challengeOptions = ptToken['challengeOptions']
-            const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
-            if (transactingIFrame) {
-                const message: AsyncMessage = {
-                    type: type,
-                    data: {
-                        token: ptToken['pt-token'],
-                        origin: ptToken['origin'],
-                        fields: this._processedElements
-                    },
-                    async: true
-                }
-                let response = await sendAsyncPostMessage<ErrorMessage | ConnectedMessage>(message, transactingIFrame)
-                if(response.type === ERROR_STEP) {
-                    return handleTypedError(ErrorType.NO_TOKEN, 'Unable validate connection token')
-                }
+        try {
+            const ptToken = await common.fetchPtToken(this._apiKey!)
+            if (ptToken) {
+                this._challengeOptions = ptToken['challengeOptions']
+                const transactingIFrame = document.getElementById(this._transactingIFrameId) as HTMLIFrameElement
+                if (transactingIFrame) {
+                    const message: AsyncMessage = {
+                        type: type,
+                        data: {
+                            token: ptToken['pt-token'],
+                            origin: ptToken['origin'],
+                            fields: this._processedElements
+                        },
+                        async: true
+                    }
+                    let response = await sendAsyncPostMessage<ErrorMessage | ConnectedMessage>(message, transactingIFrame)
+                    if (response.type === ERROR_STEP) {
+                        return handleTypedError(ErrorType.NO_TOKEN, 'Unable validate connection token')
+                    }
 
-                // Mark it as ready if it is the transacting element
-                if(!this._isReady) {
-                    this._isReady = true
-                    this.sendReadyMessage()
-                }
+                    // Mark it as ready if it is the transacting element
+                    if (!this._isReady) {
+                        this._isReady = true
+                        this.sendReadyMessage()
+                    }
 
-                this._isConnected = true
+                    this._isConnected = true
 
-                return {
-                    type: 'READY',
-                    element: response.element
+                    return {
+                        type: 'READY',
+                        element: response.element
+                    }
+                } else {
+                    return handleTypedError(ErrorType.NO_TOKEN, 'Unable to find transacting iframe')
                 }
             } else {
-                return handleTypedError(ErrorType.NO_TOKEN, 'Unable to find transacting iframe')
+                return handleTypedError(ErrorType.NO_TOKEN, 'Unable to fetch pt-token')
             }
-        } else {
+        } catch (e) {
             return handleTypedError(ErrorType.NO_TOKEN, 'Unable to fetch pt-token')
         }
     }
