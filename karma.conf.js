@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const { createDefaultConfig } = require('@open-wc/testing-karma');
 const merge = require('deepmerge');
 
@@ -16,8 +15,8 @@ module.exports = config => {
         reporters: [
           { type: 'html', subdir: 'report-html' },
           { type: 'text', subdir: '.' },
-          { type: 'lcov', subdir: '.' }
-        ]
+          { type: 'lcov', subdir: '.' },
+        ],
       },
       plugins: [
         // load plugin
@@ -41,9 +40,8 @@ module.exports = config => {
         statements: 50,
         branches: 30,
         functions: 50,
-        lines: 50
-      }
-
+        lines: 50,
+      },
     }),
   );
   return config;
