@@ -169,7 +169,7 @@ export type PayTheoryPaymentFieldsInput = {
   metadata?: { [key: string | number]: string | number | boolean };
   placeholders?: PlaceholderObject;
   elementIds?: typeof defaultElementIds;
-  session?: string;
+  session?: string; // This is used for internal use to connect a button and qr code to a hosted checkout page
   feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE;
   amount?: number;
 };

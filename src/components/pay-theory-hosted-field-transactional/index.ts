@@ -153,7 +153,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     type: `pt-static:connection_token` | `pt-static:reset_host`,
   ): Promise<ErrorResponse | ReadyResponse> {
     try {
-      const ptToken = await common.fetchPtToken(this._apiKey!);
+      const ptToken = await common.fetchPtToken(this._apiKey!, this._session);
       if (ptToken) {
         this._challengeOptions = ptToken['challengeOptions'];
         const transactingIFrame = document.getElementById(
