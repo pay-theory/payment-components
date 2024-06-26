@@ -95,7 +95,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   protected _readyPort: MessagePort | undefined;
 
   // Used to track if the socket is connected
-  protected _isConnected: boolean = false;
+  protected _isConnected = false;
 
   // List of fields that are a part of this group used to transact for this transactional element
   protected _fieldTypes: Array<ElementTypes>;
