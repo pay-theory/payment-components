@@ -16,7 +16,7 @@ import {
   tokenizePaymentMethod,
   activateCardPresentDevice,
 } from '../field-set/actions';
-import { defaultElementIds, ElementTypes } from './data';
+import { defaultElementIds } from './data';
 
 export const errorObserver = (cb: (error: string) => void) =>
   messaging.handleMessage(
@@ -44,7 +44,7 @@ export const readyObserver = (cb: (ready: true) => void) =>
     cb(true);
   });
 
-export const tokenizeObserver = (cb: (value: any) => void) =>
+export const tokenizeObserver = (cb: (value: unknown) => void) =>
   messaging.handleMessage(
     messaging.confirmTypeMessage,
     (message: { type: string; body: ConfirmationObject }) => {
@@ -52,7 +52,7 @@ export const tokenizeObserver = (cb: (value: any) => void) =>
     },
   );
 
-export const captureObserver = (cb: (value: any) => void) =>
+export const captureObserver = (cb: (value: unknown) => void) =>
   messaging.handleMessage(
     messaging.confirmationCompleteTypeMessage,
     (message: { type: string; body: SuccessfulTransactionMessage | FailedTransactionMessage }) => {
@@ -60,7 +60,7 @@ export const captureObserver = (cb: (value: any) => void) =>
     },
   );
 
-export const transactedObserver = (cb: (value: any) => void) =>
+export const transactedObserver = (cb: (value: unknown) => void) =>
   messaging.handleMessage(
     messaging.completeTypeMessage,
     (message: {
@@ -71,7 +71,7 @@ export const transactedObserver = (cb: (value: any) => void) =>
     },
   );
 
-export const cashObserver = (cb: (value: any) => void) =>
+export const cashObserver = (cb: (value: unknown) => void) =>
   messaging.handleMessage(
     messaging.cashTypeMessage,
     (message: { type: string; body: CashBarcodeObject }) => {
@@ -79,10 +79,10 @@ export const cashObserver = (cb: (value: any) => void) =>
     },
   );
 
-export const cardPresentObserver = (cb: (value: any) => void) =>
-  messaging.handleHostedFieldMessage(messaging.cardPresentTypeMessage, (message: any) => {
-    cb(message.body);
-  });
+// export const cardPresentObserver = (cb: (value: any) => void) =>
+//   messaging.handleHostedFieldMessage(messaging.cardPresentTypeMessage, (message: any) => {
+//     cb(message.body);
+//   });
 
 export const generateReturn = (
   mount: (props: {
@@ -108,6 +108,5 @@ export const generateReturn = (
     tokenizeObserver,
     transactedObserver,
     stateObserver,
-    cardPresentObserver,
   };
 };
