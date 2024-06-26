@@ -1,14 +1,24 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-/* global navigator */
 import { postMessageToHostedField } from './message';
 import PayTheoryHostedFieldTransactional from '../components/pay-theory-hosted-field-transactional';
 import { BillingInfo } from './pay_theory_types';
 import { ErrorMessage, FieldsReadyMessage } from './format';
 import { ACH_IFRAME, CARD_IFRAME, CASH_IFRAME, ElementTypes } from './data';
 
+// eslint-disable-next-line scanjs-rules/property_crypto
 const sessionId = self.crypto.randomUUID();
 
-export const getData = async (url: string, apiKey: string, sessionKey: string | null) => {
+interface PtToken {
+  'pt-token': string;
+  origin: string;
+  challengeOptions: object;
+}
+
+export const getData = async (
+  url: string,
+  apiKey: string,
+  sessionKey: string | null,
+): Promise<PtToken | object> => {
   // Validate that the host is the hosted checkout url if a session key is provided
   // If it is not, set it to null
   if (sessionKey && !hostedCheckoutEndpoint.includes(window.location.host)) {
@@ -21,7 +31,7 @@ export const getData = async (url: string, apiKey: string, sessionKey: string | 
     cache: 'no-cache',
     headers: {
       'x-api-key': apiKey,
-      'x-session-key': sessionKey || sessionId,
+      'x-session-key': sessionKey ?? sessionId,
     },
   };
   /* global fetch */
@@ -43,18 +53,11 @@ export const hostedCheckoutEndpoint = `https://${ENVIRONMENT}.checkout.${STAGE}.
 export const fetchPtToken = async (
   apiKey: string,
   sessionKey?: string | null,
-): Promise<
-  | {
-      'pt-token': string;
-      origin: string;
-      challengeOptions: object;
-    }
-  | false
-> => {
+): Promise<PtToken | false> => {
   for (let i = 0; i < 5; i++) {
     const token = await getData(transactionEndpoint, apiKey, sessionKey);
-    if (token['pt-token']) {
-      return token;
+    if ((token as PtToken)['pt-token']) {
+      return token as PtToken;
     }
   }
   return false;
@@ -65,19 +68,15 @@ const sendTransactingMessageToField = (
   billingInfo: BillingInfo,
   channel?: MessagePort,
 ) => {
-  const iframeId = `${field}-iframe`;
-  const iframe = document.getElementsByName(iframeId)[0];
-  if (iframe) {
-    postMessageToHostedField(
-      `${field}-iframe`,
-      {
-        type: 'pt-static:transact',
-        element: field,
-        billingInfo,
-      },
-      channel,
-    );
-  }
+  postMessageToHostedField(
+    `${field}-iframe`,
+    {
+      type: 'pt-static:transact',
+      element: field,
+      billingInfo,
+    },
+    channel,
+  );
 };
 
 export const sendTransactingMessage = (
@@ -90,7 +89,7 @@ export const sendTransactingMessage = (
 
     channel.port1.onmessage = ({ data }) => {
       channel.port1.close();
-      resolve(data);
+      resolve(data as ErrorMessage | FieldsReadyMessage);
     };
 
     const types = transacting.fieldTypes;
@@ -102,9 +101,9 @@ export const sendTransactingMessage = (
     );
     // Sending the message to the hosted field to transact first so that the channel port is saved in state
     // That will allow it to respond once it receives the message from the sibling fields
-    transactingField.forEach(field =>
-      sendTransactingMessageToField(field, billingInfo, channel.port2),
-    );
+    transactingField.forEach(field => {
+      sendTransactingMessageToField(field, billingInfo, channel.port2);
+    });
     siblingFields.forEach(field => {
       sendTransactingMessageToField(field, billingInfo);
     });

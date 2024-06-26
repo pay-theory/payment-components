@@ -144,6 +144,7 @@ export default async (inputParams: PayTheoryButtonInput) => {
 
     // Set checkout window to button element properties
     buttonElement.checkoutWindow = hostedCheckout;
+    // eslint-disable-next-line scanjs-rules/call_setInterval
     buttonElement.closeInterval = setInterval(() => {
       if (hostedCheckout.closed) {
         // Clear the interval and remove the overlay

@@ -26,7 +26,7 @@ export const COMPLETE_STEP = 'pt-static:complete';
 export const ERROR_STEP = 'pt-static:error';
 export const FIELDS_READY_STEP = 'pt-static:fields-ready';
 
-export type PayTheoryDataObject = {
+export interface PayTheoryDataObject {
   account_code: string | number;
   reference: string | number;
   payment_parameters: string;
@@ -40,7 +40,7 @@ export type PayTheoryDataObject = {
   billing_info?: BillingInfo;
   healthExpenseType?: HealthExpenseType;
   level3DataSummary?: Level3DataSummary;
-};
+}
 
 export interface ModifiedTransactProps extends TransactProps {
   payTheoryData: PayTheoryDataObject;
@@ -56,23 +56,23 @@ export interface ModifiedCheckoutDetails extends CheckoutDetails {
 export const parseInputParams = (
   inputParams: TransactProps | CheckoutDetails,
 ): ModifiedTransactProps | ModifiedCheckoutDetails => {
-  //@ts-ignore this will just set billingInfo and fee to undefined if they don't exist
-  const { payorId, invoiceId, recurringId, fee, metadata = {}, billingInfo } = inputParams;
+  const { payorId, invoiceId, recurringId, metadata = {} } = inputParams;
   const inputCopy = JSON.parse(JSON.stringify(inputParams)) as ModifiedTransactProps;
   inputCopy.payTheoryData = {
-    account_code: inputParams.accountCode || (metadata['pay-theory-account-code'] as string),
-    billing_info: billingInfo,
-    fee: fee,
-    invoice_id: invoiceId,
+    account_code: inputParams.accountCode ?? (metadata['pay-theory-account-code'] as string),
+    billing_info: (inputParams as TransactProps).billingInfo as BillingInfo | undefined,
+    fee: (inputParams as TransactProps).fee as number | undefined,
+    invoice_id: invoiceId as string | undefined,
     payment_parameters:
-      inputParams.paymentParameters || (metadata['payment-parameters-name'] as string),
-    payor_id: payorId,
+      inputParams.paymentParameters ?? (metadata['payment-parameters-name'] as string),
+    payor_id: payorId as string | undefined,
     receipt_description:
-      // @ts-expect-error this will just set receipt description to undefined if it doesn't exist
-      inputParams.receiptDescription || (metadata['pay-theory-receipt-description'] as string),
-    recurring_id: recurringId, //@ts-ignore this will just set reference to undefined if it doesn't exist
-    reference: inputParams.reference || (metadata['pay-theory-reference'] as string), //@ts-ignore  this will just set send receipt to undefined if it doesn't exist
-    send_receipt: inputParams.sendReceipt || !!metadata['pay-theory-receipt'],
+      (inputParams as TransactProps).receiptDescription ??
+      (metadata['pay-theory-receipt-description'] as string),
+    recurring_id: recurringId,
+    reference:
+      (inputParams as TransactProps).reference ?? (metadata['pay-theory-reference'] as string),
+    send_receipt: (inputParams as TransactProps).sendReceipt ?? !!metadata['pay-theory-receipt'],
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     healthExpenseType: inputCopy.healthExpenseType,
     level3DataSummary: inputCopy.level3DataSummary,
@@ -81,17 +81,17 @@ export const parseInputParams = (
   return inputCopy;
 };
 
-export type FieldsReadyMessage = {
+export interface FieldsReadyMessage {
   type: typeof FIELDS_READY_STEP;
-};
+}
 
-export type ErrorMessage = {
+export interface ErrorMessage {
   type: typeof ERROR_STEP;
   error: string;
   element: ElementTypes;
-};
+}
 
-export type ConfirmationMessage = {
+export interface ConfirmationMessage {
   type: typeof CONFIRMATION_STEP;
   body: {
     fee_mode: typeof MERCHANT_FEE | typeof SERVICE_FEE;
@@ -102,7 +102,7 @@ export type ConfirmationMessage = {
     amount: number;
     fee: number;
   };
-};
+}
 
 export const parseConfirmationMessage = (message: ConfirmationMessage): ConfirmationResponse => {
   const fee = message.body.fee_mode === data.SERVICE_FEE ? message.body.fee : 0;
@@ -119,7 +119,7 @@ export const parseConfirmationMessage = (message: ConfirmationMessage): Confirma
   };
 };
 
-export type SuccessfulTransactionMessage = {
+export interface SuccessfulTransactionMessage {
   type: typeof COMPLETE_STEP;
   paymentType: 'transfer';
   body: {
@@ -130,11 +130,11 @@ export type SuccessfulTransactionMessage = {
     amount: number;
     service_fee: number;
     state: 'PENDING' | 'SUCCESS';
-    metadata: { [keys: string | number]: string | number | boolean };
+    metadata: Record<string | number, string | number | boolean>;
     payor_id: string;
     payment_method_id: string;
   };
-};
+}
 
 export const parseSuccessfulTransactionMessage = (
   message: SuccessfulTransactionMessage,
@@ -158,7 +158,7 @@ export const parseSuccessfulTransactionMessage = (
   };
 };
 
-export type FailedTransactionMessage = {
+export interface FailedTransactionMessage {
   type: typeof COMPLETE_STEP;
   paymentType: 'transfer';
   body: {
@@ -176,7 +176,7 @@ export type FailedTransactionMessage = {
       };
     };
   };
-};
+}
 
 export const parseFailedTransactionMessage = (
   message: FailedTransactionMessage,
@@ -198,16 +198,16 @@ export const parseFailedTransactionMessage = (
   };
 };
 
-export type CashBarcodeMessage = {
+export interface CashBarcodeMessage {
   type: typeof CASH_BARCODE_STEP;
   body: CashBarcodeObject;
-};
+}
 
-export type TokenizedPaymentMethodMessage = {
+export interface TokenizedPaymentMethodMessage {
   type: typeof COMPLETE_STEP;
   paymentType: 'tokenize';
   body: TokenizedPaymentMethodObject;
-};
+}
 
 export const parseResponse = (
   message:
@@ -268,9 +268,9 @@ export const localizeCashBarcodeUrl = (
         resolve(response);
       };
 
-      function error() {
+      const error = () => {
         resolve(response);
-      }
+      };
 
       navigator.geolocation.getCurrentPosition(success, error, options);
     }

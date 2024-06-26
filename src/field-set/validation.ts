@@ -185,18 +185,6 @@ const findCashError = (processedElements: PayTheoryHostedField[]): string | fals
   return error;
 };
 
-const findCardPresentError = (processedElements: PayTheoryHostedField[]): string | false => {
-  if (processedElements.length === 0) {
-    return false;
-  }
-  // @ts-ignore
-  if (processedElements.reduce(findField('card-present'), false) === false) {
-    return 'missing Card Present field required for payments';
-  }
-
-  return false;
-};
-
 const validateEmail = (email: string) => {
   const re =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -559,7 +547,6 @@ export {
   findAchError,
   findCardError,
   findCashError,
-  findCardPresentError,
   formatPayorObject,
   validate,
   isValidAmount,

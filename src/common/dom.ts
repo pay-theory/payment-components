@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection */
 import { handleTypedError } from './message';
 import {
   achElementIds,
@@ -80,8 +81,8 @@ const findElementError = <T extends cashElementIds | cardElementIds | achElement
 export const processElements = <ET extends cashElementIds | cardElementIds | achElementIds>(
   elements: ET,
   fieldTypes: {
-    transacting: Array<keyof ET>;
-    siblings: Array<keyof ET>;
+    transacting: (keyof ET)[];
+    siblings: (keyof ET)[];
   },
 ) => {
   const processed: {
@@ -102,7 +103,7 @@ export const processElements = <ET extends cashElementIds | cardElementIds | ach
         if (typeof result === 'string') {
           error = result;
         } else {
-          // @ts-ignore
+          //@ts-expect-error
           processed[key].push(result);
         }
       }
@@ -114,7 +115,7 @@ export const processElements = <ET extends cashElementIds | cardElementIds | ach
   return processed;
 };
 
-export const isHidden = (element: HTMLElement): boolean => {
+export const isHidden = (element: HTMLElement | undefined): boolean => {
   if (!element) return true;
   const style = window.getComputedStyle(element);
   if (style.display === 'none') {

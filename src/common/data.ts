@@ -14,7 +14,7 @@ export const PAY = 'PAY';
 export const BOOK = 'BOOK';
 export const DONATE = 'DONATE';
 export const CHECKOUT = 'CHECKOUT';
-export type CALL_TO_ACTION = typeof PAY | typeof BOOK | typeof DONATE | typeof CHECKOUT;
+// export type CALL_TO_ACTION = typeof PAY | typeof BOOK | typeof DONATE | typeof CHECKOUT;
 
 export const CTA_TYPES = [PAY, BOOK, DONATE];
 
@@ -97,14 +97,14 @@ export const defaultElementIds = {
   'card-present': 'pay-theory-card-present',
 };
 
-export type achElementIds = {
+export interface achElementIds {
   'account-number': string;
   'account-name': string;
   'routing-number': string;
   'account-type': string;
-};
+}
 
-export type cardElementIds = {
+export interface cardElementIds {
   'credit-card': string;
   'card-number': string;
   'card-exp': string;
@@ -115,12 +115,12 @@ export type cardElementIds = {
   'billing-city': string;
   'billing-state': string;
   'billing-zip': string;
-};
+}
 
-export type cashElementIds = {
+export interface cashElementIds {
   'cash-name': string;
   'cash-contact': string;
-};
+}
 
 export type ElementTypes = keyof achElementIds | keyof cardElementIds | keyof cashElementIds;
 
@@ -129,32 +129,32 @@ export const checkoutQRField = 'pay-theory-checkout-qr';
 export const payTheoryOverlay = 'pay-theory-overlay';
 
 export const achFieldTypes: {
-  transacting: Array<keyof achElementIds>;
-  siblings: Array<keyof achElementIds>;
+  transacting: (keyof achElementIds)[];
+  siblings: (keyof achElementIds)[];
 } = {
   transacting: ['account-number'],
   siblings: ['account-name', 'account-type', 'routing-number'],
 };
 
 export const cashFieldTypes: {
-  transacting: Array<keyof cashElementIds>;
-  siblings: Array<keyof cashElementIds>;
+  transacting: (keyof cashElementIds)[];
+  siblings: (keyof cashElementIds)[];
 } = {
   transacting: ['cash-name'],
   siblings: ['cash-contact'],
 };
 
-export const cardPresentFieldTypes: {
-  transacting: Array<'card-present'>;
-  siblings: Array<string>;
-} = {
-  transacting: ['card-present'],
-  siblings: [],
-};
+// export const cardPresentFieldTypes: {
+//   transacting: 'card-present'[];
+//   siblings: string[];
+// } = {
+//   transacting: ['card-present'],
+//   siblings: [],
+// };
 
 export const cardFieldTypes: {
-  transacting: Array<keyof cardElementIds>;
-  siblings: Array<keyof cardElementIds>;
+  transacting: (keyof cardElementIds)[];
+  siblings: (keyof cardElementIds)[];
 } = {
   transacting: ['credit-card', 'card-number'],
   siblings: [
