@@ -6,31 +6,27 @@ import { BillingInfo } from './pay_theory_types';
 import { ErrorMessage, FieldsReadyMessage } from './format';
 import { ACH_IFRAME, CARD_IFRAME, CASH_IFRAME, ElementTypes } from './data';
 
-const sessionKey = self.crypto.randomUUID();
-
 const sessionId = self.crypto.randomUUID();
 
-export const getData = async (url: string,
-                              apiKey: string,
-                              sessionKey: string | null) => {
-    // Validate that the host is the hosted checkout url if a session key is provided
-    // If it is not, set it to null
-    if (sessionKey && !hostedCheckoutEndpoint.includes(window.location.host)) {
-        sessionKey = null;
-    }
+export const getData = async (url: string, apiKey: string, sessionKey: string | null) => {
+  // Validate that the host is the hosted checkout url if a session key is provided
+  // If it is not, set it to null
+  if (sessionKey && !hostedCheckoutEndpoint.includes(window.location.host)) {
+    sessionKey = null;
+  }
 
-    const options: RequestInit = {
-        method: 'GET',
-        mode: 'cors',
-        cache: 'no-cache',
-        headers: {
-            'x-api-key': apiKey,
-            'x-session-key': sessionKey || sessionId,
-        },
-    };
-    /* global fetch */
-    const response = await fetch(url, options);
-    return await response.json();
+  const options: RequestInit = {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache',
+    headers: {
+      'x-api-key': apiKey,
+      'x-session-key': sessionKey || sessionId,
+    },
+  };
+  /* global fetch */
+  const response = await fetch(url, options);
+  return await response.json();
 };
 
 export const PARTNER = process.env.ENV;
@@ -45,23 +41,23 @@ export const hostedFieldsEndpoint = `https://${ENVIRONMENT}.tags.static.${STAGE}
 export const hostedCheckoutEndpoint = `https://${ENVIRONMENT}.checkout.${STAGE}.com`;
 
 export const fetchPtToken = async (
-    apiKey: string,
-    sessionKey?: string | null
+  apiKey: string,
+  sessionKey?: string | null,
 ): Promise<
-    | {
-    'pt-token': string;
-    origin: string;
-    challengeOptions: object;
-}
-    | false
-> => {
-    for (let i = 0; i < 5; i++) {
-        const token = await getData(transactionEndpoint, apiKey, sessionKey);
-        if (token['pt-token']) {
-            return token;
-        }
+  | {
+      'pt-token': string;
+      origin: string;
+      challengeOptions: object;
     }
-    return false;
+  | false
+> => {
+  for (let i = 0; i < 5; i++) {
+    const token = await getData(transactionEndpoint, apiKey, sessionKey);
+    if (token['pt-token']) {
+      return token;
+    }
+  }
+  return false;
 };
 
 const sendTransactingMessageToField = (
