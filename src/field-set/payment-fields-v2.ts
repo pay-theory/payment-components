@@ -99,7 +99,7 @@ const mountProcessedElements = async (props: {
         }
       });
       value.elements.transacting.forEach(element => {
-        const container = document.getElementById(element.containerId);
+        const container = document.getElementById(String(element.containerId));
         element.frame.apiKey = apiKey;
         element.frame.styles = styles;
         element.frame.placeholders = placeholders;
