@@ -5,7 +5,7 @@ import common from '../common';
 import * as valid from './validation';
 import PayTheoryCheckoutQR from '../components/pay-theory-checkout-qr';
 import { PayTheoryQRInput } from '../common/pay_theory_types';
-import { ModifiedCheckoutDetails } from '../common/format';
+import { ErrorMessage, ModifiedCheckoutDetails } from '../common/format';
 
 export default async (inputParams: PayTheoryQRInput) => {
   const { apiKey, size = 128, checkoutDetails, onReady, onError, onSuccess } = inputParams;
@@ -25,7 +25,7 @@ export default async (inputParams: PayTheoryQRInput) => {
     removeErrorListener = common.errorObserver(onError);
     removeHostedErrorListener = common.handleHostedFieldMessage(
       common.socketErrorTypeMessage,
-      message => {
+      (message: ErrorMessage) => {
         onError(message.error);
       },
     );
@@ -59,7 +59,7 @@ export default async (inputParams: PayTheoryQRInput) => {
   tagFrame.setAttribute('id', `${common.checkoutQRField}-wrapper`);
   tagFrame.size = finalSize;
   tagFrame.onReady = onReadyWrapper;
-  if (onSuccess) tagFrame.onSuccess = (message: any) => onSuccess(message.data);
+  if (onSuccess) tagFrame.onSuccess = (message: MessageEvent) => onSuccess(message.data);
   if (onError) tagFrame.onError = onError;
   // Append the button div to the wrapper div
   const qrDiv = document.getElementById(common.checkoutQRField);

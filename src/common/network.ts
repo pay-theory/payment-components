@@ -105,5 +105,7 @@ export const sendTransactingMessage = (
     transactingField.forEach(field =>
       sendTransactingMessageToField(field, billingInfo, channel.port2),
     );
-    siblingFields.forEach(field => sendTransactingMessageToField(field, billingInfo));
+    siblingFields.forEach(field => {
+      sendTransactingMessageToField(field, billingInfo);
+    });
   });

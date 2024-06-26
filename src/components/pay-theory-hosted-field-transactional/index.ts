@@ -130,18 +130,34 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   constructor(props: ConstructorProps) {
     super();
-    this.createToken = this.createToken.bind(this);
-    this.transact = this.transact.bind(this);
-    this.resetToken = this.resetToken.bind(this);
-    this.capture = this.capture.bind(this);
-    this.cancel = this.cancel.bind(this);
-    this.tokenize = this.tokenize.bind(this);
-    this.sendValidMessage = this.sendValidMessage.bind(this);
-    this.sendStateMessage = this.sendStateMessage.bind(this);
-    this.sendValidMessage = this.sendValidMessage.bind(this);
-    this.sendPtToken = this.sendPtToken.bind(this);
-    this.handleFeeMessage = this.handleFeeMessage.bind(this);
-    this.handleFeeCalcReconnect = this.handleFeeCalcReconnect.bind(this);
+    this.transact = this.transact.bind(this) as () => Promise<
+      | ConfirmationMessage
+      | SuccessfulTransactionMessage
+      | FailedTransactionMessage
+      | CashBarcodeMessage
+      | ErrorMessage
+    >;
+    this.resetToken = this.resetToken.bind(this) as () => Promise<ErrorResponse | ReadyResponse>;
+    this.capture = this.capture.bind(this) as () => Promise<
+      FailedTransactionMessage | ErrorMessage
+    >;
+    this.cancel = this.cancel.bind(this) as () => Promise<true | ErrorResponse>;
+    this.tokenize = this.tokenize.bind(this) as () => Promise<
+      TokenizedPaymentMethodMessage | ErrorMessage
+    >;
+    this.sendValidMessage = this.sendValidMessage.bind(this) as () => void;
+    this.sendStateMessage = this.sendStateMessage.bind(this) as () => void;
+    this.sendValidMessage = this.sendValidMessage.bind(this) as () => void;
+    this.sendPtToken = this.sendPtToken.bind(this) as () => Promise<ReadyResponse | ErrorResponse>;
+    this.handleFeeMessage = this.handleFeeMessage.bind(this) as (message: {
+      type: string;
+      body: { fee: number; payment_type: string };
+      field: ElementTypes;
+    }) => void;
+    this.handleFeeCalcReconnect = this.handleFeeCalcReconnect.bind(this) as (message: {
+      type: string;
+      field: ElementTypes;
+    }) => Promise<void>;
     this._fieldTypes = props.fieldTypes;
     this._requiredValidFields = props.requiredValidFields;
     this._transactingIFrameId = props.transactingIFrameId;
@@ -238,7 +254,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     // Set up a listener for the hosted field to message saying it is ready for the pt-token to be sent
     this._removeHostTokenListener = common.handleHostedFieldMessage(
       // @ts-ignore
-      (event: { type: any; element: ElementTypes }) => {
+      (event: { type: unknown; element: ElementTypes }) => {
         return (
           event.type === 'pt-static:pt_token_ready' &&
           this._transactingIFrameId.includes(event.element)
@@ -248,12 +264,12 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     );
 
     this._removeFeeListener = common.handleHostedFieldMessage(
-      (event: { type: any }) => event.type === 'pt-static:calculated_fee',
+      (event: { type: unknown }) => event.type === 'pt-static:calculated_fee',
       this.handleFeeMessage,
     );
 
     this._removeFeeCalcReconnect = common.handleHostedFieldMessage(
-      (event: { type: any }) => event.type === 'pt-static:fee_calc_reconnect',
+      (event: { type: unknown }) => event.type === 'pt-static:fee_calc_reconnect',
       this.handleFeeCalcReconnect,
     );
 
@@ -379,7 +395,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     // Loop through all the other transacting elements and add their state to the state group or use the default state
     for (const [key, value] of Object.entries(transactingWebComponentMap)) {
       if (key !== this._transactingType) {
-        const transactingTypesState = value.ids.reduce((acc: any, id: string) => {
+        const transactingTypesState = value.ids.reduce((acc: unknown, id: string) => {
           const element = document.getElementsByName(id);
           if (element.length > 0) {
             const transactingElement = element[0] as PayTheoryHostedFieldTransactional;

@@ -242,7 +242,6 @@ export const cardWebComponentIds = [
 ];
 
 export type webComponentIds =
-  | (typeof transactingWebComponentIds)[number]
   | (typeof achWebComponentIds)[number]
   | (typeof cashWebComponentIds)[number]
   | (typeof cardWebComponentIds)[number];

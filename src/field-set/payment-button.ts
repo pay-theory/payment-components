@@ -3,7 +3,11 @@
 /*global navigator*/
 import common from '../common';
 import * as valid from './validation';
-import { PayTheoryButtonInput, SuccessfulTransactionObject } from '../common/pay_theory_types';
+import {
+  PayTheoryButtonInput,
+  SuccessfulTransactionObject,
+  ErrorResponse,
+} from '../common/pay_theory_types';
 import { ModifiedCheckoutDetails } from '../common/format';
 import PayTheoryCheckoutButton from '../components/pay-theory-checkout-button';
 import PayTheoryOverlay from '../components/pay-theory-overlay';
@@ -81,14 +85,14 @@ export default async (inputParams: PayTheoryButtonInput) => {
     ? modifiedCheckoutDetails.feeMode
     : common.defaultFeeMode;
   const { paymentName, callToAction, acceptedPaymentMethods } = modifiedCheckoutDetails;
-  let removeErrorListener = () => {};
-  let removeHostedErrorListener = () => {};
+  let removeErrorListener = Function.prototype;
+  let removeHostedErrorListener = Function.prototype;
   // Putting error listener on the window and hosted button so that it can catch errors while it readies the session
   if (onError) {
     removeErrorListener = common.errorObserver(onError);
     removeHostedErrorListener = common.handleHostedFieldMessage(
       common.socketErrorTypeMessage,
-      message => {
+      (message: ErrorResponse) => {
         onError(message.error);
       },
     );

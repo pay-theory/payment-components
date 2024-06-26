@@ -14,8 +14,8 @@ import {
 interface PayTheoryEvent extends MessageEvent {
   payTheory: boolean;
 }
-type validTargetFunc = (message: { type: any; element?: ElementTypes }) => boolean;
-type handleMessageFunc = (message: any) => void;
+type validTargetFunc = (message: { type: unknown; element?: ElementTypes }) => boolean;
+type handleMessageFunc = (message: unknown) => void | Promise<unknown>;
 
 const windowListenerHandler = (
   validTarget: validTargetFunc,
@@ -30,7 +30,7 @@ const windowListenerHandler = (
     try {
       // Parse the message as JSON.
       // All PT messages have either an object or a stringified object as the data
-      message = JSON.parse(message);
+      message = typeof message === 'string' ? JSON.parse(message) : message;
     } catch (e) {
       // Do nothing
       return;
@@ -109,7 +109,7 @@ export const handleCheckoutMessage = (
 
 export type AsyncMessage = {
   type: string;
-  data?: any;
+  data?: unknown;
   async: true;
 };
 
@@ -125,91 +125,79 @@ export const sendAsyncPostMessage = <T>(message: AsyncMessage, iframe: HTMLIFram
     iframe.contentWindow.postMessage(message, hostedFieldsEndpoint, [channel.port2]);
   });
 
-export const errorTypeMessage = (message: { type: any }) =>
+export const errorTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt:error';
-export const readyTypeMessage = (message: { type: any }) =>
+export const readyTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pay-theory:ready';
-export const stateTypeMessage = (message: { type: any }) =>
+export const stateTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pay-theory:state';
-export const validTypeMessage = (message: { type: any }) =>
+export const validTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pay-theory:valid';
 
-export const hostedReadyTypeMessage = (message: { type: any }) =>
-  typeof message.type === 'string' &&
-  message.type.endsWith(':ready') &&
-  message.type.startsWith('pt-static:');
-export const hostedStateTypeMessage = (message: { type: any }) =>
+export const hostedStateTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-static:state';
-export const relayTypeMessage = (message: { type: any }) =>
+export const relayTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-static:relay';
 
 //Sends message to the tokenize observer
 export const confirmString = 'pt:confirm';
-export const confirmTypeMessage = (message: { type: any }) =>
+export const confirmTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === confirmString;
 //Sends message to the transacted observer
 export const completeString = 'pt:complete';
-export const completeTypeMessage = (message: { type: any }) =>
+export const completeTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === completeString;
 //Sends message to the capture observer
 export const captureString = 'pt:capture';
-export const confirmationCompleteTypeMessage = (message: { type: any }) =>
+export const confirmationCompleteTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === captureString;
 //Sends message to the cash observer
 export const cashString = 'pt:cash';
-export const cashTypeMessage = (message: { type: any }) =>
+export const cashTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === cashString;
 
 //passes socket error from the hosted fields to SDK
-export const socketErrorTypeMessage = (message: { type: any }) =>
+export const socketErrorTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-static:error';
 
 //Message sent from hosted-fields with data when a card present device is activated or response is received from processor
-export const cardPresentTypeMessage = (message: { type: any }) =>
+export const cardPresentTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-static:card-present';
 
 // Message sent from hosted-fields when a hosted button is clicked
-export const buttonClickTypeMessage = (message: { type: any }) =>
+export const buttonClickTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-static:button-click';
 
 // Message sent from hosted-fields when a hosted button is clicked
-export const buttonReadyTypeMessage = (message: { type: any }) =>
+export const buttonReadyTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-static:button-ready';
 
-// Message sent from checkout page when payment is cancelled
-export const checkoutCancelTypeMessage = (message: { type: any }) =>
-  typeof message.type === 'string' && message.type === 'pt-checkout:cancel';
-
 // Message sent from the checkout page when there is an error
-export const checkoutErrorTypeMessage = (message: { type: any }) =>
+export const checkoutErrorTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-checkout:error';
 
 // Message sent from the checkout page when the payment is complete
-export const checkoutCompleteTypeMessage = (message: { type: any }) =>
+export const checkoutCompleteTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-checkout:complete';
 
 // Message sent from the checkout page when the barcode is received
-export const checkoutBarcodeReceivedTypeMessage = (message: { type: any }) =>
+export const checkoutBarcodeReceivedTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-checkout:barcode-received';
 
-// Message sent from the checkout page when the barcode interaction is complete
-export const checkoutBarcodeCompleteTypeMessage = (message: { type: any }) =>
-  typeof message.type === 'string' && message.type === 'pt-checkout:barcode-complete';
-
 // Message from the overlay when the user clicks the close button
-export const overlayCancelTypeMessage = (message: { type: any }) =>
+export const overlayCancelTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-overlay:cancel';
 
 // Message from the overlay when the user clicks the relaunch button
-export const overlayRelaunchTypeMessage = (message: { type: any }) =>
+export const overlayRelaunchTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-overlay:relaunch';
 
 // Message from the qr code when it is ready
-export const qrCodeReadyTypeMessage = (message: { type: any }) =>
+export const qrCodeReadyTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-static:qr-ready';
 
 // Message from the qr code when it is completes a successful transaction
-export const qrCodeCompleteTypeMessage = (message: { type: any }) =>
+export const qrCodeCompleteTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-static:qr-checkout-success';
 
 export const postMessageToHostedField = (id: string, message: object, channel?: MessagePort) => {

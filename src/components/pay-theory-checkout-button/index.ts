@@ -51,7 +51,7 @@ class PayTheoryCheckoutButton extends HTMLElement {
     );
     this._clearBarcodeReceivedListener = common.handleCheckoutMessage(
       common.checkoutBarcodeReceivedTypeMessage,
-      message => {
+      (message: MessageEvent) => {
         this._buttonBarcode = JSON.stringify(message.data);
       },
     );

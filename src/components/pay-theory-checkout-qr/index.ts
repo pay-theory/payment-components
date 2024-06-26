@@ -4,10 +4,10 @@ import common from '../../common';
 class PayTheoryCheckoutQR extends HTMLElement {
   protected _token: string | undefined;
   protected _size: number | undefined;
-  protected _onReady: (message: any) => void;
-  protected _onClick: (message: any) => void;
-  protected _onError: (message: any) => void;
-  protected _onSuccess: (message: any) => void;
+  protected _onReady: (message: unknown) => void;
+  protected _onClick: (message: unknown) => void;
+  protected _onError: (message: unknown) => void;
+  protected _onSuccess: (message: unknown) => void;
   protected _clearReadyListener: () => void | undefined;
   protected _clearSuccessListener: () => void | undefined;
   protected _clearErrorListener: () => void | undefined;
@@ -58,15 +58,15 @@ class PayTheoryCheckoutQR extends HTMLElement {
 
   // Only want to allow event listeners to be set from outside the class
   // If they have been set before there should be a clear listener function so we want to clear it and reset the listener
-  set onReady(readyFunc: (message: any) => void) {
+  set onReady(readyFunc: (message: unknown) => void) {
     this._onReady = readyFunc;
   }
 
-  set onSuccess(successFunc: (message: any) => void) {
+  set onSuccess(successFunc: (message: unknown) => void) {
     this._onSuccess = successFunc;
   }
 
-  set onError(errorFunc: (message: any) => void) {
+  set onError(errorFunc: (message: unknown) => void) {
     this._onError = errorFunc;
   }
 

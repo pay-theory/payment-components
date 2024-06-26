@@ -19,10 +19,10 @@ class PayTheoryHostedField extends HTMLElement {
 
   constructor() {
     super();
-    this.defineFields = this.defineFields.bind(this);
-    this.appendElement = this.appendElement.bind(this);
-    this.setFields = this.setFields.bind(this);
-    this.createToken = this.createToken.bind(this);
+    this.defineFields = this.defineFields.bind(this) as (token: string) => void;
+    this.appendElement = this.appendElement.bind(this) as (element: HTMLElement) => void;
+    this.setFields = this.setFields.bind(this) as (fieldArray: Array<ElementTypes>) => void;
+    this.createToken = this.createToken.bind(this) as () => string;
     this.fields = [];
   }
 

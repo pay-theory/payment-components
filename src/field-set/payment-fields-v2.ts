@@ -31,8 +31,8 @@ type ProcessedObject = {
       siblings: processedElement<cardElementIds, PayTheoryHostedField>[];
     };
     errorCheck: (
-      allElements: Array<PayTheoryHostedField | PayTheoryHostedFieldTransactional>,
-      transacting: Array<PayTheoryHostedFieldTransactional>,
+      allElements: (PayTheoryHostedField | PayTheoryHostedFieldTransactional)[],
+      transacting: PayTheoryHostedFieldTransactional[],
     ) => string | false;
   };
   ach: {
@@ -41,8 +41,8 @@ type ProcessedObject = {
       siblings: processedElement<achElementIds, PayTheoryHostedField>[];
     };
     errorCheck: (
-      allElements: Array<PayTheoryHostedField | PayTheoryHostedFieldTransactional>,
-      transacting: Array<PayTheoryHostedFieldTransactional>,
+      allElements: (PayTheoryHostedField | PayTheoryHostedFieldTransactional)[],
+      transacting: PayTheoryHostedFieldTransactional[],
     ) => string | false;
   };
   cash: {
@@ -51,8 +51,8 @@ type ProcessedObject = {
       siblings: processedElement<cashElementIds, PayTheoryHostedField>[];
     };
     errorCheck: (
-      allElements: Array<PayTheoryHostedField | PayTheoryHostedFieldTransactional>,
-      transacting: Array<PayTheoryHostedFieldTransactional>,
+      allElements: (PayTheoryHostedField | PayTheoryHostedFieldTransactional)[],
+      transacting: PayTheoryHostedFieldTransactional[],
     ) => string | false;
   };
 };
@@ -90,7 +90,7 @@ const mountProcessedElements = async (props: {
         return common.handleTypedError(ErrorType.FIELD_ERROR, error);
       }
       value.elements.siblings.forEach(sibling => {
-        const container = document.getElementById(sibling.containerId);
+        const container = document.getElementById(String(sibling.containerId));
         sibling.frame.styles = styles;
         sibling.frame.placeholders = placeholders;
         sibling.frame.session = session;
@@ -99,7 +99,7 @@ const mountProcessedElements = async (props: {
         }
       });
       value.elements.transacting.forEach(element => {
-        const container = document.getElementById(element.containerId);
+        const container = document.getElementById(String(element.containerId));
         element.frame.apiKey = apiKey;
         element.frame.styles = styles;
         element.frame.placeholders = placeholders;
@@ -233,11 +233,11 @@ const initializeFields = async (props: PayTheoryPaymentFieldsInput, port: Messag
 };
 
 const payTheoryFields = async (inputParams: PayTheoryPaymentFieldsInput) =>
-  new Promise<ReadyResponse | ErrorResponse>((resolve, reject) => {
+  new Promise<ReadyResponse | ErrorResponse>(resolve => {
     // Opening a new message channel, so we can await the response from the hosted field
     const channel = new MessageChannel();
 
-    channel.port1.onmessage = ({ data }) => {
+    channel.port1.onmessage = () => {
       channel.port1.close();
       resolve({
         type: ResponseMessageTypes.READY,

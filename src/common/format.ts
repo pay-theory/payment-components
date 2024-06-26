@@ -68,11 +68,11 @@ export const parseInputParams = (
       inputParams.paymentParameters || (metadata['payment-parameters-name'] as string),
     payor_id: payorId,
     receipt_description:
-      // @ts-ignore this will just set receipt description to undefined if it doesn't exist
+      // @ts-expect-error this will just set receipt description to undefined if it doesn't exist
       inputParams.receiptDescription || (metadata['pay-theory-receipt-description'] as string),
     recurring_id: recurringId, //@ts-ignore this will just set reference to undefined if it doesn't exist
     reference: inputParams.reference || (metadata['pay-theory-reference'] as string), //@ts-ignore  this will just set send receipt to undefined if it doesn't exist
-    send_receipt: inputParams.sendReceipt || (metadata['pay-theory-receipt'] as boolean),
+    send_receipt: inputParams.sendReceipt || !!metadata['pay-theory-receipt'],
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     healthExpenseType: inputCopy.healthExpenseType,
     level3DataSummary: inputCopy.level3DataSummary,
@@ -255,7 +255,7 @@ export const parseResponse = (
 export const localizeCashBarcodeUrl = (
   response: CashBarcodeResponse,
 ): Promise<CashBarcodeResponse> =>
-  new Promise((resolve, _) => {
+  new Promise(resolve => {
     {
       const options = {
         timeout: 5000,
