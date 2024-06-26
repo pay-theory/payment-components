@@ -43,7 +43,7 @@ class PayTheoryHostedField extends HTMLElement {
       origin: window.location.origin,
       styles: this._styles,
       placeholders: this._placeholders,
-      amount: this._amount
+      amount: this._amount,
     };
     const json = JSON.stringify(token);
     const encodedJson = window.btoa(json);
