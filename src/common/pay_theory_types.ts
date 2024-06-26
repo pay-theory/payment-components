@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { defaultElementIds, ElementTypes, MERCHANT_FEE, SERVICE_FEE } from './data';
 
 export enum ResponseMessageTypes {
@@ -10,43 +12,43 @@ export enum ResponseMessageTypes {
   READY = 'READY',
 }
 
-export type AddressObject = {
+export interface AddressObject {
   line1?: string;
   line2?: string;
   city?: string;
   region?: string;
   postal_code?: string;
   country?: string;
-};
+}
 
-export type PayorInfo = {
+export interface PayorInfo {
   first_name?: string;
   last_name?: string;
   email?: string;
   phone?: string;
   personal_address?: AddressObject;
-};
+}
 
-export type BillingInfo = {
+export interface BillingInfo {
   name?: string;
   address?: AddressObject;
-};
+}
 
-export type ConfirmationObject = {
+export interface ConfirmationObject {
   first_six: string;
   last_four: string;
   brand: string;
   receipt_number: string;
   amount: number;
   service_fee: number;
-};
+}
 
-export type ConfirmationResponse = {
+export interface ConfirmationResponse {
   type: ResponseMessageTypes.CONFIRMATION;
   body: ConfirmationObject;
-};
+}
 
-export type SuccessfulTransactionObject = {
+export interface SuccessfulTransactionObject {
   receipt_number: string;
   last_four: string;
   brand: string;
@@ -55,23 +57,23 @@ export type SuccessfulTransactionObject = {
   service_fee: number;
   state: string;
   // Keeping tags in the response for backwards compatibility
-  tags: { [keys: string | number]: string | number | boolean };
-  metadata: { [keys: string | number]: string | number | boolean };
+  tags: Record<string | number, string | number | boolean>;
+  metadata: Record<string | number, string | number | boolean>;
   payor_id: string;
   payment_method_id: string;
-};
+}
 
-export type SuccessfulTransactionResponse = {
+export interface SuccessfulTransactionResponse {
   type: ResponseMessageTypes.SUCCESS;
   body: SuccessfulTransactionObject;
-};
+}
 
-export type ReadyResponse = {
+export interface ReadyResponse {
   type: ResponseMessageTypes.READY;
   body: true;
-};
+}
 
-export type FailedTransactionObject = {
+export interface FailedTransactionObject {
   receipt_number: string;
   last_four: string;
   brand: string;
@@ -82,24 +84,24 @@ export type FailedTransactionObject = {
     failure_code: string;
     failure_text: string;
   };
-};
+}
 
-export type FailedTransactionResponse = {
+export interface FailedTransactionResponse {
   type: ResponseMessageTypes.FAILED;
   body: FailedTransactionObject;
-};
+}
 
-export type CashBarcodeObject = {
+export interface CashBarcodeObject {
   barcodeUrl: string;
   mapUrl: string;
-};
+}
 
-export type CashBarcodeResponse = {
+export interface CashBarcodeResponse {
   type: ResponseMessageTypes.CASH;
   body: CashBarcodeObject;
-};
+}
 
-export type TokenizedPaymentMethodObject = {
+export interface TokenizedPaymentMethodObject {
   payment_method_id: string;
   payor_id: string;
   last_four: string;
@@ -107,12 +109,12 @@ export type TokenizedPaymentMethodObject = {
   expiration: string;
   payment_type: 'card' | 'ach';
   metadata: { [keys: string | number]: string | number | boolean };
-};
+}
 
-export type TokenizedPaymentMethodResponse = {
+export interface TokenizedPaymentMethodResponse {
   type: ResponseMessageTypes.TOKENIZED;
   body: TokenizedPaymentMethodObject;
-};
+}
 
 // Error Types
 export enum ErrorType {
@@ -130,20 +132,20 @@ export enum ErrorType {
   NOT_READY = 'NOT_READY',
 }
 
-export type ErrorResponse = {
+export interface ErrorResponse {
   type: ResponseMessageTypes.ERROR;
   error: string;
-};
+}
 
 // Function Prop Types
-export type TokenizeProps = {
+export interface TokenizeProps {
   payorInfo?: PayorInfo;
   payorId?: string;
   metadata?: { [keys: string | number]: string | number | boolean };
   billingInfo?: BillingInfo;
-};
+}
 
-export type TransactProps = {
+export interface TransactProps {
   amount: number;
   payorInfo?: PayorInfo;
   billingInfo?: BillingInfo;
@@ -161,18 +163,18 @@ export type TransactProps = {
   recurringId?: string;
   healthExpenseType?: HealthExpenseType;
   level3DataSummary?: Level3DataSummary;
-};
+}
 
-export type PayTheoryPaymentFieldsInput = {
+export interface PayTheoryPaymentFieldsInput {
   apiKey: string;
   styles?: StyleObject;
-  metadata?: { [key: string | number]: string | number | boolean };
+  metadata?: Record<string | number, string | number | boolean>;
   placeholders?: PlaceholderObject;
   elementIds?: typeof defaultElementIds;
   session?: string; // This is used for internal use to connect a button and qr code to a hosted checkout page
   feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE;
   amount?: number;
-};
+}
 
 export enum AcceptedPaymentMethods {
   ALL = 'ALL',
@@ -198,7 +200,7 @@ export enum ButtonColor {
   GREY = 'GREY',
 }
 
-export type CheckoutDetails = {
+export interface CheckoutDetails {
   amount: number;
   paymentName: string;
   paymentDescription?: string;
@@ -206,7 +208,7 @@ export type CheckoutDetails = {
   callToAction?: CallToAction;
   acceptedPaymentMethods?: AcceptedPaymentMethods;
   payorId?: string;
-  metadata?: { [keys: string | number]: string | number | boolean };
+  metadata?: Record<string | number, string | number | boolean>;
   feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE;
   accountCode?: string;
   paymentParameters?: string;
@@ -214,25 +216,25 @@ export type CheckoutDetails = {
   recurringId?: string;
   healthExpenseType?: HealthExpenseType;
   level3DataSummary?: Level3DataSummary;
-};
+}
 
-export type PayTheoryQRInput = {
+export interface PayTheoryQRInput {
   apiKey: string;
   checkoutDetails: CheckoutDetails;
   size: number;
   onReady: (ready: true) => void;
   onError: (error: string) => void;
   onSuccess: (result: SuccessfulTransactionObject) => void;
-};
+}
 
-export type ButtonStyle = {
+export interface ButtonStyle {
   color: ButtonColor;
   callToAction: CallToAction;
   pill: boolean;
   height: number;
-};
+}
 
-export type PayTheoryButtonInput = {
+export interface PayTheoryButtonInput {
   apiKey: string;
   checkoutDetails: CheckoutDetails;
   style?: ButtonStyle;
@@ -242,20 +244,20 @@ export type PayTheoryButtonInput = {
   onCancel?: () => void;
   onSuccess?: (result: SuccessfulTransactionObject) => void;
   onBarcode?: (result: CashBarcodeObject) => void;
-};
+}
 
-export type FieldState = {
+export interface FieldState {
   isFocused: boolean;
   isDirty: boolean;
   errorMessages: string[];
-};
+}
 
 export type StateObject = Record<ElementTypes, FieldState> &
   Record<'service_fee', { amount?: number; ach_fee?: number; card_fee?: number }>;
 
 export type PlaceholderObject = Partial<Record<ElementTypes, string>>;
 
-export type StyleObject = {
+export interface StyleObject {
   default: object;
   success: object;
   error: object;
@@ -269,7 +271,7 @@ export type StyleObject = {
     };
   };
   hidePlaceholder?: boolean;
-};
+}
 
 export interface Level3DataSummary {
   tax_amt: number;

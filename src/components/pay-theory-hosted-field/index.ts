@@ -1,6 +1,6 @@
 /* global HTMLElement */
 import common from '../../common';
-// @ts-ignore
+//@ts-expect-error
 import DOMPurify from 'dompurify';
 import { ElementTypes } from '../../common/data';
 import { StyleObject } from '../../common/pay_theory_types';
@@ -10,7 +10,7 @@ export type placeholderObject = Partial<Record<ElementTypes, string>>;
 class PayTheoryHostedField extends HTMLElement {
   protected _field: ElementTypes | undefined;
   protected _styles: StyleObject = common.defaultStyles;
-  protected fields: Partial<Array<ElementTypes>>;
+  protected fields: Partial<ElementTypes[]>;
   protected _placeholders: placeholderObject = {};
   protected _amount: number | undefined;
 
@@ -21,12 +21,12 @@ class PayTheoryHostedField extends HTMLElement {
     super();
     this.defineFields = this.defineFields.bind(this) as (token: string) => void;
     this.appendElement = this.appendElement.bind(this) as (element: HTMLElement) => void;
-    this.setFields = this.setFields.bind(this) as (fieldArray: Array<ElementTypes>) => void;
+    this.setFields = this.setFields.bind(this) as (fieldArray: ElementTypes[]) => void;
     this.createToken = this.createToken.bind(this) as () => string;
     this.fields = [];
   }
 
-  setFields(fieldArray: Array<ElementTypes>) {
+  setFields(fieldArray: ElementTypes[]) {
     this.fields = fieldArray;
   }
 
@@ -72,7 +72,7 @@ class PayTheoryHostedField extends HTMLElement {
     container?.appendChild(element);
   }
 
-  async connectedCallback() {
+  connectedCallback() {
     // eslint-disable-next-line no-unsanitized/property
     this.innerHTML = DOMPurify.sanitize(`<div class="framed">
             <div id="pay-theory-${this.field}-hosted-field-container" class="pay-theory-field">
@@ -82,13 +82,11 @@ class PayTheoryHostedField extends HTMLElement {
     this.defineFields(token);
   }
 
-  disconnectedCallback() {}
-
   set session(value: string) {
     this._session = value;
   }
 
-  set styles(value: StyleObject) {
+  set styles(value: StyleObject | undefined) {
     if (value) {
       this._styles = value;
     } else {

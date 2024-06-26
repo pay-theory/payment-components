@@ -1,4 +1,3 @@
-// @ts-ignore
 import PayTheoryHostedField from '../pay-theory-hosted-field';
 import common from '../../common';
 import {
@@ -41,39 +40,39 @@ export interface IncomingFieldState extends FieldState {
   isConnected?: boolean;
 }
 
-export type TransactDataObject = {
+export interface TransactDataObject {
   amount: number;
   payorInfo: PayorInfo;
   payTheoryData: PayTheoryDataObject;
-  metadata?: { [keys: string | number]: string | number | boolean };
+  metadata?: Record<string | number, string | number | boolean>;
   fee_mode?: typeof common.MERCHANT_FEE | typeof common.SERVICE_FEE;
   confirmation?: boolean;
-};
+}
 
-export type TokenizeDataObject = {
+export interface TokenizeDataObject {
   payorInfo?: PayorInfo;
-  metadata?: { [keys: string | number]: string | number | boolean };
+  metadata?: Record<string | number, string | number | boolean>;
   payorId?: string;
   billingInfo?: BillingInfo;
-};
+}
 
-type ConstructorProps = {
-  fieldTypes: Array<ElementTypes>;
-  requiredValidFields: Array<ElementTypes>;
+interface ConstructorProps {
+  fieldTypes: ElementTypes[];
+  requiredValidFields: ElementTypes[];
   transactingIFrameId: typeof CARD_IFRAME | typeof ACH_IFRAME | typeof CASH_IFRAME;
   stateGroup: Partial<StateObject>;
   transactingType: TransactingType;
-};
+}
 
-type ConnectedMessage = {
+interface ConnectedMessage {
   type: 'pt-static:connected';
   element: ElementTypes;
-};
+}
 
-type ReadyResponse = {
+interface ReadyResponse {
   type: 'READY';
   element: ElementTypes;
-};
+}
 
 class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   // Used to fetch the pt-token attribute to initialize the hosted field
@@ -81,27 +80,27 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   protected _challengeOptions: object | undefined;
 
   // Used to track the metadata that is passed in for a session
-  protected _metadata: { [key: string | number]: string | number | boolean } | undefined;
+  protected _metadata: Record<string | number, string | number | boolean> | undefined;
 
   // Used to track if the transact or tokenize function has been called, and we are awaiting a response
-  protected _initialized: boolean = false;
-  protected _completed: boolean = false;
+  protected _initialized = false;
+  protected _completed = false;
 
   // Used to track if the element was the one that was used when transact was called
   protected _isTransactingElement: boolean = false;
 
   // Used to track if the element is ready to communicate with the transacting iframe
-  protected _isReady: boolean = false;
+  protected _isReady = false;
   protected _readyPort: MessagePort | undefined;
 
   // Used to track if the socket is connected
   protected _isConnected = false;
 
   // List of fields that are a part of this group used to transact for this transactional element
-  protected _fieldTypes: Array<ElementTypes>;
+  protected _fieldTypes: ElementTypes[];
 
   // Used to track what elements are being used for the transaction
-  protected _processedElements: Partial<Array<ElementTypes>> = [];
+  protected _processedElements: Partial<ElementTypes[]> = [];
 
   // Used to track the state of the elements that are being used for the transaction of this transactional element
   protected _stateGroup: Partial<StateObject>;
@@ -110,8 +109,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   protected _error: string | undefined;
 
   // Used to track if the transactional element is valid
-  protected _requiredValidFields: Array<ElementTypes>;
-  protected _isValid: boolean = false;
+  protected _requiredValidFields: ElementTypes[];
+  protected _isValid = false;
 
   // Help to track the transacting type of the transactional element
   protected _transactingIFrameId: typeof CARD_IFRAME | typeof ACH_IFRAME | typeof CASH_IFRAME;
@@ -172,15 +171,15 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       const ptToken = await common.fetchPtToken(this._apiKey!, this._session);
       if (ptToken) {
         this._challengeOptions = ptToken['challengeOptions'];
-        const transactingIFrame = document.getElementById(
-          this._transactingIFrameId,
-        ) as HTMLIFrameElement;
+        const transactingIFrame = document.getElementById(this._transactingIFrameId) as
+          | HTMLIFrameElement
+          | undefined;
         if (transactingIFrame) {
           const message: AsyncMessage = {
             type: type,
             data: {
               token: ptToken['pt-token'],
-              origin: ptToken['origin'],
+              origin: ptToken.origin,
               fields: this._processedElements,
             },
             async: true,
@@ -277,7 +276,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback();
     this._removeEventListeners();
     this._removeHostTokenListener();
     this._removeFeeListener();
@@ -285,8 +283,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   async transact(data: TransactDataObject, element: PayTheoryHostedFieldTransactional) {
-    data.fee_mode = data.fee_mode || this._feeMode || defaultFeeMode;
-    data.metadata = data.metadata || this._metadata;
+    data.fee_mode = data.fee_mode ?? this._feeMode ?? defaultFeeMode;
+    data.metadata = data.metadata ?? this._metadata;
     this._isTransactingElement = true;
     // @ts-ignore
     const response = await common.sendTransactingMessage(element, data.payTheoryData.billing_info);
@@ -325,11 +323,11 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   async cancel(): Promise<true | ErrorResponse> {
-    const transactingIFrame = document.getElementById(
-      this._transactingIFrameId,
-    ) as HTMLIFrameElement;
+    const transactingIFrame = document.getElementById(this._transactingIFrameId) as
+      | HTMLIFrameElement
+      | undefined;
     if (transactingIFrame) {
-      transactingIFrame.contentWindow!.postMessage(
+      transactingIFrame.contentWindow.postMessage(
         {
           type: `pt-static:cancel`,
         },
@@ -389,7 +387,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     };
 
     if (this._fee !== undefined && this._transactingType !== 'cash') {
-      newState.service_fee![`${this._transactingType}_fee`] = this._fee;
+      newState.service_fee[`${this._transactingType}_fee`] = this._fee;
     }
 
     // Loop through all the other transacting elements and add their state to the state group or use the default state
@@ -401,7 +399,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             const transactingElement = element[0] as PayTheoryHostedFieldTransactional;
             // Check for service fee and add it to the state group
             if (transactingElement.fee && transactingElement.transactingType !== 'cash') {
-              newState.service_fee![`${transactingElement.transactingType}_fee`] =
+              newState.service_fee[`${transactingElement.transactingType}_fee`] =
                 transactingElement.fee;
             }
             return transactingElement.stateGroup;
@@ -458,7 +456,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         value.ids.forEach((id: string) => {
           const element = document.getElementsByName(id);
           if (element.length > 0) {
-            const transactingElement = element[0] as PayTheoryHostedFieldTransactional;
+            const transactingElement = element[0] as PayTheoryHostedFieldTransactional | undefined;
             if (!transactingElement?.ready) {
               sendReadyMessage = false;
             }
@@ -493,7 +491,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     this._readyPort = value;
   }
 
-  set metadata(value: { [key: string | number]: string | number | boolean } | undefined) {
+  set metadata(value: Record<string | number, string | number | boolean> | undefined) {
     this._metadata = value;
   }
 
@@ -505,7 +503,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     this._initialized = value;
   }
 
-  set processedElements(value: Partial<Array<ElementTypes>>) {
+  set processedElements(value: Partial<ElementTypes[]>) {
     this._processedElements = value;
   }
 
@@ -527,7 +525,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   set state(value: IncomingFieldState | undefined) {
     // Check to see if the state object has an element property and if it is in the state group
-    if (value && value.element && value.element in this._stateGroup) {
+    if (value?.element in this._stateGroup) {
       // Update the state group with the new state
       this._stateGroup[value.element] = value;
       this.sendStateMessage();
@@ -552,8 +550,8 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         if (fieldsToCheck.includes(curr)) {
           return (
             acc &&
-            this._stateGroup[curr]!.isDirty &&
-            this._stateGroup[curr]!.errorMessages.length === 0
+            this._stateGroup[curr].isDirty &&
+            this._stateGroup[curr].errorMessages.length === 0
           );
         } else {
           return acc;
