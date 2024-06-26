@@ -267,7 +267,7 @@ const isValidPayorInfo = (payorInfo: payorInfo): ErrorResponse | null => {
 const nullifyEmptyStrings = (params: object) => {
   const newParams = JSON.parse(JSON.stringify(params));
   Object.keys(newParams).forEach(key => {
-    const value = newParams[key as keyof typeof newParams];
+    const value = newParams[key as keyof typeof newParams] as unknown;
     if (value === '') {
       // @ts-ignore
       newParams[key as keyof typeof newParams] = null;
