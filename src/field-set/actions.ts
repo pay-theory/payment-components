@@ -89,7 +89,7 @@ export const transact = async (
       const { payorInfo, customerInfo, shippingDetails } = newProps;
       newProps.payorInfo = payorInfo || customerInfo || shippingDetails || {};
       // Adding line for backwards compatability. Default to what was passed into the transact function, then the one passed into create, then the default
-      newProps.feeMode = !!newProps.feeMode
+      newProps.feeMode = newProps.feeMode
         ? newProps.feeMode
         : transactingElement.feeMode
           ? transactingElement.feeMode
