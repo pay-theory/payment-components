@@ -235,13 +235,13 @@ export type ButtonStyle = {
 export type PayTheoryButtonInput = {
   apiKey: string;
   checkoutDetails: CheckoutDetails;
-  style: ButtonStyle;
-  onReady: (ready: true) => void;
-  onClick: () => void;
-  onError: (error: string) => void;
-  onCancel: () => void;
-  onSuccess: (result: SuccessfulTransactionObject) => void;
-  onBarcode: (result: CashBarcodeObject) => void;
+  style?: ButtonStyle;
+  onReady?: (ready: true) => void;
+  onClick?: () => void;
+  onError?: (error: string) => void;
+  onCancel?: () => void;
+  onSuccess?: (result: SuccessfulTransactionObject) => void;
+  onBarcode?: (result: CashBarcodeObject) => void;
 };
 
 export type FieldState = {

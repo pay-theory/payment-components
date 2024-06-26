@@ -25,19 +25,22 @@ const windowListenerHandler = (
   // If payTheory is not set to true on the event then ignore as it is not from one of our listeners
   if (!event.payTheory) return;
 
-  let message = event.data;
+  let message = event.data as string | { type: unknown; element?: ElementTypes };
   if (typeof message !== 'object') {
     try {
       // Parse the message as JSON.
       // All PT messages have either an object or a stringified object as the data
-      message = typeof message === 'string' ? JSON.parse(message) : message;
+      message = JSON.parse(message) as { type: unknown; element?: ElementTypes };
     } catch (e) {
       // Do nothing
       return;
     }
   }
   if (validTarget(message)) {
-    handleMessage(message);
+    const response = handleMessage(message);
+    if (response instanceof Promise) {
+      response.catch((error: string) => handleError(error));
+    }
   }
 };
 
@@ -107,11 +110,11 @@ export const handleCheckoutMessage = (
   };
 };
 
-export type AsyncMessage = {
+export interface AsyncMessage {
   type: string;
   data?: unknown;
   async: true;
-};
+}
 
 export const sendAsyncPostMessage = <T>(message: AsyncMessage, iframe: HTMLIFrameElement) =>
   new Promise<T>(resolve => {
@@ -207,7 +210,7 @@ export const postMessageToHostedField = (id: string, message: object, channel?: 
     if (channel) {
       element.contentWindow.postMessage(message, hostedFieldsEndpoint, [channel]);
     } else {
-      element?.contentWindow?.postMessage(message, hostedFieldsEndpoint);
+      element.contentWindow.postMessage(message, hostedFieldsEndpoint);
     }
   } else {
     console.log('Hosted Field not found');
@@ -242,12 +245,12 @@ export const sendObserverMessage = (
     | CashBarcodeResponse
     | TokenizedPaymentMethodResponse
     | ConfirmationResponse,
-  confirmationResponse: boolean = false,
+  confirmationResponse = false,
 ) => {
   switch (message.type) {
     case ResponseMessageTypes.SUCCESS:
     case ResponseMessageTypes.TOKENIZED:
-    case ResponseMessageTypes.FAILED:
+    case ResponseMessageTypes.FAILED: {
       const messageType = confirmationResponse ? captureString : completeString;
       window.postMessage(
         {
@@ -257,7 +260,8 @@ export const sendObserverMessage = (
         window.location.origin,
       );
       break;
-    case ResponseMessageTypes.CASH:
+    }
+    case ResponseMessageTypes.CASH: {
       window.postMessage(
         {
           type: cashString,
@@ -266,7 +270,8 @@ export const sendObserverMessage = (
         window.location.origin,
       );
       break;
-    case ResponseMessageTypes.CONFIRMATION:
+    }
+    case ResponseMessageTypes.CONFIRMATION: {
       window.postMessage(
         {
           type: confirmString,
@@ -275,9 +280,11 @@ export const sendObserverMessage = (
         window.location.origin,
       );
       break;
-    case ResponseMessageTypes.ERROR:
+    }
+    case ResponseMessageTypes.ERROR: {
       // Do nothing. Error message should have already been sent
       break;
+    }
     default:
       // Do nothing
       break;
