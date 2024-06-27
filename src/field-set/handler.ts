@@ -8,18 +8,16 @@ import payTheoryHostedFieldTransactional, {
   IncomingFieldState,
 } from '../components/pay-theory-hosted-field-transactional';
 
-type relayMessage = {
+interface relayMessage {
   type: string;
   value: string | object;
   element: ElementTypes | 'card-autofill' | 'address-autofill';
-};
+}
 
 //relays state to the hosted fields to tokenize the instrument
 const verifyRelay = (fields: string[], message: relayMessage) => {
   fields.forEach(field => {
-    if (document.getElementsByName(field)[0]) {
-      common.postMessageToHostedField(field, message);
-    }
+    common.postMessageToHostedField(field, message);
   });
 };
 
@@ -81,7 +79,9 @@ export const hostedErrorHandler = (message: {
         const transactingElement = element[0] as payTheoryHostedFieldTransactional;
         if (transactingElement.initialized) {
           transactingElement.initialized = false;
-          transactingElement.resetToken();
+          transactingElement.resetToken().catch(() => {
+            common.handleError('Error resetting token');
+          });
         }
 
         // If the session has expired, set the ready state to false
