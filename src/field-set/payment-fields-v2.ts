@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
-/*global navigator*/
 import common from '../common';
 import * as valid from './validation';
 import {
@@ -24,38 +23,22 @@ import {
   StyleObject,
 } from '../common/pay_theory_types';
 
-type ProcessedObject = {
-  card: {
-    elements: {
-      transacting: processedElement<cardElementIds, PayTheoryHostedFieldTransactional>[];
-      siblings: processedElement<cardElementIds, PayTheoryHostedField>[];
-    };
-    errorCheck: (
-      allElements: (PayTheoryHostedField | PayTheoryHostedFieldTransactional)[],
-      transacting: PayTheoryHostedFieldTransactional[],
-    ) => string | false;
+interface ProcessedObjectValue<T extends cashElementIds | cardElementIds | achElementIds> {
+  elements: {
+    transacting: processedElement<T, PayTheoryHostedFieldTransactional>[];
+    siblings: processedElement<T, PayTheoryHostedField>[];
   };
-  ach: {
-    elements: {
-      transacting: processedElement<achElementIds, PayTheoryHostedFieldTransactional>[];
-      siblings: processedElement<achElementIds, PayTheoryHostedField>[];
-    };
-    errorCheck: (
-      allElements: (PayTheoryHostedField | PayTheoryHostedFieldTransactional)[],
-      transacting: PayTheoryHostedFieldTransactional[],
-    ) => string | false;
-  };
-  cash: {
-    elements: {
-      transacting: processedElement<cashElementIds, PayTheoryHostedFieldTransactional>[];
-      siblings: processedElement<cashElementIds, PayTheoryHostedField>[];
-    };
-    errorCheck: (
-      allElements: (PayTheoryHostedField | PayTheoryHostedFieldTransactional)[],
-      transacting: PayTheoryHostedFieldTransactional[],
-    ) => string | false;
-  };
-};
+  errorCheck: (
+    allElements: (PayTheoryHostedField | PayTheoryHostedFieldTransactional)[],
+    transacting: PayTheoryHostedFieldTransactional[],
+  ) => string | false;
+}
+
+interface ProcessedObject {
+  card: ProcessedObjectValue<cardElementIds>;
+  ach: ProcessedObjectValue<achElementIds>;
+  cash: ProcessedObjectValue<cashElementIds>;
+}
 
 const mountProcessedElements = async (props: {
   processed: ProcessedObject;
@@ -63,7 +46,7 @@ const mountProcessedElements = async (props: {
   styles: StyleObject;
   placeholders: PlaceholderObject;
   session: string | undefined;
-  metadata: { [key: string | number]: string | number | boolean };
+  metadata: Record<string | number, string | number | boolean>;
   removeEventListeners: () => void;
   feeMode: typeof MERCHANT_FEE | typeof SERVICE_FEE | undefined;
   amount: number | undefined;
@@ -81,15 +64,18 @@ const mountProcessedElements = async (props: {
     amount,
   } = props;
   for (const value of Object.values(processed)) {
-    const transactingElements = value.elements.transacting.map(element => element.frame);
-    const siblingsElements = value.elements.siblings.map(element => element.frame);
+    const typedValue = value as ProcessedObjectValue<
+      cashElementIds | cardElementIds | achElementIds
+    >;
+    const transactingElements = typedValue.elements.transacting.map(element => element.frame);
+    const siblingsElements = typedValue.elements.siblings.map(element => element.frame);
     const allElements = [...transactingElements, ...siblingsElements];
     if (allElements.length > 0) {
-      const error = value.errorCheck(allElements, transactingElements);
+      const error = typedValue.errorCheck(allElements, transactingElements);
       if (error) {
         return common.handleTypedError(ErrorType.FIELD_ERROR, error);
       }
-      value.elements.siblings.forEach(sibling => {
+      typedValue.elements.siblings.forEach(sibling => {
         const container = document.getElementById(String(sibling.containerId));
         sibling.frame.styles = styles;
         sibling.frame.placeholders = placeholders;
@@ -98,7 +84,7 @@ const mountProcessedElements = async (props: {
           container.appendChild(sibling.frame);
         }
       });
-      value.elements.transacting.forEach(element => {
+      typedValue.elements.transacting.forEach(element => {
         const container = document.getElementById(String(element.containerId));
         element.frame.apiKey = apiKey;
         element.frame.styles = styles;
@@ -108,8 +94,8 @@ const mountProcessedElements = async (props: {
         element.frame.feeMode = feeMode;
         element.frame.amount = amount;
         element.frame.session = session;
-        const processedElementTypes = value.elements.siblings.map(sibling => sibling.type);
-        const transactingElementType = value.elements.transacting.map(
+        const processedElementTypes = typedValue.elements.siblings.map(sibling => sibling.type);
+        const transactingElementType = typedValue.elements.transacting.map(
           transacting => transacting.type,
         );
         element.frame.processedElements = [...processedElementTypes, ...transactingElementType];
