@@ -3,15 +3,13 @@ import common from '../../common';
 
 class PayTheoryOverlay extends HTMLElement {
   protected _token: string | undefined;
-  protected _onFocus: () => void;
-  protected _onCancel: () => void;
-  protected _clearFocusListener: () => void = () => {};
-  protected _clearCancelListener: () => void = () => {};
+  protected _onFocus: (() => void) | undefined;
+  protected _onCancel: (() => void) | undefined;
+  protected _clearFocusListener: (() => void) | undefined;
+  protected _clearCancelListener: (() => void) | undefined;
 
   constructor() {
     super();
-    this._onFocus = () => {};
-    this._onCancel = () => {};
   }
 
   defineOverlay() {
@@ -28,17 +26,21 @@ class PayTheoryOverlay extends HTMLElement {
     // Adding the event listeners for the overlay
     this._clearCancelListener = common.handleHostedFieldMessage(
       common.overlayCancelTypeMessage,
-      this._onCancel,
+      () => {
+        if (this._onCancel) this._onCancel();
+      },
     );
     this._clearFocusListener = common.handleHostedFieldMessage(
       common.overlayRelaunchTypeMessage,
-      this._onFocus,
+      () => {
+        if (this._onFocus) this._onFocus();
+      },
     );
   }
 
   disconnectedCallback() {
-    this._clearCancelListener();
-    this._clearFocusListener();
+    if (this._clearCancelListener) this._clearCancelListener();
+    if (this._clearFocusListener) this._clearFocusListener();
   }
 
   // Only want to allow event listeners to be set from outside the class
