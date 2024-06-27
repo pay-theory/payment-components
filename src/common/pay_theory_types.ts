@@ -1,5 +1,5 @@
-// noinspection JSUnusedGlobalSymbols
-// eslint-disable no-unused-vars
+/* eslint-disable no-unused-vars */
+/* noinspection JSUnusedGlobalSymbols */
 
 import { defaultElementIds, ElementTypes, MERCHANT_FEE, SERVICE_FEE } from './data';
 
