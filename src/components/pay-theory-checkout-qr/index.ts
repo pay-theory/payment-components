@@ -14,10 +14,6 @@ class PayTheoryCheckoutQR extends HTMLElement {
   protected _clearSuccessListener: (() => void) | undefined;
   protected _clearErrorListener: (() => void) | undefined;
 
-  constructor() {
-    super();
-  }
-
   defineQR() {
     // Creating the iFrame for the Button
     const qrFrame = document.createElement('iframe');

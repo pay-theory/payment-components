@@ -142,7 +142,7 @@ export interface ErrorResponse {
 export interface TokenizeProps {
   payorInfo?: PayorInfo;
   payorId?: string;
-  metadata?: { [keys: string | number]: string | number | boolean };
+  metadata?: Record<string | number, string | number | boolean>;
   billingInfo?: BillingInfo;
 }
 
@@ -151,7 +151,7 @@ export interface TransactProps {
   payorInfo?: PayorInfo;
   billingInfo?: BillingInfo;
   payorId?: string;
-  metadata?: { [keys: string | number]: string | number | boolean };
+  metadata?: Record<string | number, string | number | boolean>;
   feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE;
   fee?: number;
   confirmation?: boolean;

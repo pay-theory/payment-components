@@ -235,7 +235,7 @@ const payTheoryFields = async (inputParams: PayTheoryPaymentFieldsInput) =>
       const result = initializeFields(inputParams, channel.port2);
       if (result) resolve(result);
     } else {
-      document.addEventListener('DOMContentLoaded', async () => {
+      document.addEventListener('DOMContentLoaded', () => {
         const result = initializeFields(inputParams, channel.port2);
         if (result) resolve(result);
       });
