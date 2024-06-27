@@ -3,13 +3,19 @@ import common from '../common';
 import { handleTypedError } from '../common/message';
 import PayTheoryHostedField from '../components/pay-theory-hosted-field';
 import {
+  BillingInfo,
   ErrorResponse,
   ErrorType,
+  Level3DataSummary,
   PayorInfo,
   TaxIndicatorType,
   HealthExpenseType,
 } from '../common/pay_theory_types';
-import { ModifiedCheckoutDetails, ModifiedTransactProps } from '../common/format';
+import {
+  ModifiedCheckoutDetails,
+  ModifiedTransactProps,
+  PayTheoryDataObject,
+} from '../common/format';
 import { ElementTypes } from '../common/data';
 
 const findField =
@@ -26,8 +32,8 @@ const findAccountType = findField('account-type');
 const findAccountName = findField('account-name');
 
 // partner mode is used to indicate migration builds
-const checkApiKey = (key: any) => {
-  if (!validate(key, 'string')) {
+const checkApiKey = (key: unknown) => {
+  if (!validate<string>(key, 'string')) {
     throw Error(`Valid API Key not found. Please provide a valid API Key`);
   }
   const keyParts = key.split('-');
@@ -42,25 +48,28 @@ const checkApiKey = (key: any) => {
   }
 };
 
-const validate = (value: any, type: string) => {
-  return typeof value === type && value;
+const validate = <T>(value: unknown, type: string): value is T => {
+  return typeof value === type && Boolean(value);
 };
 
-const checkFeeMode = (mode: string) => {
-  if (!validate(mode, 'string') || ![common.MERCHANT_FEE, common.SERVICE_FEE].includes(mode)) {
+const checkFeeMode = (mode: unknown) => {
+  if (
+    !validate<string>(mode, 'string') ||
+    ![common.MERCHANT_FEE, common.SERVICE_FEE].includes(mode)
+  ) {
     console.error(
       `Fee Mode should be either 'merchant_fee' or 'service_fee' which are also available as constants at window.paytheory.MERCHANT_FEE and window.paytheory.SERVICE_FEE`,
     );
   }
 };
 
-const checkMetadata = (metadata: any) => {
+const checkMetadata = (metadata: unknown) => {
   if (!validate(metadata, 'object')) {
     throw Error(`Metadata should be a JSON Object`);
   }
 };
 
-const checkStyles = (styles: any) => {
+const checkStyles = (styles: unknown) => {
   if (!validate(styles, 'object')) {
     throw Error(
       `Styles should be a JSON Object. An example of the object is at https://github.com/pay-theory/payment-components`,
@@ -68,7 +77,7 @@ const checkStyles = (styles: any) => {
   }
 };
 
-const checkAmount = (amount: any) => {
+const checkAmount = (amount: unknown) => {
   const error = isValidAmount(amount);
 
   if (error) {
@@ -76,7 +85,13 @@ const checkAmount = (amount: any) => {
   }
 };
 
-const checkInitialParams = (key: any, mode: any, metadata: any, styles: any, amount: any) => {
+const checkInitialParams = (
+  key: unknown,
+  mode: unknown,
+  metadata: unknown,
+  styles: unknown,
+  amount: unknown,
+) => {
   checkApiKey(key);
   if (mode) checkFeeMode(mode);
   checkMetadata(metadata);
@@ -269,9 +284,9 @@ const nullifyEmptyStrings = (params: object) => {
 const formatPayorObject = (payorInfo: payorInfo): PayorInfo => {
   // Make a deep copy of the payorInfo object
   let payorCopy = JSON.parse(JSON.stringify(payorInfo));
-  // Nullify any empty strings
+  // Nullify unknown empty strings
   payorCopy = nullifyEmptyStrings(payorCopy);
-  // Strip out any non-numeric characters from the phone number
+  // Strip out unknown non-numeric characters from the phone number
   if (payorCopy.phone) {
     payorCopy.phone = payorCopy.phone.replace(/\D/g, '');
   }
@@ -279,15 +294,15 @@ const formatPayorObject = (payorInfo: payorInfo): PayorInfo => {
 };
 
 const isvalidTransactParams = (
-  amount: any,
-  payorInfo: any,
-  metadata: any,
+  amount: unknown,
+  payorInfo: unknown,
+  metadata: unknown,
 ): ErrorResponse | null => {
   //Make sure that we have the base required settings
   if (
-    !validate(amount, 'number') ||
-    !validate(metadata, 'object') ||
-    !validate(payorInfo, 'object')
+    !validate<number>(amount, 'number') ||
+    !validate<object>(metadata, 'object') ||
+    !validate<object>(payorInfo, 'object')
   ) {
     const missing = `${!validate(amount, 'number') ? 'amount ' : ''}${!validate(metadata, 'object') ? 'metadata ' : ''}${!validate(payorInfo, 'object') ? 'payorInfo ' : ''}`;
     return handleTypedError(
@@ -301,7 +316,7 @@ const isvalidTransactParams = (
   return null;
 };
 
-const isValidTokenizeParams = (payorInfo: any, metadata: any): ErrorResponse | null => {
+const isValidTokenizeParams = (payorInfo: unknown, metadata: unknown): ErrorResponse | null => {
   //Make sure that we have the base required settings
   if (!validate(metadata, 'object') || !validate(payorInfo, 'object')) {
     const missing = `${!validate(metadata, 'object') ? 'metadata ' : ''}${!validate(payorInfo, 'object') ? 'payorInfo ' : ''}`;
@@ -313,8 +328,8 @@ const isValidTokenizeParams = (payorInfo: any, metadata: any): ErrorResponse | n
   return null;
 };
 
-const isValidAmount = (amount: any): ErrorResponse | null => {
-  if (!validate(amount, 'number')) {
+const isValidAmount = (amount: unknown): ErrorResponse | null => {
+  if (!validate<number>(amount, 'number')) {
     return handleTypedError(ErrorType.INVALID_PARAM, 'amount must be a positive integer');
   }
   if (amount % 1 !== 0) {
@@ -323,14 +338,14 @@ const isValidAmount = (amount: any): ErrorResponse | null => {
   return null;
 };
 
-const isValidDeviceId = (deviceId: any): ErrorResponse | null => {
-  if (!validate(deviceId, 'string')) {
-    return handleTypedError(ErrorType.INVALID_PARAM, 'deviceId is required and must be a string');
-  }
-  return null;
-};
+// const isValidDeviceId = (deviceId: unknown): ErrorResponse | null => {
+//   if (!validate(deviceId, 'string')) {
+//     return handleTypedError(ErrorType.INVALID_PARAM, 'deviceId is required and must be a string');
+//   }
+//   return null;
+// };
 
-const isValidPayorDetails = (payorInfo: any, payorId: any): ErrorResponse | null => {
+const isValidPayorDetails = (payorInfo: unknown, payorId: unknown): ErrorResponse | null => {
   const keys = Object.keys(payorInfo);
   // Verify both id and info aren't passed in
   if (payorId && keys.length > 0) {
@@ -345,15 +360,15 @@ const isValidPayorDetails = (payorInfo: any, payorId: any): ErrorResponse | null
   return null;
 };
 
-const isValidInvoiceAndRecurringId = (payTheoryInfo: any): ErrorResponse | null => {
-  const { invoiceId, recurringId } = payTheoryInfo;
-  if (invoiceId && !validate(invoiceId, 'string')) {
+const isValidInvoiceAndRecurringId = (payTheoryInfo: PayTheoryDataObject): ErrorResponse | null => {
+  const { invoice_id, recurring_id } = payTheoryInfo;
+  if (invoice_id && !validate(invoice_id, 'string')) {
     return handleTypedError(ErrorType.INVALID_PARAM, 'invoiceId must be a string');
   }
-  if (recurringId && !validate(recurringId, 'string')) {
+  if (recurring_id && !validate(recurring_id, 'string')) {
     return handleTypedError(ErrorType.INVALID_PARAM, 'recurringId must be a string');
   }
-  if (invoiceId && recurringId) {
+  if (invoice_id && recurring_id) {
     return handleTypedError(
       ErrorType.INVALID_PARAM,
       'invoiceId and recurringId cannot both be present',
@@ -362,7 +377,7 @@ const isValidInvoiceAndRecurringId = (payTheoryInfo: any): ErrorResponse | null 
   return null;
 };
 
-const isValidFeeMode = (feeMode: any): ErrorResponse | null => {
+const isValidFeeMode = (feeMode: string): ErrorResponse | null => {
   if (![common.MERCHANT_FEE, common.SERVICE_FEE].includes(feeMode)) {
     return handleTypedError(
       ErrorType.INVALID_PARAM,
@@ -372,34 +387,36 @@ const isValidFeeMode = (feeMode: any): ErrorResponse | null => {
   return null;
 };
 
-const isValidFeeAmount = (fee: any): ErrorResponse | null => {
+const isValidFeeAmount = (fee: unknown): ErrorResponse | null => {
   if ((fee || typeof fee === 'number') && !validate(fee, 'number')) {
     return handleTypedError(ErrorType.INVALID_PARAM, 'fee must be a positive integer');
   }
   return null;
 };
 
-const isValidBillingInfo = (billingInfo: any): ErrorResponse | null => {
-  if (billingInfo && !validate(billingInfo, 'object')) {
-    return handleTypedError(ErrorType.INVALID_PARAM, 'billingInfo must be an object');
-  }
-  if (billingInfo && billingInfo.address && !validate(billingInfo.address, 'object')) {
-    return handleTypedError(ErrorType.INVALID_PARAM, 'billingInfo.address must be an object');
-  }
-  if (billingInfo && billingInfo.address && !validate(billingInfo.address.postal_code, 'string')) {
-    return handleTypedError(
-      ErrorType.INVALID_PARAM,
-      'billingInfo.address.postal_code is required when passing in billingInfo',
-    );
+const isValidBillingInfo = (billingInfo: unknown): ErrorResponse | null => {
+  if (billingInfo) {
+    if (!validate<BillingInfo>(billingInfo, 'object')) {
+      return handleTypedError(ErrorType.INVALID_PARAM, 'billingInfo must be an object');
+    }
+    if (billingInfo.address && !validate(billingInfo.address, 'object')) {
+      return handleTypedError(ErrorType.INVALID_PARAM, 'billingInfo.address must be an object');
+    }
+    if (billingInfo.address && !validate(billingInfo.address.postal_code, 'string')) {
+      return handleTypedError(
+        ErrorType.INVALID_PARAM,
+        'billingInfo.address.postal_code is required when passing in billingInfo',
+      );
+    }
   }
   return null;
 };
 
-const isValidL3DataSummary = (l3DataSummary: any): ErrorResponse | null => {
+const isValidL3DataSummary = (l3DataSummary: unknown): ErrorResponse | null => {
   // If null or undefined then return null
   if (l3DataSummary === null || l3DataSummary === undefined) return null;
 
-  if (!validate(l3DataSummary, 'object')) {
+  if (!validate<Level3DataSummary>(l3DataSummary, 'object')) {
     return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary must be an object');
   }
 
@@ -459,11 +476,11 @@ const isValidL3DataSummary = (l3DataSummary: any): ErrorResponse | null => {
   return null;
 };
 
-const isValidHealthExpenseType = (healthExpenseType: any): ErrorResponse | null => {
+const isValidHealthExpenseType = (healthExpenseType: unknown): ErrorResponse | null => {
   if (healthExpenseType === null || healthExpenseType === undefined) return null;
-  if (!validate(healthExpenseType, 'string')) {
+  if (!validate<string>(healthExpenseType, 'string')) {
     return handleTypedError(ErrorType.INVALID_PARAM, 'healthExpenseType must be a string');
-  }
+  } //@ts-expect-error
   if (!Object.values(HealthExpenseType).includes(healthExpenseType)) {
     return handleTypedError(
       ErrorType.INVALID_PARAM,
@@ -475,9 +492,9 @@ const isValidHealthExpenseType = (healthExpenseType: any): ErrorResponse | null 
 };
 
 const validateHostedCheckoutParams = (
-  callToAction: any,
-  acceptedPaymentMethods: any,
-  paymentName: any,
+  callToAction: string,
+  acceptedPaymentMethods: string,
+  paymentName: unknown,
 ): ErrorResponse | null => {
   if (callToAction && !common.CTA_TYPES.includes(callToAction)) {
     return handleTypedError(
@@ -533,7 +550,7 @@ const validTransactionParams = (
   return isValidFeeAmount(payTheoryData?.fee);
 };
 
-const validQRSize = (size: any): ErrorResponse | null => {
+const validQRSize = (size: unknown): ErrorResponse | null => {
   if (!validate(size, 'number')) {
     return handleTypedError(ErrorType.INVALID_PARAM, 'size must be a number');
   }
@@ -550,7 +567,6 @@ export {
   formatPayorObject,
   validate,
   isValidAmount,
-  isValidDeviceId,
   isvalidTransactParams,
   isValidTokenizeParams,
   isValidPayorInfo,
