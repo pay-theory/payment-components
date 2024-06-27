@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+
 /* eslint-disable no-empty-function */
 
 import PayTheoryHostedField from '../pay-theory-hosted-field';
@@ -173,7 +174,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     try {
       const ptToken = await common.fetchPtToken(this._apiKey!, this._session);
       if (ptToken) {
-        this._challengeOptions = ptToken['challengeOptions'];
+        this._challengeOptions = ptToken.challengeOptions;
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as
           | HTMLIFrameElement
           | undefined;
