@@ -18,8 +18,8 @@ export default async (inputParams: PayTheoryQRInput) => {
     ? modifiedCheckoutDetails.feeMode
     : common.defaultFeeMode;
   const { paymentName, callToAction, acceptedPaymentMethods } = modifiedCheckoutDetails;
-  let removeErrorListener = () => {};
-  let removeHostedErrorListener = () => {};
+  let removeErrorListener: (() => void) | null = null;
+  let removeHostedErrorListener: (() => void) | null = null;
   // Putting error listener on the window and hosted button so that it can catch errors while it readies the session
   if (onError) {
     removeErrorListener = common.errorObserver(onError);
@@ -47,8 +47,8 @@ export default async (inputParams: PayTheoryQRInput) => {
   // Adding logic to onReady to receive the session data for redirecting to the hosted checkout page
   const onReadyWrapper = () => {
     // Remove the error listener because we added it to the button iFrame and do not want it to be called twice
-    removeErrorListener();
-    removeHostedErrorListener();
+    if (removeErrorListener) removeErrorListener();
+    if (removeHostedErrorListener) removeHostedErrorListener();
     if (onReady) {
       onReady(true);
     }

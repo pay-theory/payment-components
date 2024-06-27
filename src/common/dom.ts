@@ -60,7 +60,7 @@ const processContainer = <
   elements: T,
   type: keyof T,
 ): processedElement<T, F> | string => {
-  const contained = document.getElementById(`${elements[type]}-tag-frame`);
+  const contained = document.getElementById(`${elements[type] as string}-tag-frame`);
   if (contained === null) {
     const frameType = webComponentMap[type as ElementTypes];
     const frame = addFrame(frameType, elements[type] as string) as F;

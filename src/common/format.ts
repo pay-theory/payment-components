@@ -60,12 +60,12 @@ export const parseInputParams = (
   const inputCopy = JSON.parse(JSON.stringify(inputParams)) as ModifiedTransactProps;
   inputCopy.payTheoryData = {
     account_code: inputParams.accountCode ?? (metadata['pay-theory-account-code'] as string),
-    billing_info: (inputParams as TransactProps).billingInfo as BillingInfo | undefined,
-    fee: (inputParams as TransactProps).fee as number | undefined,
-    invoice_id: invoiceId as string | undefined,
+    billing_info: (inputParams as TransactProps).billingInfo,
+    fee: (inputParams as TransactProps).fee,
+    invoice_id: invoiceId,
     payment_parameters:
       inputParams.paymentParameters ?? (metadata['payment-parameters-name'] as string),
-    payor_id: payorId as string | undefined,
+    payor_id: payorId,
     receipt_description:
       (inputParams as TransactProps).receiptDescription ??
       (metadata['pay-theory-receipt-description'] as string),

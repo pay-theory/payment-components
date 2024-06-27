@@ -20,10 +20,6 @@ class PayTheoryCheckoutButton extends HTMLElement {
   protected _buttonBarcode: string | undefined;
   protected _session: string | undefined;
 
-  constructor() {
-    super();
-  }
-
   defineButton() {
     // Creating the iFrame for the Button
     const buttonFrame = document.createElement('iframe');
