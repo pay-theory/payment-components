@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-empty-function */
+
 import PayTheoryHostedField from '../pay-theory-hosted-field';
 import common from '../../common';
 import {
@@ -87,7 +90,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   protected _completed = false;
 
   // Used to track if the element was the one that was used when transact was called
-  protected _isTransactingElement: boolean = false;
+  protected _isTransactingElement = false;
 
   // Used to track if the element is ready to communicate with the transacting iframe
   protected _isReady = false;
@@ -249,30 +252,33 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     }
   }
 
-  async connectedCallback() {
+  connectedCallback() {
     // Set up a listener for the hosted field to message saying it is ready for the pt-token to be sent
     this._removeHostTokenListener = common.handleHostedFieldMessage(
-      // @ts-ignore
       (event: { type: unknown; element: ElementTypes }) => {
         return (
           event.type === 'pt-static:pt_token_ready' &&
           this._transactingIFrameId.includes(event.element)
         );
       },
-      this.sendPtToken,
+      () => this.sendPtToken(),
     );
 
     this._removeFeeListener = common.handleHostedFieldMessage(
       (event: { type: unknown }) => event.type === 'pt-static:calculated_fee',
-      this.handleFeeMessage,
+      (message: {
+        type: string;
+        body: { fee: number; payment_type: string };
+        field: ElementTypes;
+      }) => this.handleFeeMessage(message),
     );
 
     this._removeFeeCalcReconnect = common.handleHostedFieldMessage(
       (event: { type: unknown }) => event.type === 'pt-static:fee_calc_reconnect',
-      this.handleFeeCalcReconnect,
+      (message: { type: string; field: ElementTypes }) => this.handleFeeCalcReconnect(message),
     );
 
-    await super.connectedCallback();
+    super.connectedCallback();
   }
 
   disconnectedCallback() {
@@ -286,7 +292,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     data.fee_mode = data.fee_mode ?? this._feeMode ?? defaultFeeMode;
     data.metadata = data.metadata ?? this._metadata;
     this._isTransactingElement = true;
-    // @ts-ignore
     const response = await common.sendTransactingMessage(element, data.payTheoryData.billing_info);
     if (response.type === ERROR_STEP) {
       this._isTransactingElement = false;
@@ -334,7 +339,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         common.hostedFieldsEndpoint,
       );
       const result = await this.resetToken();
-      if (result) {
+      if (result.type === ResponseMessageTypes.READY) {
         this._isTransactingElement = false;
         this.initialized = false;
         // Successfully sent the cancel message and reset the token
@@ -355,7 +360,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   ): Promise<TokenizedPaymentMethodMessage | ErrorMessage> {
     this._isTransactingElement = true;
     this._initialized = true;
-    // @ts-ignore
     const response = await common.sendTransactingMessage(element, data.billingInfo);
     if (response.type === ERROR_STEP) {
       this._isTransactingElement = false;
