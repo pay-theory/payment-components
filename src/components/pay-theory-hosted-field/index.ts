@@ -1,6 +1,8 @@
 /* global HTMLElement */
+/* eslint-disable no-unused-vars */
+
 import common from '../../common';
-//@ts-expect-error
+//@ts-expect-error - TS doesn't know about DOMPurify
 import DOMPurify from 'dompurify';
 import { ElementTypes } from '../../common/data';
 import { StyleObject } from '../../common/pay_theory_types';

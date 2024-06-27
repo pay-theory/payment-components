@@ -1,4 +1,5 @@
 // noinspection JSUnusedGlobalSymbols
+// eslint-disable no-unused-vars
 
 import { defaultElementIds, ElementTypes, MERCHANT_FEE, SERVICE_FEE } from './data';
 
@@ -108,7 +109,7 @@ export interface TokenizedPaymentMethodObject {
   brand: string;
   expiration: string;
   payment_type: 'card' | 'ach';
-  metadata: { [keys: string | number]: string | number | boolean };
+  metadata: Record<string | number, string | number | boolean>;
 }
 
 export interface TokenizedPaymentMethodResponse {

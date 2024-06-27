@@ -154,7 +154,6 @@ const findAchError = (processedElements: PayTheoryHostedField[]): string | false
     return false;
   }
 
-  // @ts-ignore
   achCheck.forEach(obj => {
     if (processedElements.reduce(obj.check, false) === false) {
       return obj.error;
@@ -213,7 +212,7 @@ const validatePhone = (phone: string) => {
   return stripped.length >= 5 && stripped.length <= 15;
 };
 
-type payorInfo = {
+interface payorInfo {
   same_as_billing?: boolean;
   email?: string;
   phone?: string;
@@ -227,7 +226,7 @@ type payorInfo = {
     postal_code?: string;
     country?: string;
   };
-};
+}
 
 const isValidPayorInfo = (payorInfo: payorInfo): ErrorResponse | null => {
   if (!validate(payorInfo, 'object')) {
@@ -268,7 +267,7 @@ const isValidPayorInfo = (payorInfo: payorInfo): ErrorResponse | null => {
 };
 
 const nullifyEmptyStrings = (params: object) => {
-  const newParams = JSON.parse(JSON.stringify(params));
+  const newParams: object = JSON.parse(JSON.stringify(params));
   Object.keys(newParams).forEach(key => {
     const value = newParams[key as keyof typeof newParams] as unknown;
     if (value === '') {
@@ -281,9 +280,9 @@ const nullifyEmptyStrings = (params: object) => {
   return newParams;
 };
 
-const formatPayorObject = (payorInfo: payorInfo): PayorInfo => {
+const formatPayorObject = (payorInfo: PayorInfo): PayorInfo => {
   // Make a deep copy of the payorInfo object
-  let payorCopy = JSON.parse(JSON.stringify(payorInfo));
+  let payorCopy: PayorInfo = JSON.parse(JSON.stringify(payorInfo));
   // Nullify unknown empty strings
   payorCopy = nullifyEmptyStrings(payorCopy);
   // Strip out unknown non-numeric characters from the phone number
@@ -480,7 +479,7 @@ const isValidHealthExpenseType = (healthExpenseType: unknown): ErrorResponse | n
   if (healthExpenseType === null || healthExpenseType === undefined) return null;
   if (!validate<string>(healthExpenseType, 'string')) {
     return handleTypedError(ErrorType.INVALID_PARAM, 'healthExpenseType must be a string');
-  } //@ts-expect-error
+  } //@ts-expect-error - healthExpenseType is a string and want to compare to all values of the enum which are also strings
   if (!Object.values(HealthExpenseType).includes(healthExpenseType)) {
     return handleTypedError(
       ErrorType.INVALID_PARAM,
@@ -529,7 +528,7 @@ const validTransactionParams = (
   error = isValidPayorInfo(payorInfo);
   if (error) return error;
   // validate the payorId
-  error = isValidPayorDetails(payorInfo, payTheoryData?.payor_id);
+  error = isValidPayorDetails(payorInfo, payTheoryData.payor_id);
   if (error) return error;
   // validate the fee mode
   error = isValidFeeMode(feeMode);
@@ -547,7 +546,7 @@ const validTransactionParams = (
   error = isValidHealthExpenseType(props.healthExpenseType);
   if (error) return error;
   // validate the fee
-  return isValidFeeAmount(payTheoryData?.fee);
+  return isValidFeeAmount(payTheoryData.fee);
 };
 
 const validQRSize = (size: unknown): ErrorResponse | null => {
