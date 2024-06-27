@@ -103,7 +103,7 @@ export const processElements = <ET extends cashElementIds | cardElementIds | ach
         if (typeof result === 'string') {
           error = result;
         } else {
-          //@ts-expect-error
+          //@ts-expect-error - result is not a string
           processed[key].push(result);
         }
       }

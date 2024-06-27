@@ -171,7 +171,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     type: `pt-static:connection_token` | `pt-static:reset_host`,
   ): Promise<ErrorResponse | ReadyResponse> {
     try {
-      const ptToken = await common.fetchPtToken(this._apiKey!, this._session);
+      const ptToken = await common.fetchPtToken(this._apiKey ?? '', this._session);
       if (ptToken) {
         this._challengeOptions = ptToken.challengeOptions;
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as
@@ -270,7 +270,9 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         type: string;
         body: { fee: number; payment_type: string };
         field: ElementTypes;
-      }) => this.handleFeeMessage(message),
+      }) => {
+        this.handleFeeMessage(message);
+      },
     );
 
     this._removeFeeCalcReconnect = common.handleHostedFieldMessage(

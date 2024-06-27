@@ -112,7 +112,7 @@ export default async (inputParams: PayTheoryButtonInput) => {
     // Remove the error listener because we added it to the button iFrame and do not want it to be called twice
     removeErrorListener();
     removeHostedErrorListener();
-    if (data && data.sessionId) {
+    if (data.sessionId) {
       const buttonElement = getCheckoutButton();
       buttonElement.session = data.sessionId;
     }

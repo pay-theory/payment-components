@@ -282,7 +282,7 @@ const nullifyEmptyStrings = (params: object) => {
 
 const formatPayorObject = (payorInfo: PayorInfo): PayorInfo => {
   // Make a deep copy of the payorInfo object
-  let payorCopy: PayorInfo = JSON.parse(JSON.stringify(payorInfo));
+  let payorCopy = structuredClone(payorInfo);
   // Nullify unknown empty strings
   payorCopy = nullifyEmptyStrings(payorCopy);
   // Strip out unknown non-numeric characters from the phone number

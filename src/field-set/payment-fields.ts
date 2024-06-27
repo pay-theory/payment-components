@@ -8,7 +8,7 @@ export default async (
   apiKey: string,
   legacy: undefined, // this used to be client id, left in place to preserve backwards compatibility
   styles: StyleObject = common.defaultStyles,
-  sessionMetadata: { [key: string | number]: string | number | boolean } = {},
+  sessionMetadata: Record<string | number, string | number | boolean> = {},
   fee_mode: typeof MERCHANT_FEE | typeof SERVICE_FEE = common.defaultFeeMode,
 ) => {
   const mount = async (
@@ -30,10 +30,12 @@ export default async (
     });
   };
 
-  const initTransaction = (amount: number, payorInfo: PayorInfo, confirmation: boolean = false) => {
+  const initTransaction = (amount: number, payorInfo: PayorInfo, confirmation = false) => {
     console.warn('initTransaction is deprecated. Please use transact instead.');
     //Passing in the session metadata from create because those used to be the only metadata that were passed in
-    transact({ amount, payorInfo, confirmation, feeMode: fee_mode });
+    transact({ amount, payorInfo, confirmation, feeMode: fee_mode }).catch(error => {
+      console.error(error);
+    });
   };
 
   return common.generateReturn(mount, initTransaction);

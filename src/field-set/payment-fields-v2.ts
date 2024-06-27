@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import common from '../common';
 import * as valid from './validation';
@@ -40,7 +40,7 @@ interface ProcessedObject {
   cash: ProcessedObjectValue<cashElementIds>;
 }
 
-const mountProcessedElements = async (props: {
+const mountProcessedElements = (props: {
   processed: ProcessedObject;
   apiKey: string;
   styles: StyleObject;
@@ -51,7 +51,7 @@ const mountProcessedElements = async (props: {
   feeMode: typeof MERCHANT_FEE | typeof SERVICE_FEE | undefined;
   amount: number | undefined;
   port: MessagePort;
-}) => {
+}): ErrorResponse | null => {
   const {
     processed,
     apiKey,
@@ -106,9 +106,13 @@ const mountProcessedElements = async (props: {
       });
     }
   }
+  return null;
 };
 
-const initializeFields = async (props: PayTheoryPaymentFieldsInput, port: MessagePort) => {
+const initializeFields = (
+  props: PayTheoryPaymentFieldsInput,
+  port: MessagePort,
+): ErrorResponse | null => {
   const {
     apiKey,
     styles = common.defaultStyles,
@@ -200,7 +204,7 @@ const initializeFields = async (props: PayTheoryPaymentFieldsInput, port: Messag
     },
   };
   // Mount the elements to the DOM
-  const result = await mountProcessedElements({
+  return mountProcessedElements({
     processed,
     apiKey,
     styles,
@@ -212,10 +216,6 @@ const initializeFields = async (props: PayTheoryPaymentFieldsInput, port: Messag
     amount,
     port,
   });
-
-  if (result) {
-    return result;
-  }
 };
 
 const payTheoryFields = async (inputParams: PayTheoryPaymentFieldsInput) =>
@@ -232,12 +232,11 @@ const payTheoryFields = async (inputParams: PayTheoryPaymentFieldsInput) =>
     };
 
     if (document.readyState === 'complete') {
-      initializeFields(inputParams, channel.port2).then(result => {
-        if (result) resolve(result);
-      });
+      const result = initializeFields(inputParams, channel.port2);
+      if (result) resolve(result);
     } else {
       document.addEventListener('DOMContentLoaded', async () => {
-        const result = await initializeFields(inputParams, channel.port2);
+        const result = initializeFields(inputParams, channel.port2);
         if (result) resolve(result);
       });
     }

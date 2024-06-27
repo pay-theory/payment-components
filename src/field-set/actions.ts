@@ -126,9 +126,12 @@ export const transact = async (
         updateElementFromAction(parsedResponse, transactingElement);
         sendObserverMessage(parsedResponse);
         return parsedResponse;
-      } catch (e) {
-        const errorString: string = e?.error || e?.message || e;
-        return common.handleError(errorString);
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          return common.handleError(e.message);
+        } else {
+          return common.handleError('An unknown error occurred');
+        }
       }
     }
   } else {
@@ -155,8 +158,12 @@ export const confirm = async (): Promise<
       updateElementFromAction(parsedResult, transactingElement);
       sendObserverMessage(parsedResult, true);
       return parsedResult;
-    } catch (e) {
-      return common.handleError(e?.error || e?.message || e);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        return common.handleError(e.message);
+      } else {
+        return common.handleError('An unknown error occurred');
+      }
     }
   } else {
     return common.handleTypedError(
@@ -171,8 +178,12 @@ export const cancel = async (): Promise<true | ErrorResponse> => {
   if (transactingElement) {
     try {
       return await transactingElement.cancel();
-    } catch (e) {
-      return common.handleError(e?.error || e?.message || e);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        return common.handleError(e.message);
+      } else {
+        return common.handleError('An unknown error occurred');
+      }
     }
   }
 };
@@ -192,9 +203,9 @@ export const tokenizePaymentMethod = async (
         ErrorType.ACTION_IN_PROGRESS,
         'this function has already been called',
       );
-    } else if (transactingElement.valid == false) {
+    } else if (!transactingElement.valid) {
       return common.handleTypedError(ErrorType.NOT_VALID, 'The transaction element is invalid');
-    } else if (transactingElement.ready == false) {
+    } else if (!transactingElement.ready) {
       return common.handleTypedError(ErrorType.NOT_READY, 'The transaction element is not ready');
     } else {
       const reconnectError = await reconnectIfDisconnected(transactingElement);
@@ -227,8 +238,12 @@ export const tokenizePaymentMethod = async (
         updateElementFromAction(parsedResult, transactingElement);
         sendObserverMessage(parsedResult);
         return parsedResult as TokenizedPaymentMethodResponse | ErrorResponse;
-      } catch (e) {
-        return common.handleError(e?.error || e?.message || e);
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          return common.handleError(e.message);
+        } else {
+          return common.handleError('An unknown error occurred');
+        }
       }
     }
   } else {
