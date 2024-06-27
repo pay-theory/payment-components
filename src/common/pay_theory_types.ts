@@ -222,10 +222,10 @@ export interface CheckoutDetails {
 export interface PayTheoryQRInput {
   apiKey: string;
   checkoutDetails: CheckoutDetails;
-  size: number;
-  onReady: (ready: true) => void;
-  onError: (error: string) => void;
-  onSuccess: (result: SuccessfulTransactionObject) => void;
+  size?: number;
+  onReady?: (ready: true) => void;
+  onError?: (error: string) => void;
+  onSuccess?: (result: SuccessfulTransactionObject) => void;
 }
 
 export interface ButtonStyle {
@@ -275,15 +275,15 @@ export interface StyleObject {
 }
 
 export interface Level3DataSummary {
-  tax_amt: number;
-  tax_ind: TaxIndicatorType;
-  purch_idfr: string;
-  order_num: string;
-  discnt_amt: number;
-  frght_amt: number;
-  duty_amt: number;
-  dest_postal_code: string;
-  prod_desc: string[];
+  tax_amt?: number;
+  tax_ind?: TaxIndicatorType;
+  purch_idfr?: string;
+  order_num?: string;
+  discnt_amt?: number;
+  frght_amt?: number;
+  duty_amt?: number;
+  dest_postal_code?: string;
+  prod_desc?: string[];
 }
 
 export enum TaxIndicatorType {

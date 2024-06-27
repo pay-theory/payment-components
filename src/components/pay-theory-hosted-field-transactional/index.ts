@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-
 /* eslint-disable no-empty-function */
 
 import PayTheoryHostedField from '../pay-theory-hosted-field';
@@ -121,10 +120,10 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   protected _transactingType: TransactingType;
 
   // Function used to remove event listeners
-  protected _removeEventListeners: () => void = () => {};
-  protected _removeHostTokenListener: () => void = () => {};
-  protected _removeFeeListener: () => void = () => {};
-  protected _removeFeeCalcReconnect: () => void = () => {};
+  protected _removeEventListeners: (() => void) | undefined;
+  protected _removeHostTokenListener: (() => void) | undefined;
+  protected _removeFeeListener: (() => void) | undefined;
+  protected _removeFeeCalcReconnect: (() => void) | undefined;
 
   // Used for backwards compatibility with feeMode
   protected _feeMode: typeof common.SERVICE_FEE | typeof common.MERCHANT_FEE | undefined;
@@ -283,10 +282,10 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   disconnectedCallback() {
-    this._removeEventListeners();
-    this._removeHostTokenListener();
-    this._removeFeeListener();
-    this._removeFeeCalcReconnect();
+    if (this._removeEventListeners) this._removeEventListeners();
+    if (this._removeHostTokenListener) this._removeHostTokenListener();
+    if (this._removeFeeListener) this._removeFeeListener();
+    if (this._removeFeeCalcReconnect) this._removeFeeCalcReconnect();
   }
 
   async transact(data: TransactDataObject, element: PayTheoryHostedFieldTransactional) {

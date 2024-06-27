@@ -1,23 +1,21 @@
 /* global HTMLElement */
+/* eslint-disable no-unused-vars */
+
 import common from '../../common';
 
 class PayTheoryCheckoutQR extends HTMLElement {
   protected _token: string | undefined;
   protected _size: number | undefined;
-  protected _onReady: (message: unknown) => void;
-  protected _onClick: (message: unknown) => void;
-  protected _onError: (message: unknown) => void;
-  protected _onSuccess: (message: unknown) => void;
-  protected _clearReadyListener: () => void | undefined;
-  protected _clearSuccessListener: () => void | undefined;
-  protected _clearErrorListener: () => void | undefined;
+  protected _onReady: ((message: unknown) => void) | undefined;
+  protected _onClick: ((message: unknown) => void) | undefined;
+  protected _onError: ((message: unknown) => void) | undefined;
+  protected _onSuccess: ((message: unknown) => void) | undefined;
+  protected _clearReadyListener: (() => void) | undefined;
+  protected _clearSuccessListener: (() => void) | undefined;
+  protected _clearErrorListener: (() => void) | undefined;
 
   constructor() {
     super();
-    this._onReady = () => {};
-    this._onClick = () => {};
-    this._onError = () => {};
-    this._onSuccess = () => {};
   }
 
   defineQR() {
@@ -51,9 +49,9 @@ class PayTheoryCheckoutQR extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this._clearSuccessListener();
-    this._clearReadyListener();
-    this._clearErrorListener();
+    if (this._clearSuccessListener) this._clearSuccessListener();
+    if (this._clearReadyListener) this._clearReadyListener();
+    if (this._clearErrorListener) this._clearErrorListener();
   }
 
   // Only want to allow event listeners to be set from outside the class

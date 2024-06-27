@@ -1,4 +1,6 @@
 /* global HTMLElement */
+/* eslint-disable no-unused-vars */
+
 import common from '../../common';
 import { SuccessfulTransactionObject } from '../../common/pay_theory_types';
 
@@ -8,11 +10,11 @@ class PayTheoryCheckoutButton extends HTMLElement {
   protected _onClick: () => void;
   protected _onError: (error: string) => void;
   protected _onSuccess: (message: { data: SuccessfulTransactionObject }) => void;
-  protected _clearReadyListener: () => void | undefined;
-  protected _clearClickListener: () => void | undefined;
-  protected _clearErrorListener: () => void | undefined;
-  protected _clearSuccessListener: () => void | undefined;
-  protected _clearBarcodeReceivedListener: () => void | undefined;
+  protected _clearReadyListener: (() => void) | undefined;
+  protected _clearClickListener: (() => void) | undefined;
+  protected _clearErrorListener: (() => void) | undefined;
+  protected _clearSuccessListener: (() => void) | undefined;
+  protected _clearBarcodeReceivedListener: (() => void) | undefined;
   protected _closeInterval: ReturnType<typeof setInterval> | undefined;
   protected _checkoutWindow: Window | undefined;
   protected _buttonBarcode: string | undefined;
@@ -20,10 +22,6 @@ class PayTheoryCheckoutButton extends HTMLElement {
 
   constructor() {
     super();
-    this._onReady = () => {};
-    this._onClick = () => {};
-    this._onError = () => {};
-    this._onSuccess = () => {};
   }
 
   defineButton() {
@@ -68,14 +66,12 @@ class PayTheoryCheckoutButton extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this._clearErrorListener();
-    this._clearSuccessListener();
-    this._clearReadyListener();
-    this._clearClickListener();
-    this._clearBarcodeReceivedListener();
-    if (this._closeInterval) {
-      clearInterval(this._closeInterval);
-    }
+    if (this._clearErrorListener) this._clearErrorListener();
+    if (this._clearSuccessListener) this._clearSuccessListener();
+    if (this._clearReadyListener) this._clearReadyListener();
+    if (this._clearClickListener) this._clearClickListener();
+    if (this._clearBarcodeReceivedListener) this._clearBarcodeReceivedListener();
+    if (this._closeInterval) clearInterval(this._closeInterval);
   }
 
   // Only want to allow event listeners to be set from outside the class

@@ -267,11 +267,11 @@ const isValidPayorInfo = (payorInfo: payorInfo): ErrorResponse | null => {
 };
 
 const nullifyEmptyStrings = (params: object) => {
-  const newParams: object = JSON.parse(JSON.stringify(params));
+  const newParams = structuredClone(params);
   Object.keys(newParams).forEach(key => {
     const value = newParams[key as keyof typeof newParams] as unknown;
     if (value === '') {
-      // @ts-ignore
+      // @ts-expect-error - key is a string and can be used to access the object
       newParams[key as keyof typeof newParams] = null;
     } else if (value instanceof Object) {
       nullifyEmptyStrings(value);
@@ -450,8 +450,8 @@ const isValidL3DataSummary = (l3DataSummary: unknown): ErrorResponse | null => {
     if (!validate(l3DataSummary.prod_desc, 'array')) {
       return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.prod_desc must be an array');
     }
-    for (let i = 0; i < l3DataSummary.prod_desc.length; i++) {
-      if (!validate(l3DataSummary.prod_desc[i], 'string')) {
+    for (const value of l3DataSummary.prod_desc) {
+      if (!validate(value, 'string')) {
         return handleTypedError(
           ErrorType.INVALID_PARAM,
           'l3DataSummary.prod_desc must be an array of strings',

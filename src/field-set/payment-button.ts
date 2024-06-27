@@ -1,12 +1,12 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-/*global navigator*/
 import common from '../common';
 import * as valid from './validation';
 import {
   PayTheoryButtonInput,
   SuccessfulTransactionObject,
   ErrorResponse,
+  CashBarcodeObject,
 } from '../common/pay_theory_types';
 import { ModifiedCheckoutDetails } from '../common/format';
 import PayTheoryCheckoutButton from '../components/pay-theory-checkout-button';
@@ -14,10 +14,10 @@ import PayTheoryOverlay from '../components/pay-theory-overlay';
 
 const PopupCenter = (url: string, title: string, w: number, h: number) => {
   // Fixes dual-screen position                         Most browsers      Firefox
-  // @ts-ignore ignore screen error for firefox
-  const dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
-  // @ts-ignore ignore screen error for firefox
-  const dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+  // @ts-expect-error ignore screen error for firefox
+  const dualScreenLeft: number = window.screenLeft ?? screen.left;
+  // @ts-expect-error ignore screen error for firefox
+  const dualScreenTop: number = window.screenTop ?? screen.top;
 
   const width = window.innerWidth
     ? window.innerWidth
@@ -112,7 +112,7 @@ export default async (inputParams: PayTheoryButtonInput) => {
     // Remove the error listener because we added it to the button iFrame and do not want it to be called twice
     removeErrorListener();
     removeHostedErrorListener();
-    if (data && data?.sessionId) {
+    if (data && data.sessionId) {
       const buttonElement = getCheckoutButton();
       buttonElement.session = data.sessionId;
     }
@@ -126,7 +126,7 @@ export default async (inputParams: PayTheoryButtonInput) => {
     // Check to see if a barcode response was sent back to tell which callback to call
     const buttonElement = getCheckoutButton();
     if (buttonElement?.buttonBarcode) {
-      if (onBarcode) onBarcode(JSON.parse(buttonElement.buttonBarcode));
+      if (onBarcode) onBarcode(JSON.parse(buttonElement.buttonBarcode) as CashBarcodeObject);
     } else {
       if (onCancel) onCancel();
     }

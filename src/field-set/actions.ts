@@ -34,7 +34,9 @@ const updateElementFromAction = (
 ) => {
   if (message.type === ResponseMessageTypes.ERROR || message.type === ResponseMessageTypes.FAILED) {
     iframe.initialized = false;
-    iframe.resetToken();
+    iframe.resetToken().catch(e => {
+      console.error(e);
+    });
   } else if (message.type !== ResponseMessageTypes.CONFIRMATION) {
     iframe.complete = true;
   }
@@ -43,7 +45,7 @@ const updateElementFromAction = (
 const reconnectIfDisconnected = async (
   iframe: PayTheoryHostedFieldTransactional,
 ): Promise<ErrorResponse | null> => {
-  if (iframe.connected == false) {
+  if (!iframe.connected) {
     const result = await iframe.resetToken();
     if (result.type === ResponseMessageTypes.ERROR) {
       return common.handleTypedError(ErrorType.SOCKET_ERROR, result.error);
@@ -76,9 +78,9 @@ export const transact = async (
         ErrorType.ACTION_IN_PROGRESS,
         'this function has already been called',
       );
-    } else if (transactingElement.valid == false) {
+    } else if (!transactingElement.valid) {
       return common.handleTypedError(ErrorType.NOT_VALID, 'The transaction element is invalid');
-    } else if (transactingElement.ready == false) {
+    } else if (!transactingElement.ready) {
       return common.handleTypedError(ErrorType.NOT_READY, 'The transaction element is not ready');
     } else {
       const reconnectError = await reconnectIfDisconnected(transactingElement);
@@ -87,14 +89,14 @@ export const transact = async (
       transactingElement.initialized = true;
       const newProps = common.parseInputParams(props) as ModifiedTransactProps;
       const { payorInfo, customerInfo, shippingDetails } = newProps;
-      newProps.payorInfo = payorInfo || customerInfo || shippingDetails || {};
+      newProps.payorInfo = payorInfo ?? customerInfo ?? shippingDetails ?? {};
       // Adding line for backwards compatability. Default to what was passed into the transact function, then the one passed into create, then the default
       newProps.feeMode = newProps.feeMode
         ? newProps.feeMode
         : transactingElement.feeMode
           ? transactingElement.feeMode
           : MERCHANT_FEE;
-      // @ts-ignore Adding line for backwards compatibility
+      // @ts-expect-error Adding line for backwards compatibility
       newProps.feeMode = newProps.feeMode === 'interchange' ? MERCHANT_FEE : newProps.feeMode;
       // Check for validity of the transaction parameters
       const validity = valid.validTransactionParams(newProps);
@@ -125,7 +127,8 @@ export const transact = async (
         sendObserverMessage(parsedResponse);
         return parsedResponse;
       } catch (e) {
-        return common.handleError(e?.error || e?.message || e);
+        const errorString: string = e?.error || e?.message || e;
+        return common.handleError(errorString);
       }
     }
   } else {
@@ -163,7 +166,6 @@ export const confirm = async (): Promise<
   }
 };
 
-// @ts-ignore
 export const cancel = async (): Promise<true | ErrorResponse> => {
   const transactingElement = findTransactingElement();
   if (transactingElement) {
@@ -237,7 +239,7 @@ export const tokenizePaymentMethod = async (
   }
 };
 
-export const activateCardPresentDevice = async (): Promise<ErrorResponse | true> => {
+export const activateCardPresentDevice = (): ErrorResponse | true => {
   return true;
 };
 
@@ -253,7 +255,7 @@ export const updateAmount = async (amount: number): Promise<ErrorResponse | true
     const elements = document.getElementsByName(id);
     if (elements.length) {
       const transactingElement = elements[0] as PayTheoryHostedFieldTransactional;
-      if (transactingElement.ready == false) {
+      if (!transactingElement.ready) {
         return common.handleTypedError(
           ErrorType.NOT_READY,
           'Not all fields are ready to update the amount',
