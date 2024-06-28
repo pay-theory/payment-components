@@ -1,120 +1,114 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { html, fixture, expect, assert } from '@open-wc/testing';
-import { aTimeout } from '@open-wc/testing-helpers'
+import { aTimeout } from '@open-wc/testing-helpers';
 import sinon from 'sinon';
 
-import * as common from './common'
-import '../src/components/credit-card'
-import createPaymentFields from '../src/field-set/payment-fields'
-import * as data from '../src/common/data'
+import * as common from './common';
+import '../src/components/credit-card';
+import createPaymentFields from '../src/field-set/payment-fields';
+import * as data from '../src/common/data';
 
 describe('credit-card', () => {
-    let error;
+  let error;
 
-    beforeEach(() => {
-        let stub = sinon.stub(window, 'fetch'); //add stub
-        stub.onCall(0).returns(common.jsonOk(common.MOCK_TOKEN));
-        stub.onCall(1).returns(common.jsonOk(common.MOCK_JSON));
-        stub.onCall(2).returns(common.jsonOk(common.MOCK_JSON));
-        stub.onCall(3).returns(common.jsonOk(common.MOCK_JSON));
-        stub.onCall(4).returns(common.jsonOk(common.MOCK_JSON));
+  beforeEach(() => {
+    let stub = sinon.stub(window, 'fetch'); //add stub
+    stub.onCall(0).returns(common.jsonOk(common.MOCK_TOKEN));
+    stub.onCall(1).returns(common.jsonOk(common.MOCK_JSON));
+    stub.onCall(2).returns(common.jsonOk(common.MOCK_JSON));
+    stub.onCall(3).returns(common.jsonOk(common.MOCK_JSON));
+    stub.onCall(4).returns(common.jsonOk(common.MOCK_JSON));
 
-        error = undefined;
-        window.onerror = (e) => error = e;
-    });
+    error = undefined;
+    window.onerror = e => (error = e);
+  });
 
-    afterEach(() => {
-        window.fetch.restore(); //remove stub
-        data.removeAll()
-    });
+  afterEach(() => {
+    window.fetch.restore(); //remove stub
+    data.removeAll();
+  });
 
-    // it('getters and setters work', async() => {
+  // it('getters and setters work', async() => {
 
-    //     const fixed = await fixture(html ` <pay-theory-credit-card-tag-frame/>`);
+  //     const fixed = await fixture(html ` <pay-theory-credit-card-tag-frame/>`);
 
-    //     expect(fixed.ready).to.be;
+  //     expect(fixed.ready).to.be;
 
-    //     fixed.valid = true;
+  //     fixed.valid = true;
 
-    //     expect(fixed.valid).to.be;
+  //     expect(fixed.valid).to.be;
 
-    //     fixed.error = 'error'
+  //     fixed.error = 'error'
 
-    //     expect(fixed.error).to.equal('error')
+  //     expect(fixed.error).to.equal('error')
 
-    //     fixed.styles = 'style boy'
+  //     fixed.styles = 'style boy'
 
-    //     expect(fixed.styles).to.equal('style boy')
+  //     expect(fixed.styles).to.equal('style boy')
 
-    //     fixed.styles = null
+  //     fixed.styles = null
 
-    //     expect(fixed.styles).to.equal(fixed.defaultStyles)
+  //     expect(fixed.styles).to.equal(fixed.defaultStyles)
 
-    //     fixed.amount = 200;
+  //     fixed.amount = 200;
 
-    //     expect(fixed.amount).to.equal(200)
+  //     expect(fixed.amount).to.equal(200)
 
+  // });
 
-    // });
+  it('negative interger throws error on tokenize', async () => {
+    const fixed = await fixture(html` <div id="pay-theory-credit-card" />`);
 
-    it('negative interger throws error on tokenize', async() => {
+    const creditCard = await createPaymentFields(common.api, common.client, {});
 
-        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+    const ccDiv = await document.getElementById('pay-theory-credit-card');
 
-        const creditCard = await createPaymentFields(common.api, common.client, {});
+    await expect(ccDiv).to.be.ok;
 
-        const ccDiv = await document.getElementById('pay-theory-credit-card');
+    await creditCard.mount();
 
-        await expect(ccDiv).to.be.ok;
+    const ccTagFrame = await document.getElementById('pay-theory-credit-card-tag-frame');
 
-        await creditCard.mount();
+    expect(ccTagFrame.valid).to.be;
 
-        const ccTagFrame = await document.getElementById('pay-theory-credit-card-tag-frame');
+    let spy = sinon.spy();
 
-        expect(ccTagFrame.valid).to.be;
+    creditCard.errorObserver(spy);
 
-        let spy = sinon.spy()
+    expect(error).not.to.be;
 
-        creditCard.errorObserver(spy)
+    ccTagFrame.tokenize = -2;
 
-        expect(error).not.to.be;
+    expect(error).to.be;
+  });
 
-        ccTagFrame.tokenize = -2
+  it('negative interger throws error on transact', async () => {
+    const fixed = await fixture(html` <div id="pay-theory-credit-card" />`);
 
-        expect(error).to.be;
+    const creditCard = await createPaymentFields(common.api, common.client, {});
 
-    });
+    const ccDiv = await document.getElementById('pay-theory-credit-card');
 
-    it('negative interger throws error on transact', async() => {
+    await expect(ccDiv).to.be.ok;
 
-        const fixed = await fixture(html ` <div id="pay-theory-credit-card" />`);
+    await creditCard.mount();
 
-        const creditCard = await createPaymentFields(common.api, common.client, {});
+    const ccTagFrame = await document.getElementById('pay-theory-credit-card-tag-frame');
 
-        const ccDiv = await document.getElementById('pay-theory-credit-card');
+    expect(ccTagFrame.valid).to.be;
 
-        await expect(ccDiv).to.be.ok;
+    let spy = sinon.spy();
 
-        await creditCard.mount();
+    creditCard.errorObserver(spy);
 
-        const ccTagFrame = await document.getElementById('pay-theory-credit-card-tag-frame');
+    expect(error).not.to.be;
 
-        expect(ccTagFrame.valid).to.be;
+    ccTagFrame.transact = -2;
 
-        let spy = sinon.spy()
+    expect(error).to.be;
 
-        creditCard.errorObserver(spy)
+    ccTagFrame.transact = false;
 
-        expect(error).not.to.be;
-
-        ccTagFrame.transact = -2
-
-        expect(error).to.be;
-
-        ccTagFrame.transact = false
-
-        expect(ccTagFrame.transact).not.to.be;
-
-
-    });
-
-})
+    expect(ccTagFrame.transact).not.to.be;
+  });
+});
