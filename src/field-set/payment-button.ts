@@ -104,8 +104,10 @@ export default async (inputParams: PayTheoryButtonInput) => {
   error = valid.validateHostedCheckoutParams(callToAction, acceptedPaymentMethods, paymentName);
   if (error) return false;
 
+  // eslint-disable-next-line scanjs-rules/property_crypto
+  const sessionId = self.crypto.randomUUID();
   // Fetch the PT Token
-  const ptToken = await common.fetchPtToken(apiKey);
+  const ptToken = await common.fetchPtToken(apiKey, sessionId);
 
   // Adding logic to onReady to receive the session data for redirecting to the hosted checkout page
   const onReadyWrapper = (data: { sessionId?: string }) => {
