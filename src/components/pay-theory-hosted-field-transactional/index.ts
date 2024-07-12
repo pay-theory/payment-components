@@ -81,6 +81,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   // Used to fetch the pt-token attribute to initialize the hosted field
   protected _apiKey: string | undefined;
   protected _challengeOptions: object | undefined;
+  protected _session: string | undefined;
 
   // Used to track the metadata that is passed in for a session
   protected _metadata: Record<string | number, string | number | boolean> | undefined;
@@ -642,6 +643,10 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   get amount() {
     return this._amount;
+  }
+
+  set session(value: string) {
+    this._session = value;
   }
 }
 

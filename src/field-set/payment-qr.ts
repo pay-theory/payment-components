@@ -41,8 +41,10 @@ export default async (inputParams: PayTheoryQRInput) => {
 
   const finalSize = size < 128 ? 128 : size > 300 ? 300 : size;
 
+  // eslint-disable-next-line scanjs-rules/property_crypto
+  const sessionId = self.crypto.randomUUID();
   // Fetch the PT Token
-  const ptToken = await common.fetchPtToken(apiKey);
+  const ptToken = await common.fetchPtToken(apiKey, sessionId);
 
   // Adding logic to onReady to receive the session data for redirecting to the hosted checkout page
   const onReadyWrapper = () => {
