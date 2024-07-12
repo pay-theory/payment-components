@@ -22,6 +22,7 @@ import {
   ResponseMessageTypes,
   StyleObject,
 } from '../common/pay_theory_types';
+import { hostedCheckoutEndpoint } from '../common/network';
 
 interface ProcessedObjectValue<T extends cashElementIds | cardElementIds | achElementIds> {
   elements: {
@@ -203,13 +204,21 @@ const initializeFields = (
       errorCheck: valid.findCashError,
     },
   };
+
+  // eslint-disable-next-line scanjs-rules/property_crypto
+  let sessionId: string = self.crypto.randomUUID();
+  // If there is a session passed in and the hostedCheckoutEndpoint is the same as the current host use that session id
+  if (session && hostedCheckoutEndpoint.includes(window.location.host)) {
+    sessionId = session;
+  }
+
   // Mount the elements to the DOM
   return mountProcessedElements({
     processed,
     apiKey,
     styles,
     placeholders,
-    session,
+    session: sessionId,
     metadata,
     removeEventListeners,
     feeMode,

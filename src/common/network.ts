@@ -5,9 +5,6 @@ import { BillingInfo } from './pay_theory_types';
 import { ErrorMessage, FieldsReadyMessage } from './format';
 import { ACH_IFRAME, CARD_IFRAME, CASH_IFRAME, ElementTypes } from './data';
 
-// eslint-disable-next-line scanjs-rules/property_crypto
-const sessionId = self.crypto.randomUUID();
-
 interface PtToken {
   'pt-token': string;
   origin: string;
@@ -17,21 +14,15 @@ interface PtToken {
 export const getData = async (
   url: string,
   apiKey: string,
-  sessionKey: string | null,
+  sessionKey: string,
 ): Promise<PtToken | object> => {
-  // Validate that the host is the hosted checkout url if a session key is provided
-  // If it is not, set it to null
-  if (sessionKey && !hostedCheckoutEndpoint.includes(window.location.host)) {
-    sessionKey = null;
-  }
-
   const options: RequestInit = {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
     headers: {
       'x-api-key': apiKey,
-      'x-session-key': sessionKey ?? sessionId,
+      'x-session-key': sessionKey,
     },
   };
   /* global fetch */
@@ -52,7 +43,7 @@ export const hostedCheckoutEndpoint = `https://${ENVIRONMENT}.checkout.${STAGE}.
 
 export const fetchPtToken = async (
   apiKey: string,
-  sessionKey?: string | null,
+  sessionKey: string,
 ): Promise<PtToken | false> => {
   for (let i = 0; i < 5; i++) {
     const token = await getData(transactionEndpoint, apiKey, sessionKey);
