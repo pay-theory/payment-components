@@ -55,6 +55,35 @@ const reconnectIfDisconnected = async (
   return null;
 };
 
+const transactingFieldCheck = (field: PayTheoryHostedFieldTransactional): ErrorResponse | null => {
+  const isInitialized = field.initialized;
+  field.initialized = true;
+  // Check to see if the field has already been used to complete an action
+  if (field.complete) {
+    return common.handleTypedError(
+      ErrorType.ACTION_COMPLETE,
+      'these fields have already been used to complete an action',
+    );
+    // Check to see if the field has already been initialized for an action
+  } else if (isInitialized) {
+    return common.handleTypedError(
+      ErrorType.ACTION_IN_PROGRESS,
+      'this function has already been called',
+    );
+    // Check to see if the field is valid and ready
+  } else if (!field.valid) {
+    // Reset the initialized flag so the field can be used again
+    field.initialized = false;
+    return common.handleTypedError(ErrorType.NOT_VALID, 'The transaction element is invalid');
+    // Check to see if the field has connected to the socket and is ready
+  } else if (!field.ready) {
+    // Reset the initialized flag so the field can be used again
+    field.initialized = false;
+    return common.handleTypedError(ErrorType.NOT_READY, 'The transaction element is not ready');
+  }
+  return null;
+};
+
 export const transact = async (
   props: TransactProps,
 ): Promise<
@@ -66,22 +95,10 @@ export const transact = async (
 > => {
   const transactingElement = findTransactingElement();
   if (transactingElement) {
-    const isInitialized = transactingElement.initialized;
-    transactingElement.initialized = true;
-    if (transactingElement.complete) {
-      return common.handleTypedError(
-        ErrorType.ACTION_COMPLETE,
-        'these fields have already been used to complete an action',
-      );
-    } else if (isInitialized) {
-      return common.handleTypedError(
-        ErrorType.ACTION_IN_PROGRESS,
-        'this function has already been called',
-      );
-    } else if (!transactingElement.valid) {
-      return common.handleTypedError(ErrorType.NOT_VALID, 'The transaction element is invalid');
-    } else if (!transactingElement.ready) {
-      return common.handleTypedError(ErrorType.NOT_READY, 'The transaction element is not ready');
+    // Run field check and return error if one is found before proceeding
+    const checkResult = transactingFieldCheck(transactingElement);
+    if (checkResult) {
+      return checkResult;
     } else {
       const reconnectError = await reconnectIfDisconnected(transactingElement);
       if (reconnectError) return reconnectError;
@@ -193,20 +210,10 @@ export const tokenizePaymentMethod = async (
 ): Promise<TokenizedPaymentMethodResponse | ErrorResponse> => {
   const transactingElement = findTransactingElement();
   if (transactingElement) {
-    if (transactingElement.complete) {
-      return common.handleTypedError(
-        ErrorType.ACTION_COMPLETE,
-        'these fields have already been used to complete an action',
-      );
-    } else if (transactingElement.initialized) {
-      return common.handleTypedError(
-        ErrorType.ACTION_IN_PROGRESS,
-        'this function has already been called',
-      );
-    } else if (!transactingElement.valid) {
-      return common.handleTypedError(ErrorType.NOT_VALID, 'The transaction element is invalid');
-    } else if (!transactingElement.ready) {
-      return common.handleTypedError(ErrorType.NOT_READY, 'The transaction element is not ready');
+    // Run field check and return error if one is found before proceeding
+    const checkResult = transactingFieldCheck(transactingElement);
+    if (checkResult) {
+      return checkResult;
     } else {
       const reconnectError = await reconnectIfDisconnected(transactingElement);
       if (reconnectError) return reconnectError;
