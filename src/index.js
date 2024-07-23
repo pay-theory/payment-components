@@ -14,6 +14,8 @@ import './components/bank-account-name';
 import './components/bank-account-number';
 import './components/bank-account-type';
 import './components/bank-routing-number';
+import './components/bank-institution-number';
+import './components/bank-transit-number';
 import './components/cash-contact';
 import './components/cash-name';
 import './components/card-present';
