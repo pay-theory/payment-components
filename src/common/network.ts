@@ -3,7 +3,7 @@ import { postMessageToHostedField } from './message';
 import PayTheoryHostedFieldTransactional from '../components/pay-theory-hosted-field-transactional';
 import { BillingInfo } from './pay_theory_types';
 import { ErrorMessage, FieldsReadyMessage } from './format';
-import { ACH_IFRAME, CARD_IFRAME, CASH_IFRAME, ElementTypes } from './data';
+import { BANK_IFRAME, CARD_IFRAME, CASH_IFRAME, ElementTypes } from './data';
 
 interface PtToken {
   'pt-token': string;
@@ -85,10 +85,10 @@ export const sendTransactingMessage = (
 
     const types = transacting.fieldTypes;
     const transactingField = types.filter(field =>
-      [CASH_IFRAME, ACH_IFRAME, CARD_IFRAME].includes(`${field}-iframe`),
+      [CASH_IFRAME, BANK_IFRAME, CARD_IFRAME].includes(`${field}-iframe`),
     );
     const siblingFields = types.filter(
-      field => ![CASH_IFRAME, ACH_IFRAME, CARD_IFRAME].includes(`${field}-iframe`),
+      field => ![CASH_IFRAME, BANK_IFRAME, CARD_IFRAME].includes(`${field}-iframe`),
     );
     // Sending the message to the hosted field to transact first so that the channel port is saved in state
     // That will allow it to respond once it receives the message from the sibling fields

@@ -4,6 +4,7 @@ import {
   achElementIds,
   cardElementIds,
   cashElementIds,
+  eftElementIds,
   ElementTypes,
   transactingWebComponentIds,
   webComponentIds,
@@ -36,7 +37,7 @@ export const findTransactingElement = (): PayTheoryHostedFieldTransactional | fa
 };
 
 export interface processedElement<
-  T extends cashElementIds | cardElementIds | achElementIds,
+  T extends cashElementIds | cardElementIds | achElementIds | eftElementIds,
   F extends PayTheoryHostedField | PayTheoryHostedFieldTransactional,
 > {
   type: keyof T;
@@ -54,7 +55,7 @@ export const addFrame = (frameType: webComponentIds, element: string) => {
 };
 
 const processContainer = <
-  T extends cashElementIds | cardElementIds | achElementIds,
+  T extends cashElementIds | cardElementIds | achElementIds | eftElementIds,
   F extends PayTheoryHostedField | PayTheoryHostedFieldTransactional,
 >(
   elements: T,
@@ -70,7 +71,9 @@ const processContainer = <
   }
 };
 
-const findElementError = <T extends cashElementIds | cardElementIds | achElementIds>(
+const findElementError = <
+  T extends cashElementIds | cardElementIds | achElementIds | eftElementIds,
+>(
   elements: T,
   type: keyof T,
 ) => {
@@ -78,7 +81,9 @@ const findElementError = <T extends cashElementIds | cardElementIds | achElement
   return typeof element === 'undefined' ? `unknown type ${type as string}` : false;
 };
 
-export const processElements = <ET extends cashElementIds | cardElementIds | achElementIds>(
+export const processElements = <
+  ET extends cashElementIds | cardElementIds | achElementIds | eftElementIds,
+>(
   elements: ET,
   fieldTypes: {
     transacting: (keyof ET)[];
