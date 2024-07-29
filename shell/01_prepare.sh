@@ -37,10 +37,10 @@ else
     echo "Deleting branch ${PARTNER}${MODE}-${STAGE}"
     git branch -D "${PARTNER}""${MODE}"-"${STAGE}" &>/dev/null
     git push origin --delete "${PARTNER}""${MODE}"-"${STAGE}" &>/dev/null
-    git fetch -p
-    echo "Recreating branch ${PARTNER}${MODE}-${STAGE} from base branch ${BASE_BRANCH}"
-    git checkout -b "${PARTNER}""${MODE}"-"${STAGE}" "${BASE_BRANCH}"
-    git push -u origin "${PARTNER}""${MODE}"-"${STAGE}"
+    # git fetch -p
+    # echo "Recreating branch ${PARTNER}${MODE}-${STAGE} from base branch ${BASE_BRANCH}"
+    # git checkout -b "${PARTNER}""${MODE}"-"${STAGE}" "${BASE_BRANCH}"
+    # git push -u origin "${PARTNER}""${MODE}"-"${STAGE}"
 #end if we do not have the branch in remote create it
 fi
 
