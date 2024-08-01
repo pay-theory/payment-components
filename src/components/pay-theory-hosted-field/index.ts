@@ -15,6 +15,7 @@ class PayTheoryHostedField extends HTMLElement {
   protected fields: Partial<ElementTypes[]>;
   protected _placeholders: placeholderObject = {};
   protected _amount: number | undefined;
+  protected _country: string | undefined;
 
   // Used to store the session id for a connected session from our hosted checkout
   protected _session: string | undefined;
@@ -46,6 +47,7 @@ class PayTheoryHostedField extends HTMLElement {
       styles: this._styles,
       placeholders: this._placeholders,
       amount: this._amount,
+      country: this._country,
     };
     const json = JSON.stringify(token);
     const encodedJson = window.btoa(json);
