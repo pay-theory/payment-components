@@ -6,6 +6,7 @@ import {
   achElementIds,
   cardElementIds,
   cashElementIds,
+  eftElementIds,
   MERCHANT_FEE,
   SERVICE_FEE,
 } from '../common/data';
@@ -24,7 +25,9 @@ import {
 } from '../common/pay_theory_types';
 import { hostedCheckoutEndpoint } from '../common/network';
 
-interface ProcessedObjectValue<T extends cashElementIds | cardElementIds | achElementIds> {
+interface ProcessedObjectValue<
+  T extends cashElementIds | cardElementIds | achElementIds | eftElementIds,
+> {
   elements: {
     transacting: processedElement<T, PayTheoryHostedFieldTransactional>[];
     siblings: processedElement<T, PayTheoryHostedField>[];
@@ -36,75 +39,81 @@ interface ProcessedObjectValue<T extends cashElementIds | cardElementIds | achEl
 }
 
 interface ProcessedObject {
+  ach: ProcessedObjectValue<achElementIds> | null;
   card: ProcessedObjectValue<cardElementIds>;
-  ach: ProcessedObjectValue<achElementIds>;
   cash: ProcessedObjectValue<cashElementIds>;
+  eft: ProcessedObjectValue<eftElementIds> | null;
 }
 
 const mountProcessedElements = (props: {
-  processed: ProcessedObject;
-  apiKey: string;
-  styles: StyleObject;
-  placeholders: PlaceholderObject;
-  session: string | undefined;
-  metadata: Record<string | number, string | number | boolean>;
-  removeEventListeners: () => void;
-  feeMode: typeof MERCHANT_FEE | typeof SERVICE_FEE | undefined;
   amount: number | undefined;
+  apiKey: string;
+  country: string;
+  feeMode: typeof MERCHANT_FEE | typeof SERVICE_FEE | undefined;
+  metadata: Record<string | number, string | number | boolean>;
+  placeholders: PlaceholderObject;
   port: MessagePort;
+  processed: ProcessedObject;
+  removeEventListeners: () => void;
+  session: string | undefined;
+  styles: StyleObject;
 }): ErrorResponse | null => {
   const {
-    processed,
-    apiKey,
-    styles,
-    placeholders,
-    session,
-    metadata,
-    removeEventListeners,
-    feeMode,
     amount,
+    apiKey,
+    country,
+    feeMode,
+    metadata,
+    placeholders,
+    processed,
+    removeEventListeners,
+    session,
+    styles,
   } = props;
-  for (const value of Object.values(processed)) {
-    const typedValue = value as ProcessedObjectValue<
-      cashElementIds | cardElementIds | achElementIds
-    >;
-    const transactingElements = typedValue.elements.transacting.map(element => element.frame);
-    const siblingsElements = typedValue.elements.siblings.map(element => element.frame);
-    const allElements = [...transactingElements, ...siblingsElements];
-    if (allElements.length > 0) {
-      const error = typedValue.errorCheck(allElements, transactingElements);
-      if (error) {
-        return common.handleTypedError(ErrorType.FIELD_ERROR, error);
+  for (const key in processed) {
+    if (processed.hasOwnProperty(key)) {
+      const typedValue = processed[key as keyof ProcessedObject];
+      // If the value is null skip
+      if (!typedValue) continue;
+      const transactingElements = typedValue.elements.transacting.map(element => element.frame);
+      const siblingsElements = typedValue.elements.siblings.map(element => element.frame);
+      const allElements = [...transactingElements, ...siblingsElements];
+      if (allElements.length > 0) {
+        const error = typedValue.errorCheck(allElements, transactingElements);
+        if (error) {
+          return common.handleTypedError(ErrorType.FIELD_ERROR, error);
+        }
+        typedValue.elements.siblings.forEach(sibling => {
+          const container = document.getElementById(String(sibling.containerId));
+          sibling.frame.styles = styles;
+          sibling.frame.placeholders = placeholders;
+          sibling.frame.session = session;
+          if (container) {
+            container.appendChild(sibling.frame);
+          }
+        });
+        typedValue.elements.transacting.forEach(element => {
+          const container = document.getElementById(String(element.containerId));
+          element.frame.apiKey = apiKey;
+          element.frame.styles = styles;
+          element.frame.placeholders = placeholders;
+          element.frame.metadata = metadata;
+          element.frame.removeEventListeners = removeEventListeners;
+          element.frame.feeMode = feeMode;
+          element.frame.amount = amount;
+          element.frame.session = session;
+          element.frame.country = country;
+          const processedElementTypes = typedValue.elements.siblings.map(sibling => sibling.type);
+          const transactingElementType = typedValue.elements.transacting.map(
+            transacting => transacting.type,
+          );
+          element.frame.processedElements = [...processedElementTypes, ...transactingElementType];
+          element.frame.readyPort = props.port;
+          if (container) {
+            container.appendChild(element.frame);
+          }
+        });
       }
-      typedValue.elements.siblings.forEach(sibling => {
-        const container = document.getElementById(String(sibling.containerId));
-        sibling.frame.styles = styles;
-        sibling.frame.placeholders = placeholders;
-        sibling.frame.session = session;
-        if (container) {
-          container.appendChild(sibling.frame);
-        }
-      });
-      typedValue.elements.transacting.forEach(element => {
-        const container = document.getElementById(String(element.containerId));
-        element.frame.apiKey = apiKey;
-        element.frame.styles = styles;
-        element.frame.placeholders = placeholders;
-        element.frame.metadata = metadata;
-        element.frame.removeEventListeners = removeEventListeners;
-        element.frame.feeMode = feeMode;
-        element.frame.amount = amount;
-        element.frame.session = session;
-        const processedElementTypes = typedValue.elements.siblings.map(sibling => sibling.type);
-        const transactingElementType = typedValue.elements.transacting.map(
-          transacting => transacting.type,
-        );
-        element.frame.processedElements = [...processedElementTypes, ...transactingElementType];
-        element.frame.readyPort = props.port;
-        if (container) {
-          container.appendChild(element.frame);
-        }
-      });
     }
   }
   return null;
@@ -123,14 +132,33 @@ const initializeFields = (
     session,
     feeMode,
     amount,
+    country = 'USA',
   } = props;
-  valid.checkInitialParams(apiKey, feeMode, metadata, styles, amount);
+  // Validate the input parameters
+  const validationError = valid.checkInitialParams(
+    apiKey,
+    feeMode,
+    metadata,
+    styles,
+    amount,
+    country,
+  );
+  if (validationError) return validationError;
+
   // Map the elementIds to objects that can be passed into the processElements function
   const achElements: achElementIds = {
     'account-number': elementIds['account-number'],
     'account-name': elementIds['ach-name'],
     'routing-number': elementIds['routing-number'],
     'account-type': elementIds['account-type'],
+  };
+
+  const eftElements: eftElementIds = {
+    'account-number': elementIds['bank-account-number'],
+    'account-name': elementIds['bank-account-name'],
+    'account-type': elementIds['bank-account-type'],
+    'institution-number': elementIds['bank-institution-number'],
+    'transit-number': elementIds['bank-transit-number'],
   };
 
   const cardElements: cardElementIds = {
@@ -172,8 +200,21 @@ const initializeFields = (
 
   // Creates the web component elements, so they can be added to the dom
   const cardProcessed = common.processElements(cardElements, common.cardFieldTypes);
-  const achProcessed = common.processElements(achElements, common.achFieldTypes);
   const cashProcessed = common.processElements(cashElements, common.cashFieldTypes);
+  let achProcessed: ProcessedObjectValue<achElementIds> | null = null;
+  let eftProcessed: ProcessedObjectValue<eftElementIds> | null = null;
+
+  if (country === 'CAN') {
+    eftProcessed = {
+      elements: common.processElements(eftElements, common.eftFieldTypes),
+      errorCheck: valid.findEftError,
+    };
+  } else {
+    achProcessed = {
+      elements: common.processElements(achElements, common.achFieldTypes),
+      errorCheck: valid.findAchError,
+    };
+  }
 
   // Throw an error if there are no elements to mount
   if (
@@ -181,8 +222,14 @@ const initializeFields = (
     cardProcessed.siblings.length === 0 &&
     cashProcessed.transacting.length === 0 &&
     cashProcessed.siblings.length === 0 &&
-    achProcessed.transacting.length === 0 &&
-    achProcessed.siblings.length === 0
+    ((eftProcessed &&
+      eftProcessed.elements.transacting.length === 0 &&
+      eftProcessed.elements.siblings.length === 0) ||
+      !eftProcessed) &&
+    ((achProcessed &&
+      achProcessed.elements.transacting.length === 0 &&
+      achProcessed.elements.siblings.length === 0) ||
+      !achProcessed)
   ) {
     return common.handleTypedError(
       ErrorType.NO_FIELDS,
@@ -191,18 +238,16 @@ const initializeFields = (
   }
 
   const processed: ProcessedObject = {
+    ach: achProcessed,
     card: {
       elements: cardProcessed,
       errorCheck: valid.findCardError,
-    },
-    ach: {
-      elements: achProcessed,
-      errorCheck: valid.findAchError,
     },
     cash: {
       elements: cashProcessed,
       errorCheck: valid.findCashError,
     },
+    eft: eftProcessed,
   };
 
   // eslint-disable-next-line scanjs-rules/property_crypto
@@ -214,16 +259,17 @@ const initializeFields = (
 
   // Mount the elements to the DOM
   return mountProcessedElements({
-    processed,
-    apiKey,
-    styles,
-    placeholders,
-    session: sessionId,
-    metadata,
-    removeEventListeners,
-    feeMode,
     amount,
+    apiKey,
+    country,
+    feeMode,
+    metadata,
+    placeholders,
     port,
+    processed,
+    removeEventListeners,
+    session: sessionId,
+    styles,
   });
 };
 

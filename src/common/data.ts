@@ -65,11 +65,13 @@ export const initialCardState: Partial<Record<ElementTypes, typeof initialState>
   'billing-zip': initialState,
 };
 
-export const initialAchState: Partial<Record<ElementTypes, typeof initialState>> = {
+export const initialBankState: Partial<Record<ElementTypes, typeof initialState>> = {
   'account-number': initialState,
   'account-type': initialState,
   'account-name': initialState,
   'routing-number': initialState,
+  'institution-number': initialState,
+  'transit-number': initialState,
 };
 
 export const initialCashState: Partial<Record<ElementTypes, typeof initialState>> = {
@@ -78,6 +80,7 @@ export const initialCashState: Partial<Record<ElementTypes, typeof initialState>
 };
 
 export const defaultElementIds = {
+  // Card Element Ids
   'credit-card': 'pay-theory-credit-card',
   number: 'pay-theory-credit-card-number',
   exp: 'pay-theory-credit-card-exp',
@@ -88,12 +91,21 @@ export const defaultElementIds = {
   city: 'pay-theory-credit-card-city',
   state: 'pay-theory-credit-card-state',
   zip: 'pay-theory-credit-card-zip',
+  // ACH Element Ids
   'account-number': 'pay-theory-ach-account-number',
   'ach-name': 'pay-theory-ach-account-name',
   'routing-number': 'pay-theory-ach-routing-number',
   'account-type': 'pay-theory-ach-account-type',
+  // EFT Element Ids
+  'bank-account-number': 'pay-theory-bank-account-number',
+  'bank-account-name': 'pay-theory-bank-account-name',
+  'bank-account-type': 'pay-theory-bank-account-type',
+  'bank-institution-number': 'pay-theory-bank-institution-number',
+  'bank-transit-number': 'pay-theory-bank-transit-number',
+  // Cash Element Ids
   'cash-name': 'pay-theory-cash-name',
   'cash-contact': 'pay-theory-cash-contact',
+  // Card Present Element Id
   'card-present': 'pay-theory-card-present',
 };
 
@@ -122,7 +134,19 @@ export interface cashElementIds {
   'cash-contact': string;
 }
 
-export type ElementTypes = keyof achElementIds | keyof cardElementIds | keyof cashElementIds;
+export interface eftElementIds {
+  'account-number': string;
+  'account-name': string;
+  'account-type': string;
+  'institution-number': string;
+  'transit-number': string;
+}
+
+export type ElementTypes =
+  | keyof achElementIds
+  | keyof cardElementIds
+  | keyof cashElementIds
+  | keyof eftElementIds;
 
 export const checkoutButtonField = 'pay-theory-checkout-button';
 export const checkoutQRField = 'pay-theory-checkout-qr';
@@ -134,6 +158,14 @@ export const achFieldTypes: {
 } = {
   transacting: ['account-number'],
   siblings: ['account-name', 'account-type', 'routing-number'],
+};
+
+export const eftFieldTypes: {
+  transacting: (keyof eftElementIds)[];
+  siblings: (keyof eftElementIds)[];
+} = {
+  transacting: ['account-number'],
+  siblings: ['account-name', 'account-type', 'institution-number', 'transit-number'],
 };
 
 export const cashFieldTypes: {
@@ -169,41 +201,62 @@ export const cardFieldTypes: {
   ],
 };
 
-export const ACH_IFRAME = 'account-number-iframe';
+export const BANK_IFRAME = 'account-number-iframe';
 export const CARD_IFRAME = 'card-number-iframe';
 export const CASH_IFRAME = 'cash-name-iframe';
-export type TransactingType = 'card' | 'ach' | 'cash';
+export type TransactingType = 'card' | 'bank' | 'cash';
 
 export const hostedFieldMap: Record<TransactingType, string> = {
   cash: CASH_IFRAME,
   card: CARD_IFRAME,
-  ach: ACH_IFRAME,
+  bank: BANK_IFRAME,
 };
 
-const isCardField = (string: ElementTypes) =>
-  string.startsWith('card') || string.startsWith('billing');
-const isCashField = (string: ElementTypes) => string.startsWith('cash');
-const isACHField = (string: ElementTypes) =>
-  string.startsWith('account') || string.startsWith('routing');
+const isCardField = (string: ElementTypes) => {
+  return (
+    cardFieldTypes.transacting.includes(string as keyof cardElementIds) ||
+    cardFieldTypes.siblings.includes(string as keyof cardElementIds)
+  );
+};
+const isCashField = (string: ElementTypes) => {
+  return (
+    cashFieldTypes.transacting.includes(string as keyof cashElementIds) ||
+    cashFieldTypes.siblings.includes(string as keyof cashElementIds)
+  );
+};
+
+const isBankField = (string: ElementTypes) => {
+  return (
+    achFieldTypes.transacting.includes(string as keyof achElementIds) ||
+    achFieldTypes.siblings.includes(string as keyof achElementIds) ||
+    eftFieldTypes.transacting.includes(string as keyof eftElementIds) ||
+    eftFieldTypes.siblings.includes(string as keyof eftElementIds)
+  );
+};
 
 const isFieldType = (type: ElementTypes): TransactingType | false => {
   if (isCardField(type)) return 'card';
   if (isCashField(type)) return 'cash';
-  if (isACHField(type)) return 'ach';
+  if (isBankField(type)) return 'bank';
   return false;
 };
 
-export { isCardField, isACHField, isCashField, isFieldType };
+export { isCardField, isBankField, isCashField, isFieldType };
 
 // ID's for the custom web components
-export const ACH_ACCOUNT_NAME = 'pay-theory-ach-account-name-tag-frame';
-export const ACH_ACCOUNT_NUMBER = 'pay-theory-ach-account-number-tag-frame';
-export const ACH_ACCOUNT_TYPE = 'pay-theory-ach-account-type-tag-frame';
-export const ACH_ROUTING_NUMBER = 'pay-theory-ach-routing-number-tag-frame';
+// Bank Element Ids
+export const BANK_ACCOUNT_NAME = 'pay-theory-bank-account-name-tag-frame';
+export const BANK_ACCOUNT_NUMBER = 'pay-theory-bank-account-number-tag-frame';
+export const BANK_ACCOUNT_TYPE = 'pay-theory-bank-account-type-tag-frame';
+export const BANK_ROUTING_NUMBER = 'pay-theory-bank-routing-number-tag-frame';
+export const BANK_INSTITUTION_NUMBER = 'pay-theory-bank-institution-number-tag-frame';
+export const BANK_TRANSIT_NUMBER = 'pay-theory-bank-transit-number-tag-frame';
 
+// Cash Element Ids
 export const CASH_CONTACT = 'pay-theory-cash-contact-tag-frame';
 export const CASH_NAME = 'pay-theory-cash-name-tag-frame';
 
+// Card Element Ids
 export const COMBINED_CARD = 'pay-theory-credit-card-tag-frame';
 export const CARD_NAME = 'pay-theory-credit-card-card-name-tag-frame';
 export const CARD_BILLING_LINE1 = 'pay-theory-credit-card-billing-line1-tag-frame';
@@ -216,16 +269,23 @@ export const CARD_EXP = 'pay-theory-credit-card-card-exp-tag-frame';
 export const CARD_NUMBER = 'pay-theory-credit-card-card-number-tag-frame';
 
 export const transactingWebComponentIds = [
-  ACH_ACCOUNT_NUMBER,
+  BANK_ACCOUNT_NUMBER,
   CASH_NAME,
   COMBINED_CARD,
   CARD_NUMBER,
 ];
 export const achWebComponentIds = [
-  ACH_ACCOUNT_NAME,
-  ACH_ACCOUNT_NUMBER,
-  ACH_ACCOUNT_TYPE,
-  ACH_ROUTING_NUMBER,
+  BANK_ACCOUNT_NAME,
+  BANK_ACCOUNT_NUMBER,
+  BANK_ACCOUNT_TYPE,
+  BANK_ROUTING_NUMBER,
+];
+export const eftWebComponentIds = [
+  BANK_ACCOUNT_NUMBER,
+  BANK_ACCOUNT_NAME,
+  BANK_ACCOUNT_TYPE,
+  BANK_INSTITUTION_NUMBER,
+  BANK_TRANSIT_NUMBER,
 ];
 export const cashWebComponentIds = [CASH_CONTACT, CASH_NAME];
 export const cardWebComponentIds = [
@@ -244,13 +304,16 @@ export const cardWebComponentIds = [
 export type webComponentIds =
   | (typeof achWebComponentIds)[number]
   | (typeof cashWebComponentIds)[number]
-  | (typeof cardWebComponentIds)[number];
+  | (typeof cardWebComponentIds)[number]
+  | (typeof eftWebComponentIds)[number];
 
 export const webComponentMap: Record<ElementTypes, webComponentIds> = {
-  'account-name': ACH_ACCOUNT_NAME,
-  'account-number': ACH_ACCOUNT_NUMBER,
-  'account-type': ACH_ACCOUNT_TYPE,
-  'routing-number': ACH_ROUTING_NUMBER,
+  'account-name': BANK_ACCOUNT_NAME,
+  'account-number': BANK_ACCOUNT_NUMBER,
+  'account-type': BANK_ACCOUNT_TYPE,
+  'routing-number': BANK_ROUTING_NUMBER,
+  'institution-number': BANK_INSTITUTION_NUMBER,
+  'transit-number': BANK_TRANSIT_NUMBER,
   'cash-contact': CASH_CONTACT,
   'cash-name': CASH_NAME,
   'card-cvv': CARD_CVV,
@@ -269,12 +332,12 @@ export const transactingWebComponentMap: Record<
   TransactingType,
   {
     ids: (typeof transactingWebComponentIds)[number][];
-    defaultState: typeof initialCardState | typeof initialAchState | typeof initialCashState;
+    defaultState: typeof initialCardState | typeof initialBankState | typeof initialCashState;
   }
 > = {
-  ach: {
-    ids: [ACH_ACCOUNT_NUMBER],
-    defaultState: initialAchState,
+  bank: {
+    ids: [BANK_ACCOUNT_NUMBER],
+    defaultState: initialBankState,
   },
   cash: {
     ids: [CASH_NAME],

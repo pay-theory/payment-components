@@ -28,23 +28,24 @@ export const FIELDS_READY_STEP = 'pt-static:fields-ready';
 
 export interface PayTheoryDataObject {
   account_code: string | number;
-  reference: string | number;
-  payment_parameters: string;
-  payor_id?: string;
-  send_receipt?: boolean;
-  receipt_description?: string;
-  invoice_id?: string;
-  recurring_id?: string;
-  timezone?: string;
-  fee?: number;
   billing_info?: BillingInfo;
+  fee?: number;
   healthExpenseType?: HealthExpenseType;
+  invoice_id?: string;
   level3DataSummary?: Level3DataSummary;
+  oneTimeUseToken?: boolean;
+  payor_id?: string;
+  payment_parameters: string;
+  receipt_description?: string;
+  recurring_id?: string;
+  reference: string | number;
+  send_receipt?: boolean;
+  timezone?: string;
 }
 
 export interface ModifiedTransactProps extends TransactProps {
-  payTheoryData: PayTheoryDataObject;
   customerInfo?: PayorInfo;
+  payTheoryData: PayTheoryDataObject;
   shippingDetails?: PayorInfo;
 }
 
@@ -62,7 +63,10 @@ export const parseInputParams = (
     account_code: inputParams.accountCode ?? (metadata['pay-theory-account-code'] as string),
     billing_info: (inputParams as TransactProps).billingInfo,
     fee: (inputParams as TransactProps).fee,
+    healthExpenseType: inputCopy.healthExpenseType,
     invoice_id: invoiceId,
+    level3DataSummary: inputCopy.level3DataSummary,
+    oneTimeUseToken: inputCopy.oneTimeUseToken ?? false,
     payment_parameters:
       inputParams.paymentParameters ?? (metadata['payment-parameters-name'] as string),
     payor_id: payorId,
@@ -74,8 +78,6 @@ export const parseInputParams = (
       (inputParams as TransactProps).reference ?? (metadata['pay-theory-reference'] as string),
     send_receipt: (inputParams as TransactProps).sendReceipt ?? !!metadata['pay-theory-receipt'],
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    healthExpenseType: inputCopy.healthExpenseType,
-    level3DataSummary: inputCopy.level3DataSummary,
   };
   inputCopy.metadata = metadata;
   return inputCopy;

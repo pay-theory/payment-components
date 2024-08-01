@@ -6,10 +6,10 @@ import {
   BillingInfo,
   ErrorResponse,
   ErrorType,
+  HealthExpenseType,
   Level3DataSummary,
   PayorInfo,
   TaxIndicatorType,
-  HealthExpenseType,
 } from '../common/pay_theory_types';
 import {
   ModifiedCheckoutDetails,
@@ -30,11 +30,13 @@ const findAccountNumber = findField('account-number');
 const findBankCode = findField('routing-number');
 const findAccountType = findField('account-type');
 const findAccountName = findField('account-name');
+const findInstitutionNumber = findField('institution-number');
+const findTransitNumber = findField('transit-number');
 
 // partner mode is used to indicate migration builds
 const checkApiKey = (key: unknown) => {
   if (!validate<string>(key, 'string')) {
-    throw Error(`Valid API Key not found. Please provide a valid API Key`);
+    return handleTypedError(ErrorType.INVALID_PARAM, 'API Key is required and must be a string');
   }
   const keyParts = key.split('-');
   const environment = keyParts[0];
@@ -44,7 +46,10 @@ const checkApiKey = (key: unknown) => {
   }
 
   if (environment !== common.PARTNER || stage !== common.STAGE) {
-    throw Error(`Valid API Key not found. Please provide a valid API Key`);
+    return handleTypedError(
+      ErrorType.INVALID_PARAM,
+      'Valid API Key not found. Please provide a valid API Key',
+    );
   }
 };
 
@@ -52,37 +57,57 @@ const validate = <T>(value: unknown, type: string): value is T => {
   return typeof value === type && Boolean(value);
 };
 
-const checkFeeMode = (mode: unknown) => {
+const checkFeeMode = (mode: unknown): ErrorResponse | null => {
   if (
     !validate<string>(mode, 'string') ||
     ![common.MERCHANT_FEE, common.SERVICE_FEE].includes(mode)
   ) {
-    console.error(
+    return handleTypedError(
+      ErrorType.INVALID_PARAM,
       `Fee Mode should be either 'merchant_fee' or 'service_fee' which are also available as constants at window.paytheory.MERCHANT_FEE and window.paytheory.SERVICE_FEE`,
     );
   }
+  return null;
 };
 
-const checkMetadata = (metadata: unknown) => {
+const checkMetadata = (metadata: unknown): ErrorResponse | null => {
   if (!validate(metadata, 'object')) {
-    throw Error(`Metadata should be a JSON Object`);
+    // throw Error(`Metadata should be a JSON Object`);
+    return handleTypedError(ErrorType.INVALID_PARAM, `Metadata should be a JSON Object.`);
   }
+  return null;
 };
 
-const checkStyles = (styles: unknown) => {
+const checkStyles = (styles: unknown): ErrorResponse | null => {
   if (!validate(styles, 'object')) {
-    throw Error(
-      `Styles should be a JSON Object. An example of the object is at https://github.com/pay-theory/payment-components`,
+    return handleTypedError(
+      ErrorType.INVALID_PARAM,
+      `Styles should be a JSON Object.
+      An example of the object is at https://docs.paytheory.com/docs/sdk/javascript/hosted_fields#styles-object`,
     );
   }
+  return null;
 };
 
-const checkAmount = (amount: unknown) => {
+const checkAmount = (amount: unknown): ErrorResponse | null => {
   const error = isValidAmount(amount);
+  if (error) return handleTypedError(ErrorType.INVALID_PARAM, error.error);
+  return null;
+};
 
-  if (error) {
-    throw Error(error.error);
+const supportedCountries = ['USA', 'CAN'];
+
+const checkCountry = (country: unknown): ErrorResponse | null => {
+  if (!validate<string>(country, 'string')) {
+    return handleTypedError(ErrorType.INVALID_PARAM, 'Country is required and must be a string');
   }
+  if (!supportedCountries.includes(country)) {
+    return handleTypedError(
+      ErrorType.INVALID_PARAM,
+      `You must pass in a supported country. Contact Pay Theory for more information.`,
+    );
+  }
+  return null;
 };
 
 const checkInitialParams = (
@@ -91,12 +116,21 @@ const checkInitialParams = (
   metadata: unknown,
   styles: unknown,
   amount: unknown,
-) => {
-  checkApiKey(key);
-  if (mode) checkFeeMode(mode);
-  checkMetadata(metadata);
-  checkStyles(styles);
-  if (amount !== undefined) checkAmount(amount);
+  country: unknown,
+): ErrorResponse | null => {
+  let result = checkApiKey(key);
+  if (result) return result;
+  if (mode) result = checkFeeMode(mode);
+  if (result) return result;
+  result = checkMetadata(metadata);
+  if (result) return result;
+  result = checkStyles(styles);
+  if (result) return result;
+  if (amount !== undefined) result = checkAmount(amount);
+  if (result) return result;
+  result = checkCountry(country);
+  if (result) return result;
+  return null;
 };
 
 // Checks the dom for elements and returns errors if there are missing elements or conflicting elements
@@ -149,12 +183,49 @@ const achCheck = [
   },
 ];
 
+const eftCheck = [
+  {
+    check: findAccountName,
+    error: 'missing EFT account name field required for payments',
+  },
+  {
+    check: findAccountNumber,
+    error: 'missing EFT account number field required for payments',
+  },
+  {
+    check: findAccountType,
+    error: 'missing EFT account type field required for payments',
+  },
+  {
+    check: findInstitutionNumber,
+    error: 'missing EFT institution number field required for payments',
+  },
+  {
+    check: findTransitNumber,
+    error: 'missing EFT transit number field required for payments',
+  },
+];
+
 const findAchError = (processedElements: PayTheoryHostedField[]): string | false => {
   if (processedElements.length === 0) {
     return false;
   }
 
   achCheck.forEach(obj => {
+    if (processedElements.reduce(obj.check, false) === false) {
+      return obj.error;
+    }
+  });
+
+  return false;
+};
+
+const findEftError = (processedElements: PayTheoryHostedField[]): string | false => {
+  if (processedElements.length === 0) {
+    return false;
+  }
+
+  eftCheck.forEach(obj => {
     if (processedElements.reduce(obj.check, false) === false) {
       return obj.error;
     }
@@ -563,6 +634,7 @@ export {
   findAchError,
   findCardError,
   findCashError,
+  findEftError,
   formatPayorObject,
   validate,
   isValidAmount,
