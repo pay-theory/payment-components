@@ -19,7 +19,7 @@
         ]
     },
     "scripts": {
-        "build-env": "env BUILD_ENV=$STAGE APP_ID=APrPDbJxbZuiRuwN3NjfajpH webpack",
+        "build-env": "echo 'target_mode' && echo $TARGET_MODE && env BUILD_ENV=$STAGE APP_ID=APrPDbJxbZuiRuwN3NjfajpH webpack",
         "build-aron": "env BUILD_ENV=aron APP_ID=APrPDbJxbZuiRuwN3NjfajpH webpack",
         "build-dev": "env BUILD_ENV=dev APP_ID=APrPDbJxbZuiRuwN3NjfajpH webpack",
         "build-stage": "env BUILD_ENV=stage APP_ID=APpSQimXFrjSU8bzNzhXLLFH webpack",
