@@ -4,10 +4,14 @@
 import PayTheoryHostedField from '../pay-theory-hosted-field';
 import common from '../../common';
 import {
-  ACH_IFRAME,
+  achFieldTypes,
+  BANK_IFRAME,
   CARD_IFRAME,
+  cardFieldTypes,
   CASH_IFRAME,
+  cashFieldTypes,
   defaultFeeMode,
+  eftFieldTypes,
   ElementTypes,
   TransactingType,
   transactingWebComponentMap,
@@ -60,9 +64,7 @@ export interface TokenizeDataObject {
 }
 
 interface ConstructorProps {
-  fieldTypes: ElementTypes[];
-  requiredValidFields: ElementTypes[];
-  transactingIFrameId: typeof CARD_IFRAME | typeof ACH_IFRAME | typeof CASH_IFRAME;
+  transactingIFrameId: typeof CARD_IFRAME | typeof BANK_IFRAME | typeof CASH_IFRAME;
   stateGroup: Partial<StateObject>;
   transactingType: TransactingType;
 }
@@ -81,6 +83,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   // Used to fetch the pt-token attribute to initialize the hosted field
   protected _apiKey: string | undefined;
   protected _challengeOptions: object | undefined;
+  protected _session: string | undefined;
 
   // Used to track the metadata that is passed in for a session
   protected _metadata: Record<string | number, string | number | boolean> | undefined;
@@ -116,7 +119,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   protected _isValid = false;
 
   // Help to track the transacting type of the transactional element
-  protected _transactingIFrameId: typeof CARD_IFRAME | typeof ACH_IFRAME | typeof CASH_IFRAME;
+  protected _transactingIFrameId: typeof CARD_IFRAME | typeof BANK_IFRAME | typeof CASH_IFRAME;
   protected _transactingType: TransactingType;
 
   // Function used to remove event listeners
@@ -160,8 +163,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       type: string;
       field: ElementTypes;
     }) => Promise<void>;
-    this._fieldTypes = props.fieldTypes;
-    this._requiredValidFields = props.requiredValidFields;
     this._transactingIFrameId = props.transactingIFrameId;
     this._stateGroup = props.stateGroup;
     this._transactingType = props.transactingType;
@@ -389,11 +390,16 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         amount: this._amount,
         card_fee: undefined,
         ach_fee: undefined,
+        bank_fee: undefined,
       },
     };
 
     if (this._fee !== undefined && this._transactingType !== 'cash') {
       newState.service_fee[`${this._transactingType}_fee`] = this._fee;
+      // This is for backwards compatibility with the bank fee
+      if (this._transactingType === 'bank') {
+        newState.service_fee.ach_fee = this._fee;
+      }
     }
 
     // Loop through all the other transacting elements and add their state to the state group or use the default state
@@ -407,6 +413,10 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             if (transactingElement.fee && transactingElement.transactingType !== 'cash') {
               newState.service_fee[`${transactingElement.transactingType}_fee`] =
                 transactingElement.fee;
+              // This is for backwards compatibility with the bank fee
+              if (transactingElement.transactingType === 'bank') {
+                newState.service_fee.ach_fee = transactingElement.fee;
+              }
             }
             return transactingElement.stateGroup;
           } else {
@@ -444,6 +454,12 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
         });
       }
     }
+
+    // Ensure that if we pass a valid string that includes bank that we also pass back ACH for backwards compatibility
+    if (valid.includes('bank')) {
+      valid = valid + ' ach';
+    }
+
     // Send the updated valid string
     window.postMessage(
       {
@@ -642,6 +658,45 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   get amount() {
     return this._amount;
+  }
+
+  set session(value: string) {
+    this._session = value;
+  }
+
+  set country(value: string) {
+    this._country = value;
+    // When the country is set we should also set the required fields for the element
+    switch (this._transactingIFrameId) {
+      case CARD_IFRAME:
+        this._fieldTypes = [...cardFieldTypes.transacting, ...cardFieldTypes.siblings];
+        this._requiredValidFields = ['card-number', 'card-cvv', 'card-exp', 'billing-zip'];
+        break;
+      case BANK_IFRAME:
+        if (value === 'CAN') {
+          this._fieldTypes = [...eftFieldTypes.transacting, ...eftFieldTypes.siblings];
+          this._requiredValidFields = [
+            'account-number',
+            'account-name',
+            'account-type',
+            'institution-number',
+            'transit-number',
+          ];
+        } else {
+          this._fieldTypes = [...achFieldTypes.transacting, ...achFieldTypes.siblings];
+          this._requiredValidFields = [
+            'account-number',
+            'account-name',
+            'account-type',
+            'routing-number',
+          ];
+        }
+        break;
+      case CASH_IFRAME:
+        this._fieldTypes = [...cashFieldTypes.transacting, ...cashFieldTypes.siblings];
+        this._requiredValidFields = ['cash-name', 'cash-contact'];
+        break;
+    }
   }
 }
 

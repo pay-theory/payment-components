@@ -164,6 +164,7 @@ export interface TransactProps {
   recurringId?: string;
   healthExpenseType?: HealthExpenseType;
   level3DataSummary?: Level3DataSummary;
+  oneTimeUseToken?: boolean;
 }
 
 export interface PayTheoryPaymentFieldsInput {
@@ -175,6 +176,7 @@ export interface PayTheoryPaymentFieldsInput {
   session?: string; // This is used for internal use to connect a button and qr code to a hosted checkout page
   feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE;
   amount?: number;
+  country?: string;
 }
 
 export enum AcceptedPaymentMethods {
@@ -254,7 +256,10 @@ export interface FieldState {
 }
 
 export type StateObject = Record<ElementTypes, FieldState> &
-  Record<'service_fee', { amount?: number; ach_fee?: number; card_fee?: number }>;
+  Record<
+    'service_fee',
+    { amount?: number; ach_fee?: number; card_fee?: number; bank_fee?: number }
+  >;
 
 export type PlaceholderObject = Partial<Record<ElementTypes, string>>;
 

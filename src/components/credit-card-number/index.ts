@@ -1,13 +1,9 @@
 import PayTheoryHostedFieldTransactional from '../pay-theory-hosted-field-transactional';
-import { CARD_IFRAME, CARD_NUMBER, cardFieldTypes, initialCardState } from '../../common/data';
+import { CARD_IFRAME, CARD_NUMBER, initialCardState } from '../../common/data';
 
 class CreditCardNumberFrame extends PayTheoryHostedFieldTransactional {
   constructor() {
-    const transactingFieldTypes = cardFieldTypes.transacting;
-    const siblingFieldTypes = cardFieldTypes.siblings;
     super({
-      fieldTypes: [...transactingFieldTypes, ...siblingFieldTypes],
-      requiredValidFields: ['card-number', 'card-cvv', 'card-exp', 'billing-zip'],
       transactingIFrameId: CARD_IFRAME,
       stateGroup: initialCardState,
       transactingType: 'card',
