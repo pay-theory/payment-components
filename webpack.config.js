@@ -1,14 +1,14 @@
 const path = require('path');
 const webpack = require('webpack');
-const devtool = 'inline-source-map'
+const devtool = 'inline-source-map';
 //const devtool = false
 module.exports = {
   devtool,
   resolve: {
     extensions: ['.js', '.ts'],
     fallback: {
-      util: require.resolve('util/')
-    }
+      util: require.resolve('util/'),
+    },
   },
   entry: './src/index.js',
   output: {
@@ -31,42 +31,49 @@ module.exports = {
       module: false,
     },
   },
-  mode: "production",
+  mode: 'production',
   module: {
-    rules: [{
-      test: /\.m?js$/,
-      exclude: /(node_modules|bower_components)/,
-      use: {
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            [
-              "@babel/preset-env",
-              {
-                "useBuiltIns": "usage",
-                "modules": "auto",
-                "corejs": "3.6.5",
-                "targets": {
-                  "ie": "11"
-                }
-              }
-            ]
-          ],
-          plugins: ["@babel/plugin-transform-modules-commonjs", "@babel/plugin-transform-classes"]
-        }
-      }
-    }, {
-      test: /\.css$/i,
-      use: ['style-loader', 'css-loader'],
-    }, {
-      test: /\.svg$/,
-      loader: 'svg-inline-loader'
-    },
+    rules: [
+      {
+        test: /\.m?js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              [
+                '@babel/preset-env',
+                {
+                  useBuiltIns: 'usage',
+                  modules: 'auto',
+                  corejs: '3.6.5',
+                  targets: {
+                    ie: '11',
+                  },
+                },
+              ],
+            ],
+            plugins: [
+              '@babel/plugin-transform-modules-commonjs',
+              '@babel/plugin-transform-classes',
+            ],
+          },
+        },
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.svg$/,
+        loader: 'svg-inline-loader',
+      },
       {
         test: /\.ts?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
-      }],
+      },
+    ],
   },
   plugins: [
     new webpack.DefinePlugin({
@@ -82,6 +89,6 @@ module.exports = {
         STAGE: JSON.stringify(process.env.STAGE),
         TARGET_MODE: JSON.stringify(process.env.TARGET_MODE),
       },
-    })
+    }),
   ],
 };
