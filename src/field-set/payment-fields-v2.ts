@@ -45,9 +45,11 @@ interface ProcessedObject {
   eft: ProcessedObjectValue<eftElementIds> | null;
 }
 
+// Used to generate a UUID for the session id
 const generateUUID = (): string => {
   // eslint-disable-next-line scanjs-rules/property_crypto
   if (self.crypto && self.crypto.randomUUID) return self.crypto.randomUUID();
+  // If the browser doesn't support crypto.randomUUID, generate a random UUID
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     const r = (Math.random() * 16) | 0,
       v = c == 'x' ? r : (r & 0x3) | 0x8;
