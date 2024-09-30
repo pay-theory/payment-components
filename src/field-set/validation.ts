@@ -518,7 +518,7 @@ const isValidL3DataSummary = (l3DataSummary: unknown): ErrorResponse | null => {
     );
   }
   if (l3DataSummary.prod_desc) {
-    if (!validate(l3DataSummary.prod_desc, 'array')) {
+    if (!validate(l3DataSummary.prod_desc, 'object')) {
       return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.prod_desc must be an array');
     }
     for (const value of l3DataSummary.prod_desc) {
