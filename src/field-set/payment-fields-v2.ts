@@ -45,6 +45,18 @@ interface ProcessedObject {
   eft: ProcessedObjectValue<eftElementIds> | null;
 }
 
+// Used to generate a UUID for the session id
+const generateUUID = (): string => {
+  // eslint-disable-next-line scanjs-rules/property_crypto
+  if (self.crypto?.randomUUID) return self.crypto.randomUUID();
+  // If the browser doesn't support crypto.randomUUID, generate a random UUID
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0,
+      v = c == 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 const mountProcessedElements = (props: {
   amount: number | undefined;
   apiKey: string;
@@ -250,8 +262,7 @@ const initializeFields = (
     eft: eftProcessed,
   };
 
-  // eslint-disable-next-line scanjs-rules/property_crypto
-  let sessionId: string = self.crypto.randomUUID();
+  let sessionId: string = generateUUID();
   // If there is a session passed in and the hostedCheckoutEndpoint is the same as the current host use that session id
   if (session && hostedCheckoutEndpoint.includes(window.location.host)) {
     sessionId = session;
