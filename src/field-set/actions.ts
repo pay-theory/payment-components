@@ -219,7 +219,7 @@ export const tokenizePaymentMethod = async (
       if (reconnectError) return reconnectError;
 
       transactingElement.initialized = true;
-      const { payorInfo = {}, payorId, metadata = {}, billingInfo } = props;
+      const { payorInfo = {}, payorId, metadata = {}, billingInfo, skipValidation } = props;
       //validate the input param types
       let error = valid.isValidTokenizeParams(payorInfo, metadata);
       if (error) return error;
@@ -239,6 +239,7 @@ export const tokenizePaymentMethod = async (
           metadata,
           payorId,
           billingInfo,
+          skipValidation,
         };
         const result = await transactingElement.tokenize(data, transactingElement);
         const parsedResult = parseResponse(result);
