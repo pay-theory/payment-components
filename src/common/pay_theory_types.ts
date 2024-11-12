@@ -144,6 +144,7 @@ export interface TokenizeProps {
   payorId?: string;
   metadata?: Record<string | number, string | number | boolean>;
   billingInfo?: BillingInfo;
+  skipValidation?: boolean;
 }
 
 export interface TransactProps {

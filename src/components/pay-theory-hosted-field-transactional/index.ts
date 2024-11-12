@@ -61,6 +61,7 @@ export interface TokenizeDataObject {
   metadata?: Record<string | number, string | number | boolean>;
   payorId?: string;
   billingInfo?: BillingInfo;
+  skipValidation?: boolean;
 }
 
 interface ConstructorProps {
