@@ -253,6 +253,8 @@ export const tokenizePaymentMethod = async (
             if (elements.length) {
               const transactingElement = elements[0] as PayTheoryHostedFieldTransactional;
               transactingElement.session = newSessionId;
+              transactingElement.initialized = false;
+              transactingElement.complete = false;
             }
           }
         }
