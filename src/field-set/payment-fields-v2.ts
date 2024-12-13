@@ -46,7 +46,7 @@ interface ProcessedObject {
 }
 
 // Used to generate a UUID for the session id
-const generateUUID = (): string => {
+export const generateUUID = (): string => {
   // eslint-disable-next-line scanjs-rules/property_crypto
   if (self.crypto?.randomUUID) return self.crypto.randomUUID();
   // If the browser doesn't support crypto.randomUUID, generate a random UUID
