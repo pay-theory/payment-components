@@ -218,7 +218,6 @@ export const tokenizePaymentMethod = async (
     } else {
       const reconnectError = await reconnectIfDisconnected(transactingElement);
       if (reconnectError) return reconnectError;
-
       transactingElement.initialized = true;
       const { payorInfo = {}, payorId, metadata = {}, billingInfo, skipValidation } = props;
       //validate the input param types
@@ -255,6 +254,7 @@ export const tokenizePaymentMethod = async (
               transactingElement.session = newSessionId;
               transactingElement.initialized = false;
               transactingElement.complete = false;
+              transactingElement.connected = false;
             }
           }
         }
