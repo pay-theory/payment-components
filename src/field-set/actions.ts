@@ -20,7 +20,6 @@ import {
 } from '../common/pay_theory_types';
 import { localizeCashBarcodeUrl, ModifiedTransactProps, parseResponse } from '../common/format';
 import { sendObserverMessage } from '../common/message';
-
 // Used to element to update the token on error or failure or mark as complete on success
 const updateElementFromAction = (
   message:
@@ -217,7 +216,6 @@ export const tokenizePaymentMethod = async (
     } else {
       const reconnectError = await reconnectIfDisconnected(transactingElement);
       if (reconnectError) return reconnectError;
-
       transactingElement.initialized = true;
       const { payorInfo = {}, payorId, metadata = {}, billingInfo, skipValidation } = props;
       //validate the input param types
@@ -244,6 +242,19 @@ export const tokenizePaymentMethod = async (
         const result = await transactingElement.tokenize(data, transactingElement);
         const parsedResult = parseResponse(result);
         updateElementFromAction(parsedResult, transactingElement);
+        // If the tokenization was successful but the validation was skipped, reset the fields
+        // This allows the user to modify the fields and tokenize again without getting an error
+        if (parsedResult.type === ResponseMessageTypes.TOKENIZED && skipValidation) {
+          for (const id of transactingWebComponentIds) {
+            const elements = document.getElementsByName(id);
+            if (elements.length) {
+              const transactingElement = elements[0] as PayTheoryHostedFieldTransactional;
+              transactingElement.initialized = false;
+              transactingElement.complete = false;
+              transactingElement.connected = false;
+            }
+          }
+        }
         sendObserverMessage(parsedResult);
         return parsedResult as TokenizedPaymentMethodResponse | ErrorResponse;
       } catch (e: unknown) {
