@@ -458,10 +458,10 @@ const isValidFeeMode = (feeMode: string): ErrorResponse | null => {
 };
 
 const isValidFeeAmount = (fee: unknown): ErrorResponse | null => {
-  if ((fee || typeof fee === 'number') && !validate(fee, 'number')) {
+    if (typeof fee === 'number' && fee >= 0) {
+        return null;
+    }
     return handleTypedError(ErrorType.INVALID_PARAM, 'fee must be a positive integer');
-  }
-  return null;
 };
 
 const isValidBillingInfo = (billingInfo: unknown): ErrorResponse | null => {
