@@ -458,7 +458,7 @@ const isValidFeeMode = (feeMode: string): ErrorResponse | null => {
 };
 
 const isValidFeeAmount = (fee: unknown): ErrorResponse | null => {
-    if (Number(fee) >= 0) {
+    if (fee === undefined || Number(fee) >= 0) {
         return null;
     }
     return handleTypedError(ErrorType.INVALID_PARAM, 'fee must be a positive integer');
