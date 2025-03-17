@@ -114,16 +114,22 @@ The pre-commit hook via Husky and lint-staged is now compatible with ESLint 9.x.
 ```json
 "lint-staged": {
   "*.{ts,tsx,js,jsx}": [
-    "npm run lint:fix",
     "npm run format:prettier"
   ]
 }
 ```
 
 This ensures that:
-1. ESLint runs with auto-fix capabilities
-2. Prettier formatting is still applied
-3. TypeScript type checking is performed separately
+1. Prettier formatting is applied to staged files
+2. TypeScript type checking is performed separately via the `check-ts` script
+3. ESLint linting is temporarily disabled in the pre-commit hook to avoid issues with the new configuration
+
+The ESLint linting can be run manually using the following commands:
+```bash
+npm run lint        # Run ESLint on all files
+npm run lint:fix    # Run ESLint with auto-fix on all files
+npm run lint:test   # Run ESLint only on test files
+```
 
 ## Migration Benefits
 
