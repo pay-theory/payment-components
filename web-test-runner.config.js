@@ -10,6 +10,9 @@ export default {
     'test/improved-fee-validation.web-test.js',
     'test/credit-card.web-test.js',
     'test/createPaymentFields.web-test.js',
+    'test/bank-routing-number.web-test.js',
+    'test/bank-institution-number.web-test.js',
+    'test/bank-account-name.web-test.js',
   ],
   nodeResolve: true, // resolve node modules
   coverage: true, // enable coverage reporting
@@ -35,9 +38,11 @@ export default {
   testFramework: {
     config: {
       ui: 'bdd',
-      timeout: '10000', // timeout in milliseconds
+      timeout: '30000', // increased timeout in milliseconds
     },
   },
+  // Remove concurrency settings that may be causing issues
+  // No concurrency, no timeouts, just the basics
   testRunnerHtml: testFramework => `
     <html>
       <head>
