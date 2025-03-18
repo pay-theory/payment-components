@@ -458,10 +458,16 @@ const isValidFeeMode = (feeMode: string): ErrorResponse | null => {
 };
 
 const isValidFeeAmount = (fee: unknown): ErrorResponse | null => {
-    if (fee === undefined || Number(fee) >= 0) {
-        return null;
-    }
-    return handleTypedError(ErrorType.INVALID_PARAM, 'fee must be a positive integer');
+  // Allow undefined and null fees
+  if (fee === undefined || fee === null) {
+    return null;
+  }
+
+  // Only allow actual number types and ensure they're non-negative
+  if (typeof fee === 'number' && fee >= 0) {
+    return null;
+  }
+  return handleTypedError(ErrorType.INVALID_PARAM, 'fee must be a positive integer');
 };
 
 const isValidBillingInfo = (billingInfo: unknown): ErrorResponse | null => {
