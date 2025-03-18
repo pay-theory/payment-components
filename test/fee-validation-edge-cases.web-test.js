@@ -168,17 +168,15 @@ describe('Fee Validation Edge Cases', () => {
         const numberValue = Number(value);
         const isValid = !isNaN(numberValue) && numberValue >= 0;
 
-        it(`Special string "${value}" (converts to ${numberValue}, isValid=${isValid})`, () => {
-          // Current impl accepts strings that convert to positive numbers
-          if (isValid) {
-            expect(currentResult, 'Current implementation').to.be.null;
-          } else {
-            expect(currentResult, 'Current implementation').to.not.be.null;
-          }
+        // Current impl accepts strings that convert to positive numbers
+        if (isValid) {
+          expect(currentResult, `Current implementation for "${value}"`).to.be.null;
+        } else {
+          expect(currentResult, `Current implementation for "${value}"`).to.not.be.null;
+        }
 
-          // Improved implementation rejects all strings
-          expect(improvedResult, 'Improved implementation').to.not.be.null;
-        });
+        // Improved implementation rejects all strings
+        expect(improvedResult, `Improved implementation for "${value}"`).to.not.be.null;
       });
     });
 
