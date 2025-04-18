@@ -67,6 +67,7 @@ import {
   readyObserver,
   cashObserver,
 } from './common/observe';
+import { PayTheoryMessenger } from './messenger';
 
 const create = (apiKey, styles, metadata, feeMode) =>
   createPaymentFieldsLegacy(apiKey, undefined, styles, metadata, feeMode);
@@ -114,5 +115,8 @@ window.paytheory = {
   BLACK,
   PURPLE,
 };
+
+// Add the PayTheoryMessenger to the window object
+window.PayTheoryMessenger = PayTheoryMessenger;
 
 export default window.paytheory;
