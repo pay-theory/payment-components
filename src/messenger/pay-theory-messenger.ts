@@ -52,8 +52,8 @@ class PayTheoryMessenger {
       // Create iframe with token
       this.createIframe(tokenString);
 
-      // Wait for iframe to load
-      await this.waitForIframeLoad();
+      // Wait for iframe to be fully ready with bidirectional handshake
+      await this.waitForIframeReady();
 
       // Initialize the communication channel
       this.channel = new MessengerChannel(this.iframe);
@@ -111,42 +111,87 @@ class PayTheoryMessenger {
   }
 
   /**
-   * Wait for iframe to load
+   * Wait for iframe to be fully ready using bidirectional handshake
    */
-  private waitForIframeLoad(): Promise<void> {
+  private waitForIframeReady(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.iframe) {
         reject(new Error('Iframe does not exist'));
         return;
       }
 
-      if (this.iframe.contentDocument?.readyState === 'complete') {
-        resolve();
-        return;
-      }
-
+      // Set a reasonable timeout
       const timeout = setTimeout(() => {
-        reject(new Error('Iframe load timeout'));
-      }, 10000);
+        reject(new Error('Iframe ready timeout'));
+      }, 15000);
 
-      this.iframe.addEventListener(
-        'load',
-        () => {
-          clearTimeout(timeout);
-          resolve();
-        },
-        { once: true },
-      );
+      // First wait for the iframe to load
+      const checkIframeLoaded = () => {
+        if (this.iframe?.contentDocument?.readyState === 'complete') {
+          setupMessageListener();
+        } else {
+          this.iframe?.addEventListener('load', setupMessageListener, { once: true });
+        }
+      };
 
-      this.iframe.addEventListener(
-        'error',
-        () => {
-          clearTimeout(timeout);
-          reject(new Error('Iframe failed to load'));
-        },
-        { once: true },
-      );
+      // Then establish a handshake with the iframe content
+      const setupMessageListener = () => {
+        // Set up a one-time message listener for the ready signal
+        const readyMessageListener = (event: MessageEvent) => {
+          // Verify the origin for security
+          if (!this.isValidOrigin(event.origin)) return;
+          
+          // Check if it's our ready message
+          if (event.data && event.data.type === 'PT_MESSENGER_READY') {
+            clearTimeout(timeout);
+            window.removeEventListener('message', readyMessageListener);
+            resolve();
+          }
+        };
+        
+        window.addEventListener('message', readyMessageListener);
+        
+        // Send a ping to the iframe to check if it's already ready
+        // (in case we missed the ready event)
+        this.sendPingToIframe();
+        
+        // Also set an interval to keep pinging until we get a response
+        const pingInterval = setInterval(() => {
+          this.sendPingToIframe();
+        }, 500);
+        
+        // Clear the interval when promise settles
+        setTimeout(() => {
+          clearInterval(pingInterval);
+        }, 15000);
+      };
+      
+      checkIframeLoaded();
     });
+  }
+
+  /**
+   * Send a ping message to the iframe
+   */
+  private sendPingToIframe(): void {
+    if (!this.iframe || !this.iframe.contentWindow) return;
+    
+    try {
+      this.iframe.contentWindow.postMessage({ type: 'PT_MESSENGER_PING' }, '*');
+    } catch (e) {
+      // Ignore failures, we'll retry
+    }
+  }
+
+  /**
+   * Check if the origin is valid
+   */
+  private isValidOrigin(origin: string): boolean {
+    // Check if the origin is allowed
+    const allowedOrigins = [
+      hostedFieldsEndpoint
+    ];
+    return allowedOrigins.indexOf(origin) !== -1;
   }
 
   /**

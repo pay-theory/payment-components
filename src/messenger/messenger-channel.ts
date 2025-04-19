@@ -27,22 +27,23 @@ class MessengerChannel {
           reject(new Error('Connection timeout'));
         }, 5000);
 
-        // Define a one-time handler for the connection acknowledgement
-        const handleConnectionAck = (event: MessageEvent) => {
-          if (event.data.type === 'connection_ack') {
-            window.removeEventListener('message', handleConnectionAck);
+        // Create a message ID for the channel establishment
+        const establishChannelMessageId = `establish_channel_${this.messageCounter++}_${Date.now()}`;
+
+        // Add the establishment message to the queue
+        this.messageQueue.set(establishChannelMessageId, {
+          resolve: () => {
             clearTimeout(timeout);
             resolve();
-          }
-        };
-
-        // Listen for connection acknowledgement
-        window.addEventListener('message', handleConnectionAck);
+          },
+          reject,
+        });
 
         // Send the channel's port2 to the iframe
         this.iframe.contentWindow?.postMessage(
           {
             type: 'establish_channel',
+            messageId: establishChannelMessageId,
           },
           '*',
           [this.messageChannel.port2],
