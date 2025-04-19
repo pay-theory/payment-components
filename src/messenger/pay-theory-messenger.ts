@@ -189,9 +189,7 @@ class PayTheoryMessenger {
   private isValidOrigin(origin: string): boolean {
     // Check if the origin is allowed
     const allowedOrigins = [
-      'https://tags.static.paytheorylab.com',
-      'https://tags.static.paytheory.com',
-      // Add development origins as needed
+      hostedFieldsEndpoint
     ];
     return allowedOrigins.indexOf(origin) !== -1;
   }
