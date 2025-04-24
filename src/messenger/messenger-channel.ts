@@ -91,7 +91,8 @@ class MessengerChannel {
    * Handle incoming messages from the iframe
    */
   private handleMessage(event: MessageEvent): void {
-    const { messageId, type, data, error } = event.data;
+    const eventData = event.data;
+    const { messageId, type, error } = eventData;
 
     if (!messageId || !this.messageQueue.has(messageId)) {
       return;
@@ -103,7 +104,7 @@ class MessengerChannel {
     if (type === 'error') {
       reject(new Error(error || 'Unknown error'));
     } else {
-      resolve(data);
+      resolve(eventData);
     }
   }
 
