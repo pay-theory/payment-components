@@ -8,6 +8,7 @@ import {
   TransactionResponse,
   ErrorResponse,
 } from './types';
+
 import { hostedFieldsEndpoint } from '../common/network';
 import { generateUUID } from '../field-set/payment-fields-v2';
 
@@ -16,7 +17,7 @@ class PayTheoryMessenger {
   private sessionId?: string;
   private iframe: HTMLIFrameElement | null = null;
   private tokenManager: TokenManager;
-  private channel: MessengerChannel;
+  private channel: MessengerChannel | null = null;
   private state: StateManager;
   private eventListeners: Map<string, Function[]> = new Map();
 
@@ -51,19 +52,19 @@ class PayTheoryMessenger {
 
       // Create iframe with token
       this.createIframe(tokenString);
-
-      // Wait for iframe to be fully ready with bidirectional handshake
+      // Wait for iframe to load
       await this.waitForIframeReady();
 
       // Initialize the communication channel
-      this.channel = new MessengerChannel(this.iframe);
+      // Ok to use ! because we know the iframe is created just a few lines above
+      this.channel = new MessengerChannel(this.iframe!);
       await this.channel.connect();
-
       this.state.setState(MessengerState.CONNECTED);
       this.emitEvent('ready', { success: true });
 
       return { success: true };
     } catch (error) {
+      console.error('Error during initialization', error);
       this.state.setState(MessengerState.ERROR);
       return {
         success: false,
@@ -102,7 +103,7 @@ class PayTheoryMessenger {
     this.iframe.setAttribute('aria-hidden', 'true');
 
     // Set the iframe source to the secure tags lib messenger URL with token
-    this.iframe.src = `${hostedFieldsEndpoint}/messenger.html?token=${tokenString}`;
+    this.iframe.src = `${hostedFieldsEndpoint}/messenger?token=${tokenString}`;
 
     // Append to body
     document.body.appendChild(this.iframe);
@@ -140,32 +141,33 @@ class PayTheoryMessenger {
         const readyMessageListener = (event: MessageEvent) => {
           // Verify the origin for security
           if (!this.isValidOrigin(event.origin)) return;
-          
+
           // Check if it's our ready message
           if (event.data && event.data.type === 'PT_MESSENGER_READY') {
             clearTimeout(timeout);
+            clearInterval(pingInterval);
             window.removeEventListener('message', readyMessageListener);
             resolve();
           }
         };
-        
+
         window.addEventListener('message', readyMessageListener);
-        
+
         // Send a ping to the iframe to check if it's already ready
         // (in case we missed the ready event)
         this.sendPingToIframe();
-        
+
         // Also set an interval to keep pinging until we get a response
         const pingInterval = setInterval(() => {
           this.sendPingToIframe();
         }, 500);
-        
+
         // Clear the interval when promise settles
         setTimeout(() => {
           clearInterval(pingInterval);
         }, 15000);
       };
-      
+
       checkIframeLoaded();
     });
   }
@@ -175,10 +177,10 @@ class PayTheoryMessenger {
    */
   private sendPingToIframe(): void {
     if (!this.iframe || !this.iframe.contentWindow) return;
-    
+
     try {
       this.iframe.contentWindow.postMessage({ type: 'PT_MESSENGER_PING' }, '*');
-    } catch (e) {
+    } catch {
       // Ignore failures, we'll retry
     }
   }
@@ -188,9 +190,7 @@ class PayTheoryMessenger {
    */
   private isValidOrigin(origin: string): boolean {
     // Check if the origin is allowed
-    const allowedOrigins = [
-      hostedFieldsEndpoint
-    ];
+    const allowedOrigins = [hostedFieldsEndpoint];
     return allowedOrigins.indexOf(origin) !== -1;
   }
 
@@ -218,7 +218,6 @@ class PayTheoryMessenger {
         }, 100);
       });
     }
-
     // Try to re-initialize
     if (currentState === MessengerState.ERROR || currentState === MessengerState.IDLE) {
       return this.initialize();
@@ -242,6 +241,7 @@ class PayTheoryMessenger {
       const result = await this.sendReconnectToken(token);
 
       if (!result.success) {
+        console.error('Error refreshing connection', result);
         this.state.setState(MessengerState.ERROR);
         return result;
       }
@@ -249,6 +249,7 @@ class PayTheoryMessenger {
       this.state.setState(MessengerState.CONNECTED);
       return { success: true };
     } catch (error) {
+      console.error('Error refreshing connection', error);
       this.state.setState(MessengerState.ERROR);
       return {
         success: false,
@@ -262,6 +263,13 @@ class PayTheoryMessenger {
    */
   private async sendReconnectToken(token: string): Promise<MessengerResponse> {
     try {
+      if (!this.channel) {
+        return {
+          success: false,
+          error: 'Channel not initialized',
+        };
+      }
+
       const response = await this.channel.sendMessage<{ token: string }, MessengerResponse>(
         'reconnect_token',
         { token },
@@ -288,6 +296,12 @@ class PayTheoryMessenger {
           error: connectionCheck.error || 'Failed to ensure connection',
         };
       }
+      if (!this.channel) {
+        return {
+          success: false,
+          error: 'Channel not initialized',
+        };
+      }
 
       // Send message to get Apple Pay session
       const response = await this.channel.sendMessage<void, ApplePaySessionResponse>(
@@ -310,6 +324,7 @@ class PayTheoryMessenger {
 
       return response;
     } catch (error) {
+      console.error('Error getting Apple Pay session', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error getting Apple Pay session',
@@ -328,6 +343,13 @@ class PayTheoryMessenger {
           success: false,
           error:
             'Missing required fields: amount, digitalWalletPayload, and walletType are required',
+        };
+      }
+
+      if (!this.channel) {
+        return {
+          success: false,
+          error: 'Channel not initialized',
         };
       }
 
@@ -359,6 +381,7 @@ class PayTheoryMessenger {
         send_receipt: payload.sendReceipt,
         split: payload.split,
         wallet_type: payload.walletType,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       };
 
       // Send transaction
@@ -372,6 +395,7 @@ class PayTheoryMessenger {
         // Token expired, try refreshing and retry
         const refreshResult = await this.refreshConnection();
         if (!refreshResult.success) {
+          console.error('Error refreshing connection', refreshResult);
           this.state.setState(MessengerState.ERROR);
           return {
             success: false,
@@ -392,12 +416,14 @@ class PayTheoryMessenger {
         this.state.setState(MessengerState.COMPLETED);
         this.emitEvent('transaction_complete', response);
       } else {
+        console.error('Error processing transaction', response);
         this.state.setState(MessengerState.ERROR);
         this.emitEvent('transaction_error', response);
       }
 
       return response;
     } catch (error) {
+      console.error('Error processing transaction', error);
       this.state.setState(MessengerState.ERROR);
       return {
         success: false,
