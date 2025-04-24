@@ -2,7 +2,7 @@ import { fetchPtToken } from '../common/network';
 
 class TokenManager {
   private apiKey: string;
-  private sessionId?: string;
+  private sessionId: string;
   private token: string | null = null;
   private tokenExpiry: number = 0;
   private tokenFetchPromise: Promise<string> | null = null;
