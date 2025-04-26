@@ -25,22 +25,32 @@ const windowListenerHandler = (
   // If payTheory is not set to true on the event then ignore as it is not from one of our listeners
   if (!event.payTheory) return;
 
+  console.log(`[PT Debug] Received event from ${event.origin}:`, event.data);
+
   let message = event.data as string | { type: unknown; element?: ElementTypes };
   if (typeof message !== 'object') {
     try {
       // Parse the message as JSON.
       // All PT messages have either an object or a stringified object as the data
       message = JSON.parse(message) as { type: unknown; element?: ElementTypes };
+      console.log(`[PT Debug] Parsed message:`, message);
     } catch (e) {
       // Do nothing
+      console.error(`[PT Debug] Failed to parse message:`, e);
       return;
     }
   }
   if (validTarget(message)) {
+    console.log(`[PT Debug] Valid message target, handling message:`, message);
     const response = handleMessage(message);
     if (response instanceof Promise) {
-      response.catch((error: string) => handleError(error));
+      response.catch((error: string) => {
+        console.error(`[PT Debug] Error handling message:`, error);
+        handleError(error);
+      });
     }
+  } else {
+    console.log(`[PT Debug] Message did not match valid target criteria`);
   }
 };
 
@@ -92,9 +102,13 @@ export const handleHostedFieldMessage = (
   validTarget: validTargetFunc,
   handleMessage: handleMessageFunc,
 ) => {
+  console.log(
+    `[PT Debug] Setting up hosted field message listener for endpoint: ${hostedFieldsEndpoint}`,
+  );
   const func = generateiFrameWindowListener(validTarget, handleMessage);
   window.addEventListener('message', func);
   return () => {
+    console.log(`[PT Debug] Removing hosted field message listener`);
     window.removeEventListener('message', func);
   };
 };
