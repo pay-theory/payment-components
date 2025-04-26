@@ -16,6 +16,11 @@ export const getData = async (
   apiKey: string,
   sessionKey: string,
 ): Promise<PtToken | object> => {
+  console.log(`[PT Debug] Attempting to fetch data from ${url}`);
+  console.log(
+    `[PT Debug] API Key: ${apiKey ? 'PROVIDED' : 'MISSING'}, Session Key: ${sessionKey ? 'PROVIDED' : 'MISSING'}`,
+  );
+
   const options: RequestInit = {
     method: 'GET',
     mode: 'cors',
@@ -25,9 +30,18 @@ export const getData = async (
       'x-session-key': sessionKey,
     },
   };
-  /* global fetch */
-  const response = await fetch(url, options);
-  return await response.json();
+
+  try {
+    /* global fetch */
+    console.log(`[PT Debug] Making network request to: ${url}`);
+    const response = await fetch(url, options);
+    const data = await response.json();
+    console.log(`[PT Debug] Response received:`, data);
+    return data;
+  } catch (error) {
+    console.error(`[PT Debug] Error fetching data from ${url}:`, error);
+    return {};
+  }
 };
 
 export const PARTNER = process.env.ENV;
@@ -35,22 +49,41 @@ export const STAGE = process.env.STAGE;
 const TARGET_MODE = process.env.TARGET_MODE;
 const ENVIRONMENT = `${PARTNER}${TARGET_MODE}`;
 
+console.log('[PT Debug] Environment Variables:');
+console.log(`[PT Debug] PARTNER (ENV): ${PARTNER}`);
+console.log(`[PT Debug] STAGE: ${STAGE}`);
+console.log(`[PT Debug] TARGET_MODE: ${TARGET_MODE}`);
+console.log(`[PT Debug] Constructed ENVIRONMENT: ${ENVIRONMENT}`);
+
 export const transactionEndpoint = `https://${ENVIRONMENT}.${STAGE}.com/pt-token-service/`;
+console.log(`[PT Debug] Constructed transactionEndpoint: ${transactionEndpoint}`);
 
 export const hostedFieldsEndpoint = `https://${ENVIRONMENT}.tags.static.${STAGE}.com`;
+console.log(`[PT Debug] Constructed hostedFieldsEndpoint: ${hostedFieldsEndpoint}`);
 
 export const hostedCheckoutEndpoint = `https://${ENVIRONMENT}.checkout.${STAGE}.com`;
+console.log(`[PT Debug] Constructed hostedCheckoutEndpoint: ${hostedCheckoutEndpoint}`);
 
 export const fetchPtToken = async (
   apiKey: string,
   sessionKey: string,
 ): Promise<PtToken | false> => {
+  console.log(
+    `[PT Debug] Attempting to fetch pt-token with apiKey: ${apiKey ? 'PROVIDED' : 'MISSING'} and sessionKey: ${sessionKey ? 'PROVIDED' : 'MISSING'}`,
+  );
+  console.log(`[PT Debug] Token endpoint: ${transactionEndpoint}`);
+
   for (let i = 0; i < 5; i++) {
+    console.log(`[PT Debug] Attempt ${i + 1} to fetch pt-token`);
     const token = await getData(transactionEndpoint, apiKey, sessionKey);
+    console.log(`[PT Debug] Token response:`, token);
     if ((token as PtToken)['pt-token']) {
+      console.log(`[PT Debug] Successfully retrieved pt-token on attempt ${i + 1}`);
       return token as PtToken;
     }
+    console.log(`[PT Debug] Failed to retrieve pt-token on attempt ${i + 1}`);
   }
+  console.error(`[PT Debug] All attempts to fetch pt-token failed`);
   return false;
 };
 
