@@ -270,15 +270,26 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   connectedCallback() {
+    console.log(`[PT Debug] connectedCallback triggered for ${this._transactingIFrameId}`);
     // Set up a listener for the hosted field to message saying it is ready for the pt-token to be sent
     this._removeHostTokenListener = common.handleHostedFieldMessage(
       (event: { type: unknown; element: ElementTypes }) => {
-        return (
+        const matches =
           event.type === 'pt-static:pt_token_ready' &&
-          this._transactingIFrameId.includes(event.element)
-        );
+          this._transactingIFrameId.includes(event.element);
+        if (event.type === 'pt-static:pt_token_ready') {
+          console.log(
+            `[PT Debug] Received pt_token_ready event for element: ${event.element}, matches: ${matches}`,
+          );
+        }
+        return matches;
       },
-      () => this.sendPtToken(),
+      () => {
+        console.log(
+          `[PT Debug] Calling sendPtToken from pt_token_ready handler for ${this._transactingIFrameId}`,
+        );
+        return this.sendPtToken();
+      },
     );
 
     this._removeFeeListener = common.handleHostedFieldMessage(
@@ -522,6 +533,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set apiKey(value: string) {
+    console.log(`[PT Debug] Setting apiKey: ${value ? 'PROVIDED' : 'EMPTY'}`);
     this._apiKey = value;
   }
 
@@ -677,6 +689,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set session(value: string) {
+    console.log(`[PT Debug] Setting session: ${value ? 'PROVIDED' : 'EMPTY'}`);
     this._session = value;
   }
 
