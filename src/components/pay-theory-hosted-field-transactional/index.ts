@@ -173,13 +173,19 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     type: `pt-static:connection_token` | `pt-static:reset_host`,
   ): Promise<ErrorResponse | ReadyResponse> {
     try {
+      console.log(`[PT Debug] sendTokenAsync called with type: ${type}`);
+      console.log(
+        `[PT Debug] API Key present: ${this._apiKey ? 'YES' : 'NO'}, Session present: ${this._session ? 'YES' : 'NO'}`,
+      );
       const ptToken = await common.fetchPtToken(this._apiKey ?? '', this._session);
+      console.log(`[PT Debug] fetchPtToken result: ${ptToken ? 'SUCCESS' : 'FAILURE'}`);
       if (ptToken) {
         this._challengeOptions = ptToken.challengeOptions;
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as
           | HTMLIFrameElement
           | undefined;
         if (transactingIFrame) {
+          console.log(`[PT Debug] Found transacting iframe with id: ${this._transactingIFrameId}`);
           const message: AsyncMessage = {
             type: type,
             data: {
@@ -189,11 +195,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             },
             async: true,
           };
+          console.log(`[PT Debug] Sending message to iframe: ${type} with token`);
           const response = await sendAsyncPostMessage<ErrorMessage | ConnectedMessage>(
             message,
             transactingIFrame,
           );
+          console.log(`[PT Debug] Response from iframe:`, response);
           if (response.type === ERROR_STEP) {
+            console.error(`[PT Debug] Error response from iframe:`, response);
             return handleTypedError(ErrorType.NO_TOKEN, 'Unable validate connection token');
           }
 
@@ -204,18 +213,24 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
           }
 
           this._isConnected = true;
+          console.log(`[PT Debug] Connection established successfully`);
 
           return {
             type: 'READY',
             element: response.element,
           };
         } else {
+          console.error(
+            `[PT Debug] Transacting iframe not found with id: ${this._transactingIFrameId}`,
+          );
           return handleTypedError(ErrorType.NO_TOKEN, 'Unable to find transacting iframe');
         }
       } else {
+        console.error('[PT Debug] Failed to fetch pt-token');
         return handleTypedError(ErrorType.NO_TOKEN, 'Unable to fetch pt-token');
       }
     } catch (e) {
+      console.error(`[PT Debug] Exception in sendTokenAsync:`, e);
       return handleTypedError(ErrorType.NO_TOKEN, 'Unable to fetch pt-token');
     }
   }
