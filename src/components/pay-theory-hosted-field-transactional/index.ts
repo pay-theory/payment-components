@@ -136,6 +136,9 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   constructor(props: ConstructorProps) {
     super();
+    console.log(
+      `[PT Debug] Creating PayTheoryHostedFieldTransactional with transactingIFrameId: ${props.transactingIFrameId}, type: ${props.transactingType}`,
+    );
     this.transact = this.transact.bind(this) as () => Promise<
       | ConfirmationMessage
       | SuccessfulTransactionMessage
@@ -694,12 +697,14 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set country(value: string) {
+    console.log(`[PT Debug] Setting country to: ${value} for ${this._transactingIFrameId}`);
     this._country = value;
     // When the country is set we should also set the required fields for the element
     switch (this._transactingIFrameId) {
       case CARD_IFRAME:
         this._fieldTypes = [...cardFieldTypes.transacting, ...cardFieldTypes.siblings];
         this._requiredValidFields = ['card-number', 'card-cvv', 'card-exp', 'billing-zip'];
+        console.log(`[PT Debug] Set fieldTypes for CARD_IFRAME:`, this._fieldTypes);
         break;
       case BANK_IFRAME:
         if (value === 'CAN') {
@@ -711,6 +716,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             'institution-number',
             'transit-number',
           ];
+          console.log(`[PT Debug] Set fieldTypes for BANK_IFRAME (CAN):`, this._fieldTypes);
         } else {
           this._fieldTypes = [...achFieldTypes.transacting, ...achFieldTypes.siblings];
           this._requiredValidFields = [
@@ -719,11 +725,13 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             'account-type',
             'routing-number',
           ];
+          console.log(`[PT Debug] Set fieldTypes for BANK_IFRAME (non-CAN):`, this._fieldTypes);
         }
         break;
       case CASH_IFRAME:
         this._fieldTypes = [...cashFieldTypes.transacting, ...cashFieldTypes.siblings];
         this._requiredValidFields = ['cash-name', 'cash-contact'];
+        console.log(`[PT Debug] Set fieldTypes for CASH_IFRAME:`, this._fieldTypes);
         break;
     }
   }
