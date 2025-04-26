@@ -239,10 +239,12 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   async resetToken() {
+    console.log(`[PT Debug] Resetting token for ${this._transactingIFrameId}`);
     return this.sendTokenAsync(`pt-static:reset_host`);
   }
 
   async sendPtToken() {
+    console.log(`[PT Debug] Sending PT token for ${this._transactingIFrameId}`);
     return this.sendTokenAsync(`pt-static:connection_token`);
   }
 
