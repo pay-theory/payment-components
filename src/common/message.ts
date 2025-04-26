@@ -121,7 +121,10 @@ export const sendAsyncPostMessage = <T>(message: AsyncMessage, iframe: HTMLIFram
     // Opening a new message channel, so we can await the response from the hosted field
     const channel = new MessageChannel();
 
+    console.log(`[PT Debug] Sending async message to iframe: ${iframe.id}`, message);
+
     channel.port1.onmessage = ({ data }) => {
+      console.log(`[PT Debug] Received response via MessageChannel for ${iframe.id}:`, data);
       channel.port1.close();
       resolve(data);
     };
@@ -207,13 +210,14 @@ export const postMessageToHostedField = (id: string, message: object, channel?: 
   const elements = document.getElementsByName(id);
   if (elements.length) {
     const element = elements[0] as HTMLIFrameElement;
+    console.log(`[PT Debug] Posting message to hosted field ${id}:`, message);
     if (channel) {
       element.contentWindow.postMessage(message, hostedFieldsEndpoint, [channel]);
     } else {
       element.contentWindow.postMessage(message, hostedFieldsEndpoint);
     }
   } else {
-    console.log('Hosted Field not found');
+    console.error(`[PT Debug] Hosted Field not found: ${id}`);
   }
 };
 
