@@ -7,7 +7,6 @@
     "license": "MIT",
     "repository": "pay-theory/payment-components",
     "sideEffects": false,
-    "type": "module",
     "publishConfig": {
         "access": "public"
     },
