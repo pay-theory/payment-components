@@ -24,14 +24,17 @@
 #field-wrapper-card-number {
   min-width: 213px;
   flex-grow: 1;
+  flex: 2 1 0;
 }
 
 #field-wrapper-card-exp {
   min-width: 75px;
+  flex: 1 1 0;
 }
 
 #field-wrapper-card-cvv {
   min-width: 75px;
+  flex: 1 1 0;
 }
 
 #field-wrapper-address-postal_code {
