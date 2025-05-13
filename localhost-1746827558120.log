@@ -1,0 +1,1560 @@
+client:789 [vite] connecting...
+react-dom_client.js?v=f9780881:17985 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+client:912 [vite] connected.
+index.ts:10 Uncaught NotSupportedError: Failed to execute 'define' on 'CustomElementRegistry': the name "pay-theory-credit-card-card-cvv-tag-frame" has already been used with this registry
+    at 8648 (index.ts:10:23)
+    at n (bootstrap:19:32)
+    at nonce:1:26
+    at index.js:118:23
+    at index.js:118:23
+8648 @ index.ts:10
+n @ bootstrap:19
+(anonymous) @ nonce:1
+(anonymous) @ index.js:118
+(anonymous) @ index.js:118
+index.js:98 [PT DEBUG] Routing decision: Field type "account-type" is transactional: false
+index.js:232 [PT DEBUG] Rendering SiblingField for type: account-type with hub: account-number
+SiblingField.jsx:230 [PT DIAGNOSTIC] SiblingField (account-type) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-type):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-type has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-type has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-type dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-type
+index.js:98 [PT DEBUG] Routing decision: Field type "account-number" is transactional: true
+index.js:224 [PT DEBUG] Rendering TransactionalField for type: account-number
+ [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: false
+  sessionKey: false
+ [PT DEBUG] Hub field account-number has essential dependencies: true
+ [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = false
+         sessionKey = false
+       
+ [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+ [PT DEBUG] Routing decision: Field type "account-name" is transactional: false
+ [PT DEBUG] Rendering SiblingField for type: account-name with hub: account-number
+ [PT DIAGNOSTIC] SiblingField (account-name) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+ [PT DEBUG] Spoke field account-name has full dependencies: false
+ [PT DEBUG] Spoke field account-name has minimal dependencies: true
+ [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+ [PT DIAGNOSTIC] applySafeEventHandlers called for account-name
+ [PT DEBUG] Routing decision: Field type "routing-number" is transactional: false
+ [PT DEBUG] Rendering SiblingField for type: routing-number with hub: account-number
+ [PT DIAGNOSTIC] SiblingField (routing-number) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: routing-number):
+  dispatch: true
+  isHubReady: false
+ [PT DEBUG] Spoke field routing-number has full dependencies: false
+ [PT DEBUG] Spoke field routing-number has minimal dependencies: true
+ [PT DEBUG] Spoke field routing-number dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+ [PT DIAGNOSTIC] applySafeEventHandlers called for routing-number
+ [PT DIAGNOSTIC] Basic initialization useEffect running for account-type
+ [PT DEBUG] Field account-type basic initialization complete
+ [PT DIAGNOSTIC] Field account-type setting up global listener for hub-ready messages from account-number
+ [PT DIAGNOSTIC] Field account-type hub ready state changed to: NOT READY
+ [PT DIAGNOSTIC] Field account-type hub ready state: false, trustedOrigin: null - not sending sibling ready.
+ CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+ [PT DIAGNOSTIC] SiblingField (account-type) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-type):
+  dispatch: true
+  isHubReady: false
+ [PT DEBUG] Spoke field account-type has full dependencies: false
+ [PT DEBUG] Spoke field account-type has minimal dependencies: true
+ [PT DEBUG] Spoke field account-type dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+ [PT DIAGNOSTIC] applySafeEventHandlers called for account-type
+ [PT DIAGNOSTIC] No socket available for account-type
+ [PT DIAGNOSTIC] No session key available for account-type
+ [PT DIAGNOSTIC] No merchant UID available for account-type
+ [PT DIAGNOSTIC] Dependency status for account-type:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+ [PT DEBUG] Spoke field account-type state: dispatch=true, isHubReady=false
+ [Security] account-type connected to parent undefined
+ [PT DIAGNOSTIC] SiblingField (account-type) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-type):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-type has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-type has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-type dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-type
+SiblingField.jsx:187 [PT DIAGNOSTIC] Field account-type hub ready state changed to: NOT READY
+SiblingField.jsx:210 [PT DIAGNOSTIC] Field account-type hub ready state: false, trustedOrigin: http://localhost:5173 - not sending sibling ready.
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:125 [PT DIAGNOSTIC] Basic initialization useEffect running for account-name
+useFieldEvents.js:128 [PT DEBUG] Field account-name basic initialization complete
+SiblingField.jsx:123 [PT DIAGNOSTIC] Field account-name setting up global listener for hub-ready messages from account-number
+SiblingField.jsx:187 [PT DIAGNOSTIC] Field account-name hub ready state changed to: NOT READY
+SiblingField.jsx:210 [PT DIAGNOSTIC] Field account-name hub ready state: false, trustedOrigin: null - not sending sibling ready.
+SiblingField.jsx:230 [PT DIAGNOSTIC] SiblingField (account-name) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-name
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for account-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for account-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for account-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field account-name state: dispatch=true, isHubReady=false
+securityUtils.js:92 [Security] account-name connected to parent undefined
+SiblingField.jsx:230 [PT DIAGNOSTIC] SiblingField (account-name) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-name
+ [PT DIAGNOSTIC] Field account-name hub ready state changed to: NOT READY
+ [PT DIAGNOSTIC] Field account-name hub ready state: false, trustedOrigin: http://localhost:5173 - not sending sibling ready.
+ CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+ [PT DIAGNOSTIC] Basic initialization useEffect running for routing-number
+ [PT DEBUG] Field routing-number basic initialization complete
+ [PT DIAGNOSTIC] Field routing-number setting up global listener for hub-ready messages from account-number
+ [PT DIAGNOSTIC] Field routing-number hub ready state changed to: NOT READY
+ [PT DIAGNOSTIC] Field routing-number hub ready state: false, trustedOrigin: null - not sending sibling ready.
+ [PT DIAGNOSTIC] SiblingField (routing-number) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: routing-number):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field routing-number has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field routing-number has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field routing-number dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for routing-number
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for routing-number
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for routing-number
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for routing-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for routing-number:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field routing-number state: dispatch=true, isHubReady=false
+securityUtils.js:92 [Security] routing-number connected to parent undefined
+SiblingField.jsx:230 [PT DIAGNOSTIC] SiblingField (routing-number) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: routing-number):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field routing-number has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field routing-number has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field routing-number dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for routing-number
+SiblingField.jsx:187 [PT DIAGNOSTIC] Field routing-number hub ready state changed to: NOT READY
+SiblingField.jsx:210 [PT DIAGNOSTIC] Field routing-number hub ready state: false, trustedOrigin: http://localhost:5173 - not sending sibling ready.
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:125 [PT DIAGNOSTIC] Basic initialization useEffect running for account-number
+useFieldEvents.js:128 [PT DEBUG] Field account-number basic initialization complete
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: false
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = false
+         sessionKey = false
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for account-number
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for account-number
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for account-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field account-number context state: socket=false, sessionKey=false, origin=true
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-type
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-name
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: routing-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+bank-account:1 Unchecked runtime.lastError: The message port closed before a response was received.
+bank-account:1 Unchecked runtime.lastError: The message port closed before a response was received.
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(1 ports)'}
+securityUtils.js:89 [Security] Invalid message structure (logging safe subset) {type: 'pt-static:connection_token', element: undefined}
+r1 @ securityUtils.js:89
+i @ useWindowListener.js:89
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:connection_token] Passing message: {type: 'pt-static:connection_token', data: {…}, async: true, ports: Array(1)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: false
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = false
+         sessionKey = false
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = false
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for account-number: OPEN (1)
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for account-number
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for account-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = true
+  sessionKey = false
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field account-number context state: socket=true, sessionKey=false, origin=true
+BankAccountUS.jsx:238 CLIENT::Ready observer called with: true
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for account-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for account-number: e6bb...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for account-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field account-number context state: socket=true, sessionKey=true, origin=true
+useFieldEvents.js:947 [PT INSPECT] Dependencies ready for inspection (socket, sessionKey) in account-number. Running inspection.
+useFieldEvents.js:622 [PT Encrypt Check - Field Event] Action: field:inspected, SharedKey Present: true
+useFieldEvents.js:569 [PT INSPECT] Gathering inspection data...
+useFieldEvents.js:603 [PT INSPECT] Inspection data gathered: {ua: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Ap…KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', langs: Array(2), platform: 'MacIntel', cores: 8, webdriver: false, …}
+useFieldEvents.js:632 [PT PRE-ENCRYPT - field:inspected] Payload: {inspection: {…}, sessionKey: 'e6bb1f5f-2f14-488e-aaaf-1ea033552f52'}
+useFieldEvents.js:641 [PT Encrypt Send - Field Event] Sending encrypted payload for field:inspected
+TransactionalField.jsx:340 [PT WARN] Received unhandled message type from socket for account-number: undefined
+(anonymous) @ TransactionalField.jsx:340
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-type):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-type has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-type has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-type dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-type
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for account-type
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for account-type
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for account-type
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-type:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field account-type state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'account-type', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-type
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:898 [PT DIAGNOSTIC] Direct onFocus event triggered for account-name
+useFieldEvents.js:739 [PT DIAGNOSTIC] handleFocus called for account-name
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for account-name
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for account-name:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:746 [PT DIAGNOSTIC] Focus event PASSED checks for account-name
+useFieldEvents.js:385 [PT Encrypt Check - Field Event] Action: field:focus, SharedKey Present: false
+useFieldEvents.js:418 [PT Encrypt Skip - Field Event] Cannot send action field:focus: Shared key not available yet.
+(anonymous) @ useFieldEvents.js:418
+(anonymous) @ useFieldEvents.js:765
+onFocus @ useFieldEvents.js:900
+uh @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+ho @ react-dom-client.production.js:1470
+cf @ react-dom-client.production.js:11996
+bf @ react-dom-client.production.js:14699
+lv @ react-dom-client.production.js:14667
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for account-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for account-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for account-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field account-name state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'account-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-name
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for account-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for account-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for account-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field account-name state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'account-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for account-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for account-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for account-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field account-name state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'account-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-name
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for account-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for account-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for account-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field account-name state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'account-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for account-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for account-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for account-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field account-name state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'account-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-name
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for account-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for account-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for account-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field account-name state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'account-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-name
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for account-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for account-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for account-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field account-name state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'account-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:912 [PT DIAGNOSTIC] Direct onBlur event triggered for account-name
+useFieldEvents.js:777 [PT DIAGNOSTIC] handleBlur called for account-name
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for account-name
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field account-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field account-name has minimal dependencies: true
+ [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+ [PT DEBUG] comprehensiveCheck() for account-name:
+      isInitialized = true
+      hasDependencies = true
+    
+ [PT DIAGNOSTIC] Blur event PASSED checks for account-name
+ [PT Encrypt Check - Combined Blur] Action: field:blur, KeyPrints buffered: 0, SharedKey Present: false
+ [PT Encrypt Skip - Combined Blur] Cannot send action field:blur: Shared key not available yet.
+(anonymous) @ index-CMowtH5A.js:26
+(anonymous) @ index-CMowtH5A.js:26
+onBlur @ index-CMowtH5A.js:26
+uh @ index-DJ25tB8v.js:49
+(anonymous) @ index-DJ25tB8v.js:49
+ho @ index-DJ25tB8v.js:49
+cf @ index-DJ25tB8v.js:49
+bf @ index-DJ25tB8v.js:50
+lv @ index-DJ25tB8v.js:50
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: account-name):
+  dispatch: true
+  isHubReady: false
+ [PT DEBUG] Spoke field account-name has full dependencies: false
+ [PT DEBUG] Spoke field account-name has minimal dependencies: true
+ [PT DEBUG] Spoke field account-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+ [PT DIAGNOSTIC] applySafeEventHandlers called for account-name
+ [PT DIAGNOSTIC] No socket available for account-name
+ [PT DIAGNOSTIC] No session key available for account-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for account-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field account-name state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+BankAccountUS.jsx:214 CLIENT::Error observer called with: 
+useFieldEvents.js:898 [PT DIAGNOSTIC] Direct onFocus event triggered for account-number
+useFieldEvents.js:739 [PT DIAGNOSTIC] handleFocus called for account-number
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for account-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for account-number:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:746 [PT DIAGNOSTIC] Focus event PASSED checks for account-number
+useFieldEvents.js:385 [PT Encrypt Check - Field Event] Action: field:focus, SharedKey Present: true
+useFieldEvents.js:398 [PT PRE-ENCRYPT - field:focus] Payload: {field: 'account-number', focusPrint: {…}, sessionKey: 'e6bb1f5f-2f14-488e-aaaf-1ea033552f52'}
+useFieldEvents.js:407 [PT Encrypt Send - Field Event] Sending encrypted payload for field:focus: {action: 'field:focus', sessionKey: 'ZTZiYjFmNWYtMmYxNC00ODhlLWFhYWYtMWVhMDMzNTUyZjUy', encoded: 'cntjD9pCt9PBRhzDw3t9Mz+YXYyfIu8cHvAd0+AZaHAu9Vfk0B…R6cIc5UN4+04blMUzMym5R24GSpxcg3vqsUN7/0CdDDb/0wnl', publicKey: 'ZrVlc2N7kio9UIEuKGYwQclwymrYaHv3aThuRGn4YGM='}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for account-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for account-number: e6bb...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for account-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field account-number context state: socket=true, sessionKey=true, origin=true
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'account-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-name
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for account-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for account-number: e6bb...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for account-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field account-number context state: socket=true, sessionKey=true, origin=true
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for account-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for account-number: e6bb...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for account-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field account-number context state: socket=true, sessionKey=true, origin=true
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for account-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for account-number: e6bb...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for account-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field account-number context state: socket=true, sessionKey=true, origin=true
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for account-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for account-number: e6bb...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for account-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field account-number context state: socket=true, sessionKey=true, origin=true
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for account-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for account-number: e6bb...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for account-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field account-number context state: socket=true, sessionKey=true, origin=true
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for account-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for account-number: e6bb...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for account-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field account-number context state: socket=true, sessionKey=true, origin=true
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for account-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for account-number: e6bb...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for account-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field account-number context state: socket=true, sessionKey=true, origin=true
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for account-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for account-number: e6bb...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for account-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field account-number context state: socket=true, sessionKey=true, origin=true
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+ [PT DIAGNOSTIC] Direct onBlur event triggered for account-number
+ [PT DIAGNOSTIC] handleBlur called for account-number
+ [PT DIAGNOSTIC] comprehensiveCheck() called for account-number
+ [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+ [PT DEBUG] Hub field account-number has essential dependencies: true
+ [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+ [PT DEBUG] comprehensiveCheck() for account-number:
+      isInitialized = true
+      hasDependencies = true
+    
+ [PT DIAGNOSTIC] Blur event PASSED checks for account-number
+ [PT Encrypt Check - Combined Blur] Action: field:blur, KeyPrints buffered: 0, SharedKey Present: true
+ [PT PRE-ENCRYPT - field:blur] Payload: {field: 'account-number', blurPrint: {…}, keyPrints: Array(0), sessionKey: 'e6bb1f5f-2f14-488e-aaaf-1ea033552f52'}
+ [PT Encrypt Send - Combined Blur] Sending encrypted payload for field:blur
+ [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+ [PT DEBUG] Hub field account-number has essential dependencies: true
+ [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+ [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+ [PT DIAGNOSTIC] Socket status for account-number: OPEN (1)
+ [PT DIAGNOSTIC] Session key available for account-number: e6bb...
+ [PT DIAGNOSTIC] Merchant UID available for account-number
+ [PT DIAGNOSTIC] Dependency status for account-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+ [PT DEBUG] Hub field account-number context state: socket=true, sessionKey=true, origin=true
+ [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:898 [PT DIAGNOSTIC] Direct onFocus event triggered for routing-number
+useFieldEvents.js:739 [PT DIAGNOSTIC] handleFocus called for routing-number
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for routing-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: routing-number):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field routing-number has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field routing-number has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field routing-number dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for routing-number:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:746 [PT DIAGNOSTIC] Focus event PASSED checks for routing-number
+useFieldEvents.js:385 [PT Encrypt Check - Field Event] Action: field:focus, SharedKey Present: false
+useFieldEvents.js:418 [PT Encrypt Skip - Field Event] Cannot send action field:focus: Shared key not available yet.
+(anonymous) @ useFieldEvents.js:418
+(anonymous) @ useFieldEvents.js:765
+onFocus @ useFieldEvents.js:900
+uh @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+ho @ react-dom-client.production.js:1470
+cf @ react-dom-client.production.js:11996
+bf @ react-dom-client.production.js:14699
+lv @ react-dom-client.production.js:14667
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: routing-number):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field routing-number has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field routing-number has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field routing-number dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for routing-number
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for routing-number
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for routing-number
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for routing-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for routing-number:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field routing-number state: dispatch=true, isHubReady=false
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'routing-number', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: routing-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: account-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: routing-number):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field routing-number has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field routing-number has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field routing-number dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for routing-number
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for routing-number
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for routing-number
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for routing-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for routing-number:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field routing-number state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'routing-number', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: routing-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:912 [PT DIAGNOSTIC] Direct onBlur event triggered for routing-number
+useFieldEvents.js:777 [PT DIAGNOSTIC] handleBlur called for routing-number
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for routing-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: routing-number):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field routing-number has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field routing-number has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field routing-number dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for routing-number:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:784 [PT DIAGNOSTIC] Blur event PASSED checks for routing-number
+useFieldEvents.js:434 [PT Encrypt Check - Combined Blur] Action: field:blur, KeyPrints buffered: 0, SharedKey Present: false
+useFieldEvents.js:467 [PT Encrypt Skip - Combined Blur] Cannot send action field:blur: Shared key not available yet.
+(anonymous) @ useFieldEvents.js:467
+(anonymous) @ useFieldEvents.js:798
+onBlur @ useFieldEvents.js:914
+uh @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+ho @ react-dom-client.production.js:1470
+cf @ react-dom-client.production.js:11996
+bf @ react-dom-client.production.js:14699
+lv @ react-dom-client.production.js:14667
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: routing-number):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field routing-number has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field routing-number has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field routing-number dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for routing-number
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for routing-number
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for routing-number
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for routing-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for routing-number:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field routing-number state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: routing-number
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'routing-number', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:898 [PT DIAGNOSTIC] Direct onFocus event triggered for routing-number
+useFieldEvents.js:739 [PT DIAGNOSTIC] handleFocus called for routing-number
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for routing-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: routing-number):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field routing-number has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field routing-number has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field routing-number dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for routing-number:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:746 [PT DIAGNOSTIC] Focus event PASSED checks for routing-number
+useFieldEvents.js:385 [PT Encrypt Check - Field Event] Action: field:focus, SharedKey Present: false
+useFieldEvents.js:418 [PT Encrypt Skip - Field Event] Cannot send action field:focus: Shared key not available yet.
+(anonymous) @ useFieldEvents.js:418
+(anonymous) @ useFieldEvents.js:765
+onFocus @ useFieldEvents.js:900
+uh @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+ho @ react-dom-client.production.js:1470
+cf @ react-dom-client.production.js:11996
+bf @ react-dom-client.production.js:14699
+lv @ react-dom-client.production.js:14667
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: routing-number):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field routing-number has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field routing-number has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field routing-number dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for routing-number
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for routing-number
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for routing-number
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for routing-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for routing-number:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field routing-number state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'routing-number', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: routing-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useFieldEvents.js:912 [PT DIAGNOSTIC] Direct onBlur event triggered for routing-number
+useFieldEvents.js:777 [PT DIAGNOSTIC] handleBlur called for routing-number
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for routing-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: routing-number):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field routing-number has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field routing-number has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field routing-number dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for routing-number:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:784 [PT DIAGNOSTIC] Blur event PASSED checks for routing-number
+useFieldEvents.js:434 [PT Encrypt Check - Combined Blur] Action: field:blur, KeyPrints buffered: 0, SharedKey Present: false
+useFieldEvents.js:467 [PT Encrypt Skip - Combined Blur] Cannot send action field:blur: Shared key not available yet.
+(anonymous) @ useFieldEvents.js:467
+(anonymous) @ useFieldEvents.js:798
+onBlur @ useFieldEvents.js:914
+uh @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+ho @ react-dom-client.production.js:1470
+cf @ react-dom-client.production.js:11996
+bf @ react-dom-client.production.js:14699
+lv @ react-dom-client.production.js:14667
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: routing-number):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field routing-number has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field routing-number has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field routing-number dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = account-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for routing-number
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for routing-number
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for routing-number
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for routing-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for routing-number:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field routing-number state: dispatch=true, isHubReady=false
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://localhost:5173', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'account-number', data: {…}, source: 'routing-number', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: account-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field account-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field account-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for account-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: routing-number
+BankAccountUS.jsx:275 CLIENT::State observer called with: {account-number: {…}, account-type: {…}, account-name: {…}, routing-number: {…}, institution-number: {…}, …}

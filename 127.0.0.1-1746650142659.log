@@ -1,0 +1,2546 @@
+script.js:488 Retrieved from localStorage - API Key: "validate-paytheorystudy-5d8b6de53f935a00ac35e9012a028748"
+script.js:489 Retrieved from localStorage - SDK URL: "https://validate.sdk.paytheorystudy.com/"
+script.js:493 Set apiKeyInput.value to: "validate-paytheorystudy-5d8b6de53f935a00ac35e9012a028748"
+script.js:498 Set sdkUrlInput.value to: "https://validate.sdk.paytheorystudy.com/"
+script.js:175 State Observer Data: {}
+script.js:179 Received empty state object, preserving previous table view.
+127.0.0.1/:1 Unchecked runtime.lastError: The message port closed before a response was received.
+127.0.0.1/:1 Unchecked runtime.lastError: The message port closed before a response was received.
+script.js:267 Resetting observers...
+script.js:175 State Observer Data: {}
+script.js:179 Received empty state object, preserving previous table view.
+script.js:278 Observers reset complete.
+script.js:123 API key changed, derived URL differs from manually entered one. Keeping manual URL.
+script.js:355 Initializing with rendered field IDs: (5) ['pay-theory-credit-card-number', 'pay-theory-credit-card-exp', 'pay-theory-credit-card-cvv', 'pay-theory-credit-card-zip', 'pay-theory-credit-card-account-name']
+script.js:377 Initializing PayTheory Fields with params: {apiKey: 'validate-paytheorystudy-5d8b6de53f935a00ac35e9012a028748', styles: {…}, placeholders: {…}}
+script.js:288 Setting up observers...
+script.js:267 Resetting observers...
+script.js:175 State Observer Data: {}
+script.js:179 Received empty state object, preserving previous table view.
+script.js:278 Observers reset complete.
+script.js:316 Observers setup complete.
+index.js:98 [PT DEBUG] Routing decision: Field type "card-number" is transactional: true
+index.js:224 [PT DEBUG] Rendering TransactionalField for type: card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: false
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = false
+         sessionKey = false
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+index.js:98 [PT DEBUG] Routing decision: Field type "card-name" is transactional: false
+index.js:232 [PT DEBUG] Rendering SiblingField for type: card-name with hub: card-number
+SiblingField.jsx:230 [PT DIAGNOSTIC] SiblingField (card-name) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-name
+ [PT DEBUG] Routing decision: Field type "card-cvv" is transactional: false
+ [PT DEBUG] Rendering SiblingField for type: card-cvv with hub: card-number
+ [PT DIAGNOSTIC] SiblingField (card-cvv) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-cvv):
+  dispatch: true
+  isHubReady: false
+ [PT DEBUG] Spoke field card-cvv has full dependencies: false
+ [PT DEBUG] Spoke field card-cvv has minimal dependencies: true
+ [PT DEBUG] Spoke field card-cvv dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+ [PT DIAGNOSTIC] applySafeEventHandlers called for card-cvv
+ [PT DEBUG] Routing decision: Field type "card-exp" is transactional: false
+ [PT DEBUG] Rendering SiblingField for type: card-exp with hub: card-number
+ [PT DIAGNOSTIC] SiblingField (card-exp) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-exp):
+  dispatch: true
+  isHubReady: false
+ [PT DEBUG] Spoke field card-exp has full dependencies: false
+ [PT DEBUG] Spoke field card-exp has minimal dependencies: true
+ [PT DEBUG] Spoke field card-exp dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+ [PT DIAGNOSTIC] applySafeEventHandlers called for card-exp
+ [PT DEBUG] Routing decision: Field type "billing-zip" is transactional: false
+ [PT DEBUG] Rendering SiblingField for type: billing-zip with hub: card-number
+ [PT DIAGNOSTIC] SiblingField (billing-zip) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+ [PT DEBUG] Spoke field billing-zip has full dependencies: false
+ [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+ [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+ [PT DIAGNOSTIC] applySafeEventHandlers called for billing-zip
+ [PT DIAGNOSTIC] Basic initialization useEffect running for card-number
+ [PT DEBUG] Field card-number basic initialization complete
+ [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+ State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+ [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: false
+  sessionKey: false
+ [PT DEBUG] Hub field card-number has essential dependencies: true
+ [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = false
+         sessionKey = false
+       
+ [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+ [PT DIAGNOSTIC] No socket available for card-number
+ [PT DIAGNOSTIC] No session key available for card-number
+ [PT DIAGNOSTIC] No merchant UID available for card-number
+ [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = false
+  isHubReady = false
+
+ [PT DEBUG] Hub field card-number context state: socket=false, sessionKey=false, origin=true
+ [PT DIAGNOSTIC] Basic initialization useEffect running for card-cvv
+ [PT DEBUG] Field card-cvv basic initialization complete
+ [PT DIAGNOSTIC] Field card-cvv setting up global listener for hub-ready messages from card-number
+ [PT DIAGNOSTIC] Field card-cvv hub ready state changed to: NOT READY
+ [PT DIAGNOSTIC] Field card-cvv hub ready state: false, trustedOrigin: null - not sending sibling ready.
+ [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+ State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+ [PT DIAGNOSTIC] SiblingField (card-cvv) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-cvv):
+  dispatch: true
+  isHubReady: false
+ [PT DEBUG] Spoke field card-cvv has full dependencies: false
+ [PT DEBUG] Spoke field card-cvv has minimal dependencies: true
+ [PT DEBUG] Spoke field card-cvv dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+ [PT DIAGNOSTIC] applySafeEventHandlers called for card-cvv
+ [PT DIAGNOSTIC] No socket available for card-cvv
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-cvv
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-cvv
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-cvv:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-cvv state: dispatch=true, isHubReady=false
+securityUtils.js:92 [Security] card-cvv connected to parent undefined
+SiblingField.jsx:230 [PT DIAGNOSTIC] SiblingField (card-cvv) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-cvv):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-cvv has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-cvv has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-cvv dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-cvv
+SiblingField.jsx:187 [PT DIAGNOSTIC] Field card-cvv hub ready state changed to: NOT READY
+SiblingField.jsx:210 [PT DIAGNOSTIC] Field card-cvv hub ready state: false, trustedOrigin: http://127.0.0.1:8083 - not sending sibling ready.
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-cvv', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: false
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = false
+         sessionKey = false
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:125 [PT DIAGNOSTIC] Basic initialization useEffect running for card-exp
+useFieldEvents.js:128 [PT DEBUG] Field card-exp basic initialization complete
+SiblingField.jsx:123 [PT DIAGNOSTIC] Field card-exp setting up global listener for hub-ready messages from card-number
+SiblingField.jsx:187 [PT DIAGNOSTIC] Field card-exp hub ready state changed to: NOT READY
+SiblingField.jsx:210 [PT DIAGNOSTIC] Field card-exp hub ready state: false, trustedOrigin: null - not sending sibling ready.
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+SiblingField.jsx:230 [PT DIAGNOSTIC] SiblingField (card-exp) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-exp):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-exp has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-exp has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-exp dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-exp
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-exp
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-exp
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-exp
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-exp:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-exp state: dispatch=true, isHubReady=false
+securityUtils.js:92 [Security] card-exp connected to parent undefined
+SiblingField.jsx:230 [PT DIAGNOSTIC] SiblingField (card-exp) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-exp):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-exp has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-exp has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-exp dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-exp
+SiblingField.jsx:187 [PT DIAGNOSTIC] Field card-exp hub ready state changed to: NOT READY
+SiblingField.jsx:210 [PT DIAGNOSTIC] Field card-exp hub ready state: false, trustedOrigin: http://127.0.0.1:8083 - not sending sibling ready.
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-exp', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: false
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = false
+         sessionKey = false
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:125 [PT DIAGNOSTIC] Basic initialization useEffect running for billing-zip
+useFieldEvents.js:128 [PT DEBUG] Field billing-zip basic initialization complete
+SiblingField.jsx:123 [PT DIAGNOSTIC] Field billing-zip setting up global listener for hub-ready messages from card-number
+SiblingField.jsx:187 [PT DIAGNOSTIC] Field billing-zip hub ready state changed to: NOT READY
+SiblingField.jsx:210 [PT DIAGNOSTIC] Field billing-zip hub ready state: false, trustedOrigin: null - not sending sibling ready.
+SiblingField.jsx:230 [PT DIAGNOSTIC] SiblingField (billing-zip) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field billing-zip has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for billing-zip
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for billing-zip
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for billing-zip
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for billing-zip
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for billing-zip:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field billing-zip state: dispatch=true, isHubReady=false
+securityUtils.js:92 [Security] billing-zip connected to parent undefined
+SiblingField.jsx:230 [PT DIAGNOSTIC] SiblingField (billing-zip) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field billing-zip has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for billing-zip
+SiblingField.jsx:187 [PT DIAGNOSTIC] Field billing-zip hub ready state changed to: NOT READY
+SiblingField.jsx:210 [PT DIAGNOSTIC] Field billing-zip hub ready state: false, trustedOrigin: http://127.0.0.1:8083 - not sending sibling ready.
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'billing-zip', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: false
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = false
+         sessionKey = false
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-cvv
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-exp
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: billing-zip
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-number
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:125 [PT DIAGNOSTIC] Basic initialization useEffect running for card-name
+useFieldEvents.js:128 [PT DEBUG] Field card-name basic initialization complete
+SiblingField.jsx:123 [PT DIAGNOSTIC] Field card-name setting up global listener for hub-ready messages from card-number
+SiblingField.jsx:187 [PT DIAGNOSTIC] Field card-name hub ready state changed to: NOT READY
+SiblingField.jsx:210 [PT DIAGNOSTIC] Field card-name hub ready state: false, trustedOrigin: null - not sending sibling ready.
+SiblingField.jsx:230 [PT DIAGNOSTIC] SiblingField (card-name) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-name state: dispatch=true, isHubReady=false
+securityUtils.js:92 [Security] card-name connected to parent undefined
+SiblingField.jsx:230 [PT DIAGNOSTIC] SiblingField (card-name) - Props passing to BaseField:
+  sessionKey: false
+  hostToken: false
+  merchantUid: false
+  isHubReady: false
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-name):
+  dispatch: true
+  isHubReady: false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-name has minimal dependencies: true
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-name
+SiblingField.jsx:187 [PT DIAGNOSTIC] Field card-name hub ready state changed to: NOT READY
+SiblingField.jsx:210 [PT DIAGNOSTIC] Field card-name hub ready state: false, trustedOrigin: http://127.0.0.1:8083 - not sending sibling ready.
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: false
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = false
+         sessionKey = false
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-name
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(1 ports)'}
+securityUtils.js:89 [Security] Invalid message structure (logging safe subset) {type: 'pt-static:connection_token', element: undefined}
+r1 @ securityUtils.js:89
+i @ useWindowListener.js:89
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:connection_token] Passing message: {type: 'pt-static:connection_token', data: {…}, async: true, ports: Array(1)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: false
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = false
+         sessionKey = false
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = false
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-number
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = false
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=false, origin=true
+useFieldEvents.js:898 [PT DIAGNOSTIC] Direct onFocus event triggered for card-number
+useFieldEvents.js:739 [PT DIAGNOSTIC] handleFocus called for card-number
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = false
+       
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for card-number:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:746 [PT DIAGNOSTIC] Focus event PASSED checks for card-number
+useFieldEvents.js:385 [PT Encrypt Check - Field Event] Action: field:focus, SharedKey Present: false
+useFieldEvents.js:418 [PT Encrypt Skip - Field Event] Cannot send action field:focus: Shared key not available yet.
+(anonymous) @ useFieldEvents.js:418
+(anonymous) @ useFieldEvents.js:765
+onFocus @ useFieldEvents.js:900
+uh @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+ho @ react-dom-client.production.js:1470
+cf @ react-dom-client.production.js:11996
+bf @ react-dom-client.production.js:14699
+lv @ react-dom-client.production.js:14667
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = false
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-number
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = false
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=false, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: false
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = false
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-number
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+script.js:293 Ready Observer: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+useFieldEvents.js:947 [PT INSPECT] Dependencies ready for inspection (socket, sessionKey) in card-number. Running inspection.
+useFieldEvents.js:622 [PT Encrypt Check - Field Event] Action: field:inspected, SharedKey Present: true
+useFieldEvents.js:569 [PT INSPECT] Gathering inspection data...
+useFieldEvents.js:603 [PT INSPECT] Inspection data gathered: {ua: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Ap…KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', langs: Array(1), platform: 'MacIntel', cores: 8, webdriver: false, …}
+useFieldEvents.js:632 [PT PRE-ENCRYPT - field:inspected] Payload: {inspection: {…}, sessionKey: '7f7c324d-9ccf-42c2-88a3-74e91ab3280b'}
+useFieldEvents.js:641 [PT Encrypt Send - Field Event] Sending encrypted payload for field:inspected
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+ [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+ [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+ [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+ [PT DEBUG] Hub field card-number has essential dependencies: true
+ [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+ [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+ [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+ [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+ [PT DIAGNOSTIC] Merchant UID available for card-number
+ [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+ [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+ [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+ [PT DEBUG] Hub field card-number has essential dependencies: true
+ [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+ [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+ [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+ State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+ [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+ [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-number
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:912 [PT DIAGNOSTIC] Direct onBlur event triggered for card-number
+useFieldEvents.js:777 [PT DIAGNOSTIC] handleBlur called for card-number
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for card-number:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:784 [PT DIAGNOSTIC] Blur event PASSED checks for card-number
+useFieldEvents.js:434 [PT Encrypt Check - Combined Blur] Action: field:blur, KeyPrints buffered: 0, SharedKey Present: true
+useFieldEvents.js:446 [PT PRE-ENCRYPT - field:blur] Payload: {field: 'card-number', blurPrint: {…}, keyPrints: Array(0), sessionKey: '7f7c324d-9ccf-42c2-88a3-74e91ab3280b'}
+useFieldEvents.js:457 [PT Encrypt Send - Combined Blur] Sending encrypted payload for field:blur
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+socketUtils.js:81 [PT DIAGNOSTIC] Socket status for card-number: OPEN (1)
+socketUtils.js:57 [PT DIAGNOSTIC] Session key available for card-number: 7f7c...
+useFieldEvents.js:155 [PT DIAGNOSTIC] Merchant UID available for card-number
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-number:
+  dispatch = true
+  socket = true
+  sessionKey = true
+  origin = true
+  hubField = false
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Hub field card-number context state: socket=true, sessionKey=true, origin=true
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:898 [PT DIAGNOSTIC] Direct onFocus event triggered for card-exp
+useFieldEvents.js:739 [PT DIAGNOSTIC] handleFocus called for card-exp
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for card-exp
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-exp):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-exp has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-exp has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-exp dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for card-exp:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:746 [PT DIAGNOSTIC] Focus event PASSED checks for card-exp
+script.js:298 Error Observer: 
+(anonymous) @ script.js:298
+(anonymous) @ observe.ts:5
+i @ message.ts:20
+(anonymous) @ message.ts:31
+postMessage
+set error @ index.ts:400
+set state @ index.ts:368
+(anonymous) @ handler.ts:42
+c @ handler.ts:37
+i @ message.ts:20
+(anonymous) @ message.ts:40
+script.js:175 State Observer Data: {}
+script.js:179 Received empty state object, preserving previous table view.
+useFieldEvents.js:385 [PT Encrypt Check - Field Event] Action: field:focus, SharedKey Present: false
+useFieldEvents.js:418 [PT Encrypt Skip - Field Event] Cannot send action field:focus: Shared key not available yet.
+(anonymous) @ useFieldEvents.js:418
+(anonymous) @ useFieldEvents.js:765
+onFocus @ useFieldEvents.js:900
+uh @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+ho @ react-dom-client.production.js:1470
+cf @ react-dom-client.production.js:11996
+bf @ react-dom-client.production.js:14699
+lv @ react-dom-client.production.js:14667
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-exp):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-exp has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-exp has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-exp dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-exp
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-exp
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-exp
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-exp
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-exp:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-exp state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-exp', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-exp
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-number
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-exp):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-exp has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-exp has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-exp dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-exp
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-exp
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-exp
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-exp
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-exp:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-exp state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-exp', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-exp):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-exp has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-exp has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-exp dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-exp
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-exp
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-exp
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-exp
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-exp:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-exp state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-exp', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-exp
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-exp):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-exp has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-exp has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-exp dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-exp
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-exp
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-exp
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-exp
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-exp:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-exp state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-exp', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-exp):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-exp has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-exp has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-exp dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-exp
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-exp
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-exp
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-exp
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-exp:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-exp state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-exp', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-exp
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+ [PT DIAGNOSTIC] Direct onBlur event triggered for card-exp
+ [PT DIAGNOSTIC] handleBlur called for card-exp
+ [PT DIAGNOSTIC] comprehensiveCheck() called for card-exp
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-exp):
+  dispatch: true
+  isHubReady: false
+ [PT DEBUG] Spoke field card-exp has full dependencies: false
+ [PT DEBUG] Spoke field card-exp has minimal dependencies: true
+ [PT DEBUG] Spoke field card-exp dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+ [PT DEBUG] comprehensiveCheck() for card-exp:
+      isInitialized = true
+      hasDependencies = true
+    
+ [PT DIAGNOSTIC] Blur event PASSED checks for card-exp
+ [PT Encrypt Check - Combined Blur] Action: field:blur, KeyPrints buffered: 0, SharedKey Present: false
+ [PT Encrypt Skip - Combined Blur] Cannot send action field:blur: Shared key not available yet.
+(anonymous) @ index-Dhy8ZfoN.js:26
+(anonymous) @ index-Dhy8ZfoN.js:26
+onBlur @ index-Dhy8ZfoN.js:26
+uh @ index-D07K32za.js:49
+(anonymous) @ index-D07K32za.js:49
+ho @ index-D07K32za.js:49
+cf @ index-D07K32za.js:49
+bf @ index-D07K32za.js:50
+lv @ index-D07K32za.js:50
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-exp):
+  dispatch: true
+  isHubReady: false
+ [PT DEBUG] Spoke field card-exp has full dependencies: false
+ [PT DEBUG] Spoke field card-exp has minimal dependencies: true
+ [PT DEBUG] Spoke field card-exp dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+ [PT DIAGNOSTIC] applySafeEventHandlers called for card-exp
+ [PT DIAGNOSTIC] No socket available for card-exp
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-exp
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-exp
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-exp:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-exp state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:898 [PT DIAGNOSTIC] Direct onFocus event triggered for card-cvv
+useFieldEvents.js:739 [PT DIAGNOSTIC] handleFocus called for card-cvv
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for card-cvv
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-cvv):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-cvv has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-cvv has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-cvv dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for card-cvv:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:746 [PT DIAGNOSTIC] Focus event PASSED checks for card-cvv
+useFieldEvents.js:385 [PT Encrypt Check - Field Event] Action: field:focus, SharedKey Present: false
+useFieldEvents.js:418 [PT Encrypt Skip - Field Event] Cannot send action field:focus: Shared key not available yet.
+(anonymous) @ useFieldEvents.js:418
+(anonymous) @ useFieldEvents.js:765
+onFocus @ useFieldEvents.js:900
+uh @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+ho @ react-dom-client.production.js:1470
+cf @ react-dom-client.production.js:11996
+bf @ react-dom-client.production.js:14699
+lv @ react-dom-client.production.js:14667
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-cvv):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-cvv has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-cvv has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-cvv dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-cvv
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-cvv
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-cvv
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-cvv
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-cvv:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-cvv state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-exp', ports: Array(0)}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-cvv', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-exp
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-cvv
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-cvv):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-cvv has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-cvv has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-cvv dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-cvv
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-cvv
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-cvv
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-cvv
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-cvv:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-cvv state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-cvv', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-cvv):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-cvv has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-cvv has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-cvv dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-cvv
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-cvv
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-cvv
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-cvv
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-cvv:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-cvv state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-cvv', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-cvv
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-cvv):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-cvv has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-cvv has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-cvv dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-cvv
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-cvv
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-cvv
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-cvv
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-cvv:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-cvv state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-cvv', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-cvv
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+ [PT DIAGNOSTIC] Direct onBlur event triggered for card-cvv
+ [PT DIAGNOSTIC] handleBlur called for card-cvv
+ [PT DIAGNOSTIC] comprehensiveCheck() called for card-cvv
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-cvv):
+  dispatch: true
+  isHubReady: false
+ [PT DEBUG] Spoke field card-cvv has full dependencies: false
+ [PT DEBUG] Spoke field card-cvv has minimal dependencies: true
+ [PT DEBUG] Spoke field card-cvv dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+ [PT DEBUG] comprehensiveCheck() for card-cvv:
+      isInitialized = true
+      hasDependencies = true
+    
+ [PT DIAGNOSTIC] Blur event PASSED checks for card-cvv
+ [PT Encrypt Check - Combined Blur] Action: field:blur, KeyPrints buffered: 0, SharedKey Present: false
+ [PT Encrypt Skip - Combined Blur] Cannot send action field:blur: Shared key not available yet.
+(anonymous) @ index-Dhy8ZfoN.js:26
+(anonymous) @ index-Dhy8ZfoN.js:26
+onBlur @ index-Dhy8ZfoN.js:26
+uh @ index-D07K32za.js:49
+(anonymous) @ index-D07K32za.js:49
+ho @ index-D07K32za.js:49
+cf @ index-D07K32za.js:49
+bf @ index-D07K32za.js:50
+lv @ index-D07K32za.js:50
+ [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-cvv):
+  dispatch: true
+  isHubReady: false
+ [PT DEBUG] Spoke field card-cvv has full dependencies: false
+ [PT DEBUG] Spoke field card-cvv has minimal dependencies: true
+ [PT DEBUG] Spoke field card-cvv dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+ [PT DIAGNOSTIC] applySafeEventHandlers called for card-cvv
+ [PT DIAGNOSTIC] No socket available for card-cvv
+ [PT DIAGNOSTIC] No session key available for card-cvv
+ [PT DIAGNOSTIC] No merchant UID available for card-cvv
+ [PT DIAGNOSTIC] Dependency status for card-cvv:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+ [PT DEBUG] Spoke field card-cvv state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:898 [PT DIAGNOSTIC] Direct onFocus event triggered for billing-zip
+useFieldEvents.js:739 [PT DIAGNOSTIC] handleFocus called for billing-zip
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for billing-zip
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field billing-zip has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for billing-zip:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:746 [PT DIAGNOSTIC] Focus event PASSED checks for billing-zip
+useFieldEvents.js:385 [PT Encrypt Check - Field Event] Action: field:focus, SharedKey Present: false
+useFieldEvents.js:418 [PT Encrypt Skip - Field Event] Cannot send action field:focus: Shared key not available yet.
+(anonymous) @ useFieldEvents.js:418
+(anonymous) @ useFieldEvents.js:765
+onFocus @ useFieldEvents.js:900
+uh @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+ho @ react-dom-client.production.js:1470
+cf @ react-dom-client.production.js:11996
+bf @ react-dom-client.production.js:14699
+lv @ react-dom-client.production.js:14667
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field billing-zip has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for billing-zip
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for billing-zip
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for billing-zip
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for billing-zip
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for billing-zip:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field billing-zip state: dispatch=true, isHubReady=false
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-cvv', ports: Array(0)}
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'billing-zip', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-cvv
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: billing-zip
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field billing-zip has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for billing-zip
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for billing-zip
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for billing-zip
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for billing-zip
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for billing-zip:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field billing-zip state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'billing-zip', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field billing-zip has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for billing-zip
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for billing-zip
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for billing-zip
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for billing-zip
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for billing-zip:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field billing-zip state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'billing-zip', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: billing-zip
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field billing-zip has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for billing-zip
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for billing-zip
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for billing-zip
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for billing-zip
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for billing-zip:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field billing-zip state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'billing-zip', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: billing-zip
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field billing-zip has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for billing-zip
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for billing-zip
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for billing-zip
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for billing-zip
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for billing-zip:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field billing-zip state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'billing-zip', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field billing-zip has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for billing-zip
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for billing-zip
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for billing-zip
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for billing-zip
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for billing-zip:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field billing-zip state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'billing-zip', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field billing-zip has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for billing-zip
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for billing-zip
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for billing-zip
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for billing-zip
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for billing-zip:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field billing-zip state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'billing-zip', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+ [PT DIAGNOSTIC] Direct onBlur event triggered for billing-zip
+useFieldEvents.js:777 [PT DIAGNOSTIC] handleBlur called for billing-zip
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for billing-zip
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field billing-zip has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for billing-zip:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:784 [PT DIAGNOSTIC] Blur event PASSED checks for billing-zip
+useFieldEvents.js:434 [PT Encrypt Check - Combined Blur] Action: field:blur, KeyPrints buffered: 0, SharedKey Present: false
+useFieldEvents.js:467 [PT Encrypt Skip - Combined Blur] Cannot send action field:blur: Shared key not available yet.
+(anonymous) @ useFieldEvents.js:467
+(anonymous) @ useFieldEvents.js:798
+onBlur @ useFieldEvents.js:914
+uh @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+ho @ react-dom-client.production.js:1470
+cf @ react-dom-client.production.js:11996
+bf @ react-dom-client.production.js:14699
+lv @ react-dom-client.production.js:14667
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: billing-zip):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field billing-zip has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field billing-zip has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field billing-zip dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for billing-zip
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for billing-zip
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for billing-zip
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for billing-zip
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for billing-zip:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field billing-zip state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:898 [PT DIAGNOSTIC] Direct onFocus event triggered for card-name
+useFieldEvents.js:739 [PT DIAGNOSTIC] handleFocus called for card-name
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for card-name
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for card-name:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:746 [PT DIAGNOSTIC] Focus event PASSED checks for card-name
+script.js:313 Valid Observer: card
+useFieldEvents.js:385 [PT Encrypt Check - Field Event] Action: field:focus, SharedKey Present: false
+useFieldEvents.js:418 [PT Encrypt Skip - Field Event] Cannot send action field:focus: Shared key not available yet.
+(anonymous) @ useFieldEvents.js:418
+(anonymous) @ useFieldEvents.js:765
+onFocus @ useFieldEvents.js:900
+uh @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+ho @ react-dom-client.production.js:1470
+cf @ react-dom-client.production.js:11996
+bf @ react-dom-client.production.js:14699
+lv @ react-dom-client.production.js:14667
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-name state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'billing-zip', ports: Array(0)}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: billing-zip
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-name
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-name state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-name state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-name
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-name state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:912 [PT DIAGNOSTIC] Direct onBlur event triggered for card-name
+useFieldEvents.js:777 [PT DIAGNOSTIC] handleBlur called for card-name
+useFieldEvents.js:277 [PT DIAGNOSTIC] comprehensiveCheck() called for card-name
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:281 [PT DEBUG] comprehensiveCheck() for card-name:
+      isInitialized = true
+      hasDependencies = true
+    
+useFieldEvents.js:784 [PT DIAGNOSTIC] Blur event PASSED checks for card-name
+useFieldEvents.js:434 [PT Encrypt Check - Combined Blur] Action: field:blur, KeyPrints buffered: 0, SharedKey Present: false
+useFieldEvents.js:467 [PT Encrypt Skip - Combined Blur] Cannot send action field:blur: Shared key not available yet.
+(anonymous) @ useFieldEvents.js:467
+(anonymous) @ useFieldEvents.js:798
+onBlur @ useFieldEvents.js:914
+uh @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+ho @ react-dom-client.production.js:1470
+cf @ react-dom-client.production.js:11996
+bf @ react-dom-client.production.js:14699
+lv @ react-dom-client.production.js:14667
+useFieldEvents.js:242 [PT DIAGNOSTIC] checkCriticalDependencies (Spoke: card-name):
+  dispatch: true
+  isHubReady: false
+useFieldEvents.js:255 [PT DEBUG] Spoke field card-name has full dependencies: false
+useFieldEvents.js:256 [PT DEBUG] Spoke field card-name has minimal dependencies: true
+useFieldEvents.js:257 [PT DEBUG] Spoke field card-name dependency details:
+        dispatch = true
+        isHubReady = false
+        hubField = card-number
+      
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-name
+socketUtils.js:67 [PT DIAGNOSTIC] No socket available for card-name
+socketUtils.js:51 [PT DIAGNOSTIC] No session key available for card-name
+useFieldEvents.js:157 [PT DIAGNOSTIC] No merchant UID available for card-name
+useFieldEvents.js:161 [PT DIAGNOSTIC] Dependency status for card-name:
+  dispatch = true
+  socket = false
+  sessionKey = false
+  origin = true
+  hubField = true
+  isHubReady = false
+
+useFieldEvents.js:174 [PT DEBUG] Spoke field card-name state: dispatch=true, isHubReady=false
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
+useWindowListener.js:41 [PT RAW EVENT LISTENER] Received event: {origin: 'http://127.0.0.1:8083', data: {…}, ports: '(0 ports)'}
+useWindowListener.js:97 [PT WINDOW LISTENER - PRE-HANDLER pt-static:relay] Passing message: {type: 'pt-static:relay', element: 'card-number', data: {…}, source: 'card-name', ports: Array(0)}
+useFieldEvents.js:218 [PT DIAGNOSTIC] checkCriticalDependencies (Hub: card-number):
+  dispatch: true
+  origin: true
+  socket: true
+  sessionKey: true
+useFieldEvents.js:231 [PT DEBUG] Hub field card-number has essential dependencies: true
+useFieldEvents.js:232 [PT DEBUG] Hub field card-number dependency details:
+         dispatch = true
+         origin = true
+         socket = true
+         sessionKey = true
+       
+useFieldEvents.js:892 [PT DIAGNOSTIC] applySafeEventHandlers called for card-number
+useFieldEvents.js:561 [PT DEBUG] Sending state for field: card-name
+index.ts:258 [Debug] sendStateMessage: Sending aggregated state to merchant window {fullStateObject: {…}}
+script.js:175 State Observer Data: {card-number: {…}, card-exp: {…}, card-cvv: {…}, card-name: {…}, billing-line1: {…}, …}
