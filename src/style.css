@@ -1,4 +1,13 @@
+[id^="pay-theory-"] {
+  max-width: 100vh;
+  width: 100%;
+}
+
 #pay-theory-badge-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
   display: flex;
   flex-direction: column;
   align-content: center;
@@ -6,6 +15,8 @@
 }
 
 .combined {
+  justify-content: flex-start;
+  align-items: center;
   justify-content: flex-start;
   align-items: center;
 }
@@ -25,15 +36,25 @@
 
 #field-wrapper-address-postal_code {
   min-width: 75px;
+  min-width: 75px;
 }
 
 .field-wrapper {
   display: flex;
   justify-content: center;
   flex-direction: column;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .field-wrapper iframe {
+  width: 100%;
+  display: inline-block;
+  border: none;
+  max-height: 72px;
+  min-height: 18px;
+  height: auto;
   width: 100%;
   display: inline-block;
   border: none;
@@ -47,14 +68,19 @@
   flex-direction: row;
   width: auto;
   height: 100%;
+  height: 48px;
 }
 
 #pay-theory-credit-card {
-  width: 400px;
+  min-width: 400px;
 }
 
 #pay-theory-credit-card-number {
-  width: 340px;
+  min-width: 340px;
+}
+
+#pay-theory-card-present {
+  display: none;
 }
 
 #pay-theory-card-present {
@@ -64,12 +90,15 @@
 .pay-theory-field div {
   display: flex;
   flex-grow: 1;
+  display: flex;
+  flex-grow: 1;
 }
 
 .framed {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  max-width: 100vw;
+  width: auto;
 }
 
 #pay-theory-overlay {
@@ -78,6 +107,13 @@
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+#pay-theory-checkout-button-iframe {
+  width: 100%;
+  max-height: 55px;
+  min-height: 30px;
+  height: auto;
 }
 
 #pay-theory-checkout-button-iframe {
