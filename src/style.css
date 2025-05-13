@@ -1,3 +1,8 @@
+[id^="pay-theory-"] {
+  max-width: 100vh;
+  width: 100%;
+}
+
 #pay-theory-badge-wrapper {
   display: flex;
   flex-direction: column;
@@ -47,14 +52,15 @@
   flex-direction: row;
   width: auto;
   height: 100%;
+  height: 48px;
 }
 
 #pay-theory-credit-card {
-  width: 400px;
+  min-width: 400px;
 }
 
 #pay-theory-credit-card-number {
-  width: 340px;
+  min-width: 340px;
 }
 
 #pay-theory-card-present {
@@ -69,7 +75,8 @@
 .framed {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  max-width: 100vw;
+  width: auto;
 }
 
 #pay-theory-overlay {
