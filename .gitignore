@@ -10,3 +10,4 @@
 .codacy-coverage
 get.sh
 payment-components.iml
+env.sh

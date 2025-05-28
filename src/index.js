@@ -76,47 +76,54 @@ const createPaymentFields = (apiKey, clientId, styles, metadata) => {
   return createPaymentFieldsLegacy(apiKey, clientId, styles, metadata, MERCHANT_FEE);
 };
 
-window.paytheory = {
-  createPaymentFields, // deprecated
-  create,
-  button,
-  qrCode,
-  errorObserver,
-  payTheoryFields,
-  transact,
-  confirm,
-  cancel,
-  tokenizePaymentMethod,
-  updateAmount,
-  transactedObserver,
-  tokenizeObserver,
-  captureObserver,
-  stateObserver,
-  validObserver,
-  readyObserver,
-  cashObserver,
-  SURCHARGE,
-  SERVICE_FEE,
-  INTERCHANGE,
-  MERCHANT_FEE,
-  ALL,
-  NOT_CASH,
-  NOT_CARD,
-  NOT_ACH,
-  ONLY_CASH,
-  ONLY_CARD,
-  ONLY_ACH,
-  PAY,
-  BOOK,
-  DONATE,
-  CHECKOUT,
-  WHITE,
-  GREY,
-  BLACK,
-  PURPLE,
-};
+// Check if window.paytheory already exists
+if (!window.paytheory) {
+  window.paytheory = {
+    createPaymentFields, // deprecated
+    create,
+    button,
+    qrCode,
+    errorObserver,
+    payTheoryFields,
+    transact,
+    confirm,
+    cancel,
+    tokenizePaymentMethod,
+    updateAmount,
+    transactedObserver,
+    tokenizeObserver,
+    captureObserver,
+    stateObserver,
+    validObserver,
+    readyObserver,
+    cashObserver,
+    SURCHARGE,
+    SERVICE_FEE,
+    INTERCHANGE,
+    MERCHANT_FEE,
+    ALL,
+    NOT_CASH,
+    NOT_CARD,
+    NOT_ACH,
+    ONLY_CASH,
+    ONLY_CARD,
+    ONLY_ACH,
+    PAY,
+    BOOK,
+    DONATE,
+    CHECKOUT,
+    WHITE,
+    GREY,
+    BLACK,
+    PURPLE,
+  };
 
-// Add the PayTheoryMessenger to the window object
-window.PayTheoryMessenger = PayTheoryMessenger;
+  // Add the PayTheoryMessenger to the window object
+  // This ensures PayTheoryMessenger is also only defined once,
+  // assuming its initialization is tied to the main SDK setup.
+  if (!window.PayTheoryMessenger) {
+    window.PayTheoryMessenger = PayTheoryMessenger;
+  }
+}
 
 export default window.paytheory;
