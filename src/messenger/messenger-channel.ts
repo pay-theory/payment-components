@@ -98,7 +98,12 @@ class MessengerChannel {
       return;
     }
 
-    const { resolve, reject } = this.messageQueue.get(messageId)!;
+    const message = this.messageQueue.get(messageId);
+    if (!message) {
+      return;
+    }
+    const { resolve, reject } = message;
+
     this.messageQueue.delete(messageId);
 
     if (type === 'error') {
