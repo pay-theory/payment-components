@@ -12,7 +12,7 @@ export default [
       'karma.conf.js',
       'karma-variables.js',
       'webpack.config.js',
-      'polyfill.js',
+      'src/polyfill.js', // This file has special polyfill code that needs different rules
       'src/**/*.ts', // Ignoring TypeScript files for now as they require a parser
       '**/*.test.js', // Ignoring old test files
       '**/createPaymentFields.test.js',
@@ -33,6 +33,61 @@ export default [
       ...js.configs.recommended.rules,
       'no-unused-vars': 'warn',
       'no-undef': 'error',
+    },
+  },
+
+  // Configuration for Node.js script files
+  {
+    files: ['sequential-test.js', 'test-safely.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        process: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        console: 'readonly',
+      },
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      'no-unused-vars': 'warn',
+      'no-undef': 'error',
+    },
+  },
+
+  // Configuration for test files in the test directory
+  {
+    files: ['test/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.mocha,
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        assert: 'readonly',
+        chai: 'readonly',
+        sinon: 'readonly',
+        before: 'readonly',
+        after: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        fixture: 'readonly',
+        html: 'readonly',
+        fixtureCleanup: 'readonly',
+        fixtureSync: 'readonly',
+        aTimeout: 'readonly',
+        process: 'readonly',
+        Response: 'readonly',
+      },
+    },
+    rules: {
+      'no-unused-vars': 'off',
+      'security/detect-object-injection': 'off',
     },
   },
 
