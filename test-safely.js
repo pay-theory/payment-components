@@ -11,8 +11,7 @@
  *   --pattern: Test pattern to match (passed to -g flag of web-test-runner)
  */
 
-const { spawn } = require('child_process');
-const path = require('path');
+import { spawn } from 'child_process';
 
 // Parse command-line arguments
 const args = process.argv.slice(2);

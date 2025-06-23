@@ -7,7 +7,6 @@
     "license": "MIT",
     "repository": "pay-theory/payment-components",
     "sideEffects": false,
-    "type": "module",
     "publishConfig": {
         "access": "public"
     },
@@ -26,6 +25,7 @@
         "build-stage": "env BUILD_ENV=stage APP_ID=APpSQimXFrjSU8bzNzhXLLFH webpack",
         "build-prod": "env BUILD_ENV=prod APP_ID=APcT6PQC1XiuCpPMUUXEZZ2y webpack && npm run test",
         "lint": "eslint --ext .js,.ts .",
+        "lint:eslint": "eslint --ext .js,.ts .",
         "lint:fix": "eslint --ext .js,.ts . --fix",
         "lint:test": "eslint --ext .js,.ts test/",
         "format:eslint": "eslint --ext .ts,.js,.html . --fix",

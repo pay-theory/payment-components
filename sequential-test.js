@@ -17,7 +17,6 @@ const execPromise = promisify(exec);
 // Configuration
 const TEST_DIR = './test';
 const TEST_TIMEOUT = 20000; // 20 seconds per test file
-const TEST_PATTERN = '*.web-test.js';
 
 // Order tests from simplest to most complex
 const TEST_ORDER = [
