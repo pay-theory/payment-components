@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Local Development Test - Payment Components</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .field-container {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            height: 40px;
+        }
+
+        /* PayTheory specific field sizing */
+        #pay-theory-credit-card-number {
+            min-width: 340px;
+        }
+
+        #pay-theory-credit-card {
+            min-width: 400px;
+        }
+
+        /* Section headers */
+        h3 {
+            color: #333;
+            border-bottom: 2px solid #007cba;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Tab styles */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            margin-right: 2px;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            background: #e8e8e8;
+        }
+
+        .tab.active {
+            background: #007cba;
+            color: white;
+            border-color: #007cba;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        button {
+            background: #007cba;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #005a87;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+        }
+
+        .error {
+            background: #ffe7e7;
+            border-color: #ffb3b3;
+            color: #cc0000;
+        }
+
+        .success {
+            background: #e7ffe7;
+            border-color: #b3ffb3;
+            color: #006600;
+        }
+
+        /* Button layout styles */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .button-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            min-height: 44px;
+        }
+
+        .confirmation-actions {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Local Development Test</h1>
+        <p>
+            Testing local development setup with:
+            <br />
+            • Payment Components (parent SDK) on <strong>localhost:3000</strong>
+            <br />
+            • Secure Tags Lib (iframe fields) on <strong>https://localhost:3001</strong>
+        </p>
+
+        <!-- Payment method tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="card">Credit Card</div>
+            <div class="tab" data-tab="ach">ACH / Bank</div>
+            <div class="tab" data-tab="cash">Cash</div>
+        </div>
+
+        <!-- Payment form container -->
+        <form id="payment-form">
+            <!-- Card Payment Fields Tab -->
+            <div id="card-tab" class="tab-content active">
+                <h3>Card Payment Fields</h3>
+
+                <h4>Separate Card Fields</h4>
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-number">Card Number</label>
+                    <div id="pay-theory-credit-card-number" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-exp">Expiration Date</label>
+                    <div id="pay-theory-credit-card-exp" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-cvv">CVV</label>
+                    <div id="pay-theory-credit-card-cvv" class="field-container"></div>
+                </div>
+
+                <h4>Optional Billing Information</h4>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-account-name">Cardholder Name</label>
+                    <div id="pay-theory-credit-card-account-name" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-address-1">Address Line 1</label>
+                    <div id="pay-theory-credit-card-address-1" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-address-2">Address Line 2</label>
+                    <div id="pay-theory-credit-card-address-2" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-city">City</label>
+                    <div id="pay-theory-credit-card-city" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-state">State</label>
+                    <div id="pay-theory-credit-card-state" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-zip">ZIP Code</label>
+                    <div id="pay-theory-credit-card-zip" class="field-container"></div>
+                </div>
+            </div>
+
+            <!-- ACH Payment Fields Tab -->
+            <div id="ach-tab" class="tab-content">
+                <h3>ACH Payment Fields</h3>
+
+                <div class="form-group">
+                    <label for="pay-theory-ach-account-name">Account Name</label>
+                    <div id="pay-theory-ach-account-name" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-ach-account-number">Account Number</label>
+                    <div id="pay-theory-ach-account-number" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-ach-routing-number">Routing Number</label>
+                    <div id="pay-theory-ach-routing-number" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-ach-account-type">Account Type</label>
+                    <div id="pay-theory-ach-account-type" class="field-container"></div>
+                </div>
+            </div>
+
+            <!-- Cash Payment Fields Tab -->
+            <div id="cash-tab" class="tab-content">
+                <h3>Cash Payment Fields</h3>
+
+                <div class="form-group">
+                    <label for="pay-theory-cash-name">Name</label>
+                    <div id="pay-theory-cash-name" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-cash-contact">Contact</label>
+                    <div id="pay-theory-cash-contact" class="field-container"></div>
+                </div>
+            </div>
+
+            <!-- Button Layout -->
+            <div class="button-container" style="margin-top: 20px;">
+                <!-- Top Row: Standard Transaction -->
+                <div class="button-row">
+                    <button type="button" id="initiate-payment">
+                        Process Transaction
+                    </button>
+                </div>
+
+                <!-- Middle Row: Confirmation Flow -->
+                <div class="button-row">
+                    <button type="button" id="initiate-payment-with-confirmation" class="confirmation-initial">
+                        Process with Confirmation
+                    </button>
+
+                    <div class="confirmation-actions" style="display: none;">
+                        <button type="button" id="confirm-payment">
+                            Confirm Payment
+                        </button>
+                        <button type="button" id="cancel-payment">
+                            Cancel Payment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bottom Row: Tokenization -->
+                <div class="button-row">
+                    <button type="button" id="tokenize">
+                        Tokenize Payment Method
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div id="status" class="status">
+            Ready to test local development setup...
+        </div>
+
+        <div id="error" class="status error" style="display: none;">
+        </div>
+
+        <div id="result-container" style="margin-top: 20px; display: none;">
+            <h4>Transaction Result:</h4>
+            <pre id="result-text"
+                style="background: #f5f5f5; padding: 15px; border-radius: 4px; white-space: pre-wrap; font-size: 12px; overflow-x: auto;"></pre>
+        </div>
+    </div>
+
+    <!-- Load your locally built SDK (hot-reloaded from dev server) -->
+    <script src="./index.js"></script>
+
+    <script>
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🔧 Setting up tabs...');
+
+            // Get all tabs and tab content
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            // Add click listeners to tabs
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    const targetTab = this.getAttribute('data-tab');
+
+                    // Remove active class from all tabs and content
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to clicked tab and corresponding content
+                    this.classList.add('active');
+                    document.getElementById(targetTab + '-tab').classList.add('active');
+
+                    // Update button states when tab changes
+                    updateButtonStates();
+
+                    console.log('🔄 Switched to tab:', targetTab);
+                });
+            });
+        });
+
+        // Configuration constants
+        // const API_KEY = "start-paytheory-62d8597c57af5d64a7ebee0a8fd3d3cc";
+        const API_KEY = "austin-paytheorylab-d7dbe665f5565fe8ae8a23eab45dd285"
+        const AMOUNT = 10000; // $100.00 in cents
+        const FEE_MODE = window.paytheory ? window.paytheory.MERCHANT_FEE : null;
+        // const FEE_MODE = window.paytheory.SERVICE_FEE;
+
+        const PAYOR_INFO = {
+            first_name: 'User',
+            last_name: 'Name'
+        };
+
+        const BILLING_INFO = {
+            name: "Some Body",
+            address: {
+                line1: "123 Street St",
+                line2: "Apartment 17",
+                city: "Somewhere",
+                region: "OH",
+                postal_code: "12345",
+                country: "USA"
+            }
+        }
+
+        const TRANSACTING_PARAMETERS = {
+            amount: AMOUNT,
+            feeMode: FEE_MODE,
+            fee: 300,
+            billingInfo: BILLING_INFO,
+            accountCode: "12 Account Code",
+            reference: "12 Reference",
+        };
+
+        const TOKENIZE_PAYMENT_METHOD_PARAMETERS = {
+            payorInfo: PAYOR_INFO,
+            billingInfo: BILLING_INFO,
+            skipValidation: true
+        }
+
+        // Test your payment components here
+        console.log('Testing local development setup');
+        console.log('Payment components should load from localhost:3000');
+        console.log('Iframe fields should load from https://localhost:3001');
+
+        const statusEl = document.getElementById('status');
+        const paymentBtn = document.getElementById('initiate-payment');
+        const paymentWithConfirmationBtn = document.getElementById('initiate-payment-with-confirmation');
+        const tokenizeBtn = document.getElementById('tokenize');
+        const confirmBtn = document.getElementById('confirm-payment');
+        const cancelBtn = document.getElementById('cancel-payment');
+        const confirmationInitialEl = document.querySelector('.confirmation-initial');
+        const confirmationActionsEl = document.querySelector('.confirmation-actions');
+        const errorDiv = document.getElementById('error');
+        const resultContainer = document.getElementById('result-container');
+        const resultText = document.getElementById('result-text');
+
+        function updateStatus(message, type = 'info') {
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        function showError(message) {
+            errorDiv.innerHTML = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            errorDiv.style.display = 'none';
+        }
+
+        function showResult(result) {
+            resultText.textContent = JSON.stringify(result, null, 2);
+            resultContainer.style.display = 'block';
+        }
+
+        function hideResult() {
+            resultContainer.style.display = 'none';
+        }
+
+        // Store validation state for checking tab-specific validity
+        let validationState = {
+            card: false,
+            ach: false,
+            cash: false
+        };
+
+        // Store confirmation state
+        let confirmationState = {
+            hasConfirmation: false,
+            confirmationData: null
+        };
+
+        // Setup PayTheory observers when SDK is available
+        function setupPayTheoryObservers() {
+            if (typeof paytheory !== 'undefined') {
+                paytheory.errorObserver(e => {
+                    console.log(e, "error")
+                    showError(e.error);
+                });
+
+                paytheory.stateObserver(e => {
+                    // console.log(e, "state")
+                })
+
+                paytheory.validObserver(e => {
+                    console.log(e, "valid")
+                    // See if the string we passed in contains the string we are looking for
+                    validationState = {
+                        card: e.includes("card"),
+                        ach: e.includes("ach"),
+                        cash: e.includes("cash")
+                    };
+                });
+            }
+        }
+
+        // Get currently active tab
+        function getActiveTab() {
+            const activeTab = document.querySelector('.tab.active');
+            return activeTab ? activeTab.getAttribute('data-tab') : 'card';
+        }
+
+        // Check if current tab's required fields are valid
+        function isCurrentTabValid() {
+            const activeTab = getActiveTab();
+            let requiredFields = [];
+
+            return validationState[activeTab];
+        }
+
+        // Update button states based on active tab and confirmation status
+        function updateButtonStates() {
+            const activeTab = getActiveTab();
+            const isCashTab = activeTab === 'cash';
+            const hasConfirmation = confirmationState.hasConfirmation;
+
+            // Handle confirmation flow display
+            if (hasConfirmation) {
+                confirmationInitialEl.style.display = 'none';
+                confirmationActionsEl.style.display = 'flex';
+            } else {
+                confirmationInitialEl.style.display = 'block';
+                confirmationActionsEl.style.display = 'none';
+            }
+
+            // Handle cash tab restrictions
+            if (isCashTab) {
+                paymentWithConfirmationBtn.disabled = true;
+                tokenizeBtn.disabled = true;
+                // Hide confirmation buttons entirely on cash tab
+                confirmationInitialEl.style.display = 'none';
+                confirmationActionsEl.style.display = 'none';
+            } else {
+                // Enable confirmation and tokenization buttons on non-cash tabs
+                paymentWithConfirmationBtn.disabled = false;
+                tokenizeBtn.disabled = false;
+            }
+        }
+
+        // Initialize payment fields automatically
+        function initializePayTheoryFields() {
+            updateStatus('Initializing payment fields...', 'info');
+            hideError();
+            hideResult();
+
+            try {
+                if (typeof paytheory !== 'undefined') {
+                    // Setup observers first
+                    setupPayTheoryObservers();
+
+                    // Initialize PayTheory fields
+                    paytheory.payTheoryFields({
+                        apiKey: API_KEY,
+                        country: "USA",
+                        amount: AMOUNT,
+                        styles: {
+                            default: {
+                                color: '#333',
+                                fontSize: '14px'
+                            }
+                        }
+                    });
+
+                    updateStatus(
+                        'PayTheory SDK initialized! Fill out the payment fields to enable transaction buttons.',
+                        'success'
+                    );
+                } else {
+                    updateStatus(
+                        'PayTheory SDK not loaded. Check that index.js is built and loaded correctly.',
+                        'error'
+                    );
+                }
+            } catch (error) {
+                updateStatus(`Error: ${error.message}`, 'error');
+                console.error('PayTheory initialization error:', error);
+            }
+        }
+
+        // Transaction processing
+        paymentBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            hideError();
+            hideResult();
+
+            // Check if current tab's fields are valid before proceeding
+            if (!isCurrentTabValid()) {
+                const activeTab = getActiveTab();
+                const tabName = activeTab === 'card' ? 'Credit Card' :
+                    activeTab === 'ach' ? 'ACH/Bank' : 'Cash';
+                updateStatus(`Please fill out all required ${tabName} fields before processing transaction.`, 'error');
+                return;
+            }
+
+            // Reset confirmation state when starting new transaction
+            confirmationState.hasConfirmation = false;
+            confirmationState.confirmationData = null;
+            updateButtonStates();
+
+            updateStatus('Processing transaction...', 'info');
+
+            paytheory.transact(TRANSACTING_PARAMETERS)
+                .then(result => {
+                    console.log('Transaction result:', result);
+
+                    if (result.type === "SUCCESS") {
+                        updateStatus('Transaction successful!', 'success');
+                        // Reset confirmation state on success
+                        confirmationState.hasConfirmation = false;
+                        confirmationState.confirmationData = null;
+                        updateButtonStates();
+                        showResult(result.body);
+                    } else if (result.type === "FAILED") {
+                        updateStatus('Transaction failed', 'error');
+                        // Reset confirmation state on failure
+                        confirmationState.hasConfirmation = false;
+                        confirmationState.confirmationData = null;
+                        updateButtonStates();
+                        showResult(result.body);
+                    } else if (result.type === "ERROR") {
+                        updateStatus(`Payment Error: ${result.error}`, 'error');
+                        // Reset confirmation state on error
+                        confirmationState.hasConfirmation = false;
+                        confirmationState.confirmationData = null;
+                        updateButtonStates();
+                        showResult({ error: result.error });
+                    } else if (result.type === "CONFIRMATION") {
+                        updateStatus('Transaction requires confirmation - use Confirm or Cancel buttons', 'info');
+                        console.log('Confirmation required:', result);
+                        confirmationState.hasConfirmation = true;
+                        confirmationState.confirmationData = result;
+                        updateButtonStates();
+                        showResult(result);
+                    } else if (result.type === "CASH") {
+                        updateStatus('Cash payment initiated', 'success');
+                        showResult(result.body);
+                    }
+                })
+                .catch(e => {
+                    updateStatus('Transaction error occurred', 'error');
+                    console.error('Transaction error:', e);
+                    showResult(e);
+                });
+        });
+
+        // Tokenization
+        tokenizeBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            hideError();
+            hideResult();
+
+            // Check if current tab's fields are valid before proceeding
+            if (!isCurrentTabValid()) {
+                const activeTab = getActiveTab();
+                const tabName = activeTab === 'card' ? 'Credit Card' :
+                    activeTab === 'ach' ? 'ACH/Bank' : 'Cash';
+                updateStatus(`Please fill out all required ${tabName} fields before tokenizing.`, 'error');
+                return;
+            }
+
+            updateStatus('Tokenizing payment method...', 'info');
+
+            paytheory.tokenizePaymentMethod(TOKENIZE_PAYMENT_METHOD_PARAMETERS)
+                .then(result => {
+                    console.log('Tokenization result:', result);
+
+                    if (result.type === "TOKENIZED") {
+                        updateStatus('Payment method tokenized successfully!', 'success');
+                        showResult(result.body);
+                    } else if (result.type === "ERROR") {
+                        updateStatus(`Tokenization Error: ${result.error}`, 'error');
+                        showResult({ error: result.error });
+                    }
+                })
+                .catch(e => {
+                    updateStatus('Tokenization error occurred', 'error');
+                    console.error('Tokenization error:', e);
+                    showResult(e);
+                });
+        });
+
+        // Transaction with confirmation
+        paymentWithConfirmationBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            hideError();
+            hideResult();
+
+            // Check if current tab's fields are valid before proceeding
+            if (!isCurrentTabValid()) {
+                const activeTab = getActiveTab();
+                const tabName = activeTab === 'card' ? 'Credit Card' :
+                    activeTab === 'ach' ? 'ACH/Bank' : 'Cash';
+                updateStatus(`Please fill out all required ${tabName} fields before processing transaction.`, 'error');
+                return;
+            }
+
+            // Reset confirmation state
+            confirmationState.hasConfirmation = false;
+            confirmationState.confirmationData = null;
+            updateButtonStates();
+
+            updateStatus('Processing transaction with confirmation...', 'info');
+
+            const transactingParametersWithConfirmation = {
+                ...TRANSACTING_PARAMETERS,
+                confirmation: true
+            };
+
+            paytheory.transact(transactingParametersWithConfirmation)
+                .then(result => {
+                    console.log('Transaction result:', result);
+
+                    if (result.type === "SUCCESS") {
+                        updateStatus('Transaction successful!', 'success');
+                        // Reset confirmation state on success
+                        confirmationState.hasConfirmation = false;
+                        confirmationState.confirmationData = null;
+                        updateButtonStates();
+                        showResult(result.body);
+                    } else if (result.type === "FAILED") {
+                        updateStatus('Transaction failed', 'error');
+                        // Reset confirmation state on failure
+                        confirmationState.hasConfirmation = false;
+                        confirmationState.confirmationData = null;
+                        updateButtonStates();
+                        showResult(result.body);
+                    } else if (result.type === "ERROR") {
+                        updateStatus(`Payment Error: ${result.error}`, 'error');
+                        // Reset confirmation state on error
+                        confirmationState.hasConfirmation = false;
+                        confirmationState.confirmationData = null;
+                        updateButtonStates();
+                        showResult({ error: result.error });
+                    } else if (result.type === "CONFIRMATION") {
+                        updateStatus('Transaction requires confirmation - use Confirm or Cancel buttons', 'info');
+                        console.log('Confirmation required:', result);
+                        confirmationState.hasConfirmation = true;
+                        confirmationState.confirmationData = result;
+                        updateButtonStates();
+                        showResult(result);
+                    } else if (result.type === "CASH") {
+                        updateStatus('Cash payment initiated', 'success');
+                        showResult(result.body);
+                    }
+                })
+                .catch(e => {
+                    updateStatus('Transaction error occurred', 'error');
+                    console.error('Transaction error:', e);
+                    showResult(e);
+                });
+        });
+
+        // Confirm payment
+        confirmBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            hideError();
+            hideResult();
+
+            if (!confirmationState.hasConfirmation || !confirmationState.confirmationData) {
+                updateStatus('No confirmation data available', 'error');
+                return;
+            }
+
+            updateStatus('Confirming payment...', 'info');
+
+            paytheory.confirm(confirmationState.confirmationData)
+                .then(result => {
+                    console.log('Confirmation result:', result);
+
+                    // Reset confirmation state
+                    confirmationState.hasConfirmation = false;
+                    confirmationState.confirmationData = null;
+                    updateButtonStates();
+
+                    if (result.type === "SUCCESS") {
+                        updateStatus('Payment confirmed successfully!', 'success');
+                        showResult(result.body);
+                    } else if (result.type === "FAILED") {
+                        updateStatus('Payment confirmation failed', 'error');
+                        showResult(result.body);
+                    } else if (result.type === "ERROR") {
+                        updateStatus(`Confirmation Error: ${result.error}`, 'error');
+                        showResult({ error: result.error });
+                    }
+                })
+                .catch(e => {
+                    updateStatus('Confirmation error occurred', 'error');
+                    console.error('Confirmation error:', e);
+                    showResult(e);
+
+                    // Reset confirmation state on error
+                    confirmationState.hasConfirmation = false;
+                    confirmationState.confirmationData = null;
+                    updateButtonStates();
+                });
+        });
+
+        // Cancel payment
+        cancelBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            hideError();
+            hideResult();
+
+            if (!confirmationState.hasConfirmation || !confirmationState.confirmationData) {
+                updateStatus('No confirmation data available', 'error');
+                return;
+            }
+
+            updateStatus('Cancelling payment...', 'info');
+
+            paytheory.cancel(confirmationState.confirmationData)
+                .then(result => {
+                    console.log('Cancellation result:', result);
+
+                    // Reset confirmation state
+                    confirmationState.hasConfirmation = false;
+                    confirmationState.confirmationData = null;
+                    updateButtonStates();
+
+                    if (result.type === "SUCCESS") {
+                        updateStatus('Payment cancelled successfully', 'success');
+                        showResult(result.body);
+                    } else if (result.type === "FAILED") {
+                        updateStatus('Payment cancellation failed', 'error');
+                        showResult(result.body);
+                    } else if (result.type === "ERROR") {
+                        updateStatus(`Cancellation Error: ${result.error}`, 'error');
+                        showResult({ error: result.error });
+                    }
+                })
+                .catch(e => {
+                    updateStatus('Cancellation error occurred', 'error');
+                    console.error('Cancellation error:', e);
+                    showResult(e);
+
+                    // Reset confirmation state on error
+                    confirmationState.hasConfirmation = false;
+                    confirmationState.confirmationData = null;
+                    updateButtonStates();
+                });
+        });
+
+        // Initialize fields when page loads
+        window.addEventListener('load', function () {
+            updateStatus('Ready to test payment fields initialization', 'success');
+            // Initialize PayTheory fields automatically
+            initializePayTheoryFields();
+            // Set initial button states
+            updateButtonStates();
+        });
+    </script>
+</body>
+
+</html>

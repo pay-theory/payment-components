@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Local Development Test - Payment Components</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Local Development Test</h1>
+        <p>
+            Testing local development setup with:
+            <br />
+            • Payment Components (parent SDK) on <strong>localhost:3000</strong>
+            <br />
+            • Secure Tags Lib (iframe fields) on <strong>https://localhost:3001</strong>
+        </p>
+
+        <!-- Payment method tabs -->
+        <div class="tabs">
+            <div class="tab" data-tab="card">Credit Card</div>
+            <div class="tab" data-tab="ach">ACH / Bank</div>
+            <div class="tab" data-tab="cash">Cash</div>
+            <div class="tab" data-tab="button">Checkout Button</div>
+            <div class="tab active" data-tab="qr">QR Code</div>
+        </div>
+
+        <!-- Payment form container -->
+        <form id="payment-form">
+            <!-- Card Payment Fields Tab -->
+            <div id="card-tab" class="tab-content">
+                <h3>Card Payment Fields</h3>
+
+                <h4>Separate Card Fields</h4>
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-number">Card Number</label>
+                    <div id="pay-theory-credit-card-number" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-exp">Expiration Date</label>
+                    <div id="pay-theory-credit-card-exp" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-cvv">CVV</label>
+                    <div id="pay-theory-credit-card-cvv" class="field-container"></div>
+                </div>
+
+                <h4>Optional Billing Information</h4>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-account-name">Cardholder Name</label>
+                    <div id="pay-theory-credit-card-account-name" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-address-1">Address Line 1</label>
+                    <div id="pay-theory-credit-card-address-1" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-address-2">Address Line 2</label>
+                    <div id="pay-theory-credit-card-address-2" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-city">City</label>
+                    <div id="pay-theory-credit-card-city" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-state">State</label>
+                    <div id="pay-theory-credit-card-state" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-credit-card-zip">ZIP Code</label>
+                    <div id="pay-theory-credit-card-zip" class="field-container"></div>
+                </div>
+            </div>
+
+            <!-- ACH Payment Fields Tab -->
+            <div id="ach-tab" class="tab-content">
+                <h3>ACH Payment Fields</h3>
+
+                <div class="form-group">
+                    <label for="pay-theory-ach-account-name">Account Name</label>
+                    <div id="pay-theory-ach-account-name" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-ach-account-number">Account Number</label>
+                    <div id="pay-theory-ach-account-number" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-ach-routing-number">Routing Number</label>
+                    <div id="pay-theory-ach-routing-number" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-ach-account-type">Account Type</label>
+                    <div id="pay-theory-ach-account-type" class="field-container"></div>
+                </div>
+            </div>
+
+            <!-- Cash Payment Fields Tab -->
+            <div id="cash-tab" class="tab-content">
+                <h3>Cash Payment Fields</h3>
+
+                <div class="form-group">
+                    <label for="pay-theory-cash-name">Name</label>
+                    <div id="pay-theory-cash-name" class="field-container"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pay-theory-cash-contact">Contact</label>
+                    <div id="pay-theory-cash-contact" class="field-container"></div>
+                </div>
+            </div>
+
+            <!-- Checkout Button Tab -->
+            <div id="button-tab" class="tab-content">
+                <h3>Checkout Button</h3>
+                <p>Click the button below to open a hosted checkout experience in a popup window.</p>
+
+                <div class="form-group">
+                    <label>Checkout Button (Hosted Experience)</label>
+                    <div id="pay-theory-checkout-button" class="button-field-container"></div>
+                </div>
+            </div>
+
+            <!-- QR Code Tab -->
+            <div id="qr-tab" class="tab-content active">
+                <h3>QR Code Checkout</h3>
+                <p>Scan the QR code below with your mobile device to complete the payment.</p>
+
+                <div class="form-group">
+                    <label>QR Code (Mobile Checkout)</label>
+                    <div id="pay-theory-checkout-qr" class="qr-field-container"></div>
+                </div>
+            </div>
+
+            <!-- Button Layout for Card/ACH/Cash -->
+            <div class="button-container" id="field-buttons" style="margin-top: 20px;">
+                <!-- Top Row: Standard Transaction -->
+                <div class="button-row">
+                    <button type="button" id="initiate-payment">
+                        Process Transaction
+                    </button>
+                </div>
+
+                <!-- Middle Row: Confirmation Flow -->
+                <div class="button-row">
+                    <button type="button" id="initiate-payment-with-confirmation" class="confirmation-initial">
+                        Process with Confirmation
+                    </button>
+
+                    <div class="confirmation-actions" style="display: none;">
+                        <button type="button" id="confirm-payment">
+                            Confirm Payment
+                        </button>
+                        <button type="button" id="cancel-payment">
+                            Cancel Payment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bottom Row: Tokenization -->
+                <div class="button-row">
+                    <button type="button" id="tokenize">
+                        Tokenize Payment Method
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div id="status" class="status">
+            Ready to test local development setup...
+        </div>
+
+        <div id="error" class="status error" style="display: none;">
+        </div>
+
+        <div id="result-container" style="margin-top: 20px; display: none;">
+            <h4>Transaction Result:</h4>
+            <pre id="result-text"></pre>
+        </div>
+    </div>
+
+    <!-- Load your locally built SDK (hot-reloaded from dev server) -->
+    <script src="../index.js"></script>
+    <script src="config.js"></script>
+    <script src="tabs.js"></script>
+    <script src="payment-fields.js"></script>
+    <script src="checkout-components.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
