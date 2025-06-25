@@ -73,6 +73,8 @@
         "prepare": "husky"
     },
     "devDependencies": {
+        "@babel/plugin-transform-modules-commonjs": "^7.27.1",
+        "@babel/preset-env": "^7.27.2",
         "@eslint/js": "^9.22.0",
         "@esm-bundle/chai": "^4.3.4-fix.0",
         "@open-wc/testing": "^4.0.0",
