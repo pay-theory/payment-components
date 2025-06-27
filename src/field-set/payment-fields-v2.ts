@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import common from '../common';
-import * as valid from './validation';
 import {
   achElementIds,
   cardElementIds,
@@ -10,10 +9,8 @@ import {
   MERCHANT_FEE,
   SERVICE_FEE,
 } from '../common/data';
-import PayTheoryHostedField from '../components/pay-theory-hosted-field';
 import { processedElement } from '../common/dom';
-import PayTheoryHostedFieldTransactional from '../components/pay-theory-hosted-field-transactional';
-import * as handler from './handler';
+import { hostedCheckoutEndpoint } from '../common/network';
 import {
   ErrorResponse,
   ErrorType,
@@ -23,7 +20,10 @@ import {
   ResponseMessageTypes,
   StyleObject,
 } from '../common/pay_theory_types';
-import { hostedCheckoutEndpoint } from '../common/network';
+import PayTheoryHostedField from '../components/pay-theory-hosted-field';
+import PayTheoryHostedFieldTransactional from '../components/pay-theory-hosted-field-transactional';
+import * as handler from './handler';
+import * as valid from './validation';
 
 interface ProcessedObjectValue<
   T extends cashElementIds | cardElementIds | achElementIds | eftElementIds,

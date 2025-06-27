@@ -46,6 +46,7 @@ const checkApiKey = (key: unknown) => {
   }
 
   if (environment !== common.PARTNER || stage !== common.STAGE) {
+    console.log('🔧 Invalid API Key:', common.PARTNER, common.STAGE);
     return handleTypedError(
       ErrorType.INVALID_PARAM,
       'Valid API Key not found. Please provide a valid API Key',
