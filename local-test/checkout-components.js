@@ -139,7 +139,7 @@ class CheckoutComponentsManager {
 
     // Initialize both components but keep them hidden
     if (!this.buttonInitialized) {
-      // this.initializeCheckoutButton();
+      this.initializeCheckoutButton();
     }
 
     if (!this.qrInitialized) {

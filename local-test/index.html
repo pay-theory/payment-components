@@ -21,17 +21,17 @@
 
         <!-- Payment method tabs -->
         <div class="tabs">
-            <div class="tab" data-tab="card">Credit Card</div>
+            <div class="tab active" data-tab="card">Credit Card</div>
             <div class="tab" data-tab="ach">ACH / Bank</div>
             <div class="tab" data-tab="cash">Cash</div>
             <div class="tab" data-tab="button">Checkout Button</div>
-            <div class="tab active" data-tab="qr">QR Code</div>
+            <div class="tab" data-tab="qr">QR Code</div>
         </div>
 
         <!-- Payment form container -->
         <form id="payment-form">
             <!-- Card Payment Fields Tab -->
-            <div id="card-tab" class="tab-content">
+            <div id="card-tab" class="tab-content active">
                 <h3>Card Payment Fields</h3>
 
                 <h4>Separate Card Fields</h4>
@@ -135,7 +135,7 @@
             </div>
 
             <!-- QR Code Tab -->
-            <div id="qr-tab" class="tab-content active">
+            <div id="qr-tab" class="tab-content">
                 <h3>QR Code Checkout</h3>
                 <p>Scan the QR code below with your mobile device to complete the payment.</p>
 

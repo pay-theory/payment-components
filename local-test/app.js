@@ -146,7 +146,7 @@ class LocalTestApp {
     this.isSDKLoaded = true;
 
     // Initialize payment fields for field-based tabs
-    // this.paymentFieldsManager.initializePayTheoryFields();
+    this.paymentFieldsManager.initializePayTheoryFields();
 
     // Initialize all checkout components on load (hidden initially)
     this.checkoutComponentsManager.initializeAllComponents();

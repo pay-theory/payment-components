@@ -5,6 +5,31 @@
 
 /* global paytheory, API_KEY, AMOUNT, FEE_MODE, TRANSACTING_PARAMETERS, TOKENIZE_PAYMENT_METHOD_PARAMETERS, initializeFeeMode */
 
+const STYLES = {
+  default: {
+    color: 'green',
+    fontSize: '14px',
+    padding: '8px 0px 0px 12px',
+    fontFamily: 'Europa, Segoe UI, Trebuchet MS, Arial, Helvetica, sans-serif',
+  },
+  error: {
+    color: '#d9534f',
+    fontSize: '14px',
+    padding: '8px 0px 0px 12px',
+    fontFamily: 'Europa, Segoe UI, Trebuchet MS, Arial, Helvetica, sans-serif',
+  },
+  radio: {
+    width: 18,
+    fill: 'rgb(144 58 210)',
+    text: {
+      fontSize: '14px',
+      fontFamily: 'halyard-text, inter, arial, sans-serif',
+      fontWeight: '100',
+    },
+  },
+  hidePlaceholder: false,
+};
+
 class PaymentFieldsManager {
   constructor() {
     this.validationState = {
@@ -95,12 +120,7 @@ class PaymentFieldsManager {
           apiKey: API_KEY,
           country: 'USA',
           amount: AMOUNT,
-          styles: {
-            default: {
-              color: '#333',
-              fontSize: '14px',
-            },
-          },
+          styles: STYLES,
         };
         console.log('Fields config:', fieldsConfig);
 
