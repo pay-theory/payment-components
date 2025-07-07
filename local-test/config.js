@@ -4,7 +4,6 @@
 
 // API Configuration
 // const API_KEY = "start-paytheory-62d8597c57af5d64a7ebee0a8fd3d3cc";
-const API_KEY = 'austin-paytheorylab-d7dbe665f5565fe8ae8a23eab45dd285';
 const AMOUNT = 10000; // $100.00 in cents
 
 // Fee configuration - will be set after PayTheory SDK loads
