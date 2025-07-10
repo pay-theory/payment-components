@@ -16,3 +16,6 @@ payment-components.iml
 .env.development.local
 .env.test.local
 .env.production.local
+# Claude
+.claude
+Claude.md

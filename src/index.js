@@ -26,6 +26,7 @@ import 'regenerator-runtime';
 import './style.css';
 
 import payTheoryFields from './field-set/payment-fields-v2';
+import PayTheoryMessenger from './messenger/pay-theory-messenger';
 import {
   transact,
   confirm,
@@ -113,6 +114,7 @@ window.paytheory = {
   GREY,
   BLACK,
   PURPLE,
+  PayTheoryMessenger,
 };
 
 export default window.paytheory;
