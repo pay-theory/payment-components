@@ -163,10 +163,10 @@ export default function createPaymentFields(
         get: function () {
           return transactingTypeValue;
         },
-        set: function (newValue) {
+        set: function () {
           // Always keep it as 'bank' regardless of the attempted value
           transactingTypeValue = 'bank';
-          return transactingTypeValue;
+          // Setters should not return values - they should only perform side effects
         },
         configurable: true,
         enumerable: true,
