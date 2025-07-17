@@ -5,7 +5,6 @@ import {
   ApplePaySessionResponse,
   MessengerResponse,
   TransactionResponse,
-  ErrorResponse,
 } from './types';
 
 export {
@@ -15,7 +14,6 @@ export {
   ApplePaySessionResponse,
   MessengerResponse,
   TransactionResponse,
-  ErrorResponse,
 };
 
 export default PayTheoryMessenger;

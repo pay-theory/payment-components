@@ -26,6 +26,9 @@ export const PT_MESSENGER_APPLE_MERCHANT_VALIDATION =
 export const PT_MESSENGER_TRANSFER_COMPLETE = 'pt-messenger:transfer_complete' as const;
 export const PT_MESSENGER_RECONNECT_TOKEN_SUCCESS = 'pt-messenger:reconnect_token_success' as const;
 
+// Response types
+export const PT_MERCHANT_VALIDATION = 'merchant_validation' as const;
+
 export type INCOMING_MESSENGER_TYPES =
   | typeof PT_MESSENGER_CONNECTION_ACK
   | typeof PT_MESSENGER_SOCKET_CONNECTED

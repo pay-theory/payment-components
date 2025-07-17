@@ -5,20 +5,23 @@ import {
   ApplePaySessionResponse,
   MessengerAppleMerchantValidationMessage,
   MessengerResponse,
+  MessengerSocketErrorMessage,
+  MessengerTransferCompleteMessage,
   TransactionResponse,
   WalletTransactionPayload,
   WalletTransactionPayloadServer,
 } from './types';
 
 import { hostedFieldsEndpoint } from '../common/network';
+import { ErrorResponse, ResponseMessageTypes } from '../common/pay_theory_types';
 import { generateUUID } from '../field-set/payment-fields-v2';
 import {
-  PT_MESSENGER_APPLE_MERCHANT_VALIDATION,
-  PT_MESSENGER_ESTABLISH_CHANNEL,
   PT_MESSENGER_MERCHANT_VALIDATION,
   PT_MESSENGER_PING,
   PT_MESSENGER_READY,
   PT_MESSENGER_RECONNECT_TOKEN,
+  PT_MESSENGER_SOCKET_ERROR,
+  PT_MESSENGER_TRANSFER_COMPLETE,
   PT_MESSENGER_WALLET_TRANSACTION,
 } from './constants';
 
@@ -297,20 +300,20 @@ class PayTheoryMessenger {
   /**
    * Get Apple Pay session for merchant validation
    */
-  async getApplePaySession(): Promise<ApplePaySessionResponse> {
+  async getApplePaySession(): Promise<ApplePaySessionResponse | ErrorResponse> {
     try {
       console.log('Getting Apple Pay session');
       // Ensure connected
       const connectionCheck = await this.ensureConnected();
       if (!connectionCheck.success) {
         return {
-          success: false,
+          type: ResponseMessageTypes.ERROR,
           error: connectionCheck.error || 'Failed to ensure connection',
         };
       }
       if (!this.channel) {
         return {
-          success: false,
+          type: ResponseMessageTypes.ERROR,
           error: 'Channel not initialized',
         };
       }
@@ -325,7 +328,7 @@ class PayTheoryMessenger {
         const refreshResult = await this.refreshConnection();
         if (!refreshResult.success) {
           return {
-            success: false,
+            type: ResponseMessageTypes.ERROR,
             error: refreshResult.error || 'Failed to refresh connection',
           };
         }
@@ -336,11 +339,14 @@ class PayTheoryMessenger {
         );
       }
 
-      return response.body;
+      return {
+        type: ResponseMessageTypes.SUCCESS,
+        session: response.body,
+      };
     } catch (error) {
       console.error('Error getting Apple Pay session', error);
       return {
-        success: false,
+        type: ResponseMessageTypes.ERROR,
         error: error instanceof Error ? error.message : 'Unknown error getting Apple Pay session',
       };
     }
@@ -349,12 +355,14 @@ class PayTheoryMessenger {
   /**
    * Process a wallet transaction
    */
-  async processWalletTransaction(payload: WalletTransactionPayload): Promise<TransactionResponse> {
+  async processWalletTransaction(
+    payload: WalletTransactionPayload,
+  ): Promise<TransactionResponse | ErrorResponse> {
     try {
       // Validate required fields
       if (!payload.amount || !payload.digitalWalletPayload || !payload.walletType) {
         return {
-          success: false,
+          type: ResponseMessageTypes.ERROR,
           error:
             'Missing required fields: amount, digitalWalletPayload, and walletType are required',
         };
@@ -362,7 +370,7 @@ class PayTheoryMessenger {
 
       if (!this.channel) {
         return {
-          success: false,
+          type: ResponseMessageTypes.ERROR,
           error: 'Channel not initialized',
         };
       }
@@ -371,7 +379,7 @@ class PayTheoryMessenger {
       const connectionCheck = await this.ensureConnected();
       if (!connectionCheck.success) {
         return {
-          success: false,
+          type: ResponseMessageTypes.ERROR,
           error: connectionCheck.error || 'Failed to ensure connection',
         };
       }
@@ -400,51 +408,103 @@ class PayTheoryMessenger {
 
       // Send transaction
       this.state.setState(MessengerState.PROCESSING);
-      const response = await this.channel.sendMessage<any, TransactionResponse>(
-        PT_MESSENGER_WALLET_TRANSACTION,
-        formattedPayload,
-      );
+      const response = await this.channel.sendMessage<
+        any,
+        MessengerSocketErrorMessage | MessengerTransferCompleteMessage
+      >(PT_MESSENGER_WALLET_TRANSACTION, formattedPayload);
 
       console.log('Wallet Transaction Response PC', response);
 
-      if (!response.success && response.error === 'TOKEN_EXPIRED') {
-        // Token expired, try refreshing and retry
-        const refreshResult = await this.refreshConnection();
-        if (!refreshResult.success) {
-          console.error('Error refreshing connection', refreshResult);
+      // Handle error responses (from secure-tags-lib error handling)
+      if (response.type === PT_MESSENGER_SOCKET_ERROR) {
+        const errorMsg = response.body.error || 'Unknown error';
+
+        // Handle token expiration
+        if (errorMsg === 'TOKEN_EXPIRED') {
+          // Token expired, try refreshing and retry
+          const refreshResult = await this.refreshConnection();
+          if (!refreshResult.success) {
+            console.error('Error refreshing connection', refreshResult);
+            this.state.setState(MessengerState.ERROR);
+            return {
+              type: ResponseMessageTypes.ERROR,
+              error: refreshResult.error || 'Failed to refresh connection',
+            };
+          }
+
+          // Retry after refresh
+          this.state.setState(MessengerState.PROCESSING);
+          const retryResponse = await this.channel.sendMessage<any, any>(
+            PT_MESSENGER_WALLET_TRANSACTION,
+            formattedPayload,
+          );
+
+          // Process retry response
+          if (retryResponse.type === 'pt-static:error') {
+            console.error('Error processing transaction after refresh', retryResponse);
+            this.state.setState(MessengerState.ERROR);
+            this.emitEvent('transaction_error', { error: retryResponse.error });
+            return {
+              type: ResponseMessageTypes.ERROR,
+              error: retryResponse.error || 'Transaction failed after token refresh',
+            };
+          }
+
+          // Update response to process below
+          Object.assign(response, retryResponse);
+        } else {
+          // Other errors
+          console.error('Error processing transaction', response);
           this.state.setState(MessengerState.ERROR);
+          this.emitEvent('transaction_error', { error: errorMsg });
           return {
-            success: false,
-            error: refreshResult.error || 'Failed to refresh connection',
+            type: ResponseMessageTypes.ERROR,
+            error: errorMsg,
+          };
+        }
+      }
+
+      // Handle PT_MESSENGER_TRANSFER_COMPLETE responses
+      if (response.type === PT_MESSENGER_TRANSFER_COMPLETE && response.body?.transaction) {
+        const transaction = response.body.transaction;
+
+        // Check if transaction failed
+        if (transaction.status === 'FAILED') {
+          // Refresh connection for retry with new host token
+          await this.refreshConnection();
+
+          this.state.setState(MessengerState.ERROR);
+          this.emitEvent('transaction_error', { transaction });
+
+          return {
+            type: ResponseMessageTypes.SUCCESS,
+            transaction,
           };
         }
 
-        // Retry after refresh
-        this.state.setState(MessengerState.PROCESSING);
-        return this.channel.sendMessage<any, TransactionResponse>(
-          PT_MESSENGER_WALLET_TRANSACTION,
-          formattedPayload,
-        );
-      }
-
-      // Handle response
-      if (response.success) {
+        // Transaction is pending or successful
         this.state.setState(MessengerState.COMPLETED);
-        this.emitEvent('transaction_complete', response);
-      } else {
-        console.error('Error processing transaction', response);
-        this.state.setState(MessengerState.ERROR);
-        this.emitEvent('transaction_error', response);
+        this.emitEvent('transaction_complete', { transaction });
+
+        return {
+          type: ResponseMessageTypes.SUCCESS,
+          transaction,
+        };
       }
 
-      return response;
+      // Unexpected response format
+      console.error('Unexpected response format', response);
+      this.state.setState(MessengerState.ERROR);
+      return {
+        type: ResponseMessageTypes.ERROR,
+        error: 'Unexpected response format',
+      };
     } catch (error) {
       console.error('Error processing transaction', error);
       this.state.setState(MessengerState.ERROR);
       return {
-        success: false,
+        type: ResponseMessageTypes.ERROR,
         error: error instanceof Error ? error.message : 'Unknown error processing transaction',
-        transaction_id: null,
       };
     }
   }

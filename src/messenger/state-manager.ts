@@ -6,6 +6,7 @@ export enum MessengerState {
   PROCESSING = 'processing',
   COMPLETED = 'completed',
   ERROR = 'error',
+  FAILED = 'failed',
 }
 
 type StateTransition = {
@@ -33,7 +34,12 @@ class StateManager {
       MessengerState.ERROR,
     ],
     [MessengerState.COMPLETED]: [MessengerState.IDLE],
-    [MessengerState.ERROR]: [MessengerState.IDLE, MessengerState.INITIALIZING],
+    [MessengerState.ERROR]: [
+      MessengerState.IDLE,
+      MessengerState.INITIALIZING,
+      MessengerState.FAILED,
+    ],
+    [MessengerState.FAILED]: [MessengerState.IDLE],
   };
 
   /**
