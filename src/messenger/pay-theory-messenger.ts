@@ -7,6 +7,7 @@ import {
   MessengerResponse,
   TransactionResponse,
   WalletTransactionPayload,
+  WalletTransactionPayloadServer,
 } from './types';
 
 import { hostedFieldsEndpoint } from '../common/network';
@@ -376,7 +377,7 @@ class PayTheoryMessenger {
       }
 
       // Format the payload for the backend
-      const formattedPayload = {
+      const formattedPayload: WalletTransactionPayloadServer = {
         digital_wallet_payload: payload.digitalWalletPayload,
         amount: payload.amount,
         payor: payload.payor,
@@ -403,6 +404,8 @@ class PayTheoryMessenger {
         PT_MESSENGER_WALLET_TRANSACTION,
         formattedPayload,
       );
+
+      console.log('Wallet Transaction Response PC', response);
 
       if (!response.success && response.error === 'TOKEN_EXPIRED') {
         // Token expired, try refreshing and retry

@@ -39,11 +39,13 @@ export interface ErrorResponse {
   details?: any;
 }
 
+export type WalletType = 'apple' | 'google' | 'paze';
+
 // Wallet transaction payload
 export interface WalletTransactionPayload {
   amount: number;
   digitalWalletPayload: any;
-  walletType: string;
+  walletType: WalletType;
   payor?: any;
   reference?: string;
   accountCode?: string;
@@ -58,6 +60,27 @@ export interface WalletTransactionPayload {
   recurringId?: string;
   sendReceipt?: boolean;
   split?: any;
+}
+
+export interface WalletTransactionPayloadServer {
+  amount: number;
+  digital_wallet_payload: any;
+  wallet_type: WalletType;
+  payor?: any;
+  reference?: string;
+  account_code?: string;
+  metadata?: any;
+  additional_purchase_data?: any;
+  billing_address?: any;
+  fee?: number;
+  health_expense_type?: string;
+  invoice_id?: string;
+  receipt_description?: string;
+  payor_id?: string;
+  recurring_id?: string;
+  send_receipt?: boolean;
+  split?: any;
+  timezone: string;
 }
 
 /**

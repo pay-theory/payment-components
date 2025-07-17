@@ -147,11 +147,16 @@ async function handleApplePay() {
     try {
       showStatus('Processing payment...', 'info');
 
+      // Stringify the event
+      const eventString = JSON.stringify(event.payment);
+
       const result = await messenger.processWalletTransaction({
         amount: AMOUNT,
-        digitalWalletPayload: event.payment,
+        digitalWalletPayload: eventString,
         walletType: 'APPLE_PAY',
       });
+
+      console.log('Result', result);
 
       if (result.success) {
         session.completePayment(ApplePaySession.STATUS_SUCCESS);
