@@ -23,9 +23,13 @@ import {
   PT_MESSENGER_SOCKET_ERROR,
   PT_MESSENGER_TRANSFER_COMPLETE,
   PT_MESSENGER_WALLET_TRANSACTION,
+  PT_WALLET_TYPE_APPLE,
+  PT_WALLET_TYPE_GOOGLE,
+  PT_WALLET_TYPE_PAZE,
 } from './constants';
 
 class PayTheoryMessenger {
+  private static instances: Map<string, PayTheoryMessenger> = new Map();
   private apiKey: string;
   private sessionId?: string;
   private iframe: HTMLIFrameElement | null = null;
@@ -33,23 +37,65 @@ class PayTheoryMessenger {
   private channel: MessengerChannel | null = null;
   private state: StateManager;
   private eventListeners: Map<string, Function[]> = new Map();
+  private globalEventListeners: Array<{ type: string; handler: EventListener }> = [];
+  private initializationPromise: Promise<MessengerResponse> | null = null;
+  private refreshPromise: Promise<MessengerResponse> | null = null;
+
+  // Static Constants
+  static readonly applePay = PT_WALLET_TYPE_APPLE;
+  static readonly googlePay = PT_WALLET_TYPE_GOOGLE;
+  static readonly paze = PT_WALLET_TYPE_PAZE;
 
   constructor(options: { apiKey: string }) {
+    // Check if instance already exists for this API key
+    const existingInstance = PayTheoryMessenger.instances.get(options.apiKey);
+    if (existingInstance) {
+      console.warn('PayTheoryMessenger instance already exists for this API key');
+      return existingInstance;
+    }
+
     this.apiKey = options.apiKey;
     this.sessionId = generateUUID();
     this.tokenManager = new TokenManager(this.apiKey, this.sessionId);
     this.state = new StateManager();
+
+    // Register this instance
+    PayTheoryMessenger.instances.set(options.apiKey, this);
+  }
+
+  // Add static method to clear instances (useful for testing)
+  static clearInstances(): void {
+    PayTheoryMessenger.instances.forEach(instance => instance.destroy());
+    PayTheoryMessenger.instances.clear();
   }
 
   /**
    * Initialize the messenger - create iframe and establish connection
    */
   async initialize(): Promise<MessengerResponse> {
-    try {
-      if (this.state.getState() !== MessengerState.IDLE) {
-        throw new Error('Messenger is already initialized or initializing');
-      }
+    // Prevent multiple simultaneous initialization
+    if (this.initializationPromise) {
+      return await this.initializationPromise;
+    }
 
+    if (this.state.getState() !== MessengerState.IDLE) {
+      // Already initialized or initializing
+      return this.ensureConnected();
+    }
+
+    // Create and store the initialization promise
+    this.initializationPromise = this.doInitialize();
+
+    try {
+      const result = await this.initializationPromise;
+      return result;
+    } finally {
+      this.initializationPromise = null;
+    }
+  }
+
+  private async doInitialize(): Promise<MessengerResponse> {
+    try {
       this.state.setState(MessengerState.INITIALIZING);
 
       // Get token first
@@ -115,6 +161,16 @@ class PayTheoryMessenger {
     this.iframe.setAttribute('title', 'Payment Theory Messenger');
     this.iframe.setAttribute('aria-hidden', 'true');
 
+    // Add cleanup on iframe unload
+    this.iframe.addEventListener('beforeunload', () => {
+      this.handleIframeUnload();
+    });
+
+    // For older browsers, also listen to unload
+    this.iframe.addEventListener('unload', () => {
+      this.handleIframeUnload();
+    });
+
     // Set the iframe source to the secure tags lib messenger URL with token
     this.iframe.src = `${hostedFieldsEndpoint}/messenger?token=${tokenString}`;
 
@@ -134,8 +190,13 @@ class PayTheoryMessenger {
         return;
       }
 
+      let pingInterval: NodeJS.Timeout;
+
       // Set a reasonable timeout
       const timeout = setTimeout(() => {
+        if (pingInterval) clearInterval(pingInterval);
+        // Clean up any remaining listeners
+        this.cleanupEventListeners();
         reject(new Error('Iframe ready timeout'));
       }, 15000);
 
@@ -161,9 +222,19 @@ class PayTheoryMessenger {
             clearTimeout(timeout);
             clearInterval(pingInterval);
             window.removeEventListener('message', readyMessageListener);
+            // Remove from tracked listeners
+            this.globalEventListeners = this.globalEventListeners.filter(
+              l => l.handler !== readyMessageListener,
+            );
             resolve();
           }
         };
+
+        // Track the listener
+        this.globalEventListeners.push({
+          type: 'message',
+          handler: readyMessageListener,
+        });
 
         window.addEventListener('message', readyMessageListener);
 
@@ -172,7 +243,7 @@ class PayTheoryMessenger {
         this.sendPingToIframe();
 
         // Also set an interval to keep pinging until we get a response
-        const pingInterval = setInterval(() => {
+        pingInterval = setInterval(() => {
           this.sendPingToIframe();
         }, 500);
 
@@ -219,19 +290,33 @@ class PayTheoryMessenger {
     }
 
     if (currentState === MessengerState.INITIALIZING) {
-      // Wait for initialization to complete
+      // If we have an initialization promise, wait for it
+      if (this.initializationPromise) {
+        return await this.initializationPromise;
+      }
+
+      // Otherwise wait for state change with timeout
       return new Promise(resolve => {
+        const timeout = setTimeout(() => {
+          clearInterval(checkInterval);
+          resolve({ success: false, error: 'Connection timeout' });
+        }, 30000);
+
         const checkInterval = setInterval(() => {
-          if (this.state.getState() === MessengerState.CONNECTED) {
+          const state = this.state.getState();
+          if (state === MessengerState.CONNECTED) {
+            clearTimeout(timeout);
             clearInterval(checkInterval);
             resolve({ success: true });
-          } else if (this.state.getState() === MessengerState.ERROR) {
+          } else if (state === MessengerState.ERROR) {
+            clearTimeout(timeout);
             clearInterval(checkInterval);
             resolve({ success: false, error: 'Messenger initialization failed' });
           }
         }, 100);
       });
     }
+
     // Try to re-initialize
     if (currentState === MessengerState.ERROR || currentState === MessengerState.IDLE) {
       return this.initialize();
@@ -244,6 +329,22 @@ class PayTheoryMessenger {
    * Refresh the connection with a new token
    */
   async refreshConnection(): Promise<MessengerResponse> {
+    // Prevent concurrent refresh attempts
+    if (this.refreshPromise) {
+      return await this.refreshPromise;
+    }
+
+    this.refreshPromise = this.doRefreshConnection();
+
+    try {
+      const result = await this.refreshPromise;
+      return result;
+    } finally {
+      this.refreshPromise = null;
+    }
+  }
+
+  private async doRefreshConnection(): Promise<MessengerResponse> {
     try {
       this.state.setState(MessengerState.REFRESHING);
 
@@ -513,16 +614,46 @@ class PayTheoryMessenger {
    * Clean up resources
    */
   destroy(): void {
-    if (this.iframe && this.iframe.parentNode) {
-      this.iframe.parentNode.removeChild(this.iframe);
-    }
+    // 1. Clean up all event listeners
+    this.cleanupEventListeners();
 
+    // 2. Disconnect channel before removing iframe
     if (this.channel) {
       this.channel.disconnect();
+      this.channel = null;
     }
 
+    // 3. Remove iframe from DOM
+    if (this.iframe && this.iframe.parentNode) {
+      this.iframe.parentNode.removeChild(this.iframe);
+      this.iframe = null;
+    }
+
+    // 4. Clear token manager
+    this.tokenManager.cleanup();
+
+    // 5. Reset state
     this.state.setState(MessengerState.IDLE);
     this.eventListeners.clear();
+
+    // 6. Remove from instances map
+    PayTheoryMessenger.instances.delete(this.apiKey);
+  }
+
+  private cleanupEventListeners(): void {
+    // Remove any global event listeners
+    this.globalEventListeners.forEach(({ type, handler }) => {
+      window.removeEventListener(type, handler);
+    });
+    this.globalEventListeners = [];
+  }
+
+  private handleIframeUnload(): void {
+    console.warn('PayTheoryMessenger iframe is being unloaded');
+    // Notify consumers via event
+    this.emitEvent('iframe_unloaded', { timestamp: Date.now() });
+    // Clean up resources
+    this.cleanupEventListeners();
   }
 
   /**

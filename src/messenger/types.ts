@@ -11,6 +11,7 @@ import {
   PT_MESSENGER_SOCKET_ERROR,
   PT_MESSENGER_TRANSFER_COMPLETE,
   PT_MESSENGER_WALLET_TRANSACTION,
+  PT_WALLET_TYPES,
 } from './constants';
 
 import { ResponseMessageTypes } from '../common/pay_theory_types';
@@ -158,7 +159,7 @@ export interface MessengerResponse {
 // Apple Pay session response
 export interface ApplePaySessionResponse {
   type: ResponseMessageTypes.SUCCESS;
-  session?: any;
+  session: any;
 }
 
 // Transaction response
@@ -167,13 +168,11 @@ export interface TransactionResponse {
   transaction: Transaction;
 }
 
-export type WalletType = 'apple' | 'google' | 'paze';
-
 // Wallet transaction payload
 export interface WalletTransactionPayload {
   amount: number;
   digitalWalletPayload: any;
-  walletType: WalletType;
+  walletType: PT_WALLET_TYPES;
   payor?: any;
   reference?: string;
   accountCode?: string;
@@ -193,7 +192,7 @@ export interface WalletTransactionPayload {
 export interface WalletTransactionPayloadServer {
   amount: number;
   digital_wallet_payload: any;
-  wallet_type: WalletType;
+  wallet_type: PT_WALLET_TYPES;
   payor?: any;
   reference?: string;
   account_code?: string;
@@ -282,7 +281,7 @@ export interface MessengerWalletTransactionMessage {
   type: typeof PT_MESSENGER_WALLET_TRANSACTION;
   messageId: string;
   data: {
-    walletType: 'apple' | 'google';
+    walletType: PT_WALLET_TYPES;
     paymentToken: unknown;
     billingContact?: {
       givenName?: string;

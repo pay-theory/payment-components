@@ -73,6 +73,15 @@ class TokenManager {
       );
     }
   }
+
+  /**
+   * Cleanup method to clear stored tokens and pending promises
+   */
+  cleanup(): void {
+    this.token = null;
+    this.tokenExpiry = 0;
+    this.tokenFetchPromise = null;
+  }
 }
 
 export default TokenManager;

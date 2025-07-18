@@ -117,4 +117,6 @@ window.paytheory = {
   PayTheoryMessenger,
 };
 
+window.PayTheoryMessenger = PayTheoryMessenger;
+
 export default window.paytheory;

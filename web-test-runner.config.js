@@ -13,6 +13,7 @@ export default {
     'test/bank-routing-number.web-test.js',
     'test/bank-institution-number.web-test.js',
     'test/bank-account-name.web-test.js',
+    'test/pay-theory-messenger.web-test.js',
   ],
   nodeResolve: true, // resolve node modules
   coverage: true, // enable coverage reporting

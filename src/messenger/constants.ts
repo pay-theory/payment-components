@@ -37,3 +37,13 @@ export type INCOMING_MESSENGER_TYPES =
   | typeof PT_MESSENGER_APPLE_MERCHANT_VALIDATION
   | typeof PT_MESSENGER_TRANSFER_COMPLETE
   | typeof PT_MESSENGER_RECONNECT_TOKEN_SUCCESS;
+
+// Wallet types
+export const PT_WALLET_TYPE_APPLE = 'APPLE_PAY' as const;
+export const PT_WALLET_TYPE_GOOGLE = 'GOOGLE_PAY' as const;
+export const PT_WALLET_TYPE_PAZE = 'PAZE' as const;
+
+export type PT_WALLET_TYPES =
+  | typeof PT_WALLET_TYPE_APPLE
+  | typeof PT_WALLET_TYPE_GOOGLE
+  | typeof PT_WALLET_TYPE_PAZE;
