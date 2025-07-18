@@ -2,41 +2,67 @@
 const API_KEY = 'austin-paytheorylab-d7dbe665f5565fe8ae8a23eab45dd285'; // Replace with your API key
 const AMOUNT = 1000; // $10.00 in cents
 
+/**
+ * Response Handling Changes:
+ *
+ * The PayTheory SDK now returns typed responses:
+ *
+ * 1. Apple Pay Merchant Validation:
+ *    - Success: { type: 'SUCCESS', session: { session: <ApplePaySession> } }
+ *    - Error: { type: 'ERROR', error: string }
+ *
+ * 2. Wallet Transactions:
+ *    - Success: { type: 'SUCCESS', transaction: <FullTransactionObject> }
+ *    - Error: { type: 'ERROR', error: string }
+ *
+ * Transaction statuses can be:
+ * - PENDING: Transaction is processing
+ * - SUCCEEDED: Transaction completed successfully
+ * - FAILED: Transaction failed (connection will auto-refresh for retry)
+ * - CANCELED, VOIDED, etc.: Other statuses
+ *
+ * Note: walletType values should use the constants from the PayTheoryMessenger class
+ */
+
 // Global messenger instance
 let messenger = null;
 let googlePaymentsClient = null;
 
 // Google Pay configuration
 const GOOGLE_PAY_CONFIG = {
-  environment: 'TEST', // Change to 'PRODUCTION' for live
+  environment: 'TESTING',
+  apiVersion: 2,
+  apiVersionMinor: 0,
   merchantInfo: {
-    merchantId: 'YOUR_MERCHANT_ID', // Replace with actual merchant ID
-    merchantName: 'Test Merchant',
+    merchantName: 'Pay Theory',
+    merchantId: 'TEST',
   },
-  paymentDataRequest: {
-    apiVersion: 2,
-    apiVersionMinor: 0,
-    allowedPaymentMethods: [
-      {
-        type: 'CARD',
-        parameters: {
-          allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
-          allowedCardNetworks: ['AMEX', 'DISCOVER', 'MASTERCARD', 'VISA'],
-        },
-        tokenizationSpecification: {
-          type: 'PAYMENT_GATEWAY',
-          parameters: {
-            gateway: 'paytheory',
-            gatewayMerchantId: 'YOUR_GATEWAY_MERCHANT_ID',
-          },
+  allowedPaymentMethods: [
+    {
+      type: 'CARD',
+      parameters: {
+        allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+        allowedCardNetworks: ['AMEX', 'DISCOVER', 'JCB', 'MASTERCARD', 'VISA'],
+        billingAddressRequired: true,
+        billingAddressParameters: {
+          format: 'FULL',
+          phoneNumberRequired: true,
         },
       },
-    ],
-    transactionInfo: {
-      totalPriceStatus: 'FINAL',
-      totalPrice: (AMOUNT / 100).toFixed(2),
-      currencyCode: 'USD',
+      tokenizationSpecification: {
+        type: 'PAYMENT_GATEWAY',
+        parameters: {
+          gateway: 'paytheory',
+          gatewayMerchantId: '6d01b7a7-c53b-4755-aa03-4f3ed35fc30a',
+        },
+      },
     },
+  ],
+  transactionInfo: {
+    countryCode: 'US',
+    currencyCode: 'USD',
+    totalPriceStatus: 'FINAL',
+    totalPrice: '1.00',
   },
 };
 
@@ -49,7 +75,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 // Initialize PayTheory Messenger immediately
 async function initializeMessenger() {
   try {
-    messenger = new window.paytheory.PayTheoryMessenger({ apiKey: API_KEY });
+    messenger = new window.PayTheoryMessenger({ apiKey: API_KEY });
     await messenger.initialize();
     console.log('PayTheory Messenger initialized successfully');
 
@@ -83,7 +109,7 @@ function checkWalletAvailability() {
       .isReadyToPay({
         apiVersion: 2,
         apiVersionMinor: 0,
-        allowedPaymentMethods: GOOGLE_PAY_CONFIG.paymentDataRequest.allowedPaymentMethods,
+        allowedPaymentMethods: GOOGLE_PAY_CONFIG.allowedPaymentMethods,
       })
       .then(response => {
         if (response.result) {
@@ -131,11 +157,15 @@ async function handleApplePay() {
     try {
       showStatus('Validating merchant...', 'info');
       const response = await messenger.getApplePaySession();
-      console.log('Apple Pay session response', response);
-      if (response.success && response.session) {
-        session.completeMerchantValidation(response.session);
-      } else {
+      // Check if response is successful (ResponseMessageTypes.SUCCESS)
+      if (response.type === 'SUCCESS' && response.session) {
+        // Extract the actual session object from the nested structure
+        const sessionData = response.session.session || response.session;
+        session.completeMerchantValidation(sessionData);
+      } else if (response.type === 'ERROR') {
         throw new Error(response.error || 'Merchant validation failed');
+      } else {
+        throw new Error('Invalid response format from merchant validation');
       }
     } catch (error) {
       showStatus('Merchant validation failed: ' + error.message, 'error');
@@ -153,17 +183,44 @@ async function handleApplePay() {
       const result = await messenger.processWalletTransaction({
         amount: AMOUNT,
         digitalWalletPayload: eventString,
-        walletType: 'APPLE_PAY',
+        walletType: window.PayTheoryMessenger.applePay,
       });
 
-      console.log('Result', result);
+      console.log('Transaction Result', result);
 
-      if (result.success) {
-        session.completePayment(ApplePaySession.STATUS_SUCCESS);
-        showStatus(`Payment successful! Transaction ID: ${result.transaction_id}`, 'success');
-      } else {
+      // Check response type
+      if (result.type === 'SUCCESS') {
+        // Transaction response with full transaction data
+        const transaction = result.transaction;
+
+        if (transaction.status === 'PENDING' || transaction.status === 'SUCCEEDED') {
+          session.completePayment(ApplePaySession.STATUS_SUCCESS);
+          showStatus(`Payment successful!\n${formatTransactionDetails(transaction)}`, 'success');
+        } else if (transaction.status === 'FAILED') {
+          session.completePayment(ApplePaySession.STATUS_FAILURE);
+          const failureMessage = transaction.failure_reasons?.join(', ') || 'Unknown reason';
+          showStatus(
+            `Payment failed!\n${formatTransactionDetails(transaction)}\nReason: ${failureMessage}`,
+            'error',
+          );
+        } else {
+          // Other statuses (CANCELED, VOIDED, etc.)
+          session.completePayment(ApplePaySession.STATUS_SUCCESS);
+          showStatus(`Payment processed\n${formatTransactionDetails(transaction)}`, 'info');
+        }
+      } else if (result.type === 'ERROR') {
+        // Error response
         session.completePayment(ApplePaySession.STATUS_FAILURE);
-        showStatus('Payment failed: ' + (result.error || 'Unknown error'), 'error');
+        showStatus('Payment failed: ' + result.error, 'error');
+      } else {
+        // Legacy format or unexpected response
+        if (result.success) {
+          session.completePayment(ApplePaySession.STATUS_SUCCESS);
+          showStatus(`Payment successful! Transaction ID: ${result.transaction_id}`, 'success');
+        } else {
+          session.completePayment(ApplePaySession.STATUS_FAILURE);
+          showStatus('Payment failed: ' + (result.error || 'Unknown error'), 'error');
+        }
       }
     } catch (error) {
       session.completePayment(ApplePaySession.STATUS_FAILURE);
@@ -193,21 +250,44 @@ async function handleGooglePay() {
   }
 
   try {
-    const paymentData = await googlePaymentsClient.loadPaymentData(
-      GOOGLE_PAY_CONFIG.paymentDataRequest,
-    );
+    const paymentData = await googlePaymentsClient.loadPaymentData(GOOGLE_PAY_CONFIG);
     showStatus('Processing payment...', 'info');
 
     const result = await messenger.processWalletTransaction({
       amount: AMOUNT,
-      digitalWalletPayload: paymentData,
-      walletType: 'GOOGLE_PAY',
+      digitalWalletPayload: JSON.stringify(paymentData),
+      walletType: window.PayTheoryMessenger.googlePay,
     });
 
-    if (result.success) {
-      showStatus(`Payment successful! Transaction ID: ${result.transaction_id}`, 'success');
+    console.log('Transaction Result', result);
+
+    // Check response type
+    if (result.type === 'SUCCESS') {
+      // Transaction response with full transaction data
+      const transaction = result.transaction;
+
+      if (transaction.status === 'PENDING' || transaction.status === 'SUCCEEDED') {
+        showStatus(`Payment successful!\n${formatTransactionDetails(transaction)}`, 'success');
+      } else if (transaction.status === 'FAILED') {
+        const failureMessage = transaction.failure_reasons?.join(', ') || 'Unknown reason';
+        showStatus(
+          `Payment failed!\n${formatTransactionDetails(transaction)}\nReason: ${failureMessage}`,
+          'error',
+        );
+      } else {
+        // Other statuses (CANCELED, VOIDED, etc.)
+        showStatus(`Payment processed\n${formatTransactionDetails(transaction)}`, 'info');
+      }
+    } else if (result.type === 'ERROR') {
+      // Error response
+      showStatus('Payment failed: ' + result.error, 'error');
     } else {
-      showStatus('Payment failed: ' + (result.error || 'Unknown error'), 'error');
+      // Legacy format or unexpected response
+      if (result.success) {
+        showStatus(`Payment successful! Transaction ID: ${result.transaction_id}`, 'success');
+      } else {
+        showStatus('Payment failed: ' + (result.error || 'Unknown error'), 'error');
+      }
     }
   } catch (error) {
     if (error.statusCode === 'CANCELED') {
@@ -222,7 +302,14 @@ async function handleGooglePay() {
 function showStatus(message, type) {
   const statusEl = document.getElementById('status');
   statusEl.className = 'status ' + type;
-  statusEl.textContent = message;
+
+  // Support multi-line messages
+  if (message.includes('\n')) {
+    statusEl.innerHTML = message.split('\n').join('<br>');
+  } else {
+    statusEl.textContent = message;
+  }
+
   statusEl.style.display = 'block';
 
   if (type === 'info') {
@@ -230,4 +317,27 @@ function showStatus(message, type) {
       statusEl.style.display = 'none';
     }, 3000);
   }
+}
+
+// Helper to format transaction details for display
+function formatTransactionDetails(transaction) {
+  const details = [
+    `Transaction ID: ${transaction.transaction_id}`,
+    `Status: ${transaction.status}`,
+    `Amount: $${(transaction.gross_amount / 100).toFixed(2)}`,
+    `Fees: $${(transaction.fees / 100).toFixed(2)}`,
+    `Net: $${(transaction.net_amount / 100).toFixed(2)}`,
+  ];
+
+  if (transaction.payment_method) {
+    details.push(
+      `Card: ${transaction.payment_method.card_brand} ****${transaction.payment_method.last_four}`,
+    );
+  }
+
+  if (transaction.avs_status) {
+    details.push(`AVS: ${transaction.avs_status}`);
+  }
+
+  return details.join('\n');
 }
