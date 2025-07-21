@@ -190,42 +190,52 @@ class PayTheoryMessenger {
         return;
       }
 
-      let pingInterval: NodeJS.Timeout;
+      let pingInterval: NodeJS.Timeout | undefined;
+      let loadEventHandler: (() => void) | undefined;
+      let readyMessageListener: ((event: MessageEvent) => void) | undefined;
+      let timeout: NodeJS.Timeout | undefined;
 
-      // Set a reasonable timeout
-      const timeout = setTimeout(() => {
-        if (pingInterval) clearInterval(pingInterval);
-        // Clean up any remaining listeners
-        this.cleanupEventListeners();
-        reject(new Error('Iframe ready timeout'));
-      }, 15000);
-
-      // First wait for the iframe to load
-      const checkIframeLoaded = () => {
-        if (this.iframe?.contentDocument?.readyState === 'complete') {
-          setupMessageListener();
-        } else {
-          this.iframe?.addEventListener('load', setupMessageListener, { once: true });
+      // Cleanup function to ensure all resources are freed
+      const cleanup = () => {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = undefined;
+        }
+        if (pingInterval) {
+          clearInterval(pingInterval);
+          pingInterval = undefined;
+        }
+        if (loadEventHandler && this.iframe) {
+          this.iframe.removeEventListener('load', loadEventHandler);
+          loadEventHandler = undefined;
+        }
+        if (readyMessageListener) {
+          window.removeEventListener('message', readyMessageListener);
+          // Remove from tracked listeners
+          this.globalEventListeners = this.globalEventListeners.filter(
+            l => l.handler !== readyMessageListener,
+          );
+          readyMessageListener = undefined;
         }
       };
+
+      // Set a reasonable timeout
+      timeout = setTimeout(() => {
+        cleanup();
+        reject(new Error('Iframe ready timeout'));
+      }, 15000);
 
       // Then establish a handshake with the iframe content
       const setupMessageListener = () => {
         // Set up a one-time message listener for the ready signal
-        const readyMessageListener = (event: MessageEvent) => {
+        readyMessageListener = (event: MessageEvent) => {
           // Verify the origin for security
           if (!this.isValidOrigin(event.origin)) return;
 
           // Check if it's our ready message
           if (event.data && event.data.type === PT_MESSENGER_READY) {
             console.log('Iframe ready');
-            clearTimeout(timeout);
-            clearInterval(pingInterval);
-            window.removeEventListener('message', readyMessageListener);
-            // Remove from tracked listeners
-            this.globalEventListeners = this.globalEventListeners.filter(
-              l => l.handler !== readyMessageListener,
-            );
+            cleanup();
             resolve();
           }
         };
@@ -246,11 +256,16 @@ class PayTheoryMessenger {
         pingInterval = setInterval(() => {
           this.sendPingToIframe();
         }, 500);
+      };
 
-        // Clear the interval when promise settles
-        setTimeout(() => {
-          clearInterval(pingInterval);
-        }, 15000);
+      // First wait for the iframe to load
+      const checkIframeLoaded = () => {
+        if (this.iframe?.contentDocument?.readyState === 'complete') {
+          setupMessageListener();
+        } else {
+          loadEventHandler = setupMessageListener;
+          this.iframe?.addEventListener('load', loadEventHandler, { once: true });
+        }
       };
 
       checkIframeLoaded();
