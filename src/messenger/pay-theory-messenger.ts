@@ -26,6 +26,8 @@ import {
   PT_WALLET_TYPE_APPLE,
   PT_WALLET_TYPE_GOOGLE,
   PT_WALLET_TYPE_PAZE,
+  MessengerEvent,
+  MessengerEvents,
 } from './constants';
 
 class PayTheoryMessenger {
@@ -63,7 +65,8 @@ class PayTheoryMessenger {
     PayTheoryMessenger.instances.set(options.apiKey, this);
   }
 
-  // Add static method to clear instances (useful for testing)
+  // Static method to clear instances (internal use only - for testing)
+  /** @internal */
   static clearInstances(): void {
     PayTheoryMessenger.instances.forEach(instance => instance.destroy());
     PayTheoryMessenger.instances.clear();
@@ -119,7 +122,7 @@ class PayTheoryMessenger {
       this.channel = new MessengerChannel(this.iframe!);
       await this.channel.connect();
       this.state.setState(MessengerState.CONNECTED);
-      this.emitEvent('ready', { success: true });
+      this.emitEvent(MessengerEvents.READY, { success: true });
 
       return { success: true };
     } catch (error) {
@@ -343,7 +346,7 @@ class PayTheoryMessenger {
   /**
    * Refresh the connection with a new token
    */
-  async refreshConnection(): Promise<MessengerResponse> {
+  private async refreshConnection(): Promise<MessengerResponse> {
     // Prevent concurrent refresh attempts
     if (this.refreshPromise) {
       return await this.refreshPromise;
@@ -559,7 +562,7 @@ class PayTheoryMessenger {
           if (retryResponse.type === 'pt-static:error') {
             console.error('Error processing transaction after refresh', retryResponse);
             this.state.setState(MessengerState.ERROR);
-            this.emitEvent('transaction_error', { error: retryResponse.error });
+            this.emitEvent(MessengerEvents.TRANSACTION_ERROR, { error: retryResponse.error });
             return {
               type: ResponseMessageTypes.ERROR,
               error: retryResponse.error || 'Transaction failed after token refresh',
@@ -572,7 +575,7 @@ class PayTheoryMessenger {
           // Other errors
           console.error('Error processing transaction', response);
           this.state.setState(MessengerState.ERROR);
-          this.emitEvent('transaction_error', { error: errorMsg });
+          this.emitEvent(MessengerEvents.TRANSACTION_ERROR, { error: errorMsg });
           return {
             type: ResponseMessageTypes.ERROR,
             error: errorMsg,
@@ -590,7 +593,7 @@ class PayTheoryMessenger {
           await this.refreshConnection();
 
           this.state.setState(MessengerState.ERROR);
-          this.emitEvent('transaction_error', { transaction });
+          this.emitEvent(MessengerEvents.TRANSACTION_ERROR, { transaction });
 
           return {
             type: ResponseMessageTypes.SUCCESS,
@@ -600,7 +603,7 @@ class PayTheoryMessenger {
 
         // Transaction is pending or successful
         this.state.setState(MessengerState.COMPLETED);
-        this.emitEvent('transaction_complete', { transaction });
+        this.emitEvent(MessengerEvents.TRANSACTION_COMPLETE, { transaction });
 
         return {
           type: ResponseMessageTypes.SUCCESS,
@@ -666,7 +669,7 @@ class PayTheoryMessenger {
   private handleIframeUnload(): void {
     console.warn('PayTheoryMessenger iframe is being unloaded');
     // Notify consumers via event
-    this.emitEvent('iframe_unloaded', { timestamp: Date.now() });
+    this.emitEvent(MessengerEvents.IFRAME_UNLOADED, { timestamp: Date.now() });
     // Clean up resources
     this.cleanupEventListeners();
   }
@@ -674,28 +677,31 @@ class PayTheoryMessenger {
   /**
    * Event handling methods
    */
-  on(event: string, callback: Function): void {
+  on(event: MessengerEvent, callback: Function): () => void {
+    // Validate event at runtime (optional - TypeScript will catch at compile time)
+    const validEvents = Object.values(MessengerEvents);
+    if (!validEvents.includes(event)) {
+      console.error(`Invalid event: ${event}. Valid events are: ${validEvents.join(', ')}`);
+      return () => {}; // Return no-op unsubscribe function
+    }
+
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
 
     this.eventListeners.get(event)?.push(callback);
+
+    // Return unsubscribe function
+    return () => {
+      const listeners = this.eventListeners.get(event) || [];
+      const index = listeners.indexOf(callback);
+      if (index !== -1) {
+        listeners.splice(index, 1);
+      }
+    };
   }
 
-  off(event: string, callback: Function): void {
-    if (!this.eventListeners.has(event)) {
-      return;
-    }
-
-    const listeners = this.eventListeners.get(event) || [];
-    const index = listeners.indexOf(callback);
-
-    if (index !== -1) {
-      listeners.splice(index, 1);
-    }
-  }
-
-  private emitEvent(event: string, data: any): void {
+  private emitEvent(event: MessengerEvent, data: any): void {
     if (!this.eventListeners.has(event)) {
       return;
     }
@@ -709,20 +715,6 @@ class PayTheoryMessenger {
         console.error(`Error in event listener for ${event}:`, error);
       }
     }
-  }
-
-  /**
-   * Get current messenger state
-   */
-  getState(): MessengerState {
-    return this.state.getState();
-  }
-
-  /**
-   * Check if messenger is ready for transactions
-   */
-  isReady(): boolean {
-    return this.state.getState() === MessengerState.CONNECTED;
   }
 }
 

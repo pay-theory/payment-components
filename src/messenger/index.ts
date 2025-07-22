@@ -1,19 +1,20 @@
 import PayTheoryMessenger from './pay-theory-messenger';
-import { MessengerState } from './state-manager';
 import {
   WalletTransactionPayload,
   ApplePaySessionResponse,
   MessengerResponse,
   TransactionResponse,
 } from './types';
+import { MessengerEvent, MessengerEvents } from './constants';
 
 export {
   PayTheoryMessenger,
-  MessengerState,
   WalletTransactionPayload,
   ApplePaySessionResponse,
   MessengerResponse,
   TransactionResponse,
+  MessengerEvent,
+  MessengerEvents,
 };
 
 export default PayTheoryMessenger;

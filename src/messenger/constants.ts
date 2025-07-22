@@ -47,3 +47,16 @@ export type PT_WALLET_TYPES =
   | typeof PT_WALLET_TYPE_APPLE
   | typeof PT_WALLET_TYPE_GOOGLE
   | typeof PT_WALLET_TYPE_PAZE;
+
+// =============================================================================
+// Public Messenger Event Types
+// =============================================================================
+
+export const MessengerEvents = {
+  READY: 'ready',
+  TRANSACTION_COMPLETE: 'transaction_complete',
+  TRANSACTION_ERROR: 'transaction_error',
+  IFRAME_UNLOADED: 'iframe_unloaded',
+} as const;
+
+export type MessengerEvent = (typeof MessengerEvents)[keyof typeof MessengerEvents];
