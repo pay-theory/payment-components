@@ -1,5 +1,6 @@
 import * as data from './data';
 import { ElementTypes, MERCHANT_FEE, SERVICE_FEE } from './data';
+import { handleError } from './message';
 import {
   BillingInfo,
   CashBarcodeObject,
@@ -8,16 +9,17 @@ import {
   ConfirmationResponse,
   ErrorResponse,
   FailedTransactionResponse,
+  HealthExpenseType,
+  Level3DataSummary,
   PayorInfo,
+  PaymentMethod,
   ResponseMessageTypes,
   SuccessfulTransactionResponse,
   TokenizedPaymentMethodObject,
   TokenizedPaymentMethodResponse,
+  Transaction,
   TransactProps,
-  HealthExpenseType,
-  Level3DataSummary,
 } from './pay_theory_types';
-import { handleError } from './message';
 
 // Message Types that would come back from the iframe for async messages
 export const CONFIRMATION_STEP = 'pt-static:confirm';
@@ -41,6 +43,7 @@ export interface PayTheoryDataObject {
   reference: string | number;
   send_receipt?: boolean;
   timezone?: string;
+  expanded_response?: boolean;
 }
 
 export interface ModifiedTransactProps extends TransactProps {
@@ -78,6 +81,7 @@ export const parseInputParams = (
       (inputParams as TransactProps).reference ?? (metadata['pay-theory-reference'] as string),
     send_receipt: (inputParams as TransactProps).sendReceipt ?? !!metadata['pay-theory-receipt'],
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    expanded_response: (inputParams as TransactProps).expandedResponse,
   };
   inputCopy.metadata = metadata;
   return inputCopy;
@@ -124,6 +128,7 @@ export const parseConfirmationMessage = (message: ConfirmationMessage): Confirma
 export interface SuccessfulTransactionMessage {
   type: typeof COMPLETE_STEP;
   paymentType: 'transfer';
+  expandedResponse: false;
   body: {
     receipt_number: string;
     last_four: string;
@@ -136,6 +141,13 @@ export interface SuccessfulTransactionMessage {
     payor_id: string;
     payment_method_id: string;
   };
+}
+
+export interface SuccessfulTransactionMessageExpanded {
+  type: typeof COMPLETE_STEP;
+  paymentType: 'transfer';
+  expandedResponse: true;
+  body: Transaction;
 }
 
 export const parseSuccessfulTransactionMessage = (
@@ -163,6 +175,7 @@ export const parseSuccessfulTransactionMessage = (
 export interface FailedTransactionMessage {
   type: typeof COMPLETE_STEP;
   paymentType: 'transfer';
+  expandedResponse: false;
   body: {
     receipt_number: string;
     last_four: string;
@@ -200,6 +213,22 @@ export const parseFailedTransactionMessage = (
   };
 };
 
+export const parseExpandedTransactionMessage = (
+  message: SuccessfulTransactionMessageExpanded,
+): SuccessfulTransactionResponse | FailedTransactionResponse => {
+  if (message.body.status === 'FAILED') {
+    return {
+      type: ResponseMessageTypes.FAILED,
+      body: message.body,
+    };
+  } else {
+    return {
+      type: ResponseMessageTypes.SUCCESS,
+      body: message.body,
+    };
+  }
+};
+
 export interface CashBarcodeMessage {
   type: typeof CASH_BARCODE_STEP;
   body: CashBarcodeObject;
@@ -208,13 +237,22 @@ export interface CashBarcodeMessage {
 export interface TokenizedPaymentMethodMessage {
   type: typeof COMPLETE_STEP;
   paymentType: 'tokenize';
+  expandedResponse: false;
   body: TokenizedPaymentMethodObject;
+}
+
+export interface TokenizedPaymentMethodMessageExpanded {
+  type: typeof COMPLETE_STEP;
+  paymentType: 'tokenize';
+  expandedResponse: true;
+  body: PaymentMethod;
 }
 
 export const parseResponse = (
   message:
     | ConfirmationMessage
     | SuccessfulTransactionMessage
+    | SuccessfulTransactionMessageExpanded
     | FailedTransactionMessage
     | CashBarcodeMessage
     | TokenizedPaymentMethodMessage
@@ -236,11 +274,13 @@ export const parseResponse = (
           body: message.body,
         };
       } else {
+        if (message.expandedResponse === true) {
+          return parseExpandedTransactionMessage(message as SuccessfulTransactionMessageExpanded);
+        }
         if (message.body.state === 'FAILURE') {
           return parseFailedTransactionMessage(message as FailedTransactionMessage);
-        } else {
-          return parseSuccessfulTransactionMessage(message as SuccessfulTransactionMessage);
         }
+        return parseSuccessfulTransactionMessage(message as SuccessfulTransactionMessage);
       }
     case CASH_BARCODE_STEP:
       return {

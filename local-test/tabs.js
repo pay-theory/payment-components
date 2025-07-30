@@ -4,7 +4,7 @@
 
 class TabManager {
   constructor() {
-    this.activeTab = 'button';
+    this.activeTab = 'card'; // Default to card to match HTML
     this.init();
   }
 
@@ -14,6 +14,13 @@ class TabManager {
     // Get all tabs and tab content
     this.tabs = document.querySelectorAll('.tab');
     this.tabContents = document.querySelectorAll('.tab-content');
+
+    // Find the currently active tab from DOM
+    const activeTabElement = document.querySelector('.tab.active');
+    if (activeTabElement) {
+      this.activeTab = activeTabElement.getAttribute('data-tab');
+      console.log('📍 Detected active tab from DOM:', this.activeTab);
+    }
 
     // Add click listeners to tabs
     this.tabs.forEach(tab => {
@@ -37,6 +44,17 @@ class TabManager {
 
     // Update body class for styling
     document.body.className = `${targetTab}-tab-active`;
+
+    // Show/hide expanded response toggle based on tab
+    const expandedToggle = document.getElementById('expanded-response-toggle');
+    if (expandedToggle) {
+      // Show toggle only for card, ach, and cash tabs
+      if (['card', 'ach', 'cash'].includes(targetTab)) {
+        expandedToggle.style.display = 'block';
+      } else {
+        expandedToggle.style.display = 'none';
+      }
+    }
 
     // Update button states when tab changes
     if (window.paymentFieldsManager) {

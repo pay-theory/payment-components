@@ -19,3 +19,5 @@ payment-components.iml
 # Claude
 .claude
 Claude.md
+# Local environment config
+local-test/env-config.local.js

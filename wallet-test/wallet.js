@@ -1,6 +1,17 @@
-// Configuration
-const API_KEY = 'austin-paytheorylab-d7dbe665f5565fe8ae8a23eab45dd285'; // Replace with your API key
-const AMOUNT = 1000; // $10.00 in cents
+// Load configuration from config.js - REQUIRED
+if (!window.WALLET_CONFIG) {
+  throw new Error('WALLET_CONFIG not found. Make sure config.js is loaded before wallet.js');
+}
+// Validate required configuration
+if (!API_KEY) {
+  throw new Error('API_KEY is required in WALLET_CONFIG');
+}
+if (!window.WALLET_CONFIG.GOOGLE_MERCHANT_ID) {
+  throw new Error('GOOGLE_MERCHANT_ID is required in WALLET_CONFIG');
+}
+if (!window.WALLET_CONFIG.GOOGLE_GATEWAY_MERCHANT_ID) {
+  throw new Error('GOOGLE_GATEWAY_MERCHANT_ID is required in WALLET_CONFIG');
+}
 
 /**
  * Response Handling Changes:
@@ -30,12 +41,12 @@ let googlePaymentsClient = null;
 
 // Google Pay configuration
 const GOOGLE_PAY_CONFIG = {
-  environment: 'TESTING',
+  environment: 'PRODUCTION',
   apiVersion: 2,
   apiVersionMinor: 0,
   merchantInfo: {
     merchantName: 'Pay Theory',
-    merchantId: 'TEST',
+    merchantId: window.WALLET_CONFIG.GOOGLE_MERCHANT_ID,
   },
   allowedPaymentMethods: [
     {
@@ -53,7 +64,7 @@ const GOOGLE_PAY_CONFIG = {
         type: 'PAYMENT_GATEWAY',
         parameters: {
           gateway: 'paytheory',
-          gatewayMerchantId: '6d01b7a7-c53b-4755-aa03-4f3ed35fc30a',
+          gatewayMerchantId: window.WALLET_CONFIG.GOOGLE_GATEWAY_MERCHANT_ID,
         },
       },
     },
