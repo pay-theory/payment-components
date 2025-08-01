@@ -26,6 +26,7 @@ class StateManager {
       MessengerState.PROCESSING,
       MessengerState.REFRESHING,
       MessengerState.ERROR,
+      MessengerState.IDLE, // Allow reset to idle for cleanup
     ],
     [MessengerState.REFRESHING]: [MessengerState.CONNECTED, MessengerState.ERROR],
     [MessengerState.PROCESSING]: [
@@ -33,13 +34,14 @@ class StateManager {
       MessengerState.CONNECTED,
       MessengerState.ERROR,
     ],
-    [MessengerState.COMPLETED]: [MessengerState.IDLE],
+    [MessengerState.COMPLETED]: [MessengerState.CONNECTED, MessengerState.IDLE],
     [MessengerState.ERROR]: [
       MessengerState.IDLE,
       MessengerState.INITIALIZING,
+      MessengerState.REFRESHING, // Allow direct refresh from error
       MessengerState.FAILED,
     ],
-    [MessengerState.FAILED]: [MessengerState.IDLE],
+    [MessengerState.FAILED]: [MessengerState.IDLE, MessengerState.REFRESHING],
   };
 
   /**
@@ -87,6 +89,45 @@ class StateManager {
    */
   getStateHistory(): MessengerState[] {
     return [...this.stateHistory];
+  }
+
+  /**
+   * Execute an operation with automatic state management
+   * Ensures state transitions are handled correctly even if errors occur
+   */
+  async withStateGuard<T>(
+    processingState: MessengerState,
+    successState: MessengerState,
+    errorState: MessengerState,
+    operation: () => Promise<T>,
+  ): Promise<T> {
+    const previousState = this.currentState;
+
+    // Attempt to transition to processing state
+    if (!this.setState(processingState)) {
+      throw new Error(`Cannot transition from ${previousState} to ${processingState}`);
+    }
+
+    try {
+      const result = await operation();
+
+      // On success, transition to success state
+      if (!this.setState(successState)) {
+        console.warn(
+          `Could not transition to success state ${successState}, current: ${this.currentState}`,
+        );
+      }
+
+      return result;
+    } catch (error) {
+      // On error, ensure we transition to error state
+      if (!this.setState(errorState)) {
+        console.warn(
+          `Could not transition to error state ${errorState}, current: ${this.currentState}`,
+        );
+      }
+      throw error;
+    }
   }
 }
 

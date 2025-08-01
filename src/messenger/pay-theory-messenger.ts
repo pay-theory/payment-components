@@ -32,6 +32,7 @@ import {
 
 class PayTheoryMessenger {
   private static instances: Map<string, PayTheoryMessenger> = new Map();
+  private static initializingInstances: Map<string, Promise<MessengerResponse>> = new Map();
   private apiKey: string;
   private sessionId?: string;
   private iframe: HTMLIFrameElement | null = null;
@@ -42,6 +43,7 @@ class PayTheoryMessenger {
   private globalEventListeners: Array<{ type: string; handler: EventListener }> = [];
   private initializationPromise: Promise<MessengerResponse> | null = null;
   private refreshPromise: Promise<MessengerResponse> | null = null;
+  private refreshLock: boolean = false;
 
   // Static Constants
   static readonly applePay = PT_WALLET_TYPE_APPLE;
@@ -70,30 +72,56 @@ class PayTheoryMessenger {
   static clearInstances(): void {
     PayTheoryMessenger.instances.forEach(instance => instance.destroy());
     PayTheoryMessenger.instances.clear();
+    PayTheoryMessenger.initializingInstances.clear();
   }
 
   /**
    * Initialize the messenger - create iframe and establish connection
    */
   async initialize(): Promise<MessengerResponse> {
-    // Prevent multiple simultaneous initialization
+    // Check if already initializing globally for this API key
+    const existingInit = PayTheoryMessenger.initializingInstances.get(this.apiKey);
+    if (existingInit) {
+      return await existingInit;
+    }
+
+    // Prevent multiple simultaneous initialization on this instance
     if (this.initializationPromise) {
       return await this.initializationPromise;
     }
 
-    if (this.state.getState() !== MessengerState.IDLE) {
-      // Already initialized or initializing
-      return this.ensureConnected();
+    const currentState = this.state.getState();
+
+    // If already connected, just return success
+    if (currentState === MessengerState.CONNECTED) {
+      return { success: true };
     }
 
-    // Create and store the initialization promise
+    // If in REFRESHING state, wait for refresh to complete
+    if (currentState === MessengerState.REFRESHING && this.refreshPromise) {
+      return await this.refreshPromise;
+    }
+
+    // If in ERROR state, reset to IDLE first
+    if (currentState === MessengerState.ERROR || currentState === MessengerState.FAILED) {
+      this.state.setState(MessengerState.IDLE);
+    }
+
+    // Only proceed if in IDLE state
+    if (this.state.getState() !== MessengerState.IDLE) {
+      return { success: false, error: `Cannot initialize - messenger in ${currentState} state` };
+    }
+
+    // Create and store the initialization promise both locally and globally
     this.initializationPromise = this.doInitialize();
+    PayTheoryMessenger.initializingInstances.set(this.apiKey, this.initializationPromise);
 
     try {
       const result = await this.initializationPromise;
       return result;
     } finally {
       this.initializationPromise = null;
+      PayTheoryMessenger.initializingInstances.delete(this.apiKey);
     }
   }
 
@@ -197,6 +225,7 @@ class PayTheoryMessenger {
       let loadEventHandler: (() => void) | undefined;
       let readyMessageListener: ((event: MessageEvent) => void) | undefined;
       let timeout: NodeJS.Timeout | undefined;
+      let isResolved = false;
 
       // Cleanup function to ensure all resources are freed
       const cleanup = () => {
@@ -222,56 +251,69 @@ class PayTheoryMessenger {
         }
       };
 
-      // Set a reasonable timeout
-      timeout = setTimeout(() => {
-        cleanup();
-        reject(new Error('Iframe ready timeout'));
-      }, 15000);
+      // Wrap the main logic in try-catch to ensure cleanup
+      try {
+        // Set a reasonable timeout
+        timeout = setTimeout(() => {
+          isResolved = true;
+          cleanup();
+          reject(new Error('Iframe ready timeout'));
+        }, 15000);
 
-      // Then establish a handshake with the iframe content
-      const setupMessageListener = () => {
-        // Set up a one-time message listener for the ready signal
-        readyMessageListener = (event: MessageEvent) => {
-          // Verify the origin for security
-          if (!this.isValidOrigin(event.origin)) return;
+        // Then establish a handshake with the iframe content
+        const setupMessageListener = () => {
+          // Set up a one-time message listener for the ready signal
+          readyMessageListener = (event: MessageEvent) => {
+            // Verify the origin for security
+            if (!this.isValidOrigin(event.origin)) return;
 
-          // Check if it's our ready message
-          if (event.data && event.data.type === PT_MESSENGER_READY) {
-            console.log('Iframe ready');
-            cleanup();
-            resolve();
+            // Check if it's our ready message
+            if (event.data && event.data.type === PT_MESSENGER_READY) {
+              console.log('Iframe ready');
+              isResolved = true;
+              cleanup();
+              resolve();
+            }
+          };
+
+          // Track the listener
+          this.globalEventListeners.push({
+            type: 'message',
+            handler: readyMessageListener,
+          });
+
+          window.addEventListener('message', readyMessageListener);
+
+          // Send a ping to the iframe to check if it's already ready
+          // (in case we missed the ready event)
+          this.sendPingToIframe();
+
+          // Also set an interval to keep pinging until we get a response
+          pingInterval = setInterval(() => {
+            if (!isResolved) {
+              this.sendPingToIframe();
+            }
+          }, 500);
+        };
+
+        // First wait for the iframe to load
+        const checkIframeLoaded = () => {
+          if (this.iframe?.contentDocument?.readyState === 'complete') {
+            setupMessageListener();
+          } else {
+            loadEventHandler = setupMessageListener;
+            this.iframe?.addEventListener('load', loadEventHandler, { once: true });
           }
         };
 
-        // Track the listener
-        this.globalEventListeners.push({
-          type: 'message',
-          handler: readyMessageListener,
-        });
-
-        window.addEventListener('message', readyMessageListener);
-
-        // Send a ping to the iframe to check if it's already ready
-        // (in case we missed the ready event)
-        this.sendPingToIframe();
-
-        // Also set an interval to keep pinging until we get a response
-        pingInterval = setInterval(() => {
-          this.sendPingToIframe();
-        }, 500);
-      };
-
-      // First wait for the iframe to load
-      const checkIframeLoaded = () => {
-        if (this.iframe?.contentDocument?.readyState === 'complete') {
-          setupMessageListener();
-        } else {
-          loadEventHandler = setupMessageListener;
-          this.iframe?.addEventListener('load', loadEventHandler, { once: true });
+        checkIframeLoaded();
+      } catch (error) {
+        // Ensure cleanup happens even if an error occurs
+        if (!isResolved) {
+          cleanup();
         }
-      };
-
-      checkIframeLoaded();
+        throw error;
+      }
     });
   }
 
@@ -303,68 +345,104 @@ class PayTheoryMessenger {
   private async ensureConnected(): Promise<MessengerResponse> {
     const currentState = this.state.getState();
 
-    if (currentState === MessengerState.CONNECTED) {
-      return { success: true };
+    switch (currentState) {
+      case MessengerState.CONNECTED:
+        return { success: true };
+
+      case MessengerState.INITIALIZING:
+        if (this.initializationPromise) {
+          return await this.initializationPromise;
+        }
+        return this.waitForStateChange([MessengerState.CONNECTED, MessengerState.ERROR]);
+
+      case MessengerState.REFRESHING:
+        if (this.refreshPromise) {
+          return await this.refreshPromise;
+        }
+        return this.waitForStateChange([MessengerState.CONNECTED, MessengerState.ERROR]);
+
+      case MessengerState.ERROR:
+      case MessengerState.FAILED:
+        // Attempt to recover by refreshing
+        return this.refreshConnection();
+
+      case MessengerState.IDLE:
+        return this.initialize();
+
+      default:
+        return { success: false, error: `Invalid messenger state: ${currentState}` };
     }
+  }
 
-    if (currentState === MessengerState.INITIALIZING) {
-      // If we have an initialization promise, wait for it
-      if (this.initializationPromise) {
-        return await this.initializationPromise;
-      }
+  /**
+   * Wait for state change to one of the target states
+   */
+  private waitForStateChange(targetStates: MessengerState[]): Promise<MessengerResponse> {
+    return new Promise(resolve => {
+      const timeout = setTimeout(() => {
+        clearInterval(checkInterval);
+        resolve({ success: false, error: 'State change timeout' });
+      }, 30000);
 
-      // Otherwise wait for state change with timeout
-      return new Promise(resolve => {
-        const timeout = setTimeout(() => {
+      const checkInterval = setInterval(() => {
+        const state = this.state.getState();
+        if (targetStates.includes(state)) {
+          clearTimeout(timeout);
           clearInterval(checkInterval);
-          resolve({ success: false, error: 'Connection timeout' });
-        }, 30000);
-
-        const checkInterval = setInterval(() => {
-          const state = this.state.getState();
-          if (state === MessengerState.CONNECTED) {
-            clearTimeout(timeout);
-            clearInterval(checkInterval);
-            resolve({ success: true });
-          } else if (state === MessengerState.ERROR) {
-            clearTimeout(timeout);
-            clearInterval(checkInterval);
-            resolve({ success: false, error: 'Messenger initialization failed' });
-          }
-        }, 100);
-      });
-    }
-
-    // Try to re-initialize
-    if (currentState === MessengerState.ERROR || currentState === MessengerState.IDLE) {
-      return this.initialize();
-    }
-
-    return { success: false, error: 'Invalid messenger state' };
+          resolve({
+            success: state === MessengerState.CONNECTED,
+            error: state === MessengerState.CONNECTED ? undefined : 'Failed to connect',
+          });
+        }
+      }, 100);
+    });
   }
 
   /**
    * Refresh the connection with a new token
    */
   private async refreshConnection(): Promise<MessengerResponse> {
-    // Prevent concurrent refresh attempts
-    if (this.refreshPromise) {
-      return await this.refreshPromise;
+    // Atomic check and set using lock
+    if (this.refreshLock) {
+      // Wait for existing refresh
+      if (this.refreshPromise) {
+        return await this.refreshPromise;
+      }
+      // If no promise but lock is set, another thread is setting up
+      await new Promise(resolve => setTimeout(resolve, 50));
+      return this.refreshConnection(); // Retry
     }
 
-    this.refreshPromise = this.doRefreshConnection();
+    // Acquire lock atomically
+    this.refreshLock = true;
 
     try {
+      // Double-check pattern
+      if (this.refreshPromise) {
+        return await this.refreshPromise;
+      }
+
+      this.refreshPromise = this.doRefreshConnection();
       const result = await this.refreshPromise;
       return result;
     } finally {
       this.refreshPromise = null;
+      this.refreshLock = false;
     }
   }
 
   private async doRefreshConnection(): Promise<MessengerResponse> {
     try {
-      this.state.setState(MessengerState.REFRESHING);
+      // Ensure proper state transition: ERROR -> REFRESHING -> CONNECTED
+      const currentState = this.state.getState();
+
+      // If we're in ERROR state, transition to REFRESHING
+      if (currentState === MessengerState.ERROR || currentState === MessengerState.FAILED) {
+        this.state.setState(MessengerState.REFRESHING);
+      } else if (currentState !== MessengerState.REFRESHING) {
+        // If not in ERROR/FAILED, transition to REFRESHING anyway for consistency
+        this.state.setState(MessengerState.REFRESHING);
+      }
 
       // Get new token
       await this.tokenManager.refreshToken();
@@ -379,6 +457,7 @@ class PayTheoryMessenger {
         return result;
       }
 
+      // Successful refresh - transition to CONNECTED
       this.state.setState(MessengerState.CONNECTED);
       return { success: true };
     } catch (error) {
@@ -525,107 +604,105 @@ class PayTheoryMessenger {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       };
 
-      // Send transaction
-      this.state.setState(MessengerState.PROCESSING);
-      const response = await this.channel.sendMessage<
-        any,
-        MessengerSocketErrorMessage | MessengerTransferCompleteMessage
-      >(PT_MESSENGER_WALLET_TRANSACTION, formattedPayload);
-
-      console.log('Wallet Transaction Response PC', response);
-
-      // Handle error responses (from secure-tags-lib error handling)
-      if (response.type === PT_MESSENGER_SOCKET_ERROR) {
-        const errorMsg = response.body.error || 'Unknown error';
-
-        // Handle token expiration
-        if (errorMsg === 'TOKEN_EXPIRED') {
-          // Token expired, try refreshing and retry
-          const refreshResult = await this.refreshConnection();
-          if (!refreshResult.success) {
-            console.error('Error refreshing connection', refreshResult);
-            this.state.setState(MessengerState.ERROR);
-            return {
-              type: ResponseMessageTypes.ERROR,
-              error: refreshResult.error || 'Failed to refresh connection',
-            };
-          }
-
-          // Retry after refresh
-          this.state.setState(MessengerState.PROCESSING);
-          const retryResponse = await this.channel.sendMessage<any, any>(
-            PT_MESSENGER_WALLET_TRANSACTION,
-            formattedPayload,
-          );
-
-          // Process retry response
-          if (retryResponse.type === 'pt-static:error') {
-            console.error('Error processing transaction after refresh', retryResponse);
-            this.state.setState(MessengerState.ERROR);
-            this.emitEvent(MessengerEvents.TRANSACTION_ERROR, { error: retryResponse.error });
-            return {
-              type: ResponseMessageTypes.ERROR,
-              error: retryResponse.error || 'Transaction failed after token refresh',
-            };
-          }
-
-          // Update response to process below
-          Object.assign(response, retryResponse);
-        } else {
-          // Other errors
-          console.error('Error processing transaction', response);
-          this.state.setState(MessengerState.ERROR);
-          this.emitEvent(MessengerEvents.TRANSACTION_ERROR, { error: errorMsg });
-          return {
-            type: ResponseMessageTypes.ERROR,
-            error: errorMsg,
-          };
-        }
-      }
-
-      // Handle PT_MESSENGER_TRANSFER_COMPLETE responses
-      if (response.type === PT_MESSENGER_TRANSFER_COMPLETE && response.body?.transaction) {
-        const transaction = response.body.transaction;
-
-        // Check if transaction failed
-        if (transaction.status === 'FAILED') {
-          // Refresh connection for retry with new host token
-          await this.refreshConnection();
-
-          this.state.setState(MessengerState.ERROR);
-          this.emitEvent(MessengerEvents.TRANSACTION_ERROR, { transaction });
-
-          return {
-            type: ResponseMessageTypes.SUCCESS,
-            transaction,
-          };
-        }
-
-        // Transaction is pending or successful
-        this.state.setState(MessengerState.COMPLETED);
-        this.emitEvent(MessengerEvents.TRANSACTION_COMPLETE, { transaction });
-
-        return {
-          type: ResponseMessageTypes.SUCCESS,
-          transaction,
-        };
-      }
-
-      // Unexpected response format
-      console.error('Unexpected response format', response);
-      this.state.setState(MessengerState.ERROR);
-      return {
-        type: ResponseMessageTypes.ERROR,
-        error: 'Unexpected response format',
-      };
+      return await this.executeWalletTransaction(formattedPayload);
     } catch (error) {
       console.error('Error processing transaction', error);
+      // Set state to ERROR and attempt refresh for next transaction
       this.state.setState(MessengerState.ERROR);
+      await this.refreshConnection();
       return {
         type: ResponseMessageTypes.ERROR,
         error: error instanceof Error ? error.message : 'Unknown error processing transaction',
       };
     }
+  }
+
+  /**
+   * Execute wallet transaction with automatic token refresh on any error
+   */
+  private async executeWalletTransaction(
+    formattedPayload: WalletTransactionPayloadServer,
+  ): Promise<TransactionResponse | ErrorResponse> {
+    return await this.state
+      .withStateGuard(
+        MessengerState.PROCESSING,
+        MessengerState.CONNECTED,
+        MessengerState.ERROR,
+        async () => {
+          const response = await this.channel!.sendMessage<
+            any,
+            MessengerSocketErrorMessage | MessengerTransferCompleteMessage
+          >(PT_MESSENGER_WALLET_TRANSACTION, formattedPayload);
+
+          console.log('Wallet Transaction Response PC', response);
+
+          // Handle socket error with automatic retry
+          if (response.type === PT_MESSENGER_SOCKET_ERROR) {
+            return await this.handleTransactionError(response, formattedPayload);
+          }
+
+          // Handle successful response
+          if (response.type === PT_MESSENGER_TRANSFER_COMPLETE && response.body?.transaction) {
+            return this.handleTransactionComplete(response.body.transaction);
+          }
+
+          // Unexpected response
+          throw new Error('Unexpected response format');
+        },
+      )
+      .catch(async error => {
+        console.error('Error executing transaction', error);
+        await this.refreshConnection();
+        return {
+          type: ResponseMessageTypes.ERROR,
+          error: error instanceof Error ? error.message : 'Unknown error executing transaction',
+        };
+      });
+  }
+
+  /**
+   * Handle transaction error - refresh connection for next attempt
+   */
+  private async handleTransactionError(
+    response: MessengerSocketErrorMessage,
+    formattedPayload: WalletTransactionPayloadServer,
+  ): Promise<TransactionResponse | ErrorResponse> {
+    const errorMsg = response.body.error || 'Unknown error';
+    console.error('Socket error during transaction', errorMsg);
+
+    // Emit error event for the frontend to handle
+    this.emitEvent(MessengerEvents.TRANSACTION_ERROR, { error: errorMsg });
+
+    // Refresh connection for the next attempt (user-initiated)
+    const refreshResult = await this.refreshConnection();
+    if (!refreshResult.success) {
+      console.error('Failed to refresh connection after transaction error', refreshResult);
+    }
+
+    // Return the error to the frontend
+    return {
+      type: ResponseMessageTypes.ERROR,
+      error: errorMsg,
+    };
+  }
+
+  /**
+   * Handle transaction completion
+   */
+  private handleTransactionComplete(transaction: any): TransactionResponse {
+    if (transaction.status === 'FAILED') {
+      // Don't leave in error state for failed business logic
+      this.emitEvent(MessengerEvents.TRANSACTION_ERROR, { transaction });
+      // Schedule refresh for next transaction
+      setTimeout(() => this.refreshConnection(), 0);
+    } else {
+      this.emitEvent(MessengerEvents.TRANSACTION_COMPLETE, { transaction });
+    }
+
+    return {
+      type: ResponseMessageTypes.SUCCESS,
+      transaction,
+    };
   }
 
   /**

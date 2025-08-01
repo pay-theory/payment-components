@@ -16,7 +16,7 @@ if (!API_KEY) {
   );
 }
 
-const AMOUNT = 10000; // $100.00 in cents
+const AMOUNT = 102; // $1.02 in cents
 
 // Wallet Test Configuration
 const WALLET_CONFIG = {
@@ -84,7 +84,7 @@ const CHECKOUT_DETAILS = {
 // Transaction parameters for field-based payments
 const TRANSACTING_PARAMETERS = {
   amount: AMOUNT,
-  fee: 300,
+  // fee: 300,
   billingInfo: BILLING_INFO,
   accountCode: '12 Account Code',
   reference: '12 Reference',

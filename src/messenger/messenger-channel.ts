@@ -1,7 +1,7 @@
 import {
   OUTGOING_MESSENGER_TYPES,
-  PT_MESSENGER_ESTABLISH_CHANNEL,
   PT_MESSENGER_CONNECTION_ACK,
+  PT_MESSENGER_ESTABLISH_CHANNEL,
   PT_MESSENGER_SOCKET_ERROR,
 } from './constants';
 
@@ -113,8 +113,8 @@ class MessengerChannel {
       if (type === PT_MESSENGER_CONNECTION_ACK) {
         this.connected = true;
         resolve(data);
-      } else if (error || type === PT_MESSENGER_SOCKET_ERROR) {
-        reject(new Error(error || 'Unknown error'));
+      } else if (type === PT_MESSENGER_SOCKET_ERROR) {
+        resolve(event.data);
       } else {
         resolve(event.data);
       }
