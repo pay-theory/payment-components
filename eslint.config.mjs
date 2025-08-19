@@ -9,6 +9,7 @@ export default [
       'dist/**',
       'lib/**',
       'coverage/**',
+      'local-test/**', // This directory is used for local testing and should be ignored
       'karma.conf.js',
       'karma-variables.js',
       'webpack.config.js',
