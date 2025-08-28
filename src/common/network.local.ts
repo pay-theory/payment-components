@@ -2,11 +2,7 @@
 
 export const isLocalDevelopment = (): boolean => {
   // Check multiple conditions for local development
-  return (
-    process.env.ENV === 'local' ||
-    (typeof window !== 'undefined' && window.location.hostname === 'localhost') ||
-    (typeof window !== 'undefined' && window.location.hostname === '127.0.0.1')
-  );
+  return process.env.LOCAL_DEV === 'true';
 };
 
 export const getHostedFieldsEndpoint = (): string => {
