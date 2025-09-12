@@ -352,3 +352,60 @@ function formatTransactionDetails(transaction) {
 
   return details.join('\n');
 }
+
+// Simulate wallet transaction for testing
+async function simulateWalletTransaction() {
+  if (!messenger) {
+    showStatus('Payment system not initialized', 'error');
+    return;
+  }
+
+  try {
+    showStatus('Processing simulated transaction...', 'info');
+
+    const result = await messenger.processWalletTransaction({
+      amount: AMOUNT,
+      digitalWalletPayload: 'SUCCESS',
+      walletType: 'TEST',
+    });
+
+    console.log('Simulated Transaction Result', result);
+
+    // Check response type
+    if (result.type === 'SUCCESS') {
+      // Transaction response with full transaction data
+      const transaction = result.transaction;
+
+      if (transaction.status === 'PENDING' || transaction.status === 'SUCCEEDED') {
+        showStatus(
+          `Test transaction successful!\n${formatTransactionDetails(transaction)}`,
+          'success',
+        );
+      } else if (transaction.status === 'FAILED') {
+        const failureMessage = transaction.failure_reasons?.join(', ') || 'Unknown reason';
+        showStatus(
+          `Test transaction failed!\n${formatTransactionDetails(transaction)}\nReason: ${failureMessage}`,
+          'error',
+        );
+      } else {
+        // Other statuses (CANCELED, VOIDED, etc.)
+        showStatus(`Test transaction processed\n${formatTransactionDetails(transaction)}`, 'info');
+      }
+    } else if (result.type === 'ERROR') {
+      // Error response
+      showStatus('Test transaction failed: ' + result.error, 'error');
+    } else {
+      // Legacy format or unexpected response
+      if (result.success) {
+        showStatus(
+          `Test transaction successful! Transaction ID: ${result.transaction_id}`,
+          'success',
+        );
+      } else {
+        showStatus('Test transaction failed: ' + (result.error || 'Unknown error'), 'error');
+      }
+    }
+  } catch (error) {
+    showStatus('Test transaction failed: ' + error.message, 'error');
+  }
+}

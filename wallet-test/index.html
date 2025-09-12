@@ -83,6 +83,22 @@
             padding: 20px;
         }
 
+        .simulate-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 240px;
+            height: 45px;
+        }
+
+        .simulate-button:hover {
+            background-color: #0056b3;
+        }
+
         .loading {
             text-align: center;
             color: #666;
@@ -116,6 +132,10 @@
             </div>
 
             <div id="google-pay-button"></div>
+
+            <button class="simulate-button" id="simulate-button" onclick="simulateWalletTransaction()">
+                Simulate Wallet Transaction
+            </button>
 
             <div class="not-available" id="not-available" style="display: none;">
                 No digital wallets are available on this device/browser.
