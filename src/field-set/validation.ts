@@ -635,6 +635,7 @@ const validQRSize = (size: unknown): ErrorResponse | null => {
 };
 
 export {
+  checkApiKey,
   checkInitialParams,
   findCardNumberError,
   findCombinedCardError,

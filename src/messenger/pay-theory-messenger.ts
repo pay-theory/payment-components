@@ -30,6 +30,8 @@ import {
   MessengerEvents,
 } from './constants';
 
+import { checkApiKey } from '../field-set/validation';
+
 class PayTheoryMessenger {
   private static instances: Map<string, PayTheoryMessenger> = new Map();
   private static initializingInstances: Map<string, Promise<MessengerResponse>> = new Map();
@@ -51,6 +53,11 @@ class PayTheoryMessenger {
   static readonly paze = PT_WALLET_TYPE_PAZE;
 
   constructor(options: { apiKey: string }) {
+    // Check if the options is an object and it contains the apiKey property
+    if (typeof options !== 'object' || !options.apiKey) {
+      throw new Error('Invalid options');
+    }
+
     // Check if instance already exists for this API key
     const existingInstance = PayTheoryMessenger.instances.get(options.apiKey);
     if (existingInstance) {
@@ -79,6 +86,12 @@ class PayTheoryMessenger {
    * Initialize the messenger - create iframe and establish connection
    */
   async initialize(): Promise<MessengerResponse> {
+    const result = checkApiKey(this.apiKey);
+    if (result) {
+      console.error('Invalid API Key', result);
+      return { success: false, error: `${result.type}: ${result.error}` };
+    }
+
     // Check if already initializing globally for this API key
     const existingInit = PayTheoryMessenger.initializingInstances.get(this.apiKey);
     if (existingInit) {
@@ -691,13 +704,11 @@ class PayTheoryMessenger {
    */
   private handleTransactionComplete(transaction: any): TransactionResponse {
     if (transaction.status === 'FAILED') {
-      // Don't leave in error state for failed business logic
-      this.emitEvent(MessengerEvents.TRANSACTION_ERROR, { transaction });
       // Schedule refresh for next transaction
       setTimeout(() => this.refreshConnection(), 0);
-    } else {
-      this.emitEvent(MessengerEvents.TRANSACTION_COMPLETE, { transaction });
     }
+    // Emit event for the frontend to handle
+    this.emitEvent(MessengerEvents.TRANSACTION_COMPLETE, { transaction });
 
     return {
       type: ResponseMessageTypes.SUCCESS,
@@ -776,6 +787,14 @@ class PayTheoryMessenger {
         listeners.splice(index, 1);
       }
     };
+  }
+
+  /**
+   * Get current state (meant for testing)
+   * @returns {MessengerState} The current state of the messenger
+   */
+  getState(): MessengerState {
+    return this.state.getState();
   }
 
   private emitEvent(event: MessengerEvent, data: any): void {
