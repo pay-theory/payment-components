@@ -18,7 +18,6 @@ import { generateUUID } from '../field-set/payment-fields-v2';
 import {
   PT_MESSENGER_MERCHANT_VALIDATION,
   PT_MESSENGER_PING,
-  PT_MESSENGER_READY,
   PT_MESSENGER_RECONNECT_TOKEN,
   PT_MESSENGER_SOCKET_ERROR,
   PT_MESSENGER_TRANSFER_COMPLETE,
@@ -28,6 +27,7 @@ import {
   PT_WALLET_TYPE_PAZE,
   MessengerEvent,
   MessengerEvents,
+  PT_MESSENGER_SOCKET_CONNECTED,
 } from './constants';
 
 import { checkApiKey } from '../field-set/validation';
@@ -281,7 +281,7 @@ class PayTheoryMessenger {
             if (!this.isValidOrigin(event.origin)) return;
 
             // Check if it's our ready message
-            if (event.data && event.data.type === PT_MESSENGER_READY) {
+            if (event.data && event.data.type === PT_MESSENGER_SOCKET_CONNECTED) {
               console.log('Iframe ready');
               isResolved = true;
               cleanup();
