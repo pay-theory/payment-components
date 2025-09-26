@@ -18,6 +18,7 @@ import { generateUUID } from '../field-set/payment-fields-v2';
 import {
   PT_MESSENGER_MERCHANT_VALIDATION,
   PT_MESSENGER_PING,
+  PT_MESSENGER_READY,
   PT_MESSENGER_RECONNECT_TOKEN,
   PT_MESSENGER_RECONNECT_TOKEN_SUCCESS,
   PT_MESSENGER_SOCKET_ERROR,
@@ -281,8 +282,8 @@ class PayTheoryMessenger {
             if (!this.isValidOrigin(event.origin)) return;
 
             // Check if it's our ready message
-            if (event.data && event.data.type === PT_MESSENGER_RECONNECT_TOKEN_SUCCESS) {
-              console.log('Iframe ready');
+            if (event.data && event.data.type === PT_MESSENGER_READY) {
+              console.log('Iframe ready - WebSocket connected and host token received');
               isResolved = true;
               cleanup();
               resolve();
