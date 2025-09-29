@@ -798,6 +798,14 @@ class PayTheoryMessenger {
     return this.state.getState();
   }
 
+  /**
+   * Get state history (meant for testing)
+   * @returns {MessengerState[]} Array of all states the messenger has transitioned through
+   */
+  getStateHistory(): MessengerState[] {
+    return this.state.getStateHistory();
+  }
+
   private emitEvent(event: MessengerEvent, data: any): void {
     if (!this.eventListeners.has(event)) {
       return;
