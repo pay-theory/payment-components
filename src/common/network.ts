@@ -1,9 +1,14 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { postMessageToHostedField } from './message';
 import PayTheoryHostedFieldTransactional from '../components/pay-theory-hosted-field-transactional';
-import { BillingInfo } from './pay_theory_types';
-import { ErrorMessage, FieldsReadyMessage } from './format';
 import { BANK_IFRAME, CARD_IFRAME, CASH_IFRAME, ElementTypes } from './data';
+import { ErrorMessage, FieldsReadyMessage } from './format';
+import { postMessageToHostedField } from './message';
+import {
+  getHostedCheckoutEndpoint,
+  getHostedFieldsEndpoint,
+  getTransactionEndpoint,
+} from './network.local';
+import { BillingInfo } from './pay_theory_types';
 
 interface PtToken {
   'pt-token': string;
@@ -30,16 +35,16 @@ export const getData = async (
   return await response.json();
 };
 
+// Legacy static variables (kept for compatibility)
 export const PARTNER = process.env.ENV;
 export const STAGE = process.env.STAGE;
 const TARGET_MODE = process.env.TARGET_MODE;
 const ENVIRONMENT = `${PARTNER}${TARGET_MODE}`;
 
-export const transactionEndpoint = `https://${ENVIRONMENT}.${STAGE}.com/pt-token-service/`;
-
-export const hostedFieldsEndpoint = `https://${ENVIRONMENT}.tags.static.${STAGE}.com`;
-
-export const hostedCheckoutEndpoint = `https://${ENVIRONMENT}.checkout.${STAGE}.com`;
+// Use dynamic endpoint functions that support local development
+export const transactionEndpoint = getTransactionEndpoint();
+export const hostedFieldsEndpoint = getHostedFieldsEndpoint();
+export const hostedCheckoutEndpoint = getHostedCheckoutEndpoint();
 
 export const fetchPtToken = async (
   apiKey: string,

@@ -1,6 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
 const devtool = 'inline-source-map';
+
+// Load environment variables from .env file
+require('dotenv').config();
+
+// Check if we're in local development mode
+const isLocalDev = process.env.NODE_ENV === 'development' && process.env.LOCAL_DEV === 'true';
+
 //const devtool = false
 module.exports = {
   devtool,
@@ -77,7 +84,7 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      PRODUCTION: JSON.stringify(true),
+      PRODUCTION: JSON.stringify(!isLocalDev),
       VERSION: JSON.stringify('5fa3b9'),
       BROWSER_SUPPORTS_HTML5: true,
       TWO: '1+1',
@@ -88,7 +95,29 @@ module.exports = {
         ENV: JSON.stringify(process.env.ENV),
         STAGE: JSON.stringify(process.env.STAGE),
         TARGET_MODE: JSON.stringify(process.env.TARGET_MODE),
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        LOCAL_DEV: JSON.stringify(process.env.LOCAL_DEV),
       },
     }),
   ],
+
+  // Add development server configuration for local development
+  ...(isLocalDev && {
+    devServer: {
+      static: {
+        directory: path.join(__dirname),
+        publicPath: '/',
+      },
+      compress: true,
+      port: 3000,
+      open: true,
+      hot: true,
+      allowedHosts: 'all',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+        'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
+      },
+    },
+  }),
 };
