@@ -10,6 +10,7 @@ export default [
       'lib/**',
       'coverage/**',
       'local-test/**', // This directory is used for local testing and should be ignored
+      'wallet-test/**', // Local development wallet testing file, not part of main codebase
       'karma.conf.js',
       'karma-variables.js',
       'webpack.config.js',
