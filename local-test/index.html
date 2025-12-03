@@ -145,6 +145,14 @@
                 </div>
             </div>
 
+            <!-- Expanded Response Toggle -->
+            <div class="form-group" id="expanded-response-toggle" style="margin-top: 20px;">
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="expanded-response-checkbox" checked>
+                    <span>Enable Expanded Response</span>
+                </label>
+            </div>
+
             <!-- Button Layout for Card/ACH/Cash -->
             <div class="button-container" id="field-buttons" style="margin-top: 20px;">
                 <!-- Top Row: Standard Transaction -->
@@ -194,6 +202,7 @@
 
     <!-- Load your locally built SDK (hot-reloaded from dev server) -->
     <script src="../index.js"></script>
+    <script src="env-config.local.js"></script>
     <script src="config.js"></script>
     <script src="tabs.js"></script>
     <script src="payment-fields.js"></script>

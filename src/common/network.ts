@@ -9,6 +9,7 @@ import {
   getTransactionEndpoint,
 } from './network.local';
 import { BillingInfo } from './pay_theory_types';
+import { withExponentialBackoff } from './retry-utils';
 
 interface PtToken {
   'pt-token': string;
@@ -50,13 +51,18 @@ export const fetchPtToken = async (
   apiKey: string,
   sessionKey: string,
 ): Promise<PtToken | false> => {
-  for (let i = 0; i < 5; i++) {
-    const token = await getData(transactionEndpoint, apiKey, sessionKey);
-    if ((token as PtToken)['pt-token']) {
-      return token as PtToken;
-    }
-  }
-  return false;
+  const result = await withExponentialBackoff(
+    () => getData(transactionEndpoint, apiKey, sessionKey),
+    token => !(token as PtToken)['pt-token'],
+    {
+      maxAttempts: 5,
+      initialDelay: 100,
+      maxDelay: 2000,
+      jitter: true,
+    },
+  );
+
+  return (result as PtToken) || false;
 };
 
 const sendTransactingMessageToField = (

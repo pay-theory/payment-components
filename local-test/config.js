@@ -1,11 +1,52 @@
+/* eslint-disable no-undef */
 /**
  * Configuration constants for local testing
  */
 
-// API Configuration
-// const API_KEY = "start-paytheory-62d8597c57af5d64a7ebee0a8fd3d3cc";
-const API_KEY = 'austin-paytheorylab-d7dbe665f5565fe8ae8a23eab45dd285';
-const AMOUNT = 10000; // $100.00 in cents
+// API Configuration - These MUST be provided by setting window.ENV_CONFIG before loading this script
+// or they will be read from process.env if running through webpack
+const ENV_CONFIG = window.ENV_CONFIG || {};
+
+const API_KEY =
+  ENV_CONFIG.PAYTHEORY_API_KEY ||
+  (typeof process !== 'undefined' && process.env && process.env.PAYTHEORY_API_KEY);
+if (!API_KEY) {
+  throw new Error(
+    'PAYTHEORY_API_KEY must be set. Either set window.ENV_CONFIG.PAYTHEORY_API_KEY before loading this script, or set it in .env file when building with webpack.',
+  );
+}
+
+const AMOUNT = 102; // $1.02 in cents
+
+// Wallet Test Configuration
+const WALLET_CONFIG = {
+  API_KEY: API_KEY,
+  TEST_AMOUNT:
+    parseInt(
+      ENV_CONFIG.TEST_AMOUNT ||
+        (typeof process !== 'undefined' && process.env && process.env.TEST_AMOUNT),
+    ) || 1000,
+  GOOGLE_MERCHANT_ID:
+    ENV_CONFIG.GOOGLE_MERCHANT_ID ||
+    (typeof process !== 'undefined' && process.env && process.env.GOOGLE_MERCHANT_ID),
+  GOOGLE_GATEWAY_MERCHANT_ID:
+    ENV_CONFIG.GOOGLE_GATEWAY_MERCHANT_ID ||
+    (typeof process !== 'undefined' && process.env && process.env.GOOGLE_GATEWAY_MERCHANT_ID),
+};
+
+// Validate required wallet configuration
+if (!WALLET_CONFIG.API_KEY) {
+  throw new Error('PAYTHEORY_API_KEY must be set');
+}
+if (!WALLET_CONFIG.GOOGLE_MERCHANT_ID) {
+  throw new Error('GOOGLE_MERCHANT_ID must be set');
+}
+if (!WALLET_CONFIG.GOOGLE_GATEWAY_MERCHANT_ID) {
+  throw new Error('GOOGLE_GATEWAY_MERCHANT_ID must be set');
+}
+
+// Export wallet configuration for use by other scripts
+window.WALLET_CONFIG = WALLET_CONFIG;
 
 // Fee configuration - will be set after PayTheory SDK loads
 let FEE_MODE = null;
@@ -43,10 +84,11 @@ const CHECKOUT_DETAILS = {
 // Transaction parameters for field-based payments
 const TRANSACTING_PARAMETERS = {
   amount: AMOUNT,
-  fee: 300,
+  // fee: 300,
   billingInfo: BILLING_INFO,
   accountCode: '12 Account Code',
   reference: '12 Reference',
+  // expandedResponse will be set dynamically based on checkbox
 };
 
 // Tokenization parameters

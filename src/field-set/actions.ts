@@ -1,11 +1,8 @@
-import { findTransactingElement } from '../common/dom';
 import common from '../common';
-import { transactingWebComponentIds, MERCHANT_FEE } from '../common/data';
-import * as valid from './validation';
-import PayTheoryHostedFieldTransactional, {
-  TokenizeDataObject,
-  TransactDataObject,
-} from '../components/pay-theory-hosted-field-transactional';
+import { MERCHANT_FEE, transactingWebComponentIds } from '../common/data';
+import { findTransactingElement } from '../common/dom';
+import { localizeCashBarcodeUrl, ModifiedTransactProps, parseResponse } from '../common/format';
+import { sendObserverMessage } from '../common/message';
 import {
   CashBarcodeResponse,
   ConfirmationResponse,
@@ -18,8 +15,11 @@ import {
   TokenizeProps,
   TransactProps,
 } from '../common/pay_theory_types';
-import { localizeCashBarcodeUrl, ModifiedTransactProps, parseResponse } from '../common/format';
-import { sendObserverMessage } from '../common/message';
+import PayTheoryHostedFieldTransactional, {
+  TokenizeDataObject,
+  TransactDataObject,
+} from '../components/pay-theory-hosted-field-transactional';
+import * as valid from './validation';
 // Used to element to update the token on error or failure or mark as complete on success
 const updateElementFromAction = (
   message:
@@ -92,6 +92,7 @@ export const transact = async (
   | FailedTransactionResponse
   | CashBarcodeResponse
 > => {
+  console.log('props', props);
   const transactingElement = findTransactingElement();
   if (transactingElement) {
     // Run field check and return error if one is found before proceeding
@@ -130,6 +131,7 @@ export const transact = async (
           confirmation,
         };
         const response = await transactingElement.transact(data, transactingElement);
+        console.log('Transact Response', response);
         let parsedResponse = parseResponse(response) as
           | ErrorResponse
           | ConfirmationResponse
@@ -217,7 +219,14 @@ export const tokenizePaymentMethod = async (
       const reconnectError = await reconnectIfDisconnected(transactingElement);
       if (reconnectError) return reconnectError;
       transactingElement.initialized = true;
-      const { payorInfo = {}, payorId, metadata = {}, billingInfo, skipValidation } = props;
+      const {
+        payorInfo = {},
+        payorId,
+        metadata = {},
+        billingInfo,
+        skipValidation,
+        expandedResponse,
+      } = props;
       //validate the input param types
       let error = valid.isValidTokenizeParams(payorInfo, metadata);
       if (error) return error;
@@ -238,8 +247,10 @@ export const tokenizePaymentMethod = async (
           payorId,
           billingInfo,
           skipValidation,
+          expandedResponse,
         };
         const result = await transactingElement.tokenize(data, transactingElement);
+        console.log('Tokenize Response', result);
         const parsedResult = parseResponse(result);
         updateElementFromAction(parsedResult, transactingElement);
         // If the tokenization was successful but the validation was skipped, reset the fields

@@ -62,6 +62,9 @@ class PaymentFieldsManager {
     this.cancelBtn = document.getElementById('cancel-payment');
     this.confirmationInitialEl = document.querySelector('.confirmation-initial');
     this.confirmationActionsEl = document.querySelector('.confirmation-actions');
+
+    // Expanded response toggle
+    this.expandedResponseCheckbox = document.getElementById('expanded-response-checkbox');
   }
 
   attachEventListeners() {
@@ -224,8 +227,13 @@ class PaymentFieldsManager {
 
     this.updateStatus('Processing transaction...', 'info');
 
+    const transactParams = {
+      ...TRANSACTING_PARAMETERS,
+      expandedResponse: this.expandedResponseCheckbox.checked,
+    };
+
     paytheory
-      .transact(TRANSACTING_PARAMETERS)
+      .transact(transactParams)
       .then(result => this.handleTransactionResult(result))
       .catch(e => this.handleTransactionError(e));
   }
@@ -256,6 +264,7 @@ class PaymentFieldsManager {
     const transactingParametersWithConfirmation = {
       ...TRANSACTING_PARAMETERS,
       confirmation: true,
+      expandedResponse: this.expandedResponseCheckbox.checked,
     };
 
     paytheory
@@ -282,8 +291,13 @@ class PaymentFieldsManager {
 
     this.updateStatus('Tokenizing payment method...', 'info');
 
+    const tokenizeParams = {
+      ...TOKENIZE_PAYMENT_METHOD_PARAMETERS,
+      expandedResponse: this.expandedResponseCheckbox.checked,
+    };
+
     paytheory
-      .tokenizePaymentMethod(TOKENIZE_PAYMENT_METHOD_PARAMETERS)
+      .tokenizePaymentMethod(tokenizeParams)
       .then(result => {
         console.log('Tokenization result:', result);
 
