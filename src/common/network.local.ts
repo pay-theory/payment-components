@@ -36,7 +36,7 @@ export const getHostedCheckoutEndpoint = (): string => {
   const STAGE = process.env.STAGE || 'checkout';
   const TARGET_MODE = process.env.TARGET_MODE || '';
   const ENVIRONMENT = `${PARTNER}${TARGET_MODE}`;
-  return `https://${ENVIRONMENT}.${STAGE}.com`;
+  return `https://${ENVIRONMENT}.checkout.${STAGE}.com`;
 };
 
 // WebSocket endpoints remain pointing to deployed infrastructure
