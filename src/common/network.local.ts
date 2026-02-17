@@ -1,48 +1,74 @@
-// Local development configuration overrides
+/**
+ * Endpoint configuration for local SDK integrations.
+ *
+ * Design rule:
+ * `LOCAL_DEV` controls SDK runtime mode (webpack/dev server), while endpoint routing is controlled
+ * explicitly via `LOCAL_HOSTED_FIELDS` and `LOCAL_HOSTED_CHECKOUT`.
+ */
 
-export const isLocalDevelopment = (): boolean => {
-  // Check multiple conditions for local development
-  return process.env.LOCAL_DEV === 'true';
+const LOCAL_HOSTED_FIELDS_DEFAULT_ENDPOINT = 'https://localhost:3001';
+const LOCAL_HOSTED_CHECKOUT_DEFAULT_ENDPOINT = 'http://localhost:3002';
+
+const readEnvString = (key: string): string | undefined => {
+  const envRecord = process.env as Record<string, string | undefined>;
+  const value = envRecord[key];
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
 };
 
+const isEnvTrue = (key: string): boolean => readEnvString(key)?.toLowerCase() === 'true';
+
+const normalizeEndpoint = (endpoint: string): string => endpoint.replace(/\/+$/, '');
+
+const getEnvironment = () => {
+  const partner = process.env.ENV;
+  const stage = process.env.STAGE;
+  const targetMode = process.env.TARGET_MODE || '';
+  const environment = `${partner}${targetMode}`;
+  return { environment, partner, stage, targetMode };
+};
+
+/**
+ * Returns true when hosted fields iframes should point at a local dev server.
+ */
+export const isLocalHostedFieldsEnabled = (): boolean => isEnvTrue('LOCAL_HOSTED_FIELDS');
+
+/**
+ * Returns true when hosted checkout should point at a local dev server.
+ */
+export const isLocalHostedCheckoutEnabled = (): boolean => isEnvTrue('LOCAL_HOSTED_CHECKOUT');
+
+/**
+ * Resolve the hosted-fields base endpoint.
+ */
 export const getHostedFieldsEndpoint = (): string => {
-  if (isLocalDevelopment()) {
-    // Point to local secure-tags-lib development server
-    return 'https://localhost:3001';
-    // Alternative for HTTP: return 'http://localhost:3001';
+  if (isLocalHostedFieldsEnabled()) {
+    const endpoint = readEnvString('LOCAL_HOSTED_FIELDS_ENDPOINT');
+    return normalizeEndpoint(endpoint || LOCAL_HOSTED_FIELDS_DEFAULT_ENDPOINT);
   }
 
-  // Use existing production logic
-  const PARTNER = process.env.ENV;
-  const STAGE = process.env.STAGE;
-  const TARGET_MODE = process.env.TARGET_MODE;
-  const ENVIRONMENT = `${PARTNER}${TARGET_MODE}`;
-  return `https://${ENVIRONMENT}.tags.static.${STAGE}.com`;
+  const { environment, stage } = getEnvironment();
+  return `https://${environment}.tags.static.${stage}.com`;
 };
 
+/**
+ * Resolve the PT token transaction endpoint.
+ */
 export const getTransactionEndpoint = (): string => {
-  // Always use deployed transaction service for now
-  // Could be made configurable for local backend development in the future
-  const PARTNER = process.env.ENV || 'paytheory';
-  const STAGE = process.env.STAGE || 'api';
-  const TARGET_MODE = process.env.TARGET_MODE || '';
-  const ENVIRONMENT = `${PARTNER}${TARGET_MODE}`;
-  return `https://${ENVIRONMENT}.${STAGE}.com/pt-token-service/`;
+  const { environment, stage } = getEnvironment();
+  return `https://${environment}.${stage}.com/pt-token-service/`;
 };
 
+/**
+ * Resolve the hosted checkout base endpoint.
+ */
 export const getHostedCheckoutEndpoint = (): string => {
-  // Always use deployed checkout service
-  const PARTNER = process.env.ENV || 'paytheory';
-  const STAGE = process.env.STAGE || 'checkout';
-  const TARGET_MODE = process.env.TARGET_MODE || '';
-  const ENVIRONMENT = `${PARTNER}${TARGET_MODE}`;
-  return `https://${ENVIRONMENT}.checkout.${STAGE}.com`;
-};
+  if (isLocalHostedCheckoutEnabled()) {
+    const endpoint = readEnvString('LOCAL_HOSTED_CHECKOUT_ENDPOINT');
+    return normalizeEndpoint(endpoint || LOCAL_HOSTED_CHECKOUT_DEFAULT_ENDPOINT);
+  }
 
-// WebSocket endpoints remain pointing to deployed infrastructure
-export const getWebSocketEndpoint = (): string => {
-  // Always use deployed WebSocket service
-  // Implementation depends on how WebSocket URLs are currently configured
-  // This would need to be implemented based on current WebSocket configuration
-  return ''; // TODO: Implement based on current WebSocket configuration if needed
+  const { environment, stage } = getEnvironment();
+  return `https://${environment}.checkout.${stage}.com`;
 };

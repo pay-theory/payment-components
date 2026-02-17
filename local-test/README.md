@@ -36,14 +36,19 @@ local-test/
 
 ## Usage
 
+See `../LOCAL_STACK_README.md` for the full environment-variable matrix and multi-repo startup options.
+
 1. **Start Development Servers**
 
    ```bash
-   # Payment Components (parent SDK) - localhost:3000
-   npm start
-
-   # Secure Tags Lib (iframe fields) - https://localhost:3001
+   # Payment Components (parent SDK) - http://localhost:3000
    npm run dev:local
+   ```
+
+   Optional: start the multi-repo stack from `payment-components` root.
+
+   ```bash
+   npm run local:stack
    ```
 
 2. **Open Test Page**

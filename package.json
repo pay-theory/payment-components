@@ -27,6 +27,7 @@
     "dev:local": "env NODE_ENV=development LOCAL_DEV=true webpack serve --mode development",
     "build:local": "env NODE_ENV=development LOCAL_DEV=true webpack --mode development",
     "dev:local-watch": "env NODE_ENV=development LOCAL_DEV=true webpack --mode development --watch",
+    "local:stack": "./scripts/start-local-stack.sh",
     "lint": "eslint --ext .js,.ts .",
     "lint:eslint": "eslint --ext .js,.ts .",
     "lint:fix": "eslint --ext .js,.ts . --fix",

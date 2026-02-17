@@ -9,6 +9,13 @@ The Pay Theory Web SDK is a set of fields and components that can be used to col
 
 For documentation on the SDK, visit [docs.paytheory.com](https://docs.paytheory.com).
 
+## Local Development
+
+For local SDK + hosted fields/checkout routing setup (including independent localhost overrides), see:
+
+- [`LOCAL_STACK_README.md`](LOCAL_STACK_README.md)
+- [`local-test/README.md`](local-test/README.md)
+
 ## License
 
 MIT © [pay theory](https://github.com/pay-theory)
