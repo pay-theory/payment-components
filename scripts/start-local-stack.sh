@@ -82,12 +82,10 @@ LOCAL_HOSTED_CHECKOUT_EFFECTIVE="$(normalize_bool "${LOCAL_HOSTED_CHECKOUT:-}" "
 START_PAYMENT_COMPONENTS_EFFECTIVE="$(normalize_bool "${START_PAYMENT_COMPONENTS:-}" "true")"
 START_SECURE_TAGS_LIB_EFFECTIVE="$(normalize_bool "${START_SECURE_TAGS_LIB:-}" "$LOCAL_HOSTED_FIELDS_EFFECTIVE")"
 START_CHECKOUT_EFFECTIVE="$(normalize_bool "${START_CHECKOUT:-}" "$LOCAL_HOSTED_CHECKOUT_EFFECTIVE")"
-START_BOOKS_APP_EFFECTIVE="$(normalize_bool "${START_BOOKS_APP:-}" "false")"
 
 PAYMENT_COMPONENTS_REPO_PATH="$(resolve_repo_path "${PAYMENT_COMPONENTS_REPO_PATH:-payment-components}")"
 SECURE_TAGS_LIB_REPO_PATH="$(resolve_repo_path "${SECURE_TAGS_LIB_REPO_PATH:-secure-tags-lib}")"
-CHECKOUT_REPO_PATH="$(resolve_repo_path "${CHECKOUT_REPO_PATH:-checkout}")"
-BOOKS_APP_REPO_PATH="$(resolve_repo_path "${BOOKS_APP_REPO_PATH:-books-app}")"
+CHECKOUT_REPO_PATH="$(resolve_repo_path "${CHECKOUT_REPO_PATH:-books-app-checkout}")"
 
 PAYMENT_COMPONENTS_COMMAND="${PAYMENT_COMPONENTS_COMMAND:-npm run dev:local}"
 SECURE_TAGS_LIB_COMMAND="${SECURE_TAGS_LIB_COMMAND:-npm run dev:local}"
@@ -131,11 +129,7 @@ if [[ "$START_SECURE_TAGS_LIB_EFFECTIVE" == "true" ]]; then
 fi
 
 if [[ "$START_CHECKOUT_EFFECTIVE" == "true" ]]; then
-  start_service "checkout" "$CHECKOUT_REPO_PATH" "$CHECKOUT_COMMAND" || true
-fi
-
-if [[ "$START_BOOKS_APP_EFFECTIVE" == "true" ]]; then
-  start_service "books-app" "$BOOKS_APP_REPO_PATH" "$BOOKS_APP_COMMAND" || true
+  start_service "books-app-checkout" "$CHECKOUT_REPO_PATH" "$CHECKOUT_COMMAND" || true
 fi
 
 if [[ "${#PIDS[@]}" -eq 0 ]]; then

@@ -3,7 +3,7 @@
 This guide covers local development for `payment-components` with optional local overrides for:
 
 - hosted fields (`secure-tags-lib`)
-- hosted checkout (`checkout`)
+- hosted checkout (`books-app-checkout`)
 
 It supports four routing modes:
 
@@ -20,8 +20,7 @@ If all repos are in one parent folder:
 <root>/
   payment-components/
   secure-tags-lib/
-  checkout/
-  books-app/
+  books-app-checkout/
 ```
 
 ## Environment Variables
@@ -128,7 +127,7 @@ Repo path overrides:
 
 - `PAYMENT_COMPONENTS_REPO_PATH`
 - `SECURE_TAGS_LIB_REPO_PATH`
-- `CHECKOUT_REPO_PATH`
+- `CHECKOUT_REPO_PATH` (default: `books-app-checkout`)
 - `BOOKS_APP_REPO_PATH`
 
 Command overrides:
