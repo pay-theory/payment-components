@@ -39,8 +39,8 @@ class TokenManager {
       const token = await this.tokenFetchPromise;
       this.token = token;
 
-      // Set token expiry to 55 minutes (tokens typically valid for 1 hour)
-      this.tokenExpiry = Date.now() + 55 * 60 * 1000;
+      // Set token expiry based on JWT exp (seconds since epoch)
+      this.tokenExpiry = this.getTokenExpiryMs(token);
 
       return token;
     } finally {
@@ -71,6 +71,29 @@ class TokenManager {
       throw new Error(
         `Token fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
+    }
+  }
+
+  private getTokenExpiryMs(token: string): number {
+    try {
+      const parts = token.split('.');
+      if (parts.length < 2) return Date.now() + 4 * 60 * 1000;
+
+      const payloadB64Url = parts[1];
+      const base64 = payloadB64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
+
+      if (typeof atob !== 'function') return Date.now() + 4 * 60 * 1000;
+      const json = atob(padded);
+
+      const payload = JSON.parse(json) as { exp?: number };
+      const expSeconds = payload.exp;
+      if (!expSeconds || typeof expSeconds !== 'number') return Date.now() + 4 * 60 * 1000;
+
+      // Refresh 10 seconds before expiry to avoid clock skew
+      return expSeconds * 1000 - 10 * 1000;
+    } catch {
+      return Date.now() + 4 * 60 * 1000;
     }
   }
 
