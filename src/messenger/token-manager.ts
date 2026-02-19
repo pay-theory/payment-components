@@ -1,14 +1,19 @@
-import { fetchPtToken } from '../common/network';
+import { fetchCheckoutPtToken, fetchPtToken } from '../common/network';
+import type { CheckoutContextQuery } from '../common/pay_theory_types';
+
+type TokenManagerAuth =
+  | { apiKey: string; checkoutContext?: never }
+  | { apiKey?: never; checkoutContext: CheckoutContextQuery };
 
 class TokenManager {
-  private apiKey: string;
+  private auth: TokenManagerAuth;
   private sessionId: string;
   private token: string | null = null;
   private tokenExpiry: number = 0;
   private tokenFetchPromise: Promise<string> | null = null;
 
-  constructor(apiKey: string, sessionId: string) {
-    this.apiKey = apiKey;
+  constructor(auth: TokenManagerAuth, sessionId: string) {
+    this.auth = auth;
     this.sessionId = sessionId;
   }
 
@@ -60,7 +65,10 @@ class TokenManager {
    */
   private async fetchTokenFromServer(): Promise<string> {
     try {
-      const result = await fetchPtToken(this.apiKey, this.sessionId);
+      const result =
+        'apiKey' in this.auth
+          ? await fetchPtToken(this.auth.apiKey, this.sessionId)
+          : await fetchCheckoutPtToken(this.auth.checkoutContext, this.sessionId);
 
       if (!result || !result['pt-token']) {
         throw new Error('Token not found in response');
