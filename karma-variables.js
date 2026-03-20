@@ -6,5 +6,6 @@ const process = {
     ENV: 'partner',
     STAGE: 'stage',
     TARGET_MODE: 'targetMode',
+    LOCAL_DEV: 'true',
   },
 };

@@ -1,9 +1,15 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { postMessageToHostedField } from './message';
 import PayTheoryHostedFieldTransactional from '../components/pay-theory-hosted-field-transactional';
-import { BillingInfo } from './pay_theory_types';
-import { ErrorMessage, FieldsReadyMessage } from './format';
 import { BANK_IFRAME, CARD_IFRAME, CASH_IFRAME, ElementTypes } from './data';
+import { ErrorMessage, FieldsReadyMessage } from './format';
+import { postMessageToHostedField } from './message';
+import {
+  getHostedCheckoutEndpoint,
+  getHostedFieldsEndpoint,
+  getTransactionEndpoint,
+} from './network.local';
+import { BillingInfo } from './pay_theory_types';
+import { withExponentialBackoff } from './retry-utils';
 
 interface PtToken {
   'pt-token': string;
@@ -30,20 +36,12 @@ export const getData = async (
       'x-session-key': sessionKey,
     },
   };
-
-  try {
-    /* global fetch */
-    console.log(`[PT Debug] Making network request to: ${url}`);
-    const response = await fetch(url, options);
-    const data = await response.json();
-    console.log(`[PT Debug] Response received:`, data);
-    return data;
-  } catch (error) {
-    console.error(`[PT Debug] Error fetching data from ${url}:`, error);
-    return {};
-  }
+  /* global fetch */
+  const response = await fetch(url, options);
+  return await response.json();
 };
 
+// Legacy static variables (kept for compatibility)
 export const PARTNER = process.env.ENV;
 export const STAGE = process.env.STAGE;
 const TARGET_MODE = process.env.TARGET_MODE;
@@ -55,36 +53,27 @@ console.log(`[PT Debug] STAGE: ${STAGE}`);
 console.log(`[PT Debug] TARGET_MODE: ${TARGET_MODE}`);
 console.log(`[PT Debug] Constructed ENVIRONMENT: ${ENVIRONMENT}`);
 
-export const transactionEndpoint = `https://${ENVIRONMENT}.${STAGE}.com/pt-token-service/`;
-console.log(`[PT Debug] Constructed transactionEndpoint: ${transactionEndpoint}`);
-
-export const hostedFieldsEndpoint = `https://${ENVIRONMENT}.tags.static.${STAGE}.com`;
-console.log(`[PT Debug] Constructed hostedFieldsEndpoint: ${hostedFieldsEndpoint}`);
-
-export const hostedCheckoutEndpoint = `https://${ENVIRONMENT}.checkout.${STAGE}.com`;
-console.log(`[PT Debug] Constructed hostedCheckoutEndpoint: ${hostedCheckoutEndpoint}`);
+// Use dynamic endpoint functions that support local development
+export const transactionEndpoint = getTransactionEndpoint();
+export const hostedFieldsEndpoint = getHostedFieldsEndpoint();
+export const hostedCheckoutEndpoint = getHostedCheckoutEndpoint();
 
 export const fetchPtToken = async (
   apiKey: string,
   sessionKey: string,
 ): Promise<PtToken | false> => {
-  console.log(
-    `[PT Debug] Attempting to fetch pt-token with apiKey: ${apiKey ? 'PROVIDED' : 'MISSING'} and sessionKey: ${sessionKey ? 'PROVIDED' : 'MISSING'}`,
+  const result = await withExponentialBackoff(
+    () => getData(transactionEndpoint, apiKey, sessionKey),
+    token => !(token as PtToken)['pt-token'],
+    {
+      maxAttempts: 5,
+      initialDelay: 100,
+      maxDelay: 2000,
+      jitter: true,
+    },
   );
-  console.log(`[PT Debug] Token endpoint: ${transactionEndpoint}`);
 
-  for (let i = 0; i < 5; i++) {
-    console.log(`[PT Debug] Attempt ${i + 1} to fetch pt-token`);
-    const token = await getData(transactionEndpoint, apiKey, sessionKey);
-    console.log(`[PT Debug] Token response:`, token);
-    if ((token as PtToken)['pt-token']) {
-      console.log(`[PT Debug] Successfully retrieved pt-token on attempt ${i + 1}`);
-      return token as PtToken;
-    }
-    console.log(`[PT Debug] Failed to retrieve pt-token on attempt ${i + 1}`);
-  }
-  console.error(`[PT Debug] All attempts to fetch pt-token failed`);
-  return false;
+  return (result as PtToken) || false;
 };
 
 const sendTransactingMessageToField = (

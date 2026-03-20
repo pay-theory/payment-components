@@ -46,6 +46,7 @@ const checkApiKey = (key: unknown) => {
   }
 
   if (environment !== common.PARTNER || stage !== common.STAGE) {
+    console.log('🔧 Invalid API Key:', common.PARTNER, common.STAGE);
     return handleTypedError(
       ErrorType.INVALID_PARAM,
       'Valid API Key not found. Please provide a valid API Key',
@@ -458,7 +459,13 @@ const isValidFeeMode = (feeMode: string): ErrorResponse | null => {
 };
 
 const isValidFeeAmount = (fee: unknown): ErrorResponse | null => {
-  if (fee === undefined || Number(fee) >= 0) {
+  // Allow undefined and null fees
+  if (fee === undefined || fee === null) {
+    return null;
+  }
+
+  // Only allow actual number types and ensure they're non-negative
+  if (typeof fee === 'number' && fee >= 0) {
     return null;
   }
   return handleTypedError(ErrorType.INVALID_PARAM, 'fee must be a positive integer');
@@ -628,6 +635,7 @@ const validQRSize = (size: unknown): ErrorResponse | null => {
 };
 
 export {
+  checkApiKey,
   checkInitialParams,
   findCardNumberError,
   findCombinedCardError,

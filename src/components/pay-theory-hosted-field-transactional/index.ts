@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-empty-function */
 
-import PayTheoryHostedField from '../pay-theory-hosted-field';
 import common from '../../common';
 import {
   achFieldTypes,
@@ -17,12 +16,6 @@ import {
   transactingWebComponentMap,
 } from '../../common/data';
 import {
-  AsyncMessage,
-  handleTypedError,
-  postMessageToHostedField,
-  sendAsyncPostMessage,
-} from '../../common/message';
-import {
   CashBarcodeMessage,
   ConfirmationMessage,
   ERROR_STEP,
@@ -33,6 +26,12 @@ import {
   TokenizedPaymentMethodMessage,
 } from '../../common/format';
 import {
+  AsyncMessage,
+  handleTypedError,
+  postMessageToHostedField,
+  sendAsyncPostMessage,
+} from '../../common/message';
+import {
   BillingInfo,
   ErrorResponse,
   ErrorType,
@@ -41,6 +40,7 @@ import {
   ResponseMessageTypes,
   StateObject,
 } from '../../common/pay_theory_types';
+import PayTheoryHostedField from '../pay-theory-hosted-field';
 
 export interface IncomingFieldState extends FieldState {
   element?: ElementTypes;
@@ -62,6 +62,7 @@ export interface TokenizeDataObject {
   payorId?: string;
   billingInfo?: BillingInfo;
   skipValidation?: boolean;
+  expandedResponse?: boolean;
 }
 
 interface ConstructorProps {
