@@ -65,7 +65,7 @@ describe('Compliance Beacon', () => {
         crossorigin: undefined,
         nonce: undefined,
         type: undefined,
-        async: false,
+        async: true,
         defer: true,
         is_inline: false,
         injection_timing: 'initial',
@@ -87,8 +87,8 @@ describe('Compliance Beacon', () => {
     expect(payload.page_key).to.equal('origin:https://merchant.example');
     expect(payload).to.not.have.property('sdk_status');
     expect(payload.scripts[0]).to.include({
-      normalized_url: 'inline:sha256-AQIDBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
-      inline_content_hash: 'sha256-AQIDBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
+      normalized_url: 'inline:sha256-AQIDBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
+      inline_content_hash: 'sha256-AQIDBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
       is_inline: true,
     });
   });

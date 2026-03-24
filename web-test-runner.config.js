@@ -1,9 +1,60 @@
-import { esbuildPlugin } from '@web/dev-server-esbuild';
-import { playwrightLauncher } from '@web/test-runner-playwright';
-import path from 'path';
+const { transform: esbuildTransform } = require('esbuild');
+const fs = require('fs');
+const path = require('path');
 
-export default {
+const tsconfigRaw = fs.readFileSync(path.join(process.cwd(), 'tsconfig.json'), 'utf8');
+
+const resolveExtensionlessImportsPlugin = {
+  name: 'resolve-extensionless-imports',
+  async resolveImport({ source, context }) {
+    if (!source.startsWith('.') || path.extname(source)) {
+      return;
+    }
+
+    const importerPath = path.join(process.cwd(), context.path.replace(/^\//, ''));
+    const importerDir = path.dirname(importerPath);
+
+    for (const suffix of ['.ts', '.js', '/index.ts', '/index.js']) {
+      const candidate = path.resolve(importerDir, `${source}${suffix}`);
+
+      if (fs.existsSync(candidate)) {
+        return `${source}${suffix}`.replace(/\\/g, '/');
+      }
+    }
+  },
+};
+
+const typeScriptModulesPlugin = {
+  name: 'typescript-modules',
+  resolveMimeType(context) {
+    if (context.path.endsWith('.ts')) {
+      return 'js';
+    }
+  },
+  async transform(context) {
+    if (!context.path.endsWith('.ts')) {
+      return;
+    }
+
+    const sourcefile = path.join(process.cwd(), context.path.replace(/^\//, ''));
+    const { code } = await esbuildTransform(String(context.body), {
+      loader: 'ts',
+      format: 'esm',
+      target: 'es2020',
+      sourcefile,
+      sourcemap: 'inline',
+      tsconfigRaw,
+    });
+
+    return code;
+  },
+};
+
+module.exports = {
   rootDir: process.cwd(),
+  mimeTypes: {
+    '**/*.ts': 'js',
+  },
   files: [
     'test/basic.web-test.js',
     'test/fee-validation.web-test.js',
@@ -13,43 +64,30 @@ export default {
     'test/bank-routing-number.web-test.js',
     'test/bank-institution-number.web-test.js',
     'test/bank-account-name.web-test.js',
+    'test/compliance-beacon.web-test.js',
     'test/pay-theory-messenger.web-test.js',
   ],
-  nodeResolve: true, // resolve node modules
-  coverage: true, // enable coverage reporting
+  nodeResolve: true,
+  coverage: true,
   coverageConfig: {
-    reportDir: 'coverage', // directory to store coverage reports
-    include: ['src/**/*.js', 'src/**/*.ts'], // include patterns for coverage
-    exclude: [], // exclude patterns for coverage
+    reportDir: 'coverage',
+    include: ['src/**/*.js', 'src/**/*.ts'],
+    exclude: [],
   },
-  browsers: [
-    playwrightLauncher({
-      product: 'chromium',
-    }),
-  ],
-  plugins: [
-    // Add esbuild plugin for TypeScript
-    esbuildPlugin({
-      ts: true,
-      target: 'auto',
-      tsconfig: './tsconfig.json',
-      sourceMap: true,
-    }),
-  ],
+  plugins: [resolveExtensionlessImportsPlugin, typeScriptModulesPlugin],
   testFramework: {
     config: {
       ui: 'bdd',
-      timeout: '30000', // increased timeout in milliseconds
+      timeout: '30000',
     },
   },
-  // Remove concurrency settings that may be causing issues
-  // No concurrency, no timeouts, just the basics
   testRunnerHtml: testFramework => `
     <html>
       <head>
         <script type="module">
-          // Set up any global variables or polyfills needed for tests
-          window.process = { env: { NODE_ENV: 'test' } };
+          window.process = {
+            env: { NODE_ENV: 'test', ENV: 'test', STAGE: 'api' },
+          };
         </script>
       </head>
       <body>
@@ -57,5 +95,5 @@ export default {
       </body>
     </html>
   `,
-  debug: true,
+  debug: false,
 };
