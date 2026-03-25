@@ -1,3 +1,4 @@
+/* global module, require */
 const { transform: esbuildTransform } = require('esbuild');
 const fs = require('fs');
 const path = require('path');
