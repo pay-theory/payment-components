@@ -1,6 +1,10 @@
 import { expect } from '@open-wc/testing';
 
-import { buildComplianceBeaconPayload, findComplianceRelayTarget } from '../src/compliance/beacon';
+import {
+  buildComplianceBeaconPayload,
+  findComplianceRelayTarget,
+  startComplianceBeacon,
+} from '../src/compliance/beacon';
 
 const originalCrypto = globalThis.crypto;
 
@@ -13,9 +17,15 @@ const createDigest = values => {
 };
 
 describe('Compliance Beacon', () => {
+  let activeController;
+
   beforeEach(() => {
     document.head.innerHTML = '';
     document.body.innerHTML = '';
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      value: 'visible',
+    });
 
     Object.defineProperty(globalThis, 'crypto', {
       configurable: true,
@@ -26,6 +36,13 @@ describe('Compliance Beacon', () => {
         },
       },
     });
+  });
+
+  afterEach(() => {
+    if (activeController) {
+      activeController.stop();
+      activeController = null;
+    }
   });
 
   after(() => {
@@ -118,5 +135,53 @@ describe('Compliance Beacon', () => {
     document.body.appendChild(iframe);
 
     expect(findComplianceRelayTarget(document)).to.equal(iframe);
+  });
+
+  it('posts an initial snapshot through the hosted-fields iframe when started', async () => {
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('name', 'card-number-iframe');
+    const postMessage = (...args) => {
+      postMessage.calls.push(args);
+    };
+    postMessage.calls = [];
+    Object.defineProperty(iframe, 'contentWindow', {
+      configurable: true,
+      value: { postMessage },
+    });
+    document.body.appendChild(iframe);
+
+    activeController = startComplianceBeacon();
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(postMessage.calls.length).to.equal(1);
+    expect(postMessage.calls[0][0].type).to.equal('pt-static:compliance_beacon');
+    expect(postMessage.calls[0][0].data.snapshot_type).to.equal('client_initial');
+  });
+
+  it('flushes a final snapshot when the document becomes hidden', async () => {
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('name', 'card-number-iframe');
+    const postMessage = (...args) => {
+      postMessage.calls.push(args);
+    };
+    postMessage.calls = [];
+    Object.defineProperty(iframe, 'contentWindow', {
+      configurable: true,
+      value: { postMessage },
+    });
+    document.body.appendChild(iframe);
+
+    activeController = startComplianceBeacon();
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      value: 'hidden',
+    });
+    document.dispatchEvent(new Event('visibilitychange'));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(postMessage.calls.length).to.equal(2);
+    expect(postMessage.calls[1][0].data.snapshot_type).to.equal('client_final');
   });
 });

@@ -416,22 +416,33 @@ class PayTheoryMessenger {
    * Refresh the connection with a new token
    */
   private async refreshConnection(): Promise<MessengerResponse> {
-    if (this.refreshPromise) {
-      return await this.refreshPromise;
-    }
-
+    // Atomic check and set using lock
     if (this.refreshLock) {
-      await new Promise(resolve => setTimeout(resolve, 10));
-      return this.refreshConnection();
+      // Wait for existing refresh
+      if (this.refreshPromise) {
+        return await this.refreshPromise;
+      }
+      // If no promise but lock is set, another thread is setting up
+      await new Promise(resolve => setTimeout(resolve, 50));
+      return this.refreshConnection(); // Retry
     }
 
+    // Acquire lock atomically
     this.refreshLock = true;
-    this.refreshPromise = this.doRefreshConnection().finally(() => {
+
+    try {
+      // Double-check pattern
+      if (this.refreshPromise) {
+        return await this.refreshPromise;
+      }
+
+      this.refreshPromise = this.doRefreshConnection();
+      const result = await this.refreshPromise;
+      return result;
+    } finally {
       this.refreshPromise = null;
       this.refreshLock = false;
-    });
-
-    return await this.refreshPromise;
+    }
   }
 
   private async doRefreshConnection(): Promise<MessengerResponse> {

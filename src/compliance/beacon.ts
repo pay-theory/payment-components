@@ -1,6 +1,7 @@
 import { CARD_IFRAME, BANK_IFRAME, CASH_IFRAME } from '../common/data';
 import { complianceBeaconString } from '../common/message';
 import { hostedFieldsEndpoint } from '../common/network';
+import { generateUUID } from '../field-set/payment-fields-v2';
 
 const COMPLIANCE_META_SELECTOR = 'meta[name="pt-compliance-id"]';
 const CSP_META_SELECTOR = 'meta[http-equiv="Content-Security-Policy"]';
@@ -90,7 +91,7 @@ const readComplianceMeta = (documentRef: Document, locationRef: Location): Compl
 
   if (!correlationMeta) {
     return {
-      complianceId: `client:${createUUID()}`,
+      complianceId: `client:${generateUUID()}`,
       pageKey: `origin:${locationRef.origin}`,
     };
   }
@@ -355,18 +356,6 @@ export const startComplianceBeacon = (): ComplianceBeaconController => {
   activeBeaconController = new DOMComplianceBeaconController();
   void activeBeaconController.start();
   return activeBeaconController;
-};
-
-const createUUID = (): string => {
-  if (window.crypto?.randomUUID) {
-    return window.crypto.randomUUID();
-  }
-
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, char => {
-    const random = (Math.random() * 16) | 0;
-    const value = char === 'x' ? random : (random & 0x3) | 0x8;
-    return value.toString(16);
-  });
 };
 
 export { findComplianceRelayTarget };
