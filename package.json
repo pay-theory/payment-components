@@ -123,7 +123,7 @@
   "dependencies": {
     "core-js": "^3.33.0",
     "css-loader": "^7.1.2",
-    "dompurify": "^3.2.4",
+    "dompurify": "^3.3.2",
     "style-loader": "^4.0.0",
     "util": "^0.12.5"
   },
