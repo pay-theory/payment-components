@@ -28,11 +28,14 @@ export const COMPLETE_STEP = 'pt-static:complete';
 export const ERROR_STEP = 'pt-static:error';
 export const FIELDS_READY_STEP = 'pt-static:fields-ready';
 
+/** Backend-facing payment fields produced from the public transaction options. */
 export interface PayTheoryDataObject {
   account_code: string | number;
   billing_info?: BillingInfo;
   fee?: number;
   healthExpenseType?: HealthExpenseType;
+  /** The caller-provided idempotency identifier forwarded to the payment backend. */
+  idempotency_id?: string;
   invoice_id?: string;
   level3DataSummary?: Level3DataSummary;
   oneTimeUseToken?: boolean;
@@ -57,6 +60,12 @@ export interface ModifiedCheckoutDetails extends CheckoutDetails {
   payorInfo: undefined;
 }
 
+/**
+ * Normalizes public camelCase payment options into the backend-facing transaction payload.
+ *
+ * @param inputParams - Public transaction or hosted-checkout options.
+ * @returns A copied input object containing normalized `payTheoryData` fields.
+ */
 export const parseInputParams = (
   inputParams: TransactProps | CheckoutDetails,
 ): ModifiedTransactProps | ModifiedCheckoutDetails => {
@@ -67,6 +76,7 @@ export const parseInputParams = (
     billing_info: (inputParams as TransactProps).billingInfo,
     fee: (inputParams as TransactProps).fee,
     healthExpenseType: inputCopy.healthExpenseType,
+    idempotency_id: (inputParams as TransactProps).idempotencyId,
     invoice_id: invoiceId,
     level3DataSummary: inputCopy.level3DataSummary,
     oneTimeUseToken: inputCopy.oneTimeUseToken ?? false,

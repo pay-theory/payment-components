@@ -20,6 +20,7 @@ import {
   ResponseMessageTypes,
   StyleObject,
 } from '../common/pay_theory_types';
+import { startComplianceBeacon } from '../compliance/beacon';
 import PayTheoryHostedField from '../components/pay-theory-hosted-field';
 import PayTheoryHostedFieldTransactional from '../components/pay-theory-hosted-field-transactional';
 import * as handler from './handler';
@@ -290,6 +291,7 @@ const payTheoryFields = async (inputParams: PayTheoryPaymentFieldsInput) =>
     const channel = new MessageChannel();
 
     channel.port1.onmessage = () => {
+      startComplianceBeacon();
       channel.port1.close();
       resolve({
         type: ResponseMessageTypes.READY,

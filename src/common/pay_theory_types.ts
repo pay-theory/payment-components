@@ -148,8 +148,13 @@ export interface TokenizeProps {
   expandedResponse?: boolean;
 }
 
+/** Options accepted by the public `transact` API when creating a payment. */
 export interface TransactProps {
   amount: number;
+  /**
+   * Caller-defined identifier used by the backend to reject duplicate transaction attempts.
+   */
+  idempotencyId?: string;
   payorInfo?: PayorInfo;
   billingInfo?: BillingInfo;
   payorId?: string;
