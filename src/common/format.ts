@@ -28,6 +28,7 @@ export const COMPLETE_STEP = 'pt-static:complete';
 export const ERROR_STEP = 'pt-static:error';
 export const FIELDS_READY_STEP = 'pt-static:fields-ready';
 
+/** Backend-facing payment fields produced from the public transaction options. */
 export interface PayTheoryDataObject {
   account_code: string | number;
   billing_info?: BillingInfo;
@@ -59,6 +60,12 @@ export interface ModifiedCheckoutDetails extends CheckoutDetails {
   payorInfo: undefined;
 }
 
+/**
+ * Normalizes public camelCase payment options into the backend-facing transaction payload.
+ *
+ * @param inputParams - Public transaction or hosted-checkout options.
+ * @returns A copied input object containing normalized `payTheoryData` fields.
+ */
 export const parseInputParams = (
   inputParams: TransactProps | CheckoutDetails,
 ): ModifiedTransactProps | ModifiedCheckoutDetails => {

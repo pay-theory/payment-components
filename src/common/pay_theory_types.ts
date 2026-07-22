@@ -148,6 +148,7 @@ export interface TokenizeProps {
   expandedResponse?: boolean;
 }
 
+/** Options accepted by the public `transact` API when creating a payment. */
 export interface TransactProps {
   amount: number;
   /**
