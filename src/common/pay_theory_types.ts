@@ -150,6 +150,10 @@ export interface TokenizeProps {
 
 export interface TransactProps {
   amount: number;
+  /**
+   * Caller-defined identifier used by the backend to reject duplicate transaction attempts.
+   */
+  idempotencyId?: string;
   payorInfo?: PayorInfo;
   billingInfo?: BillingInfo;
   payorId?: string;

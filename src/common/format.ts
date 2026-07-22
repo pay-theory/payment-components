@@ -33,6 +33,8 @@ export interface PayTheoryDataObject {
   billing_info?: BillingInfo;
   fee?: number;
   healthExpenseType?: HealthExpenseType;
+  /** The caller-provided idempotency identifier forwarded to the payment backend. */
+  idempotency_id?: string;
   invoice_id?: string;
   level3DataSummary?: Level3DataSummary;
   oneTimeUseToken?: boolean;
@@ -67,6 +69,7 @@ export const parseInputParams = (
     billing_info: (inputParams as TransactProps).billingInfo,
     fee: (inputParams as TransactProps).fee,
     healthExpenseType: inputCopy.healthExpenseType,
+    idempotency_id: (inputParams as TransactProps).idempotencyId,
     invoice_id: invoiceId,
     level3DataSummary: inputCopy.level3DataSummary,
     oneTimeUseToken: inputCopy.oneTimeUseToken ?? false,
