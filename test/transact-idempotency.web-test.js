@@ -45,13 +45,23 @@ describe('transact idempotency', () => {
     document.getElementsByName(TRANSACTING_ELEMENT_NAME).forEach(element => element.remove());
   });
 
-  it('passes idempotencyId to the backend payload as idempotency_id', async () => {
+  it('passes idempotencyKey to the backend payload as idempotency_key', async () => {
     const transactingElement = createTransactingElement();
 
-    await transact({ amount: 1200, idempotencyId: 'checkout-attempt-123' });
+    await transact({ amount: 1200, idempotencyKey: 'checkout-attempt-123' });
 
     expect(transactingElement.transact.calledOnce).to.be.true;
     const transactionData = transactingElement.transact.firstCall.args[0];
-    expect(transactionData.payTheoryData.idempotency_id).to.equal('checkout-attempt-123');
+    expect(transactionData.payTheoryData.idempotency_key).to.equal('checkout-attempt-123');
+  });
+
+  it('passes statementDescriptor to the backend payload as statement_descriptor', async () => {
+    const transactingElement = createTransactingElement();
+
+    await transact({ amount: 1200, statementDescriptor: 'PAYTHEORY COFFEE' });
+
+    expect(transactingElement.transact.calledOnce).to.be.true;
+    const transactionData = transactingElement.transact.firstCall.args[0];
+    expect(transactionData.payTheoryData.statement_descriptor).to.equal('PAYTHEORY COFFEE');
   });
 });
