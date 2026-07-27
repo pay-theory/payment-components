@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "theorymcp": {
+      "type": "http",
+      "url": "https://theorymcp.ai/paytheory/agents/payment-components/mcp"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "agent_id": "payment-components",
+  "profile_version": "software_repo_gov_infra",
+  "repo_class": "software_repo",
+  "software_rubric_applied": true,
+  "base_branch": "premain",
+  "pr_target": "premain",
+  "merge_owner": "human-operator",
+  "branch_with_ticket": "<ticket-id>-<short-slug>",
+  "branch_without_ticket": "agent/<short-slug>",
+  "does_not_prove": [
+    "gov_infra_retired",
+    "mcp_replaces_repo_ci",
+    "operational_govtheory_signing",
+    "mcp_deploy_or_merge_authority",
+    "customer_workload_proof"
+  ]
+}

@@ -16,8 +16,8 @@ payment-components.iml
 .env.development.local
 .env.test.local
 .env.production.local
-# Claude
-.claude
+# Claude Code agent materialization is committed; per-developer permissions stay local.
+.claude/settings.local.json
 Claude.md
 # Local environment config
 local-test/env-config.local.js

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "theorymcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://theorymcp.ai/paytheory/agents/payment-components/mcp"
+      ]
+    }
+  }
+}
