@@ -180,6 +180,10 @@ export const cashTypeMessage = (message: { type: unknown }) =>
 export const socketErrorTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-static:error';
 
+export const complianceBeaconString = 'pt-static:compliance_beacon';
+export const complianceBeaconTypeMessage = (message: { type: unknown }) =>
+  typeof message.type === 'string' && message.type === complianceBeaconString;
+
 //Message sent from hosted-fields with data when a card present device is activated or response is received from processor
 export const cardPresentTypeMessage = (message: { type: unknown }) =>
   typeof message.type === 'string' && message.type === 'pt-static:card-present';
