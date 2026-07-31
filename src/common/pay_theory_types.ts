@@ -206,13 +206,20 @@ export enum ButtonColor {
   GREY = 'GREY',
 }
 
+// Hosted checkout validates the browser SDK's string constants rather than the legacy enums above.
+type HostedAcceptedPaymentMethod =
+  'ALL' | 'NOT_CASH' | 'NOT_CARD' | 'NOT_ACH' | 'ONLY_CASH' | 'ONLY_CARD' | 'ONLY_ACH';
+type HostedCallToAction = 'PAY' | 'DONATE' | 'BOOK';
+type HostedButtonColor = 'purple' | 'white' | 'black' | 'grey';
+
+/** Checkout details accepted by hosted buttons and QR codes. */
 export interface CheckoutDetails {
   amount: number;
   paymentName: string;
   paymentDescription?: string;
   requirePhone?: boolean;
-  callToAction?: CallToAction;
-  acceptedPaymentMethods?: AcceptedPaymentMethods;
+  callToAction?: HostedCallToAction;
+  acceptedPaymentMethods?: HostedAcceptedPaymentMethod;
   payorId?: string;
   metadata?: Record<string | number, string | number | boolean>;
   feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE;
@@ -233,9 +240,10 @@ export interface PayTheoryQRInput {
   onSuccess?: (result: SuccessfulTransactionObject) => void;
 }
 
+/** Visual configuration for the hosted checkout button. */
 export interface ButtonStyle {
-  color: ButtonColor;
-  callToAction: CallToAction;
+  color: HostedButtonColor;
+  callToAction: HostedCallToAction;
   pill: boolean;
   height: number;
 }
@@ -266,18 +274,21 @@ export type StateObject = Record<ElementTypes, FieldState> &
 
 export type PlaceholderObject = Partial<Record<ElementTypes, string>>;
 
+/** CSS-compatible field styles, including nested selectors such as `::placeholder`. */
+export interface HostedFieldCssProperties {
+  [property: string]: string | number | HostedFieldCssProperties;
+}
+
+/** Visual styling applied to hosted payment fields. */
 export interface StyleObject {
-  default: object;
-  success: object;
-  error: object;
+  default?: HostedFieldCssProperties;
+  success?: HostedFieldCssProperties;
+  error?: HostedFieldCssProperties;
   radio?: {
-    width: number;
-    fill: string;
-    stroke: string;
-    text: {
-      fontSize: string;
-      color: string;
-    };
+    width?: number;
+    fill?: string;
+    stroke?: string;
+    text?: HostedFieldCssProperties;
   };
   hidePlaceholder?: boolean;
 }

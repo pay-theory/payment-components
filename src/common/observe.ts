@@ -4,12 +4,14 @@ import * as messaging from './message';
 import {
   CashBarcodeObject,
   ConfirmationObject,
+  FailedTransactionObject,
   PayorInfo,
   PlaceholderObject,
   StateObject,
+  SuccessfulTransactionObject,
   TokenizedPaymentMethodObject,
+  Transaction,
 } from './pay_theory_types';
-import { FailedTransactionMessage, SuccessfulTransactionMessage } from './format';
 import {
   transact,
   cancel,
@@ -45,7 +47,8 @@ export const readyObserver = (cb: (ready: true) => void) =>
     cb(true);
   });
 
-export const tokenizeObserver = (cb: (value: unknown) => void) =>
+/** Observes card details emitted when a transaction requires confirmation. */
+export const tokenizeObserver = (cb: (value: ConfirmationObject) => void) =>
   messaging.handleMessage(
     messaging.confirmTypeMessage,
     (message: { type: string; body: ConfirmationObject }) => {
@@ -53,26 +56,30 @@ export const tokenizeObserver = (cb: (value: unknown) => void) =>
     },
   );
 
-export const captureObserver = (cb: (value: unknown) => void) =>
+type TransactionObserverValue = SuccessfulTransactionObject | FailedTransactionObject | Transaction;
+
+/** Observes the final transaction body emitted after confirmation. */
+export const captureObserver = (cb: (value: TransactionObserverValue) => void) =>
   messaging.handleMessage(
     messaging.confirmationCompleteTypeMessage,
-    (message: { type: string; body: SuccessfulTransactionMessage | FailedTransactionMessage }) => {
+    (message: { type: string; body: TransactionObserverValue }) => {
       cb(message.body);
     },
   );
 
-export const transactedObserver = (cb: (value: unknown) => void) =>
+/** Observes completed transaction and tokenization bodies. */
+export const transactedObserver = (
+  cb: (value: TokenizedPaymentMethodObject | TransactionObserverValue) => void,
+) =>
   messaging.handleMessage(
     messaging.completeTypeMessage,
-    (message: {
-      type: string;
-      body: TokenizedPaymentMethodObject | SuccessfulTransactionMessage | FailedTransactionMessage;
-    }) => {
+    (message: { type: string; body: TokenizedPaymentMethodObject | TransactionObserverValue }) => {
       cb(message.body);
     },
   );
 
-export const cashObserver = (cb: (value: unknown) => void) =>
+/** Observes cash barcode results. */
+export const cashObserver = (cb: (value: CashBarcodeObject) => void) =>
   messaging.handleMessage(
     messaging.cashTypeMessage,
     (message: { type: string; body: CashBarcodeObject }) => {
@@ -85,13 +92,14 @@ export const cashObserver = (cb: (value: unknown) => void) =>
 //     cb(message.body);
 //   });
 
+/** Builds the backwards-compatible controller returned by the legacy creation APIs. */
 export const generateReturn = (
   mount: (props: {
     placeholders?: PlaceholderObject;
     elements?: typeof defaultElementIds;
     session?: string;
   }) => Promise<void>,
-  initTransaction: (amount: number, payorInfo: PayorInfo, confirmation: boolean) => void,
+  initTransaction: (amount: number, payorInfo: PayorInfo, confirmation?: boolean) => void,
 ) => {
   return {
     mount,
