@@ -4,7 +4,7 @@ const path = require('node:path');
 const ts = require('typescript');
 
 const repositoryRoot = path.resolve(__dirname, '../..');
-const runtimeEntryPath = path.join(repositoryRoot, 'src/index.js');
+const runtimeEntryPath = path.join(repositoryRoot, 'src/index.ts');
 const runtimeDataPath = path.join(repositoryRoot, 'src/common/data.ts');
 const canonicalSourcePath = path.join(repositoryRoot, 'src/paytheory-sdk.ts');
 const declarationPath = path.join(repositoryRoot, 'dist/paytheory-sdk.d.ts');
@@ -49,15 +49,15 @@ const runtimeSdkKeys = sourceFile => {
       ts.isPropertyAccessExpression(node.left) &&
       node.left.expression.getText(sourceFile) === 'window' &&
       node.left.name.text === 'paytheory' &&
-      ts.isObjectLiteralExpression(node.right)
+      ts.isObjectLiteralExpression(runtimeExpression(node.right))
     ) {
-      sdkObject = node.right;
+      sdkObject = runtimeExpression(node.right);
     }
     ts.forEachChild(node, visit);
   };
 
   visit(sourceFile);
-  assert.ok(sdkObject, 'src/index.js must assign the public SDK object to window.paytheory');
+  assert.ok(sdkObject, 'src/index.ts must assign the public SDK object to window.paytheory');
 
   return sdkObject.properties.map(member => {
     const name = propertyName(member.name);
@@ -169,7 +169,7 @@ const typescriptSourcePaths = directoryPath =>
     return entry.name.endsWith('.ts') ? [entryPath] : [];
   });
 
-const runtimeSource = readSourceFile(runtimeEntryPath, ts.ScriptKind.JS);
+const runtimeSource = readSourceFile(runtimeEntryPath, ts.ScriptKind.TS);
 const runtimeDataSource = readSourceFile(runtimeDataPath, ts.ScriptKind.TS);
 const canonicalSource = readSourceFile(canonicalSourcePath, ts.ScriptKind.TS);
 const declarationSource = readSourceFile(declarationPath, ts.ScriptKind.TS);

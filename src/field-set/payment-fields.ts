@@ -11,9 +11,10 @@ import { defaultElementIds } from '../common/data';
 import payTheoryFields from './payment-fields-v2';
 import { transact } from './actions';
 
+/** Builds the backwards-compatible controller used by the legacy creation APIs. */
 export default async (
   apiKey: string,
-  legacy: undefined, // this used to be client id, left in place to preserve backwards compatibility
+  _legacyClientId: string | undefined, // Retained positionally for backwards compatibility.
   styles: StyleObject = common.defaultStyles,
   sessionMetadata: Metadata = {},
   fee_mode: PaymentFeeMode = common.defaultFeeMode,
