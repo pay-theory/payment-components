@@ -18,7 +18,7 @@ const fields: PayTheoryPaymentFieldsInput = {
 const transaction: TransactProps = {
   amount: 2500,
   payorInfo: {
-    first_name: 'Ada',
+    same_as_billing: true,
     email: 'ada@example.com',
   },
 };

@@ -3,20 +3,18 @@ import { MERCHANT_FEE, transactingWebComponentIds } from '../common/data';
 import { findTransactingElement } from '../common/dom';
 import { localizeCashBarcodeUrl, ModifiedTransactProps, parseResponse } from '../common/format';
 import { sendObserverMessage } from '../common/message';
-import {
+import { ErrorType, ResponseMessageTypes } from '../common/sdk-runtime-values';
+import type {
   CashBarcodeResponse,
   ConfirmationResponse,
   ErrorResponse,
-  ErrorType,
   FailedTransactionResponse,
-  ResponseMessageTypes,
   SuccessfulTransactionResponse,
   TokenizedPaymentMethodResponse,
   TokenizeProps,
   TransactProps,
-} from '../common/pay_theory_types';
+} from '../paytheory-sdk';
 import PayTheoryHostedFieldTransactional, {
-  TokenizeDataObject,
   TransactDataObject,
 } from '../components/pay-theory-hosted-field-transactional';
 import * as valid from './validation';
@@ -170,9 +168,7 @@ export const confirm = async (): Promise<
     try {
       const response = await transactingElement.capture();
       const parsedResult = parseResponse(response) as
-        | ErrorResponse
-        | SuccessfulTransactionResponse
-        | FailedTransactionResponse;
+        ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse;
       updateElementFromAction(parsedResult, transactingElement);
       sendObserverMessage(parsedResult, true);
       return parsedResult;
@@ -241,7 +237,7 @@ export const tokenizePaymentMethod = async (
       if (error) return error;
       const formattedPayor = valid.formatPayorObject(payorInfo);
       try {
-        const data: TokenizeDataObject = {
+        const data: TokenizeProps = {
           payorInfo: formattedPayor,
           metadata,
           payorId,

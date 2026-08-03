@@ -1,17 +1,18 @@
 /* eslint-disable no-unused-vars */
 
 import * as messaging from './message';
-import {
+import type {
   CashBarcodeObject,
   ConfirmationObject,
   FailedTransactionObject,
   PayorInfo,
+  PaymentFieldElementIds,
   PlaceholderObject,
   StateObject,
   SuccessfulTransactionObject,
   TokenizedPaymentMethodObject,
   Transaction,
-} from './pay_theory_types';
+} from '../paytheory-sdk';
 import {
   transact,
   cancel,
@@ -19,7 +20,6 @@ import {
   tokenizePaymentMethod,
   activateCardPresentDevice,
 } from '../field-set/actions';
-import { defaultElementIds } from './data';
 
 export const errorObserver = (cb: (error: string) => void) =>
   messaging.handleMessage(
@@ -96,7 +96,7 @@ export const cashObserver = (cb: (value: CashBarcodeObject) => void) =>
 export const generateReturn = (
   mount: (props: {
     placeholders?: PlaceholderObject;
-    elements?: typeof defaultElementIds;
+    elements?: PaymentFieldElementIds;
     session?: string;
   }) => Promise<void>,
   initTransaction: (amount: number, payorInfo: PayorInfo, confirmation?: boolean) => void,

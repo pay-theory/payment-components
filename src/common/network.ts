@@ -8,7 +8,7 @@ import {
   getHostedFieldsEndpoint,
   getTransactionEndpoint,
 } from './network.local';
-import { BillingInfo } from './pay_theory_types';
+import type { BillingInfo } from '../paytheory-sdk';
 import { withExponentialBackoff } from './retry-utils';
 
 interface PtToken {

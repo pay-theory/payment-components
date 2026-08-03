@@ -1,7 +1,8 @@
 import * as data from './data';
 import { ElementTypes, MERCHANT_FEE, SERVICE_FEE } from './data';
 import { handleError } from './message';
-import {
+import { ResponseMessageTypes } from './sdk-runtime-values';
+import type {
   BillingInfo,
   CashBarcodeObject,
   CashBarcodeResponse,
@@ -11,15 +12,15 @@ import {
   FailedTransactionResponse,
   HealthExpenseType,
   Level3DataSummary,
+  Metadata,
   PayorInfo,
   PaymentMethod,
-  ResponseMessageTypes,
   SuccessfulTransactionResponse,
   TokenizedPaymentMethodObject,
   TokenizedPaymentMethodResponse,
   Transaction,
   TransactProps,
-} from './pay_theory_types';
+} from '../paytheory-sdk';
 
 // Message Types that would come back from the iframe for async messages
 export const CONFIRMATION_STEP = 'pt-static:confirm';
@@ -137,7 +138,7 @@ export interface SuccessfulTransactionMessage {
     amount: number;
     service_fee: number;
     state: 'PENDING' | 'SUCCESS';
-    metadata: Record<string | number, string | number | boolean>;
+    metadata: Metadata;
     payor_id: string;
     payment_method_id: string;
   };

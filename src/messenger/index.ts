@@ -1,20 +1,14 @@
 import PayTheoryMessenger from './pay-theory-messenger';
-import {
-  WalletTransactionPayload,
-  ApplePaySessionResponse,
-  MessengerResponse,
-  TransactionResponse,
-} from './types';
-import { MessengerEvent, MessengerEvents } from './constants';
+import { MessengerEvents } from './constants';
 
-export {
-  PayTheoryMessenger,
-  WalletTransactionPayload,
+export type {
   ApplePaySessionResponse,
+  MessengerEvent,
   MessengerResponse,
   TransactionResponse,
-  MessengerEvent,
-  MessengerEvents,
-};
+  WalletTransactionPayload,
+} from '../paytheory-sdk';
+
+export { PayTheoryMessenger, MessengerEvents };
 
 export default PayTheoryMessenger;

@@ -6,6 +6,7 @@ const ts = require('typescript');
 const repositoryRoot = path.resolve(__dirname, '../..');
 const runtimeEntryPath = path.join(repositoryRoot, 'src/index.js');
 const runtimeDataPath = path.join(repositoryRoot, 'src/common/data.ts');
+const canonicalSourcePath = path.join(repositoryRoot, 'src/paytheory-sdk.ts');
 const declarationPath = path.join(repositoryRoot, 'dist/paytheory-sdk.d.ts');
 
 const readSourceFile = (filePath, scriptKind) =>
@@ -20,6 +21,19 @@ const readSourceFile = (filePath, scriptKind) =>
 const propertyName = node => {
   if (!node || (!ts.isIdentifier(node) && !ts.isStringLiteral(node))) return null;
   return node.text;
+};
+
+/** Remove type-only expression wrappers so tests inspect the emitted runtime value. */
+const runtimeExpression = node => {
+  let expression = node;
+  while (
+    ts.isAsExpression(expression) ||
+    ts.isSatisfiesExpression(expression) ||
+    ts.isParenthesizedExpression(expression)
+  ) {
+    expression = expression.expression;
+  }
+  return expression;
 };
 
 /**
@@ -75,19 +89,20 @@ const runtimeConstants = sourceFile => {
 
     statement.declarationList.declarations.forEach(declaration => {
       if (!ts.isIdentifier(declaration.name) || !declaration.initializer) return;
+      const initializer = runtimeExpression(declaration.initializer);
 
-      if (ts.isStringLiteral(declaration.initializer)) {
-        constants.set(declaration.name.text, declaration.initializer.text);
+      if (ts.isStringLiteral(initializer)) {
+        constants.set(declaration.name.text, initializer.text);
         return;
       }
 
       if (
-        declaration.name.text === 'CTA_TYPES' &&
-        ts.isArrayLiteralExpression(declaration.initializer)
+        ['CTA_TYPES', 'PAYMENT_METHOD_CONFIGS'].includes(declaration.name.text) &&
+        ts.isArrayLiteralExpression(initializer)
       ) {
         constants.set(
           declaration.name.text,
-          declaration.initializer.elements.map(element => element.getText(sourceFile)),
+          initializer.elements.map(element => element.getText(sourceFile)),
         );
       }
     });
@@ -130,8 +145,33 @@ const declaredStringUnion = (sourceFile, aliasName) => {
   });
 };
 
+/** Read named TypeScript declarations that create reusable type definitions. */
+const namedTypeDeclarations = sourceFile =>
+  sourceFile.statements.flatMap(statement => {
+    if (
+      !ts.isInterfaceDeclaration(statement) &&
+      !ts.isTypeAliasDeclaration(statement) &&
+      !ts.isEnumDeclaration(statement)
+    ) {
+      return [];
+    }
+    if (!statement.modifiers?.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword)) {
+      return [];
+    }
+    return [statement.name.text];
+  });
+
+/** Recursively list TypeScript source files under a directory. */
+const typescriptSourcePaths = directoryPath =>
+  fs.readdirSync(directoryPath, { withFileTypes: true }).flatMap(entry => {
+    const entryPath = path.join(directoryPath, entry.name);
+    if (entry.isDirectory()) return typescriptSourcePaths(entryPath);
+    return entry.name.endsWith('.ts') ? [entryPath] : [];
+  });
+
 const runtimeSource = readSourceFile(runtimeEntryPath, ts.ScriptKind.JS);
 const runtimeDataSource = readSourceFile(runtimeDataPath, ts.ScriptKind.TS);
+const canonicalSource = readSourceFile(canonicalSourcePath, ts.ScriptKind.TS);
 const declarationSource = readSourceFile(declarationPath, ts.ScriptKind.TS);
 const declarationText = declarationSource.getFullText();
 
@@ -139,6 +179,22 @@ assert.deepEqual(
   declaredSdkKeys(declarationSource).sort(),
   runtimeSdkKeys(runtimeSource).sort(),
   'PayTheorySDK must describe every runtime key and must not advertise nonexistent keys',
+);
+
+const canonicalTypeNames = new Set(namedTypeDeclarations(canonicalSource));
+const duplicatePublicTypes = typescriptSourcePaths(path.join(repositoryRoot, 'src'))
+  .filter(sourcePath => sourcePath !== canonicalSourcePath)
+  .flatMap(sourcePath => {
+    const sourceFile = readSourceFile(sourcePath, ts.ScriptKind.TS);
+    return namedTypeDeclarations(sourceFile)
+      .filter(typeName => canonicalTypeNames.has(typeName))
+      .map(typeName => `${path.relative(repositoryRoot, sourcePath)}: ${typeName}`);
+  });
+
+assert.deepEqual(
+  duplicatePublicTypes,
+  [],
+  `Public types must be defined only in src/paytheory-sdk.ts:\n${duplicatePublicTypes.join('\n')}`,
 );
 
 const sourceConstants = runtimeConstants(runtimeDataSource);
@@ -152,6 +208,24 @@ assert.deepEqual(
   declaredStringUnion(declarationSource, 'CallToAction').sort(),
   sourceConstants.get('CTA_TYPES').sort(),
   'CallToAction must contain exactly the values accepted by runtime validation',
+);
+
+assert.deepEqual(
+  declaredStringUnion(declarationSource, 'AcceptedPaymentMethod').sort(),
+  sourceConstants.get('PAYMENT_METHOD_CONFIGS').sort(),
+  'AcceptedPaymentMethod must contain exactly the values accepted by runtime validation',
+);
+
+assert.deepEqual(
+  declaredStringUnion(declarationSource, 'ButtonColor').sort(),
+  ['WHITE', 'GREY', 'BLACK', 'PURPLE'].map(name => sourceConstants.get(name)).sort(),
+  'ButtonColor must contain exactly the public runtime color values',
+);
+
+assert.deepEqual(
+  declaredStringUnion(declarationSource, 'PaymentFeeMode').sort(),
+  ['MERCHANT_FEE', 'SERVICE_FEE'].map(name => sourceConstants.get(name)).sort(),
+  'PaymentFeeMode must contain exactly the supported runtime fee modes',
 );
 
 let externalDependency;

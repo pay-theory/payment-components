@@ -16,6 +16,9 @@ canonical public contract in `src/paytheory-sdk.ts`. Partners who load the SDK a
 can download that file into a TypeScript project (for example, `types/paytheory-sdk.d.ts`) and make
 sure the directory is included by `tsconfig.json`:
 
+SDK implementation modules also import partner-facing types from this canonical contract. Types
+used only for internal transport or state remain next to their implementations.
+
 ```json
 {
   "include": ["src", "types"]

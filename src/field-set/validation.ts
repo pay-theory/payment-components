@@ -2,15 +2,16 @@
 import common from '../common';
 import { handleTypedError } from '../common/message';
 import PayTheoryHostedField from '../components/pay-theory-hosted-field';
-import {
+import { ErrorType, HealthExpenseType, TaxIndicatorType } from '../common/sdk-runtime-values';
+import type {
+  AcceptedPaymentMethod,
   BillingInfo,
+  CallToAction,
   ErrorResponse,
-  ErrorType,
-  HealthExpenseType,
   Level3DataSummary,
   PayorInfo,
-  TaxIndicatorType,
-} from '../common/pay_theory_types';
+  SupportedCountry,
+} from '../paytheory-sdk';
 import {
   ModifiedCheckoutDetails,
   ModifiedTransactProps,
@@ -96,13 +97,16 @@ const checkAmount = (amount: unknown): ErrorResponse | null => {
   return null;
 };
 
-const supportedCountries = ['USA', 'CAN'];
+const supportedCountries = {
+  USA: 'USA',
+  CAN: 'CAN',
+} as const satisfies { [Country in SupportedCountry]: Country };
 
 const checkCountry = (country: unknown): ErrorResponse | null => {
   if (!validate<string>(country, 'string')) {
     return handleTypedError(ErrorType.INVALID_PARAM, 'Country is required and must be a string');
   }
-  if (!supportedCountries.includes(country)) {
+  if (!Object.values(supportedCountries).includes(country as SupportedCountry)) {
     return handleTypedError(
       ErrorType.INVALID_PARAM,
       `You must pass in a supported country. Contact Pay Theory for more information.`,
@@ -284,23 +288,7 @@ const validatePhone = (phone: string) => {
   return stripped.length >= 5 && stripped.length <= 15;
 };
 
-interface payorInfo {
-  same_as_billing?: boolean;
-  email?: string;
-  phone?: string;
-  first_name?: string;
-  last_name?: string;
-  personal_address?: {
-    line1?: string;
-    line2?: string;
-    city?: string;
-    region?: string;
-    postal_code?: string;
-    country?: string;
-  };
-}
-
-const isValidPayorInfo = (payorInfo: payorInfo): ErrorResponse | null => {
+const isValidPayorInfo = (payorInfo: PayorInfo): ErrorResponse | null => {
   if (!validate(payorInfo, 'object')) {
     return handleTypedError(ErrorType.INVALID_PARAM, 'payor_info is not an object');
   }
@@ -569,8 +557,8 @@ const isValidHealthExpenseType = (healthExpenseType: unknown): ErrorResponse | n
 };
 
 const validateHostedCheckoutParams = (
-  callToAction: string,
-  acceptedPaymentMethods: string,
+  callToAction: CallToAction | undefined,
+  acceptedPaymentMethods: AcceptedPaymentMethod | undefined,
   paymentName: unknown,
 ): ErrorResponse | null => {
   if (callToAction && !common.CTA_TYPES.includes(callToAction)) {

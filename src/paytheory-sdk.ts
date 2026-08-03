@@ -62,6 +62,8 @@ export interface AddressObject {
 
 /** Identity and contact details supplied for a payor. */
 export interface PayorInfo {
+  /** Uses the collected billing address instead of a separate personal address. */
+  same_as_billing?: boolean;
   first_name?: string;
   last_name?: string;
   email?: string;
