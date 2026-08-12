@@ -54,6 +54,29 @@ const checkApiKey = (key: unknown) => {
   }
 };
 
+const checkCheckoutContext = (checkoutContext: unknown): ErrorResponse | null => {
+  if (!validate<Record<string, unknown>>(checkoutContext, 'object')) {
+    return handleTypedError(
+      ErrorType.INVALID_PARAM,
+      'Checkout context is required and must be an object',
+    );
+  }
+
+  const ctx = checkoutContext as Record<string, unknown>;
+  const provided = ['invoiceId', 'linkId', 'recurringHash', 'sessionId'].filter(
+    key => validate<string>(ctx[key], 'string'),
+  );
+
+  if (provided.length !== 1) {
+    return handleTypedError(
+      ErrorType.INVALID_PARAM,
+      'Must provide exactly one of checkoutContext.invoiceId, checkoutContext.linkId, checkoutContext.recurringHash, or checkoutContext.sessionId',
+    );
+  }
+
+  return null;
+};
+
 const validate = <T>(value: unknown, type: string): value is T => {
   return typeof value === type && Boolean(value);
 };
@@ -113,13 +136,31 @@ const checkCountry = (country: unknown): ErrorResponse | null => {
 
 const checkInitialParams = (
   key: unknown,
+  checkoutContext: unknown,
   mode: unknown,
   metadata: unknown,
   styles: unknown,
   amount: unknown,
   country: unknown,
 ): ErrorResponse | null => {
-  let result = checkApiKey(key);
+  const hasApiKey = validate<string>(key, 'string');
+  const hasCheckoutContext = validate<Record<string, unknown>>(checkoutContext, 'object');
+
+  if (hasApiKey && hasCheckoutContext) {
+    return handleTypedError(
+      ErrorType.INVALID_PARAM,
+      'Provide either apiKey or checkoutContext (not both).',
+    );
+  }
+
+  if (!hasApiKey && !hasCheckoutContext) {
+    return handleTypedError(
+      ErrorType.INVALID_PARAM,
+      'Provide either apiKey or checkoutContext.',
+    );
+  }
+
+  let result = hasCheckoutContext ? checkCheckoutContext(checkoutContext) : checkApiKey(key);
   if (result) return result;
   if (mode) result = checkFeeMode(mode);
   if (result) return result;

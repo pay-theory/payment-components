@@ -8,7 +8,7 @@ import {
   getHostedFieldsEndpoint,
   getTransactionEndpoint,
 } from './network.local';
-import { BillingInfo } from './pay_theory_types';
+import { BillingInfo, CheckoutContextQuery } from './pay_theory_types';
 import { withExponentialBackoff } from './retry-utils';
 
 interface PtToken {
@@ -36,6 +36,27 @@ export const getData = async (
   return await response.json();
 };
 
+const getCheckoutData = async (
+  url: string,
+  sessionKey?: string,
+): Promise<PtToken | object> => {
+  const headers: Record<string, string> = {};
+  if (sessionKey) {
+    headers['x-session-key'] = sessionKey;
+  }
+
+  const options: RequestInit = {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache',
+    headers,
+  };
+
+  /* global fetch */
+  const response = await fetch(url, options);
+  return await response.json();
+};
+
 // Legacy static variables (kept for compatibility)
 export const PARTNER = process.env.ENV;
 export const STAGE = process.env.STAGE;
@@ -53,6 +74,45 @@ export const fetchPtToken = async (
 ): Promise<PtToken | false> => {
   const result = await withExponentialBackoff(
     () => getData(transactionEndpoint, apiKey, sessionKey),
+    token => !(token as PtToken)['pt-token'],
+    {
+      maxAttempts: 5,
+      initialDelay: 100,
+      maxDelay: 2000,
+      jitter: true,
+    },
+  );
+
+  return (result as PtToken) || false;
+};
+
+const buildCheckoutTokenUrl = (checkoutContext: CheckoutContextQuery): string => {
+  const checkoutTokenEndpoint = `${transactionEndpoint}checkout-token`;
+
+  const provided: Array<[string, string]> = [];
+  if (checkoutContext.invoiceId) provided.push(['invoice_id', checkoutContext.invoiceId]);
+  if (checkoutContext.linkId) provided.push(['link_id', checkoutContext.linkId]);
+  if (checkoutContext.recurringHash)
+    provided.push(['recurring_hash', checkoutContext.recurringHash]);
+  if (checkoutContext.sessionId) provided.push(['session_id', checkoutContext.sessionId]);
+
+  if (provided.length !== 1) {
+    throw new Error('Must provide exactly one of invoiceId, linkId, recurringHash, or sessionId');
+  }
+
+  const [key, value] = provided[0];
+  return `${checkoutTokenEndpoint}?${key}=${encodeURIComponent(value)}`;
+};
+
+export const fetchCheckoutPtToken = async (
+  checkoutContext: CheckoutContextQuery,
+  sessionKey: string,
+): Promise<PtToken | false> => {
+  const url = buildCheckoutTokenUrl(checkoutContext);
+  const shouldSendSessionKey = !checkoutContext.sessionId;
+
+  const result = await withExponentialBackoff(
+    () => getCheckoutData(url, shouldSendSessionKey ? sessionKey : undefined),
     token => !(token as PtToken)['pt-token'],
     {
       maxAttempts: 5,
