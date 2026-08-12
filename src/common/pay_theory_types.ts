@@ -270,6 +270,7 @@ export interface FieldState {
   isFocused: boolean;
   isDirty: boolean;
   errorMessages: string[];
+  iframeLoaded?: boolean;
 }
 
 export type StateObject = Record<ElementTypes, FieldState> &
