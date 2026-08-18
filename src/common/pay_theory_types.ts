@@ -170,8 +170,13 @@ export interface TransactProps {
   expandedResponse?: boolean;
 }
 
-export interface PayTheoryPaymentFieldsInput {
-  apiKey: string;
+export type CheckoutContextQuery =
+  | { invoiceId: string; linkId?: never; recurringHash?: never; sessionId?: never }
+  | { linkId: string; invoiceId?: never; recurringHash?: never; sessionId?: never }
+  | { recurringHash: string; invoiceId?: never; linkId?: never; sessionId?: never }
+  | { sessionId: string; invoiceId?: never; linkId?: never; recurringHash?: never };
+
+export type PayTheoryPaymentFieldsInput = {
   styles?: StyleObject;
   metadata?: Record<string | number, string | number | boolean>;
   placeholders?: PlaceholderObject;
@@ -180,7 +185,16 @@ export interface PayTheoryPaymentFieldsInput {
   feeMode?: typeof MERCHANT_FEE | typeof SERVICE_FEE;
   amount?: number;
   country?: string;
-}
+} & (
+  | {
+      apiKey: string;
+      checkoutContext?: never;
+    }
+  | {
+      apiKey?: never;
+      checkoutContext: CheckoutContextQuery;
+    }
+);
 
 export enum AcceptedPaymentMethods {
   ALL = 'ALL',

@@ -12,6 +12,7 @@ import {
 import { processedElement } from '../common/dom';
 import { hostedCheckoutEndpoint } from '../common/network';
 import {
+  CheckoutContextQuery,
   ErrorResponse,
   ErrorType,
   PayTheoryPaymentFieldsInput,
@@ -20,6 +21,7 @@ import {
   ResponseMessageTypes,
   StyleObject,
 } from '../common/pay_theory_types';
+import { startComplianceBeacon } from '../compliance/beacon';
 import PayTheoryHostedField from '../components/pay-theory-hosted-field';
 import PayTheoryHostedFieldTransactional from '../components/pay-theory-hosted-field-transactional';
 import * as handler from './handler';
@@ -59,7 +61,8 @@ export const generateUUID = (): string => {
 
 const mountProcessedElements = (props: {
   amount: number | undefined;
-  apiKey: string;
+  apiKey?: string;
+  checkoutContext?: CheckoutContextQuery;
   country: string;
   feeMode: typeof MERCHANT_FEE | typeof SERVICE_FEE | undefined;
   metadata: Record<string | number, string | number | boolean>;
@@ -106,7 +109,8 @@ const mountProcessedElements = (props: {
         });
         typedValue.elements.transacting.forEach(element => {
           const container = document.getElementById(String(element.containerId));
-          element.frame.apiKey = apiKey;
+          if (apiKey) element.frame.apiKey = apiKey;
+          if (props.checkoutContext) element.frame.checkoutContext = props.checkoutContext;
           element.frame.styles = styles;
           element.frame.placeholders = placeholders;
           element.frame.metadata = metadata;
@@ -136,7 +140,6 @@ const initializeFields = (
   port: MessagePort,
 ): ErrorResponse | null => {
   const {
-    apiKey,
     styles = common.defaultStyles,
     metadata = {},
     placeholders = {},
@@ -146,9 +149,12 @@ const initializeFields = (
     amount,
     country = 'USA',
   } = props;
+  const apiKey = 'apiKey' in props ? props.apiKey : undefined;
+  const checkoutContext = 'checkoutContext' in props ? props.checkoutContext : undefined;
   // Validate the input parameters
   const validationError = valid.checkInitialParams(
     apiKey,
+    checkoutContext,
     feeMode,
     metadata,
     styles,
@@ -272,6 +278,7 @@ const initializeFields = (
   return mountProcessedElements({
     amount,
     apiKey,
+    checkoutContext,
     country,
     feeMode,
     metadata,
@@ -290,6 +297,7 @@ const payTheoryFields = async (inputParams: PayTheoryPaymentFieldsInput) =>
     const channel = new MessageChannel();
 
     channel.port1.onmessage = () => {
+      startComplianceBeacon();
       channel.port1.close();
       resolve({
         type: ResponseMessageTypes.READY,

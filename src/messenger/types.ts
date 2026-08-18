@@ -7,6 +7,8 @@ import {
   PT_MESSENGER_READY,
   PT_MESSENGER_RECONNECT_TOKEN,
   PT_MESSENGER_RECONNECT_TOKEN_SUCCESS,
+  PT_MESSENGER_RESEND_INVOICE_EMAIL,
+  PT_MESSENGER_RESEND_INVOICE_EMAIL_SUCCESS,
   PT_MESSENGER_SOCKET_CONNECTED,
   PT_MESSENGER_SOCKET_ERROR,
   PT_MESSENGER_TRANSFER_COMPLETE,
@@ -99,6 +101,12 @@ export interface MessengerReconnectTokenSuccessMessage {
   success: boolean;
 }
 
+export interface MessengerResendInvoiceEmailSuccessMessage {
+  type: typeof PT_MESSENGER_RESEND_INVOICE_EMAIL_SUCCESS;
+  messageId: string;
+  success: boolean;
+}
+
 export interface MessengerSocketErrorMessage {
   type: typeof PT_MESSENGER_SOCKET_ERROR;
   messageId: string;
@@ -176,6 +184,11 @@ export interface MessengerReconnectTokenMessage {
   data: {
     token: string;
   };
+}
+
+export interface MessengerResendInvoiceEmailMessage {
+  type: typeof PT_MESSENGER_RESEND_INVOICE_EMAIL;
+  messageId: string;
 }
 
 export interface MessengerPingMessage {

@@ -33,6 +33,7 @@ import {
 } from '../../common/message';
 import {
   BillingInfo,
+  CheckoutContextQuery,
   ErrorResponse,
   ErrorType,
   FieldState,
@@ -85,6 +86,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   // Used to fetch the pt-token attribute to initialize the hosted field
   protected _apiKey: string | undefined;
   protected _challengeOptions: object | undefined;
+  protected _checkoutContext: CheckoutContextQuery | undefined;
   protected _session: string | undefined;
 
   // Used to track the metadata that is passed in for a session
@@ -174,7 +176,9 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     type: `pt-static:connection_token` | `pt-static:reset_host`,
   ): Promise<ErrorResponse | ReadyResponse> {
     try {
-      const ptToken = await common.fetchPtToken(this._apiKey ?? '', this._session);
+      const ptToken = this._checkoutContext
+        ? await common.fetchCheckoutPtToken(this._checkoutContext, this._session)
+        : await common.fetchPtToken(this._apiKey ?? '', this._session);
       if (ptToken) {
         this._challengeOptions = ptToken.challengeOptions;
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as
@@ -509,6 +513,10 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   set apiKey(value: string) {
     this._apiKey = value;
+  }
+
+  set checkoutContext(value: CheckoutContextQuery | undefined) {
+    this._checkoutContext = value;
   }
 
   set readyPort(value: MessagePort) {

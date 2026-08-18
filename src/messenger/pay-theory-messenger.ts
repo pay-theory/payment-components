@@ -4,6 +4,7 @@ import TokenManager from './token-manager';
 import {
   ApplePaySessionResponse,
   MessengerAppleMerchantValidationMessage,
+  MessengerResendInvoiceEmailSuccessMessage,
   MessengerResponse,
   MessengerSocketErrorMessage,
   MessengerTransferCompleteMessage,
@@ -13,6 +14,7 @@ import {
 } from './types';
 
 import { hostedFieldsEndpoint } from '../common/network';
+import type { CheckoutContextQuery } from '../common/pay_theory_types';
 import { ErrorResponse, ResponseMessageTypes } from '../common/pay_theory_types';
 import { generateUUID } from '../field-set/payment-fields-v2';
 import {
@@ -21,6 +23,8 @@ import {
   PT_MESSENGER_READY,
   PT_MESSENGER_RECONNECT_TOKEN,
   PT_MESSENGER_RECONNECT_TOKEN_SUCCESS,
+  PT_MESSENGER_RESEND_INVOICE_EMAIL,
+  PT_MESSENGER_RESEND_INVOICE_EMAIL_SUCCESS,
   PT_MESSENGER_SOCKET_ERROR,
   PT_MESSENGER_TRANSFER_COMPLETE,
   PT_MESSENGER_WALLET_TRANSACTION,
@@ -36,7 +40,9 @@ import { checkApiKey } from '../field-set/validation';
 class PayTheoryMessenger {
   private static instances: Map<string, PayTheoryMessenger> = new Map();
   private static initializingInstances: Map<string, Promise<MessengerResponse>> = new Map();
-  private apiKey: string;
+  private instanceKey: string;
+  private apiKey: string | null;
+  private checkoutContext: CheckoutContextQuery | null;
   private sessionId?: string;
   private iframe: HTMLIFrameElement | null = null;
   private tokenManager: TokenManager;
@@ -53,26 +59,48 @@ class PayTheoryMessenger {
   static readonly googlePay = PT_WALLET_TYPE_GOOGLE;
   static readonly paze = PT_WALLET_TYPE_PAZE;
 
-  constructor(options: { apiKey: string }) {
+  constructor(
+    options:
+      | { apiKey: string; checkoutContext?: never }
+      | { apiKey?: never; checkoutContext: CheckoutContextQuery },
+  ) {
     // Check if the options is an object and it contains the apiKey property
-    if (typeof options !== 'object' || !options.apiKey) {
+    if (typeof options !== 'object') {
       throw new Error('Invalid options');
     }
 
+    const instanceKey =
+      'apiKey' in options
+        ? options.apiKey
+        : PayTheoryMessenger.createCheckoutContextKey(options.checkoutContext);
+
     // Check if instance already exists for this API key
-    const existingInstance = PayTheoryMessenger.instances.get(options.apiKey);
+    const existingInstance = PayTheoryMessenger.instances.get(instanceKey);
     if (existingInstance) {
       console.warn('PayTheoryMessenger instance already exists for this API key');
       return existingInstance;
     }
 
-    this.apiKey = options.apiKey;
+    this.instanceKey = instanceKey;
+    this.apiKey = 'apiKey' in options ? options.apiKey : null;
+    this.checkoutContext = 'checkoutContext' in options ? options.checkoutContext : null;
     this.sessionId = generateUUID();
-    this.tokenManager = new TokenManager(this.apiKey, this.sessionId);
+    this.tokenManager = new TokenManager(
+      this.apiKey ? { apiKey: this.apiKey } : { checkoutContext: this.checkoutContext! },
+      this.sessionId,
+    );
     this.state = new StateManager();
 
     // Register this instance
-    PayTheoryMessenger.instances.set(options.apiKey, this);
+    PayTheoryMessenger.instances.set(instanceKey, this);
+  }
+
+  private static createCheckoutContextKey(checkoutContext: CheckoutContextQuery): string {
+    if ('invoiceId' in checkoutContext) return `checkoutContext:invoice:${checkoutContext.invoiceId}`;
+    if ('linkId' in checkoutContext) return `checkoutContext:link:${checkoutContext.linkId}`;
+    if ('recurringHash' in checkoutContext)
+      return `checkoutContext:recurring:${checkoutContext.recurringHash}`;
+    return `checkoutContext:session:${checkoutContext.sessionId}`;
   }
 
   // Static method to clear instances (internal use only - for testing)
@@ -87,14 +115,16 @@ class PayTheoryMessenger {
    * Initialize the messenger - create iframe and establish connection
    */
   async initialize(): Promise<MessengerResponse> {
-    const result = checkApiKey(this.apiKey);
-    if (result) {
-      console.error('Invalid API Key', result);
-      return { success: false, error: `${result.type}: ${result.error}` };
+    if (this.apiKey) {
+      const result = checkApiKey(this.apiKey);
+      if (result) {
+        console.error('Invalid API Key', result);
+        return { success: false, error: `${result.type}: ${result.error}` };
+      }
     }
 
     // Check if already initializing globally for this API key
-    const existingInit = PayTheoryMessenger.initializingInstances.get(this.apiKey);
+    const existingInit = PayTheoryMessenger.initializingInstances.get(this.instanceKey);
     if (existingInit) {
       return await existingInit;
     }
@@ -128,14 +158,14 @@ class PayTheoryMessenger {
 
     // Create and store the initialization promise both locally and globally
     this.initializationPromise = this.doInitialize();
-    PayTheoryMessenger.initializingInstances.set(this.apiKey, this.initializationPromise);
+    PayTheoryMessenger.initializingInstances.set(this.instanceKey, this.initializationPromise);
 
     try {
       const result = await this.initializationPromise;
       return result;
     } finally {
       this.initializationPromise = null;
-      PayTheoryMessenger.initializingInstances.delete(this.apiKey);
+      PayTheoryMessenger.initializingInstances.delete(this.instanceKey);
     }
   }
 
@@ -565,6 +595,48 @@ class PayTheoryMessenger {
   }
 
   /**
+   * Resend an invoice email (Security PIN flow for hosted checkout invoices)
+   */
+  async resendInvoiceEmail(): Promise<MessengerResponse> {
+    try {
+      const connectionCheck = await this.ensureConnected();
+      if (!connectionCheck.success) {
+        return connectionCheck;
+      }
+
+      if (!this.channel) {
+        return {
+          success: false,
+          error: 'Channel not initialized',
+        };
+      }
+
+      const response = await this.channel.sendMessage<
+        void,
+        MessengerResendInvoiceEmailSuccessMessage | MessengerSocketErrorMessage
+      >(PT_MESSENGER_RESEND_INVOICE_EMAIL);
+
+      if (response.type === PT_MESSENGER_SOCKET_ERROR) {
+        return {
+          success: false,
+          error: response.body?.error || 'Unknown error',
+        };
+      }
+
+      if (response.type === PT_MESSENGER_RESEND_INVOICE_EMAIL_SUCCESS) {
+        return { success: response.success };
+      }
+
+      return { success: false, error: 'Unexpected response format' };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error resending invoice email',
+      };
+    }
+  }
+
+  /**
    * Process a wallet transaction
    */
   async processWalletTransaction(
@@ -744,7 +816,7 @@ class PayTheoryMessenger {
     this.eventListeners.clear();
 
     // 6. Remove from instances map
-    PayTheoryMessenger.instances.delete(this.apiKey);
+    PayTheoryMessenger.instances.delete(this.instanceKey);
   }
 
   private cleanupEventListeners(): void {
