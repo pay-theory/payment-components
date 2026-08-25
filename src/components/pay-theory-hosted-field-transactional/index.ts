@@ -23,6 +23,7 @@ import {
   FailedTransactionMessage,
   PayTheoryDataObject,
   SuccessfulTransactionMessage,
+  TokenizedPaymentMethodFailureMessage,
   TokenizedPaymentMethodMessage,
 } from '../../common/format';
 import {
@@ -152,7 +153,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     >;
     this.cancel = this.cancel.bind(this) as () => Promise<true | ErrorResponse>;
     this.tokenize = this.tokenize.bind(this) as () => Promise<
-      TokenizedPaymentMethodMessage | ErrorMessage
+      TokenizedPaymentMethodMessage | TokenizedPaymentMethodFailureMessage | ErrorMessage
     >;
     this.sendValidMessage = this.sendValidMessage.bind(this) as () => void;
     this.sendStateMessage = this.sendStateMessage.bind(this) as () => void;
@@ -182,8 +183,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       if (ptToken) {
         this._challengeOptions = ptToken.challengeOptions;
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as
-          | HTMLIFrameElement
-          | undefined;
+          HTMLIFrameElement | undefined;
         if (transactingIFrame) {
           const message: AsyncMessage = {
             type: type,
@@ -338,8 +338,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   async cancel(): Promise<true | ErrorResponse> {
     const transactingIFrame = document.getElementById(this._transactingIFrameId) as
-      | HTMLIFrameElement
-      | undefined;
+      HTMLIFrameElement | undefined;
     if (transactingIFrame) {
       transactingIFrame.contentWindow.postMessage(
         {
@@ -366,7 +365,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   async tokenize(
     data: TokenizeDataObject,
     element: PayTheoryHostedFieldTransactional,
-  ): Promise<TokenizedPaymentMethodMessage | ErrorMessage> {
+  ): Promise<TokenizedPaymentMethodMessage | TokenizedPaymentMethodFailureMessage | ErrorMessage> {
     this._isTransactingElement = true;
     this._initialized = true;
     const response = await common.sendTransactingMessage(element, data.billingInfo);
@@ -382,10 +381,9 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     const transactingIFrame = document.getElementById(
       this._transactingIFrameId,
     ) as HTMLIFrameElement;
-    return sendAsyncPostMessage<TokenizedPaymentMethodMessage | ErrorMessage>(
-      message,
-      transactingIFrame,
-    );
+    return sendAsyncPostMessage<
+      TokenizedPaymentMethodMessage | TokenizedPaymentMethodFailureMessage | ErrorMessage
+    >(message, transactingIFrame);
   }
 
   sendStateMessage() {
