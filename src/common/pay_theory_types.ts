@@ -74,6 +74,11 @@ export interface ReadyResponse {
   body: true;
 }
 
+export interface FailureReason {
+  failure_code: string;
+  failure_text: string;
+}
+
 export interface FailedTransactionObject {
   receipt_number: string;
   last_four: string;
@@ -81,10 +86,7 @@ export interface FailedTransactionObject {
   state: string;
   type: string;
   payor_id: string;
-  reason: {
-    failure_code: string;
-    failure_text: string;
-  };
+  reason: FailureReason;
 }
 
 export interface FailedTransactionResponse {
@@ -115,6 +117,11 @@ export interface TokenizedPaymentMethodObject {
 export interface TokenizedPaymentMethodResponse {
   type: ResponseMessageTypes.TOKENIZED;
   body: TokenizedPaymentMethodObject | PaymentMethod;
+}
+
+export interface FailedTokenizationResponse {
+  type: ResponseMessageTypes.FAILED;
+  body: FailureReason;
 }
 
 // Error Types

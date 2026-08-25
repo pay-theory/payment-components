@@ -3,12 +3,14 @@ import { MERCHANT_FEE, transactingWebComponentIds } from '../common/data';
 import { findTransactingElement } from '../common/dom';
 import { localizeCashBarcodeUrl, ModifiedTransactProps, parseResponse } from '../common/format';
 import { sendObserverMessage } from '../common/message';
+
 import {
   CashBarcodeResponse,
   ConfirmationResponse,
   ErrorResponse,
   ErrorType,
   FailedTransactionResponse,
+  FailedTokenizationResponse,
   ResponseMessageTypes,
   SuccessfulTransactionResponse,
   TokenizedPaymentMethodResponse,
@@ -27,6 +29,7 @@ const updateElementFromAction = (
     | ConfirmationResponse
     | SuccessfulTransactionResponse
     | FailedTransactionResponse
+    | FailedTokenizationResponse
     | CashBarcodeResponse
     | TokenizedPaymentMethodResponse,
   iframe: PayTheoryHostedFieldTransactional,
@@ -170,9 +173,7 @@ export const confirm = async (): Promise<
     try {
       const response = await transactingElement.capture();
       const parsedResult = parseResponse(response) as
-        | ErrorResponse
-        | SuccessfulTransactionResponse
-        | FailedTransactionResponse;
+        ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse;
       updateElementFromAction(parsedResult, transactingElement);
       sendObserverMessage(parsedResult, true);
       return parsedResult;
@@ -208,7 +209,7 @@ export const cancel = async (): Promise<true | ErrorResponse> => {
 
 export const tokenizePaymentMethod = async (
   props: TokenizeProps,
-): Promise<TokenizedPaymentMethodResponse | ErrorResponse> => {
+): Promise<TokenizedPaymentMethodResponse | FailedTokenizationResponse | ErrorResponse> => {
   const transactingElement = findTransactingElement();
   if (transactingElement) {
     // Run field check and return error if one is found before proceeding
@@ -250,7 +251,7 @@ export const tokenizePaymentMethod = async (
           expandedResponse,
         };
         const result = await transactingElement.tokenize(data, transactingElement);
-        console.log('Tokenize Response', result);
+        //console.log('Tokenize Response', result);
         const parsedResult = parseResponse(result);
         updateElementFromAction(parsedResult, transactingElement);
         // If the tokenization was successful but the validation was skipped, reset the fields
@@ -267,7 +268,8 @@ export const tokenizePaymentMethod = async (
           }
         }
         sendObserverMessage(parsedResult);
-        return parsedResult as TokenizedPaymentMethodResponse | ErrorResponse;
+        return parsedResult as
+          TokenizedPaymentMethodResponse | FailedTokenizationResponse | ErrorResponse;
       } catch (e: unknown) {
         if (e instanceof Error) {
           return common.handleError(e.message);

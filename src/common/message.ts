@@ -5,6 +5,7 @@ import {
   ConfirmationResponse,
   ErrorResponse,
   ErrorType,
+  FailedTokenizationResponse,
   FailedTransactionResponse,
   ResponseMessageTypes,
   SuccessfulTransactionResponse,
@@ -245,6 +246,7 @@ export const sendObserverMessage = (
   message:
     | SuccessfulTransactionResponse
     | FailedTransactionResponse
+    | FailedTokenizationResponse
     | ErrorResponse
     | CashBarcodeResponse
     | TokenizedPaymentMethodResponse

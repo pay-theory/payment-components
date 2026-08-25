@@ -19,6 +19,7 @@ import {
   TokenizedPaymentMethodResponse,
   Transaction,
   TransactProps,
+  FailedTokenizationResponse,
 } from './pay_theory_types';
 
 // Message Types that would come back from the iframe for async messages
@@ -248,6 +249,47 @@ export interface TokenizedPaymentMethodMessageExpanded {
   body: PaymentMethod;
 }
 
+export interface TokenizedPaymentMethodFailureMessage {
+  type: typeof COMPLETE_STEP;
+  paymentType: 'tokenize';
+  expandedResponse: boolean;
+  body: {
+    receipt_number?: string | null;
+    last_four?: string | null;
+    brand?: string | null;
+    state: 'FAILURE';
+    type: string;
+    payor_id?: string | null;
+    status: {
+      result: 'FAILED';
+      reason: {
+        error_code: string;
+        error_text: string;
+      };
+    };
+  };
+}
+
+const isTokenizedPaymentMethodFailureMessage = (
+  message:
+    | TokenizedPaymentMethodMessage
+    | TokenizedPaymentMethodMessageExpanded
+    | TokenizedPaymentMethodFailureMessage,
+): message is TokenizedPaymentMethodFailureMessage =>
+  'state' in message.body && message.body.state === 'FAILURE';
+
+export const parseFailedTokenizeMessage = (
+  message: TokenizedPaymentMethodFailureMessage,
+): FailedTokenizationResponse => {
+  return {
+    type: ResponseMessageTypes.FAILED,
+    body: {
+      failure_code: message.body.status.reason.error_code,
+      failure_text: message.body.status.reason.error_text,
+    },
+  };
+};
+
 export const parseResponse = (
   message:
     | ConfirmationMessage
@@ -256,6 +298,8 @@ export const parseResponse = (
     | FailedTransactionMessage
     | CashBarcodeMessage
     | TokenizedPaymentMethodMessage
+    | TokenizedPaymentMethodMessageExpanded
+    | TokenizedPaymentMethodFailureMessage
     | ErrorMessage,
 ):
   | ConfirmationResponse
@@ -263,12 +307,21 @@ export const parseResponse = (
   | FailedTransactionResponse
   | CashBarcodeResponse
   | TokenizedPaymentMethodResponse
+  | FailedTokenizationResponse
   | ErrorResponse => {
   switch (message.type) {
     case CONFIRMATION_STEP:
       return parseConfirmationMessage(message);
     case COMPLETE_STEP:
       if (message.paymentType === 'tokenize') {
+        if (isTokenizedPaymentMethodFailureMessage(message)) {
+          if (message.expandedResponse !== true) {
+            return handleError(
+              `SOCKET_ERROR: Token validation failed: ${message.body.status.reason.error_text}`,
+            );
+          }
+          return parseFailedTokenizeMessage(message);
+        }
         return {
           type: ResponseMessageTypes.TOKENIZED,
           body: message.body,
