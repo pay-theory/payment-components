@@ -254,12 +254,7 @@ export interface TokenizedPaymentMethodFailureMessage {
   paymentType: 'tokenize';
   expandedResponse: boolean;
   body: {
-    receipt_number?: string | null;
-    last_four?: string | null;
-    brand?: string | null;
     state: 'FAILURE';
-    type: string;
-    payor_id?: string | null;
     status: {
       result: 'FAILED';
       reason: {
