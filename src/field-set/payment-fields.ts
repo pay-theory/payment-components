@@ -1,20 +1,28 @@
 import common from '../common';
-import { PayorInfo, PlaceholderObject, StyleObject } from '../common/pay_theory_types';
-import { defaultElementIds, MERCHANT_FEE, SERVICE_FEE } from '../common/data';
+import type {
+  Metadata,
+  PayorInfo,
+  PaymentFeeMode,
+  PaymentFieldElementIds,
+  PlaceholderObject,
+  StyleObject,
+} from '../paytheory-sdk';
+import { defaultElementIds } from '../common/data';
 import payTheoryFields from './payment-fields-v2';
 import { transact } from './actions';
 
+/** Builds the backwards-compatible controller used by the legacy creation APIs. */
 export default async (
   apiKey: string,
-  legacy: undefined, // this used to be client id, left in place to preserve backwards compatibility
+  _legacyClientId: string | undefined, // Retained positionally for backwards compatibility.
   styles: StyleObject = common.defaultStyles,
-  sessionMetadata: Record<string | number, string | number | boolean> = {},
-  fee_mode: typeof MERCHANT_FEE | typeof SERVICE_FEE = common.defaultFeeMode,
+  sessionMetadata: Metadata = {},
+  fee_mode: PaymentFeeMode = common.defaultFeeMode,
 ) => {
   const mount = async (
     props: {
       placeholders?: PlaceholderObject;
-      elements?: typeof defaultElementIds;
+      elements?: PaymentFieldElementIds;
       session?: string;
     } = {},
   ) => {

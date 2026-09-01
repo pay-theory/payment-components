@@ -1,26 +1,21 @@
 /* eslint-disable no-unused-vars */
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import common from '../common';
-import {
-  achElementIds,
-  cardElementIds,
-  cashElementIds,
-  eftElementIds,
-  MERCHANT_FEE,
-  SERVICE_FEE,
-} from '../common/data';
+import { achElementIds, cardElementIds, cashElementIds, eftElementIds } from '../common/data';
 import { processedElement } from '../common/dom';
 import { hostedCheckoutEndpoint } from '../common/network';
-import {
+import { ErrorType, ResponseMessageTypes } from '../common/sdk-runtime-values';
+import type {
   CheckoutContextQuery,
   ErrorResponse,
-  ErrorType,
+  Metadata,
+  PaymentFeeMode,
   PayTheoryPaymentFieldsInput,
   PlaceholderObject,
   ReadyResponse,
-  ResponseMessageTypes,
   StyleObject,
-} from '../common/pay_theory_types';
+  SupportedCountry,
+} from '../paytheory-sdk';
 import { startComplianceBeacon } from '../compliance/beacon';
 import PayTheoryHostedField from '../components/pay-theory-hosted-field';
 import PayTheoryHostedFieldTransactional from '../components/pay-theory-hosted-field-transactional';
@@ -63,9 +58,9 @@ const mountProcessedElements = (props: {
   amount: number | undefined;
   apiKey?: string;
   checkoutContext?: CheckoutContextQuery;
-  country: string;
-  feeMode: typeof MERCHANT_FEE | typeof SERVICE_FEE | undefined;
-  metadata: Record<string | number, string | number | boolean>;
+  country: SupportedCountry;
+  feeMode: PaymentFeeMode | undefined;
+  metadata: Metadata;
   placeholders: PlaceholderObject;
   port: MessagePort;
   processed: ProcessedObject;

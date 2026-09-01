@@ -16,6 +16,7 @@ export default [
       'webpack.config.js',
       'src/polyfill.js', // This file has special polyfill code that needs different rules
       'src/**/*.ts', // Ignoring TypeScript files for now as they require a parser
+      'test/types/**/*.ts', // Compile-only fixtures are validated by their strict tsconfig
       '**/*.test.js', // Ignoring old test files
       '**/createPaymentFields.test.js',
     ],

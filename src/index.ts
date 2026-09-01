@@ -1,4 +1,10 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
+/**
+ * Runtime entry point for the browser SDK.
+ *
+ * The assembled global is checked against the canonical public contract so runtime exports and
+ * partner-facing types cannot drift independently.
+ */
 import './polyfill';
 import './components/credit-card';
 import './components/credit-card-number';
@@ -68,10 +74,18 @@ import {
   readyObserver,
   cashObserver,
 } from './common/observe';
+import type { PayTheorySDK } from './paytheory-sdk';
 
-const create = (apiKey, styles, metadata, feeMode) =>
+const create: PayTheorySDK['create'] = (apiKey, styles, metadata, feeMode) =>
   createPaymentFieldsLegacy(apiKey, undefined, styles, metadata, feeMode);
-const createPaymentFields = (apiKey, clientId, styles, metadata) => {
+
+/** Backwards-compatible SDK constructor retained for existing partner integrations. */
+const createPaymentFields: PayTheorySDK['createPaymentFields'] = (
+  apiKey,
+  clientId,
+  styles,
+  metadata,
+) => {
   console.warn('createPaymentFields has been deprecated');
   return createPaymentFieldsLegacy(apiKey, clientId, styles, metadata, MERCHANT_FEE);
 };
@@ -115,8 +129,9 @@ window.paytheory = {
   BLACK,
   PURPLE,
   PayTheoryMessenger,
-};
+} satisfies PayTheorySDK;
 
 window.PayTheoryMessenger = PayTheoryMessenger;
 
+/** Canonically typed SDK object installed on the browser global. */
 export default window.paytheory;
