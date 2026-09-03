@@ -14,9 +14,8 @@ const consumeBrowserGlobals = async () => {
     },
   });
 
-  await window.paytheory.payTheoryFields({
-    checkoutContext: { linkId: 'link-id' },
-  });
+  // @ts-expect-error Partner integrations authenticate hosted fields with an API key.
+  await window.paytheory.payTheoryFields({ checkoutContext: { linkId: 'link-id' } });
 
   window.paytheory.button({
     apiKey: 'partner-api-key',

@@ -4,6 +4,11 @@
  * This module intentionally contains no runtime implementation and no imports. Keeping the
  * public contract self-contained allows the declaration build to produce one downloadable file
  * that partners can either include globally or import types from locally.
+ *
+ * Declarations carrying the TypeScript "internal" JSDoc tag describe surface reserved for the
+ * Pay Theory checkout portal. The declaration build strips them from the partner file
+ * (`dist/paytheory-sdk.d.ts`) and keeps them in the internal file (`dist-internal/paytheory-sdk.d.ts`).
+ * Never write that tag in a comment above a public declaration; the compiler matches its text.
  */
 
 /** Primitive values accepted in SDK metadata. */
@@ -445,23 +450,9 @@ export interface StyleObject {
   hidePlaceholder?: boolean;
 }
 
-/**
- * Hosted-checkout context that authenticates hosted fields or the Messenger in place of an API
- * key. Provide exactly one identifier.
- */
-export type CheckoutContextQuery =
-  | { invoiceId: string; linkId?: never; recurringHash?: never; sessionId?: never }
-  | { linkId: string; invoiceId?: never; recurringHash?: never; sessionId?: never }
-  | { recurringHash: string; invoiceId?: never; linkId?: never; sessionId?: never }
-  | { sessionId: string; invoiceId?: never; linkId?: never; recurringHash?: never };
-
-/** Authentication accepted by hosted fields and the Messenger: an API key or a checkout context. */
-export type PayTheoryAuthOptions =
-  | { apiKey: string; checkoutContext?: never }
-  | { apiKey?: never; checkoutContext: CheckoutContextQuery };
-
 /** Input accepted by `payTheoryFields`. */
-export type PayTheoryPaymentFieldsInput = PayTheoryAuthOptions & {
+export interface PayTheoryPaymentFieldsInput {
+  apiKey: string;
   styles?: StyleObject;
   metadata?: Metadata;
   placeholders?: PlaceholderObject;
@@ -471,6 +462,28 @@ export type PayTheoryPaymentFieldsInput = PayTheoryAuthOptions & {
   feeMode?: PaymentFeeMode;
   amount?: number;
   country?: SupportedCountry;
+}
+
+/**
+ * @internal Hosted-checkout context used by the Pay Theory checkout portal in place of an API
+ * key. The token service only mints checkout tokens for the hosted checkout origin, so this mode
+ * is unavailable to partner integrations. Provide exactly one identifier.
+ */
+export type CheckoutContextQuery =
+  | { invoiceId: string; linkId?: never; recurringHash?: never; sessionId?: never }
+  | { linkId: string; invoiceId?: never; recurringHash?: never; sessionId?: never }
+  | { recurringHash: string; invoiceId?: never; linkId?: never; sessionId?: never }
+  | { sessionId: string; invoiceId?: never; linkId?: never; recurringHash?: never };
+
+/** @internal Authentication accepted by the runtime: an API key or a checkout context, never both. */
+export type PayTheoryAuthOptions =
+  | { apiKey: string; checkoutContext?: never }
+  | { apiKey?: never; checkoutContext: CheckoutContextQuery };
+
+/** @internal Checkout-portal input accepted by `payTheoryFields` in place of an API key. */
+export type CheckoutPaymentFieldsInput = Omit<PayTheoryPaymentFieldsInput, 'apiKey'> & {
+  apiKey?: never;
+  checkoutContext: CheckoutContextQuery;
 };
 
 /** Hosted-checkout details shared by checkout buttons and QR codes. */
@@ -673,8 +686,10 @@ export declare class PayTheoryMessenger {
   /** Wallet type constant used for Paze requests. */
   static readonly paze: 'PAZE';
 
-  /** Creates a Messenger client authenticated by a public API key or a hosted-checkout context. */
+  /** @internal Creates a Messenger client for the checkout portal using a checkout context. */
   constructor(options: PayTheoryAuthOptions);
+  /** Creates a Messenger client for the supplied public API key. */
+  constructor(options: { apiKey: string });
 
   /** Initializes the hidden Messenger frame and its secure channel. */
   initialize(): Promise<MessengerResponse>;
@@ -687,7 +702,10 @@ export declare class PayTheoryMessenger {
     payload: WalletTransactionPayload,
   ): Promise<TransactionResponse | ErrorResponse>;
 
-  /** Requests that the invoice email be resent (security PIN flow for hosted-checkout invoices). */
+  /**
+   * @internal Requests that the invoice email be resent (security PIN flow). The socket only
+   * honors this on a session whose checkout token carries an invoice checkout context.
+   */
   resendInvoiceEmail(): Promise<MessengerResponse>;
 
   /** Removes frames, channels, and event listeners owned by this instance. */
@@ -728,6 +746,8 @@ export interface PayTheorySDK {
   /** Creates a hosted checkout QR code in its configured DOM container. */
   qrCode(input: PayTheoryQRInput): Promise<void | false | ErrorResponse>;
 
+  /** @internal Mounts hosted payment fields for the checkout portal using a checkout context. */
+  payTheoryFields(input: CheckoutPaymentFieldsInput): Promise<ReadyResponse | ErrorResponse>;
   /** Mounts and initializes hosted payment fields. */
   payTheoryFields(input: PayTheoryPaymentFieldsInput): Promise<ReadyResponse | ErrorResponse>;
 

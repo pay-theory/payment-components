@@ -18,6 +18,7 @@ import type {
   MessengerEvent,
   MessengerEventMap,
   MessengerResponse,
+  PayTheoryAuthOptions,
   PayTheoryMessenger as PayTheoryMessengerContract,
   TransactionResponse,
   Unsubscribe,
@@ -65,11 +66,7 @@ class PayTheoryMessenger implements PayTheoryMessengerContract {
   static readonly googlePay = PT_WALLET_TYPE_GOOGLE;
   static readonly paze = PT_WALLET_TYPE_PAZE;
 
-  constructor(
-    options:
-      | { apiKey: string; checkoutContext?: never }
-      | { apiKey?: never; checkoutContext: CheckoutContextQuery },
-  ) {
+  constructor(options: PayTheoryAuthOptions) {
     // Check if the options is an object and it contains the apiKey property
     if (typeof options !== 'object') {
       throw new Error('Invalid options');

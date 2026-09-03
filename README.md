@@ -11,10 +11,19 @@ For documentation on the SDK, visit [docs.paytheory.com](https://docs.paytheory.
 
 ## TypeScript types
 
-The CDN publication workflows produce a standalone `dist/paytheory-sdk.d.ts` file from the
-canonical public contract in `src/paytheory-sdk.ts`. Partners who load the SDK as a browser script
-can download that file into a TypeScript project (for example, `types/paytheory-sdk.d.ts`) and make
-sure the directory is included by `tsconfig.json`:
+`src/paytheory-sdk.ts` is the canonical public contract. `npm run build-types` emits two standalone
+declaration files from it:
+
+- `dist/paytheory-sdk.d.ts` is the partner-facing declaration. Declarations tagged `@internal` are
+  stripped, so the checkout-portal-only surface (`checkoutContext`, `resendInvoiceEmail`) never
+  appears in it. The CDN publication workflows upload this file next to `index.js`.
+- `dist-internal/paytheory-sdk.d.ts` keeps the `@internal` declarations. It exists for the Pay
+  Theory checkout portal, is never uploaded to the CDN, and is copied into that project from a
+  local build.
+
+Partners who load the SDK as a browser script can download the partner declaration into a
+TypeScript project (for example, `types/paytheory-sdk.d.ts`) and make sure the directory is
+included by `tsconfig.json`:
 
 ```json
 {

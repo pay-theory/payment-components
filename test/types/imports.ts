@@ -1,6 +1,5 @@
 import type {
   CallToAction,
-  CheckoutContextQuery,
   PayTheoryPaymentFieldsInput,
   PayTheorySDK,
   StateObject,
@@ -16,11 +15,6 @@ const fields: PayTheoryPaymentFieldsInput = {
   apiKey: 'partner-api-key',
   country: 'USA',
   feeMode: 'merchant_fee',
-};
-
-const checkoutFields: PayTheoryPaymentFieldsInput = {
-  checkoutContext: { invoiceId: 'invoice-id' },
-  country: 'USA',
 };
 
 const transaction: TransactProps = {
@@ -40,7 +34,6 @@ const walletTransaction: WalletTransactionPayload = {
 const consumeSdk = async () => {
   const result: TransactResult = await sdk.transact(transaction);
   await sdk.payTheoryFields(fields);
-  await sdk.payTheoryFields(checkoutFields);
 
   if (result.type === 'SUCCESS') {
     result.body.payment_method_id;
@@ -59,11 +52,6 @@ const consumeSdk = async () => {
   const messenger = new sdk.PayTheoryMessenger({ apiKey: 'partner-api-key' });
   await messenger.processWalletTransaction(walletTransaction);
 
-  const checkoutMessenger = new sdk.PayTheoryMessenger({
-    checkoutContext: { sessionId: 'session-id' },
-  });
-  await checkoutMessenger.resendInvoiceEmail();
-
   const applePayResult = await messenger.getApplePaySession();
   if (applePayResult.type === 'SUCCESS' && applePayResult.session.success) {
     applePayResult.session.session;
@@ -71,6 +59,12 @@ const consumeSdk = async () => {
 
   // @ts-expect-error The runtime owns the Apple Pay response shape; callers cannot assert one.
   await messenger.getApplePaySession<{ merchantSessionIdentifier: string }>();
+
+  // @ts-expect-error Checkout contexts are reserved for the Pay Theory checkout portal.
+  new sdk.PayTheoryMessenger({ checkoutContext: { invoiceId: 'invoice-id' } });
+
+  // @ts-expect-error Invoice email resends are reserved for the Pay Theory checkout portal.
+  await messenger.resendInvoiceEmail();
 };
 
 // @ts-expect-error Amounts are expressed as integer cents, not formatted strings.
@@ -79,14 +73,10 @@ const invalidTransaction: TransactProps = { amount: '25.00' };
 // @ts-expect-error CHECKOUT is exported for compatibility but rejected by hosted checkout inputs.
 const invalidCallToAction: CallToAction = 'CHECKOUT';
 
-// @ts-expect-error Hosted fields accept either an API key or a checkout context, never both.
-const bothAuth: PayTheoryPaymentFieldsInput = { apiKey: 'k', checkoutContext: { linkId: 'l' } };
-
-// @ts-expect-error A checkout context identifies exactly one hosted-checkout resource.
-const ambiguousContext: CheckoutContextQuery = { invoiceId: 'id', linkId: 'id' };
+// @ts-expect-error Partner integrations authenticate hosted fields with an API key.
+const checkoutFields: PayTheoryPaymentFieldsInput = { checkoutContext: { invoiceId: 'id' } };
 
 void invalidTransaction;
 void invalidCallToAction;
-void bothAuth;
-void ambiguousContext;
+void checkoutFields;
 void consumeSdk;

@@ -23,7 +23,7 @@
     ]
   },
   "scripts": {
-    "build-types": "tsc -p ./tsconfig.types.json",
+    "build-types": "tsc -p ./tsconfig.types.json && tsc -p ./tsconfig.types-internal.json",
     "build:bundle": "webpack && npm run test:bundle",
     "build-env": "env BUILD_ENV=$STAGE APP_ID=APrPDbJxbZuiRuwN3NjfajpH npm run build:bundle",
     "build-aron": "env BUILD_ENV=aron APP_ID=APrPDbJxbZuiRuwN3NjfajpH npm run build:bundle",
@@ -79,7 +79,7 @@
     "test:credit-card": "web-test-runner test/credit-card.web-test.js --node-resolve",
     "test:payment-fields": "web-test-runner test/createPaymentFields.web-test.js --node-resolve",
     "check-ts": "tsc --skipLibCheck --noEmit -p ./tsconfig.json",
-    "test:types": "npm run build-types && tsc -p ./test/types/tsconfig.json && node ./test/types/check-source-contract.cjs && node ./test/types/check-standalone.cjs",
+    "test:types": "npm run build-types && tsc -p ./test/types/tsconfig.json && tsc -p ./test/types/internal/tsconfig.json && node ./test/types/check-source-contract.cjs && node ./test/types/check-standalone.cjs",
     "test:bundle": "node ./test/types/check-bundle.cjs",
     "prepare": "husky"
   },

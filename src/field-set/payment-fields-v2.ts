@@ -7,6 +7,7 @@ import { hostedCheckoutEndpoint } from '../common/network';
 import { ErrorType, ResponseMessageTypes } from '../common/sdk-runtime-values';
 import type {
   CheckoutContextQuery,
+  CheckoutPaymentFieldsInput,
   ErrorResponse,
   Metadata,
   PaymentFeeMode,
@@ -131,7 +132,7 @@ const mountProcessedElements = (props: {
 };
 
 const initializeFields = (
-  props: PayTheoryPaymentFieldsInput,
+  props: PayTheoryPaymentFieldsInput | CheckoutPaymentFieldsInput,
   port: MessagePort,
 ): ErrorResponse | null => {
   const {
@@ -286,7 +287,9 @@ const initializeFields = (
   });
 };
 
-const payTheoryFields = async (inputParams: PayTheoryPaymentFieldsInput) =>
+const payTheoryFields = async (
+  inputParams: PayTheoryPaymentFieldsInput | CheckoutPaymentFieldsInput,
+) =>
   new Promise<ReadyResponse | ErrorResponse>(resolve => {
     // Opening a new message channel, so we can await the response from the hosted field
     const channel = new MessageChannel();

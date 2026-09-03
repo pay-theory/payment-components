@@ -7,6 +7,7 @@ export default [
     ignores: [
       '**/node_modules/**',
       'dist/**',
+      'dist-internal/**', // Internal declaration emit; a .d.ts the JS parser cannot read
       'lib/**',
       'coverage/**',
       'local-test/**', // This directory is used for local testing and should be ignored

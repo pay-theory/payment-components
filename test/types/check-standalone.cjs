@@ -8,6 +8,7 @@ const runtimeEntryPath = path.join(repositoryRoot, 'src/index.ts');
 const runtimeDataPath = path.join(repositoryRoot, 'src/common/data.ts');
 const canonicalSourcePath = path.join(repositoryRoot, 'src/paytheory-sdk.ts');
 const declarationPath = path.join(repositoryRoot, 'dist/paytheory-sdk.d.ts');
+const internalDeclarationPath = path.join(repositoryRoot, 'dist-internal/paytheory-sdk.d.ts');
 
 const readSourceFile = (filePath, scriptKind) =>
   ts.createSourceFile(
@@ -174,11 +175,20 @@ const runtimeDataSource = readSourceFile(runtimeDataPath, ts.ScriptKind.TS);
 const canonicalSource = readSourceFile(canonicalSourcePath, ts.ScriptKind.TS);
 const declarationSource = readSourceFile(declarationPath, ts.ScriptKind.TS);
 const declarationText = declarationSource.getFullText();
+const internalDeclarationSource = readSourceFile(internalDeclarationPath, ts.ScriptKind.TS);
+const internalDeclarationText = internalDeclarationSource.getFullText();
 
 assert.deepEqual(
   declaredSdkKeys(declarationSource).sort(),
   runtimeSdkKeys(runtimeSource).sort(),
   'PayTheorySDK must describe every runtime key and must not advertise nonexistent keys',
+);
+
+// The internal declaration keeps @internal overloads, so the same key may appear more than once.
+assert.deepEqual(
+  [...new Set(declaredSdkKeys(internalDeclarationSource))].sort(),
+  runtimeSdkKeys(runtimeSource).sort(),
+  'The internal PayTheorySDK must describe exactly the runtime keys',
 );
 
 const canonicalTypeNames = new Set(namedTypeDeclarations(canonicalSource));
@@ -228,33 +238,64 @@ assert.deepEqual(
   'PaymentFeeMode must contain exactly the supported runtime fee modes',
 );
 
-let externalDependency;
-const findExternalDependency = node => {
-  if (
-    ts.isImportDeclaration(node) ||
-    ts.isImportTypeNode(node) ||
-    ts.isExternalModuleReference(node)
-  ) {
-    externalDependency = node;
-    return;
-  }
-  ts.forEachChild(node, findExternalDependency);
-};
-findExternalDependency(declarationSource);
+/** Every emitted declaration must stand alone and describe the browser globals. */
+const assertStandaloneDeclaration = (sourceFile, label) => {
+  let externalDependency;
+  const findExternalDependency = node => {
+    if (
+      ts.isImportDeclaration(node) ||
+      ts.isImportTypeNode(node) ||
+      ts.isExternalModuleReference(node)
+    ) {
+      externalDependency = node;
+      return;
+    }
+    ts.forEachChild(node, findExternalDependency);
+  };
+  findExternalDependency(sourceFile);
 
-assert.equal(
-  externalDependency,
-  undefined,
-  'The downloadable declaration must not depend on another file or package',
-);
-assert.match(declarationText, /declare global\s*{/, 'The declaration must augment browser globals');
-assert.match(
-  declarationText,
-  /@deprecated Use `payTheoryFields`/,
-  'Legacy creation APIs must be deprecated',
-);
+  const text = sourceFile.getFullText();
+  assert.equal(
+    externalDependency,
+    undefined,
+    `${label} must not depend on another file or package`,
+  );
+  assert.match(text, /declare global\s*{/, `${label} must augment browser globals`);
+  assert.match(
+    text,
+    /@deprecated Use `payTheoryFields`/,
+    `${label} must deprecate legacy creation APIs`,
+  );
+  assert.doesNotMatch(
+    text,
+    /\b(clearInstances|getState|getStateHistory)\s*\(/,
+    `${label} must not publish testing-only Messenger methods`,
+  );
+};
+
+assertStandaloneDeclaration(declarationSource, 'The partner declaration');
+assertStandaloneDeclaration(internalDeclarationSource, 'The internal declaration');
+
+// Checkout-portal surface is tagged @internal: stripped from the partner file, kept internally.
+const checkoutOnlySurface =
+  /\b(checkoutContext|resendInvoiceEmail|CheckoutContextQuery|PayTheoryAuthOptions|CheckoutPaymentFieldsInput)\b/;
 assert.doesNotMatch(
   declarationText,
-  /\b(clearInstances|getState|getStateHistory)\s*\(/,
-  'Internal and testing-only Messenger methods must not be published',
+  checkoutOnlySurface,
+  'Checkout-portal surface must not be published in the partner declaration',
+);
+assert.match(
+  internalDeclarationText,
+  /resendInvoiceEmail\(\): Promise<MessengerResponse>/,
+  'The internal declaration must keep resendInvoiceEmail',
+);
+assert.match(
+  internalDeclarationText,
+  /constructor\(options: PayTheoryAuthOptions\)/,
+  'The internal declaration must keep the checkout-context Messenger constructor',
+);
+assert.match(
+  internalDeclarationText,
+  /payTheoryFields\(input: CheckoutPaymentFieldsInput\)/,
+  'The internal declaration must keep the checkout-context payTheoryFields overload',
 );
