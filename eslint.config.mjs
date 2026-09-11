@@ -7,6 +7,7 @@ export default [
     ignores: [
       '**/node_modules/**',
       'dist/**',
+      'dist-internal/**', // Internal declaration emit; a .d.ts the JS parser cannot read
       'lib/**',
       'coverage/**',
       'local-test/**', // This directory is used for local testing and should be ignored
@@ -16,6 +17,7 @@ export default [
       'webpack.config.js',
       'src/polyfill.js', // This file has special polyfill code that needs different rules
       'src/**/*.ts', // Ignoring TypeScript files for now as they require a parser
+      'test/types/**/*.ts', // Compile-only fixtures are validated by their strict tsconfig
       '**/*.test.js', // Ignoring old test files
       '**/createPaymentFields.test.js',
     ],

@@ -23,6 +23,7 @@ import {
   FailedTransactionMessage,
   PayTheoryDataObject,
   SuccessfulTransactionMessage,
+  TokenizedPaymentMethodFailureMessage,
   TokenizedPaymentMethodMessage,
 } from '../../common/format';
 import {
@@ -31,39 +32,34 @@ import {
   postMessageToHostedField,
   sendAsyncPostMessage,
 } from '../../common/message';
-import {
-  BillingInfo,
+import { ErrorType, ResponseMessageTypes } from '../../common/sdk-runtime-values';
+import type {
   CheckoutContextQuery,
   ErrorResponse,
-  ErrorType,
   FieldState,
-  PayorInfo,
-  ResponseMessageTypes,
+  Metadata,
+  PaymentFeeMode,
   StateObject,
-} from '../../common/pay_theory_types';
+  SupportedCountry,
+  TokenizeProps,
+  TransactProps,
+} from '../../paytheory-sdk';
 import PayTheoryHostedField from '../pay-theory-hosted-field';
 
+/** Internal field-state message enriched with its source element and connection status. */
 export interface IncomingFieldState extends FieldState {
   element?: ElementTypes;
   isConnected?: boolean;
 }
 
+/** Internal hosted-field transaction payload derived from the canonical public transaction input. */
 export interface TransactDataObject {
-  amount: number;
-  payorInfo: PayorInfo;
+  amount: TransactProps['amount'];
+  payorInfo: NonNullable<TransactProps['payorInfo']>;
   payTheoryData: PayTheoryDataObject;
-  metadata?: Record<string | number, string | number | boolean>;
-  fee_mode?: typeof common.MERCHANT_FEE | typeof common.SERVICE_FEE;
-  confirmation?: boolean;
-}
-
-export interface TokenizeDataObject {
-  payorInfo?: PayorInfo;
-  metadata?: Record<string | number, string | number | boolean>;
-  payorId?: string;
-  billingInfo?: BillingInfo;
-  skipValidation?: boolean;
-  expandedResponse?: boolean;
+  metadata?: Metadata;
+  fee_mode?: PaymentFeeMode;
+  confirmation?: TransactProps['confirmation'];
 }
 
 interface ConstructorProps {
@@ -77,7 +73,7 @@ interface ConnectedMessage {
   element: ElementTypes;
 }
 
-interface ReadyResponse {
+interface HostedFieldReadyResponse {
   type: 'READY';
   element: ElementTypes;
 }
@@ -90,7 +86,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   protected _session: string | undefined;
 
   // Used to track the metadata that is passed in for a session
-  protected _metadata: Record<string | number, string | number | boolean> | undefined;
+  protected _metadata: Metadata | undefined;
 
   // Used to track if the transact or tokenize function has been called, and we are awaiting a response
   protected _initialized = false;
@@ -133,7 +129,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   protected _removeFeeCalcReconnect: (() => void) | undefined;
 
   // Used for backwards compatibility with feeMode
-  protected _feeMode: typeof common.SERVICE_FEE | typeof common.MERCHANT_FEE | undefined;
+  protected _feeMode: PaymentFeeMode | undefined;
 
   protected _fee: number | undefined;
 
@@ -146,18 +142,22 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       | CashBarcodeMessage
       | ErrorMessage
     >;
-    this.resetToken = this.resetToken.bind(this) as () => Promise<ErrorResponse | ReadyResponse>;
+    this.resetToken = this.resetToken.bind(this) as () => Promise<
+      ErrorResponse | HostedFieldReadyResponse
+    >;
     this.capture = this.capture.bind(this) as () => Promise<
       FailedTransactionMessage | ErrorMessage
     >;
     this.cancel = this.cancel.bind(this) as () => Promise<true | ErrorResponse>;
     this.tokenize = this.tokenize.bind(this) as () => Promise<
-      TokenizedPaymentMethodMessage | ErrorMessage
+      TokenizedPaymentMethodMessage | TokenizedPaymentMethodFailureMessage | ErrorMessage
     >;
     this.sendValidMessage = this.sendValidMessage.bind(this) as () => void;
     this.sendStateMessage = this.sendStateMessage.bind(this) as () => void;
     this.sendValidMessage = this.sendValidMessage.bind(this) as () => void;
-    this.sendPtToken = this.sendPtToken.bind(this) as () => Promise<ReadyResponse | ErrorResponse>;
+    this.sendPtToken = this.sendPtToken.bind(this) as () => Promise<
+      HostedFieldReadyResponse | ErrorResponse
+    >;
     this.handleFeeMessage = this.handleFeeMessage.bind(this) as (message: {
       type: string;
       body: { fee: number; payment_type: string };
@@ -174,7 +174,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   async sendTokenAsync(
     type: `pt-static:connection_token` | `pt-static:reset_host`,
-  ): Promise<ErrorResponse | ReadyResponse> {
+  ): Promise<ErrorResponse | HostedFieldReadyResponse> {
     try {
       const ptToken = this._checkoutContext
         ? await common.fetchCheckoutPtToken(this._checkoutContext, this._session)
@@ -182,8 +182,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       if (ptToken) {
         this._challengeOptions = ptToken.challengeOptions;
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as
-          | HTMLIFrameElement
-          | undefined;
+          HTMLIFrameElement | undefined;
         if (transactingIFrame) {
           const message: AsyncMessage = {
             type: type,
@@ -338,8 +337,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   async cancel(): Promise<true | ErrorResponse> {
     const transactingIFrame = document.getElementById(this._transactingIFrameId) as
-      | HTMLIFrameElement
-      | undefined;
+      HTMLIFrameElement | undefined;
     if (transactingIFrame) {
       transactingIFrame.contentWindow.postMessage(
         {
@@ -364,9 +362,9 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   async tokenize(
-    data: TokenizeDataObject,
+    data: TokenizeProps,
     element: PayTheoryHostedFieldTransactional,
-  ): Promise<TokenizedPaymentMethodMessage | ErrorMessage> {
+  ): Promise<TokenizedPaymentMethodMessage | TokenizedPaymentMethodFailureMessage | ErrorMessage> {
     this._isTransactingElement = true;
     this._initialized = true;
     const response = await common.sendTransactingMessage(element, data.billingInfo);
@@ -382,10 +380,9 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     const transactingIFrame = document.getElementById(
       this._transactingIFrameId,
     ) as HTMLIFrameElement;
-    return sendAsyncPostMessage<TokenizedPaymentMethodMessage | ErrorMessage>(
-      message,
-      transactingIFrame,
-    );
+    return sendAsyncPostMessage<
+      TokenizedPaymentMethodMessage | TokenizedPaymentMethodFailureMessage | ErrorMessage
+    >(message, transactingIFrame);
   }
 
   sendStateMessage() {
@@ -523,7 +520,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     this._readyPort = value;
   }
 
-  set metadata(value: Record<string | number, string | number | boolean> | undefined) {
+  set metadata(value: Metadata | undefined) {
     this._metadata = value;
   }
 
@@ -621,7 +618,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     this._removeEventListeners = value;
   }
 
-  set feeMode(value: typeof common.SERVICE_FEE | typeof common.MERCHANT_FEE | undefined) {
+  set feeMode(value: PaymentFeeMode | undefined) {
     this._feeMode = value;
   }
 
@@ -674,7 +671,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     this._session = value;
   }
 
-  set country(value: string) {
+  set country(value: SupportedCountry) {
     this._country = value;
     // When the country is set we should also set the required fields for the element
     switch (this._transactingIFrameId) {

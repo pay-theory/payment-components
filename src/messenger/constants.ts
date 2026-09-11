@@ -48,11 +48,6 @@ export const PT_WALLET_TYPE_APPLE = 'APPLE_PAY' as const;
 export const PT_WALLET_TYPE_GOOGLE = 'GOOGLE_PAY' as const;
 export const PT_WALLET_TYPE_PAZE = 'PAZE' as const;
 
-export type PT_WALLET_TYPES =
-  | typeof PT_WALLET_TYPE_APPLE
-  | typeof PT_WALLET_TYPE_GOOGLE
-  | typeof PT_WALLET_TYPE_PAZE;
-
 // =============================================================================
 // Public Messenger Event Types
 // =============================================================================
@@ -63,5 +58,3 @@ export const MessengerEvents = {
   TRANSACTION_ERROR: 'transaction_error',
   IFRAME_UNLOADED: 'iframe_unloaded',
 } as const;
-
-export type MessengerEvent = (typeof MessengerEvents)[keyof typeof MessengerEvents];
