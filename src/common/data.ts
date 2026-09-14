@@ -1,37 +1,49 @@
+import type {
+  AcceptedPaymentMethod,
+  ButtonColor,
+  CallToAction,
+  HostedFieldType as ElementTypes,
+  PaymentFeeMode,
+  PaymentFieldElementIds,
+} from '../paytheory-sdk';
+
+/** Internal compatibility name for the canonical hosted-field type. */
+export type { HostedFieldType as ElementTypes } from '../paytheory-sdk';
+
 export const defaultStyles = {
   default: {},
   success: {},
   error: {},
 };
-export const SURCHARGE = 'merchant_fee';
-export const INTERCHANGE = 'merchant_fee';
-export const MERCHANT_FEE = 'merchant_fee';
-export const SERVICE_FEE = 'service_fee';
+export const SURCHARGE = 'merchant_fee' satisfies PaymentFeeMode;
+export const INTERCHANGE = 'merchant_fee' satisfies PaymentFeeMode;
+export const MERCHANT_FEE = 'merchant_fee' satisfies PaymentFeeMode;
+export const SERVICE_FEE = 'service_fee' satisfies PaymentFeeMode;
 export const defaultFeeMode = SURCHARGE;
 
 // Call to action constants for the hosted checkout and button
-export const PAY = 'PAY';
-export const BOOK = 'BOOK';
-export const DONATE = 'DONATE';
+export const PAY = 'PAY' satisfies CallToAction;
+export const BOOK = 'BOOK' satisfies CallToAction;
+export const DONATE = 'DONATE' satisfies CallToAction;
 export const CHECKOUT = 'CHECKOUT';
 // export type CALL_TO_ACTION = typeof PAY | typeof BOOK | typeof DONATE | typeof CHECKOUT;
 
-export const CTA_TYPES = [PAY, BOOK, DONATE];
+export const CTA_TYPES = [PAY, BOOK, DONATE] as const satisfies readonly CallToAction[];
 
 // Available Payment Method Constants for the hosted checkout
-export const ALL = 'ALL';
-export const NOT_CASH = 'NOT_CASH';
-export const NOT_CARD = 'NOT_CARD';
-export const NOT_ACH = 'NOT_ACH';
-export const ONLY_CASH = 'ONLY_CASH';
-export const ONLY_CARD = 'ONLY_CARD';
-export const ONLY_ACH = 'ONLY_ACH';
+export const ALL = 'ALL' satisfies AcceptedPaymentMethod;
+export const NOT_CASH = 'NOT_CASH' satisfies AcceptedPaymentMethod;
+export const NOT_CARD = 'NOT_CARD' satisfies AcceptedPaymentMethod;
+export const NOT_ACH = 'NOT_ACH' satisfies AcceptedPaymentMethod;
+export const ONLY_CASH = 'ONLY_CASH' satisfies AcceptedPaymentMethod;
+export const ONLY_CARD = 'ONLY_CARD' satisfies AcceptedPaymentMethod;
+export const ONLY_ACH = 'ONLY_ACH' satisfies AcceptedPaymentMethod;
 
 // Color constants for the button
-export const WHITE = 'white';
-export const BLACK = 'black';
-export const GREY = 'grey';
-export const PURPLE = 'purple';
+export const WHITE = 'white' satisfies ButtonColor;
+export const BLACK = 'black' satisfies ButtonColor;
+export const GREY = 'grey' satisfies ButtonColor;
+export const PURPLE = 'purple' satisfies ButtonColor;
 
 export const PAYMENT_METHOD_CONFIGS = [
   ALL,
@@ -41,7 +53,7 @@ export const PAYMENT_METHOD_CONFIGS = [
   ONLY_CASH,
   ONLY_CARD,
   ONLY_ACH,
-];
+] as const satisfies readonly AcceptedPaymentMethod[];
 
 export const initialState: {
   isDirty: boolean;
@@ -79,7 +91,7 @@ export const initialCashState: Partial<Record<ElementTypes, typeof initialState>
   'cash-contact': initialState,
 };
 
-export const defaultElementIds = {
+export const defaultElementIds: PaymentFieldElementIds = {
   // Card Element Ids
   'credit-card': 'pay-theory-credit-card',
   number: 'pay-theory-credit-card-number',
@@ -141,12 +153,6 @@ export interface eftElementIds {
   'institution-number': string;
   'transit-number': string;
 }
-
-export type ElementTypes =
-  | keyof achElementIds
-  | keyof cardElementIds
-  | keyof cashElementIds
-  | keyof eftElementIds;
 
 export const checkoutButtonField = 'pay-theory-checkout-button';
 export const checkoutQRField = 'pay-theory-checkout-qr';

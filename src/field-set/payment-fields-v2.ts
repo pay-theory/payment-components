@@ -1,25 +1,22 @@
 /* eslint-disable no-unused-vars */
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import common from '../common';
-import {
-  achElementIds,
-  cardElementIds,
-  cashElementIds,
-  eftElementIds,
-  MERCHANT_FEE,
-  SERVICE_FEE,
-} from '../common/data';
+import { achElementIds, cardElementIds, cashElementIds, eftElementIds } from '../common/data';
 import { processedElement } from '../common/dom';
 import { hostedCheckoutEndpoint } from '../common/network';
-import {
+import { ErrorType, ResponseMessageTypes } from '../common/sdk-runtime-values';
+import type {
+  CheckoutContextQuery,
+  CheckoutPaymentFieldsInput,
   ErrorResponse,
-  ErrorType,
+  Metadata,
+  PaymentFeeMode,
   PayTheoryPaymentFieldsInput,
   PlaceholderObject,
   ReadyResponse,
-  ResponseMessageTypes,
   StyleObject,
-} from '../common/pay_theory_types';
+  SupportedCountry,
+} from '../paytheory-sdk';
 import { startComplianceBeacon } from '../compliance/beacon';
 import PayTheoryHostedField from '../components/pay-theory-hosted-field';
 import PayTheoryHostedFieldTransactional from '../components/pay-theory-hosted-field-transactional';
@@ -60,10 +57,11 @@ export const generateUUID = (): string => {
 
 const mountProcessedElements = (props: {
   amount: number | undefined;
-  apiKey: string;
-  country: string;
-  feeMode: typeof MERCHANT_FEE | typeof SERVICE_FEE | undefined;
-  metadata: Record<string | number, string | number | boolean>;
+  apiKey?: string;
+  checkoutContext?: CheckoutContextQuery;
+  country: SupportedCountry;
+  feeMode: PaymentFeeMode | undefined;
+  metadata: Metadata;
   placeholders: PlaceholderObject;
   port: MessagePort;
   processed: ProcessedObject;
@@ -107,7 +105,8 @@ const mountProcessedElements = (props: {
         });
         typedValue.elements.transacting.forEach(element => {
           const container = document.getElementById(String(element.containerId));
-          element.frame.apiKey = apiKey;
+          if (apiKey) element.frame.apiKey = apiKey;
+          if (props.checkoutContext) element.frame.checkoutContext = props.checkoutContext;
           element.frame.styles = styles;
           element.frame.placeholders = placeholders;
           element.frame.metadata = metadata;
@@ -133,11 +132,10 @@ const mountProcessedElements = (props: {
 };
 
 const initializeFields = (
-  props: PayTheoryPaymentFieldsInput,
+  props: PayTheoryPaymentFieldsInput | CheckoutPaymentFieldsInput,
   port: MessagePort,
 ): ErrorResponse | null => {
   const {
-    apiKey,
     styles = common.defaultStyles,
     metadata = {},
     placeholders = {},
@@ -147,9 +145,12 @@ const initializeFields = (
     amount,
     country = 'USA',
   } = props;
+  const apiKey = 'apiKey' in props ? props.apiKey : undefined;
+  const checkoutContext = 'checkoutContext' in props ? props.checkoutContext : undefined;
   // Validate the input parameters
   const validationError = valid.checkInitialParams(
     apiKey,
+    checkoutContext,
     feeMode,
     metadata,
     styles,
@@ -273,6 +274,7 @@ const initializeFields = (
   return mountProcessedElements({
     amount,
     apiKey,
+    checkoutContext,
     country,
     feeMode,
     metadata,
@@ -285,7 +287,9 @@ const initializeFields = (
   });
 };
 
-const payTheoryFields = async (inputParams: PayTheoryPaymentFieldsInput) =>
+const payTheoryFields = async (
+  inputParams: PayTheoryPaymentFieldsInput | CheckoutPaymentFieldsInput,
+) =>
   new Promise<ReadyResponse | ErrorResponse>(resolve => {
     // Opening a new message channel, so we can await the response from the hosted field
     const channel = new MessageChannel();

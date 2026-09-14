@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 
 import common from '../../common';
-import { SuccessfulTransactionObject } from '../../common/pay_theory_types';
+import type { SuccessfulTransactionObject } from '../../paytheory-sdk';
 
 class PayTheoryCheckoutButton extends HTMLElement {
   protected _token: string | undefined;
