@@ -376,6 +376,10 @@ export interface TransactProps {
   level3DataSummary?: Level3DataSummary;
   oneTimeUseToken?: boolean;
   expandedResponse?: boolean;
+  /** Caller-defined key the backend uses to reject duplicate transaction attempts. */
+  idempotencyKey?: string;
+  /** Optional statement descriptor forwarded to the payment backend. */
+  statementDescriptor?: string;
 }
 
 /** Hosted field names accepted by placeholder and state maps. */
