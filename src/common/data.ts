@@ -2,6 +2,7 @@ import type {
   AcceptedPaymentMethod,
   ButtonColor,
   CallToAction,
+  FieldState,
   HostedFieldType as ElementTypes,
   PaymentFeeMode,
   PaymentFieldElementIds,
@@ -55,17 +56,14 @@ export const PAYMENT_METHOD_CONFIGS = [
   ONLY_ACH,
 ] as const satisfies readonly AcceptedPaymentMethod[];
 
-export const initialState: {
-  isDirty: boolean;
-  isFocused: boolean;
-  errorMessages: string[];
-} = {
+export const initialState: FieldState = {
   isDirty: false,
   isFocused: false,
   errorMessages: [],
+  iframeLoaded: false,
 };
 
-export const initialCardState: Partial<Record<ElementTypes, typeof initialState>> = {
+export const initialCardState: Partial<Record<ElementTypes, FieldState>> = {
   'card-number': initialState,
   'card-exp': initialState,
   'card-cvv': initialState,
@@ -77,7 +75,7 @@ export const initialCardState: Partial<Record<ElementTypes, typeof initialState>
   'billing-zip': initialState,
 };
 
-export const initialBankState: Partial<Record<ElementTypes, typeof initialState>> = {
+export const initialBankState: Partial<Record<ElementTypes, FieldState>> = {
   'account-number': initialState,
   'account-type': initialState,
   'account-name': initialState,
@@ -86,7 +84,7 @@ export const initialBankState: Partial<Record<ElementTypes, typeof initialState>
   'transit-number': initialState,
 };
 
-export const initialCashState: Partial<Record<ElementTypes, typeof initialState>> = {
+export const initialCashState: Partial<Record<ElementTypes, FieldState>> = {
   'cash-name': initialState,
   'cash-contact': initialState,
 };
