@@ -37,6 +37,9 @@ jobs:
       - name: Check TS
         run: npm run check-ts
 
+      - name: Check downloadable SDK types
+        run: npm run test:types
+
       # - name: Check tests
       #   run: |
       #     npm run test

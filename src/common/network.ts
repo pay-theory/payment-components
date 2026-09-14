@@ -8,7 +8,7 @@ import {
   getHostedFieldsEndpoint,
   getTransactionEndpoint,
 } from './network.local';
-import { BillingInfo, CheckoutContextQuery } from './pay_theory_types';
+import type { BillingInfo, CheckoutContextQuery } from '../paytheory-sdk';
 import { withExponentialBackoff } from './retry-utils';
 
 interface PtToken {
@@ -36,10 +36,7 @@ export const getData = async (
   return await response.json();
 };
 
-const getCheckoutData = async (
-  url: string,
-  sessionKey?: string,
-): Promise<PtToken | object> => {
+const getCheckoutData = async (url: string, sessionKey?: string): Promise<PtToken | object> => {
   const headers: Record<string, string> = {};
   if (sessionKey) {
     headers['x-session-key'] = sessionKey;

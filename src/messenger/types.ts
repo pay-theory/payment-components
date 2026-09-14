@@ -13,68 +13,34 @@ import {
   PT_MESSENGER_SOCKET_ERROR,
   PT_MESSENGER_TRANSFER_COMPLETE,
   PT_MESSENGER_WALLET_TRANSACTION,
-  PT_WALLET_TYPES,
 } from './constants';
 
-import { ResponseMessageTypes, Transaction } from '../common/pay_theory_types';
+import type {
+  ApplePayMerchantValidationBody,
+  Transaction,
+  WalletTransactionPayload,
+  WalletType,
+} from '../paytheory-sdk';
 
-// Function Response
-export interface MessengerResponse {
-  success: boolean;
-  error?: string;
-}
-
-// Apple Pay session response
-export interface ApplePaySessionResponse {
-  type: ResponseMessageTypes.SUCCESS;
-  session: any;
-}
-
-// Transaction response
-export interface TransactionResponse {
-  type: ResponseMessageTypes.SUCCESS;
-  transaction: Transaction;
-}
-
-// Wallet transaction payload
-export interface WalletTransactionPayload {
-  amount: number;
-  digitalWalletPayload: any;
-  walletType: PT_WALLET_TYPES;
-  payor?: any;
-  reference?: string;
-  accountCode?: string;
-  metadata?: any;
-  additionalPurchaseData?: any;
-  billingAddress?: any;
-  fee?: number;
-  healthExpenseType?: string;
-  invoiceId?: string;
-  receiptDescription?: string;
-  payorId?: string;
-  recurringId?: string;
-  sendReceipt?: boolean;
-  split?: any;
-}
-
+/** Internal snake_case payload sent from Messenger to the wallet transaction endpoint. */
 export interface WalletTransactionPayloadServer {
-  amount: number;
-  digital_wallet_payload: any;
-  wallet_type: PT_WALLET_TYPES;
-  payor?: any;
-  reference?: string;
-  account_code?: string;
-  metadata?: any;
-  additional_purchase_data?: any;
-  billing_address?: any;
-  fee?: number;
-  health_expense_type?: string;
-  invoice_id?: string;
-  receipt_description?: string;
-  payor_id?: string;
-  recurring_id?: string;
-  send_receipt?: boolean;
-  split?: any;
+  amount: WalletTransactionPayload['amount'];
+  digital_wallet_payload: WalletTransactionPayload['digitalWalletPayload'];
+  wallet_type: WalletTransactionPayload['walletType'];
+  payor?: WalletTransactionPayload['payor'];
+  reference?: WalletTransactionPayload['reference'];
+  account_code?: WalletTransactionPayload['accountCode'];
+  metadata?: WalletTransactionPayload['metadata'];
+  additional_purchase_data?: WalletTransactionPayload['additionalPurchaseData'];
+  billing_address?: WalletTransactionPayload['billingAddress'];
+  fee?: WalletTransactionPayload['fee'];
+  health_expense_type?: WalletTransactionPayload['healthExpenseType'];
+  invoice_id?: WalletTransactionPayload['invoiceId'];
+  receipt_description?: WalletTransactionPayload['receiptDescription'];
+  payor_id?: WalletTransactionPayload['payorId'];
+  recurring_id?: WalletTransactionPayload['recurringId'];
+  send_receipt?: WalletTransactionPayload['sendReceipt'];
+  split?: WalletTransactionPayload['split'];
   timezone: string;
 }
 
@@ -122,11 +88,7 @@ export interface MessengerReadyMessage {
 export interface MessengerAppleMerchantValidationMessage {
   type: typeof PT_MESSENGER_APPLE_MERCHANT_VALIDATION;
   messageId: string;
-  body: {
-    success: boolean;
-    session?: unknown; // Apple Pay session object
-    error?: string;
-  };
+  body: ApplePayMerchantValidationBody;
 }
 
 export interface MessengerTransferCompleteMessage {
@@ -151,11 +113,12 @@ export interface MessengerMerchantValidationMessage {
   messageId: string;
 }
 
+/** Internal iframe message carrying a provider-issued wallet payment token. */
 export interface MessengerWalletTransactionMessage {
   type: typeof PT_MESSENGER_WALLET_TRANSACTION;
   messageId: string;
   data: {
-    walletType: PT_WALLET_TYPES;
+    walletType: WalletType;
     paymentToken: unknown;
     billingContact?: {
       givenName?: string;

@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.types.json",
+  "compilerOptions": {
+    "outDir": "./dist-internal",
+    "stripInternal": false
+  },
+  "files": ["src/paytheory-sdk.ts"]
+}
