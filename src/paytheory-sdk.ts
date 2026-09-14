@@ -547,7 +547,7 @@ export interface FieldState {
   isDirty: boolean;
   errorMessages: string[];
   /** True once the hosted field's iframe has finished loading. */
-  iframeLoaded?: boolean;
+  iframeLoaded: boolean;
 }
 
 /** Fee details included with hosted-field state notifications. */
