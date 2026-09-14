@@ -5,17 +5,15 @@ import common from '../../common';
 //@ts-expect-error - TS doesn't know about DOMPurify
 import DOMPurify from 'dompurify';
 import { ElementTypes } from '../../common/data';
-import { StyleObject } from '../../common/pay_theory_types';
-
-export type placeholderObject = Partial<Record<ElementTypes, string>>;
+import type { PlaceholderObject, StyleObject, SupportedCountry } from '../../paytheory-sdk';
 
 class PayTheoryHostedField extends HTMLElement {
   protected _field: ElementTypes | undefined;
   protected _styles: StyleObject = common.defaultStyles;
   protected fields: Partial<ElementTypes[]>;
-  protected _placeholders: placeholderObject = {};
+  protected _placeholders: PlaceholderObject = {};
   protected _amount: number | undefined;
-  protected _country: string | undefined;
+  protected _country: SupportedCountry | undefined;
 
   // Used to store the session id for a connected session from our hosted checkout
   protected _session: string | undefined;
@@ -98,7 +96,7 @@ class PayTheoryHostedField extends HTMLElement {
     }
   }
 
-  set placeholders(value: placeholderObject) {
+  set placeholders(value: PlaceholderObject) {
     if (value) {
       this._placeholders = value;
     } else {

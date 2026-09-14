@@ -70,6 +70,28 @@ export const hostedErrorHandler = (message: {
   error: string;
   field: ElementTypes;
 }) => {
+  const socketErrorCode = (() => {
+    if (typeof message.error !== 'string') return null;
+    const trimmed = message.error.trim();
+
+    // Common case from secure-tags-lib: `SOCKET_ERROR: ERROR_CODE: message`
+    const withoutSocketPrefix = trimmed.startsWith('SOCKET_ERROR:')
+      ? trimmed.slice('SOCKET_ERROR:'.length).trim()
+      : trimmed;
+    const directMatch = withoutSocketPrefix.match(/^([A-Z][A-Z0-9_]+):/);
+    if (directMatch) return directMatch[1];
+
+    // Defensive: tolerate nested/duplicated socket prefixes or other preambles.
+    const nestedMatch = trimmed.match(/(?:^|SOCKET_ERROR:\s*)([A-Z][A-Z0-9_]+):/);
+    return nestedMatch ? nestedMatch[1] : null;
+  })();
+
+  const isSessionInvalid =
+    socketErrorCode === 'SESSION_EXPIRED' ||
+    socketErrorCode === 'SESSION_NOT_FOUND' ||
+    socketErrorCode === 'SESSION_SPENT' ||
+    socketErrorCode === 'CHECKOUT_COMPLETE';
+
   const fieldType = common.isFieldType(message.field);
   if (fieldType) {
     const components = transactingWebComponentMap[fieldType];
@@ -84,12 +106,12 @@ export const hostedErrorHandler = (message: {
           });
         }
 
-        // If the session has expired, set the ready state to false
-        if (message.error.startsWith('SESSION_EXPIRED')) transactingElement.connected = false;
+        // If the session is no longer active, set the ready state to false
+        if (isSessionInvalid) transactingElement.connected = false;
       }
     });
   }
 
   // Do not throw an error if the error is a session expired error
-  if (!message.error.startsWith('SESSION_EXPIRED')) common.handleError(message.error);
+  if (socketErrorCode !== 'SESSION_EXPIRED') common.handleError(message.error);
 };

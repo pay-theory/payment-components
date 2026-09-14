@@ -23,6 +23,7 @@ import {
   FailedTransactionMessage,
   PayTheoryDataObject,
   SuccessfulTransactionMessage,
+  TokenizedPaymentMethodFailureMessage,
   TokenizedPaymentMethodMessage,
 } from '../../common/format';
 import {
@@ -31,38 +32,34 @@ import {
   postMessageToHostedField,
   sendAsyncPostMessage,
 } from '../../common/message';
-import {
-  BillingInfo,
+import { ErrorType, ResponseMessageTypes } from '../../common/sdk-runtime-values';
+import type {
+  CheckoutContextQuery,
   ErrorResponse,
-  ErrorType,
   FieldState,
-  PayorInfo,
-  ResponseMessageTypes,
+  Metadata,
+  PaymentFeeMode,
   StateObject,
-} from '../../common/pay_theory_types';
+  SupportedCountry,
+  TokenizeProps,
+  TransactProps,
+} from '../../paytheory-sdk';
 import PayTheoryHostedField from '../pay-theory-hosted-field';
 
+/** Internal field-state message enriched with its source element and connection status. */
 export interface IncomingFieldState extends FieldState {
   element?: ElementTypes;
   isConnected?: boolean;
 }
 
+/** Internal hosted-field transaction payload derived from the canonical public transaction input. */
 export interface TransactDataObject {
-  amount: number;
-  payorInfo: PayorInfo;
+  amount: TransactProps['amount'];
+  payorInfo: NonNullable<TransactProps['payorInfo']>;
   payTheoryData: PayTheoryDataObject;
-  metadata?: Record<string | number, string | number | boolean>;
-  fee_mode?: typeof common.MERCHANT_FEE | typeof common.SERVICE_FEE;
-  confirmation?: boolean;
-}
-
-export interface TokenizeDataObject {
-  payorInfo?: PayorInfo;
-  metadata?: Record<string | number, string | number | boolean>;
-  payorId?: string;
-  billingInfo?: BillingInfo;
-  skipValidation?: boolean;
-  expandedResponse?: boolean;
+  metadata?: Metadata;
+  fee_mode?: PaymentFeeMode;
+  confirmation?: TransactProps['confirmation'];
 }
 
 interface ConstructorProps {
@@ -76,7 +73,7 @@ interface ConnectedMessage {
   element: ElementTypes;
 }
 
-interface ReadyResponse {
+interface HostedFieldReadyResponse {
   type: 'READY';
   element: ElementTypes;
 }
@@ -85,10 +82,11 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   // Used to fetch the pt-token attribute to initialize the hosted field
   protected _apiKey: string | undefined;
   protected _challengeOptions: object | undefined;
+  protected _checkoutContext: CheckoutContextQuery | undefined;
   protected _session: string | undefined;
 
   // Used to track the metadata that is passed in for a session
-  protected _metadata: Record<string | number, string | number | boolean> | undefined;
+  protected _metadata: Metadata | undefined;
 
   // Used to track if the transact or tokenize function has been called, and we are awaiting a response
   protected _initialized = false;
@@ -131,15 +129,12 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   protected _removeFeeCalcReconnect: (() => void) | undefined;
 
   // Used for backwards compatibility with feeMode
-  protected _feeMode: typeof common.SERVICE_FEE | typeof common.MERCHANT_FEE | undefined;
+  protected _feeMode: PaymentFeeMode | undefined;
 
   protected _fee: number | undefined;
 
   constructor(props: ConstructorProps) {
     super();
-    console.log(
-      `[PT Debug] Creating PayTheoryHostedFieldTransactional with transactingIFrameId: ${props.transactingIFrameId}, type: ${props.transactingType}`,
-    );
     this.transact = this.transact.bind(this) as () => Promise<
       | ConfirmationMessage
       | SuccessfulTransactionMessage
@@ -147,18 +142,22 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
       | CashBarcodeMessage
       | ErrorMessage
     >;
-    this.resetToken = this.resetToken.bind(this) as () => Promise<ErrorResponse | ReadyResponse>;
+    this.resetToken = this.resetToken.bind(this) as () => Promise<
+      ErrorResponse | HostedFieldReadyResponse
+    >;
     this.capture = this.capture.bind(this) as () => Promise<
       FailedTransactionMessage | ErrorMessage
     >;
     this.cancel = this.cancel.bind(this) as () => Promise<true | ErrorResponse>;
     this.tokenize = this.tokenize.bind(this) as () => Promise<
-      TokenizedPaymentMethodMessage | ErrorMessage
+      TokenizedPaymentMethodMessage | TokenizedPaymentMethodFailureMessage | ErrorMessage
     >;
     this.sendValidMessage = this.sendValidMessage.bind(this) as () => void;
     this.sendStateMessage = this.sendStateMessage.bind(this) as () => void;
     this.sendValidMessage = this.sendValidMessage.bind(this) as () => void;
-    this.sendPtToken = this.sendPtToken.bind(this) as () => Promise<ReadyResponse | ErrorResponse>;
+    this.sendPtToken = this.sendPtToken.bind(this) as () => Promise<
+      HostedFieldReadyResponse | ErrorResponse
+    >;
     this.handleFeeMessage = this.handleFeeMessage.bind(this) as (message: {
       type: string;
       body: { fee: number; payment_type: string };
@@ -175,21 +174,16 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   async sendTokenAsync(
     type: `pt-static:connection_token` | `pt-static:reset_host`,
-  ): Promise<ErrorResponse | ReadyResponse> {
+  ): Promise<ErrorResponse | HostedFieldReadyResponse> {
     try {
-      console.log(`[PT Debug] sendTokenAsync called with type: ${type}`);
-      console.log(
-        `[PT Debug] API Key present: ${this._apiKey ? 'YES' : 'NO'}, Session present: ${this._session ? 'YES' : 'NO'}`,
-      );
-      const ptToken = await common.fetchPtToken(this._apiKey ?? '', this._session);
-      console.log(`[PT Debug] fetchPtToken result: ${ptToken ? 'SUCCESS' : 'FAILURE'}`);
+      const ptToken = this._checkoutContext
+        ? await common.fetchCheckoutPtToken(this._checkoutContext, this._session)
+        : await common.fetchPtToken(this._apiKey ?? '', this._session);
       if (ptToken) {
         this._challengeOptions = ptToken.challengeOptions;
         const transactingIFrame = document.getElementById(this._transactingIFrameId) as
-          | HTMLIFrameElement
-          | undefined;
+          HTMLIFrameElement | undefined;
         if (transactingIFrame) {
-          console.log(`[PT Debug] Found transacting iframe with id: ${this._transactingIFrameId}`);
           const message: AsyncMessage = {
             type: type,
             data: {
@@ -199,14 +193,11 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             },
             async: true,
           };
-          console.log(`[PT Debug] Sending message to iframe: ${type} with token`);
           const response = await sendAsyncPostMessage<ErrorMessage | ConnectedMessage>(
             message,
             transactingIFrame,
           );
-          console.log(`[PT Debug] Response from iframe:`, response);
           if (response.type === ERROR_STEP) {
-            console.error(`[PT Debug] Error response from iframe:`, response);
             return handleTypedError(ErrorType.NO_TOKEN, 'Unable validate connection token');
           }
 
@@ -217,35 +208,27 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
           }
 
           this._isConnected = true;
-          console.log(`[PT Debug] Connection established successfully`);
 
           return {
             type: 'READY',
             element: response.element,
           };
         } else {
-          console.error(
-            `[PT Debug] Transacting iframe not found with id: ${this._transactingIFrameId}`,
-          );
           return handleTypedError(ErrorType.NO_TOKEN, 'Unable to find transacting iframe');
         }
       } else {
-        console.error('[PT Debug] Failed to fetch pt-token');
         return handleTypedError(ErrorType.NO_TOKEN, 'Unable to fetch pt-token');
       }
     } catch (e) {
-      console.error(`[PT Debug] Exception in sendTokenAsync:`, e);
       return handleTypedError(ErrorType.NO_TOKEN, 'Unable to fetch pt-token');
     }
   }
 
   async resetToken() {
-    console.log(`[PT Debug] Resetting token for ${this._transactingIFrameId}`);
     return this.sendTokenAsync(`pt-static:reset_host`);
   }
 
   async sendPtToken() {
-    console.log(`[PT Debug] Sending PT token for ${this._transactingIFrameId}`);
     return this.sendTokenAsync(`pt-static:connection_token`);
   }
 
@@ -276,26 +259,15 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   connectedCallback() {
-    console.log(`[PT Debug] connectedCallback triggered for ${this._transactingIFrameId}`);
     // Set up a listener for the hosted field to message saying it is ready for the pt-token to be sent
     this._removeHostTokenListener = common.handleHostedFieldMessage(
       (event: { type: unknown; element: ElementTypes }) => {
-        const matches =
+        return (
           event.type === 'pt-static:pt_token_ready' &&
-          this._transactingIFrameId.includes(event.element);
-        if (event.type === 'pt-static:pt_token_ready') {
-          console.log(
-            `[PT Debug] Received pt_token_ready event for element: ${event.element}, matches: ${matches}`,
-          );
-        }
-        return matches;
-      },
-      () => {
-        console.log(
-          `[PT Debug] Calling sendPtToken from pt_token_ready handler for ${this._transactingIFrameId}`,
+          this._transactingIFrameId.includes(event.element)
         );
-        return this.sendPtToken();
       },
+      () => this.sendPtToken(),
     );
 
     this._removeFeeListener = common.handleHostedFieldMessage(
@@ -365,8 +337,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   async cancel(): Promise<true | ErrorResponse> {
     const transactingIFrame = document.getElementById(this._transactingIFrameId) as
-      | HTMLIFrameElement
-      | undefined;
+      HTMLIFrameElement | undefined;
     if (transactingIFrame) {
       transactingIFrame.contentWindow.postMessage(
         {
@@ -391,9 +362,9 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   async tokenize(
-    data: TokenizeDataObject,
+    data: TokenizeProps,
     element: PayTheoryHostedFieldTransactional,
-  ): Promise<TokenizedPaymentMethodMessage | ErrorMessage> {
+  ): Promise<TokenizedPaymentMethodMessage | TokenizedPaymentMethodFailureMessage | ErrorMessage> {
     this._isTransactingElement = true;
     this._initialized = true;
     const response = await common.sendTransactingMessage(element, data.billingInfo);
@@ -409,10 +380,9 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     const transactingIFrame = document.getElementById(
       this._transactingIFrameId,
     ) as HTMLIFrameElement;
-    return sendAsyncPostMessage<TokenizedPaymentMethodMessage | ErrorMessage>(
-      message,
-      transactingIFrame,
-    );
+    return sendAsyncPostMessage<
+      TokenizedPaymentMethodMessage | TokenizedPaymentMethodFailureMessage | ErrorMessage
+    >(message, transactingIFrame);
   }
 
   sendStateMessage() {
@@ -539,15 +509,18 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set apiKey(value: string) {
-    console.log(`[PT Debug] Setting apiKey: ${value ? 'PROVIDED' : 'EMPTY'}`);
     this._apiKey = value;
+  }
+
+  set checkoutContext(value: CheckoutContextQuery | undefined) {
+    this._checkoutContext = value;
   }
 
   set readyPort(value: MessagePort) {
     this._readyPort = value;
   }
 
-  set metadata(value: Record<string | number, string | number | boolean> | undefined) {
+  set metadata(value: Metadata | undefined) {
     this._metadata = value;
   }
 
@@ -645,7 +618,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
     this._removeEventListeners = value;
   }
 
-  set feeMode(value: typeof common.SERVICE_FEE | typeof common.MERCHANT_FEE | undefined) {
+  set feeMode(value: PaymentFeeMode | undefined) {
     this._feeMode = value;
   }
 
@@ -695,19 +668,16 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   }
 
   set session(value: string) {
-    console.log(`[PT Debug] Setting session: ${value ? 'PROVIDED' : 'EMPTY'}`);
     this._session = value;
   }
 
-  set country(value: string) {
-    console.log(`[PT Debug] Setting country to: ${value} for ${this._transactingIFrameId}`);
+  set country(value: SupportedCountry) {
     this._country = value;
     // When the country is set we should also set the required fields for the element
     switch (this._transactingIFrameId) {
       case CARD_IFRAME:
         this._fieldTypes = [...cardFieldTypes.transacting, ...cardFieldTypes.siblings];
         this._requiredValidFields = ['card-number', 'card-cvv', 'card-exp', 'billing-zip'];
-        console.log(`[PT Debug] Set fieldTypes for CARD_IFRAME:`, this._fieldTypes);
         break;
       case BANK_IFRAME:
         if (value === 'CAN') {
@@ -719,7 +689,6 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             'institution-number',
             'transit-number',
           ];
-          console.log(`[PT Debug] Set fieldTypes for BANK_IFRAME (CAN):`, this._fieldTypes);
         } else {
           this._fieldTypes = [...achFieldTypes.transacting, ...achFieldTypes.siblings];
           this._requiredValidFields = [
@@ -728,13 +697,11 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
             'account-type',
             'routing-number',
           ];
-          console.log(`[PT Debug] Set fieldTypes for BANK_IFRAME (non-CAN):`, this._fieldTypes);
         }
         break;
       case CASH_IFRAME:
         this._fieldTypes = [...cashFieldTypes.transacting, ...cashFieldTypes.siblings];
         this._requiredValidFields = ['cash-name', 'cash-contact'];
-        console.log(`[PT Debug] Set fieldTypes for CASH_IFRAME:`, this._fieldTypes);
         break;
     }
   }
