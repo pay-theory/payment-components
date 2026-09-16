@@ -2,6 +2,28 @@ const path = require('path');
 const webpack = require('webpack');
 const devtool = 'inline-source-map';
 
+// Keep the typed runtime entry compatible with the same legacy browsers as the former JS entry.
+// Other TypeScript modules retain the repository's existing ts-loader behavior.
+const legacyBrowserBabelLoader = {
+  loader: 'babel-loader',
+  options: {
+    presets: [
+      [
+        '@babel/preset-env',
+        {
+          useBuiltIns: 'usage',
+          modules: 'auto',
+          corejs: '3.6.5',
+          targets: {
+            ie: '11',
+          },
+        },
+      ],
+    ],
+    plugins: ['@babel/plugin-transform-modules-commonjs', '@babel/plugin-transform-classes'],
+  },
+};
+
 // Load environment variables from .env file
 require('dotenv').config();
 
@@ -17,7 +39,7 @@ module.exports = {
       util: require.resolve('util/'),
     },
   },
-  entry: './src/index.js',
+  entry: './src/index.ts',
   output: {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
@@ -38,33 +60,15 @@ module.exports = {
       module: false,
     },
   },
-  mode: 'production',
+  // Local builds preserve readable development output; every CDN environment remains optimized.
+  mode: isLocalDev ? 'development' : 'production',
   module: {
     rules: [
       {
         test: /\.m?js$/,
         exclude: /(node_modules|bower_components)/,
         use: {
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              [
-                '@babel/preset-env',
-                {
-                  useBuiltIns: 'usage',
-                  modules: 'auto',
-                  corejs: '3.6.5',
-                  targets: {
-                    ie: '11',
-                  },
-                },
-              ],
-            ],
-            plugins: [
-              '@babel/plugin-transform-modules-commonjs',
-              '@babel/plugin-transform-classes',
-            ],
-          },
+          ...legacyBrowserBabelLoader,
         },
       },
       {
@@ -78,7 +82,11 @@ module.exports = {
       {
         test: /\.ts?$/,
         use: 'ts-loader',
-        exclude: /node_modules/,
+        exclude: [/node_modules/, path.resolve(__dirname, 'src/index.ts')],
+      },
+      {
+        include: path.resolve(__dirname, 'src/index.ts'),
+        use: [legacyBrowserBabelLoader, 'ts-loader'],
       },
     ],
   },

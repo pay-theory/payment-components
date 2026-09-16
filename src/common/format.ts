@@ -1,7 +1,8 @@
 import * as data from './data';
 import { ElementTypes, MERCHANT_FEE, SERVICE_FEE } from './data';
 import { handleError } from './message';
-import {
+import { ResponseMessageTypes } from './sdk-runtime-values';
+import type {
   BillingInfo,
   CashBarcodeObject,
   CashBarcodeResponse,
@@ -11,15 +12,16 @@ import {
   FailedTransactionResponse,
   HealthExpenseType,
   Level3DataSummary,
+  Metadata,
   PayorInfo,
   PaymentMethod,
-  ResponseMessageTypes,
   SuccessfulTransactionResponse,
   TokenizedPaymentMethodObject,
   TokenizedPaymentMethodResponse,
   Transaction,
   TransactProps,
-} from './pay_theory_types';
+  FailedTokenizationResponse,
+} from '../paytheory-sdk';
 
 // Message Types that would come back from the iframe for async messages
 export const CONFIRMATION_STEP = 'pt-static:confirm';
@@ -28,11 +30,14 @@ export const COMPLETE_STEP = 'pt-static:complete';
 export const ERROR_STEP = 'pt-static:error';
 export const FIELDS_READY_STEP = 'pt-static:fields-ready';
 
+/** Backend-facing payment fields produced from the public transaction options. */
 export interface PayTheoryDataObject {
   account_code: string | number;
   billing_info?: BillingInfo;
   fee?: number;
   healthExpenseType?: HealthExpenseType;
+  /** The caller-provided idempotency key forwarded to the payment backend. */
+  idempotency_key?: string;
   invoice_id?: string;
   level3DataSummary?: Level3DataSummary;
   oneTimeUseToken?: boolean;
@@ -42,6 +47,7 @@ export interface PayTheoryDataObject {
   recurring_id?: string;
   reference: string | number;
   send_receipt?: boolean;
+  statement_descriptor?: string;
   timezone?: string;
   expanded_response?: boolean;
 }
@@ -57,6 +63,12 @@ export interface ModifiedCheckoutDetails extends CheckoutDetails {
   payorInfo: undefined;
 }
 
+/**
+ * Normalizes public camelCase payment options into the backend-facing transaction payload.
+ *
+ * @param inputParams - Public transaction or hosted-checkout options.
+ * @returns A copied input object containing normalized `payTheoryData` fields.
+ */
 export const parseInputParams = (
   inputParams: TransactProps | CheckoutDetails,
 ): ModifiedTransactProps | ModifiedCheckoutDetails => {
@@ -67,6 +79,7 @@ export const parseInputParams = (
     billing_info: (inputParams as TransactProps).billingInfo,
     fee: (inputParams as TransactProps).fee,
     healthExpenseType: inputCopy.healthExpenseType,
+    idempotency_key: (inputParams as TransactProps).idempotencyKey,
     invoice_id: invoiceId,
     level3DataSummary: inputCopy.level3DataSummary,
     oneTimeUseToken: inputCopy.oneTimeUseToken ?? false,
@@ -80,6 +93,7 @@ export const parseInputParams = (
     reference:
       (inputParams as TransactProps).reference ?? (metadata['pay-theory-reference'] as string),
     send_receipt: (inputParams as TransactProps).sendReceipt ?? !!metadata['pay-theory-receipt'],
+    statement_descriptor: (inputParams as TransactProps).statementDescriptor,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     expanded_response: (inputParams as TransactProps).expandedResponse,
   };
@@ -137,7 +151,7 @@ export interface SuccessfulTransactionMessage {
     amount: number;
     service_fee: number;
     state: 'PENDING' | 'SUCCESS';
-    metadata: Record<string | number, string | number | boolean>;
+    metadata: Metadata;
     payor_id: string;
     payment_method_id: string;
   };
@@ -248,6 +262,42 @@ export interface TokenizedPaymentMethodMessageExpanded {
   body: PaymentMethod;
 }
 
+export interface TokenizedPaymentMethodFailureMessage {
+  type: typeof COMPLETE_STEP;
+  paymentType: 'tokenize';
+  expandedResponse: boolean;
+  body: {
+    state: 'FAILURE';
+    status: {
+      result: 'FAILED';
+      reason: {
+        error_code: string;
+        error_text: string;
+      };
+    };
+  };
+}
+
+const isTokenizedPaymentMethodFailureMessage = (
+  message:
+    | TokenizedPaymentMethodMessage
+    | TokenizedPaymentMethodMessageExpanded
+    | TokenizedPaymentMethodFailureMessage,
+): message is TokenizedPaymentMethodFailureMessage =>
+  'state' in message.body && message.body.state === 'FAILURE';
+
+export const parseFailedTokenizeMessage = (
+  message: TokenizedPaymentMethodFailureMessage,
+): FailedTokenizationResponse => {
+  return {
+    type: ResponseMessageTypes.FAILED,
+    body: {
+      failure_code: message.body.status.reason.error_code,
+      failure_text: message.body.status.reason.error_text,
+    },
+  };
+};
+
 export const parseResponse = (
   message:
     | ConfirmationMessage
@@ -256,6 +306,8 @@ export const parseResponse = (
     | FailedTransactionMessage
     | CashBarcodeMessage
     | TokenizedPaymentMethodMessage
+    | TokenizedPaymentMethodMessageExpanded
+    | TokenizedPaymentMethodFailureMessage
     | ErrorMessage,
 ):
   | ConfirmationResponse
@@ -263,12 +315,21 @@ export const parseResponse = (
   | FailedTransactionResponse
   | CashBarcodeResponse
   | TokenizedPaymentMethodResponse
+  | FailedTokenizationResponse
   | ErrorResponse => {
   switch (message.type) {
     case CONFIRMATION_STEP:
       return parseConfirmationMessage(message);
     case COMPLETE_STEP:
       if (message.paymentType === 'tokenize') {
+        if (isTokenizedPaymentMethodFailureMessage(message)) {
+          if (message.expandedResponse !== true) {
+            return handleError(
+              `SOCKET_ERROR: Token validation failed: ${message.body.status.reason.error_text}`,
+            );
+          }
+          return parseFailedTokenizeMessage(message);
+        }
         return {
           type: ResponseMessageTypes.TOKENIZED,
           body: message.body,

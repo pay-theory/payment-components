@@ -67,6 +67,7 @@ module.exports = {
     'test/bank-account-name.web-test.js',
     'test/compliance-beacon.web-test.js',
     'test/pay-theory-messenger.web-test.js',
+    'test/iframe-loaded-initial-state.web-test.js',
   ],
   nodeResolve: true,
   coverage: true,

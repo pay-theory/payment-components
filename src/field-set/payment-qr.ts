@@ -4,7 +4,7 @@
 import common from '../common';
 import * as valid from './validation';
 import PayTheoryCheckoutQR from '../components/pay-theory-checkout-qr';
-import { PayTheoryQRInput, SuccessfulTransactionObject } from '../common/pay_theory_types';
+import type { PayTheoryQRInput, SuccessfulTransactionObject } from '../paytheory-sdk';
 import { ErrorMessage, ModifiedCheckoutDetails } from '../common/format';
 
 export default async (inputParams: PayTheoryQRInput) => {
