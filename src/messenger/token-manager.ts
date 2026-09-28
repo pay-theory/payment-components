@@ -1,5 +1,5 @@
 import { fetchCheckoutPtToken, fetchPtToken } from '../common/network';
-import type { CheckoutContextQuery } from '../common/pay_theory_types';
+import type { CheckoutContextQuery } from '../paytheory-sdk';
 
 type TokenManagerAuth =
   | { apiKey: string; checkoutContext?: never }

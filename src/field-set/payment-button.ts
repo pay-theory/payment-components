@@ -2,12 +2,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import common from '../common';
 import * as valid from './validation';
-import {
+import type {
   PayTheoryButtonInput,
   SuccessfulTransactionObject,
   ErrorResponse,
   CashBarcodeObject,
-} from '../common/pay_theory_types';
+} from '../paytheory-sdk';
 import { ModifiedCheckoutDetails } from '../common/format';
 import PayTheoryCheckoutButton from '../components/pay-theory-checkout-button';
 import PayTheoryOverlay from '../components/pay-theory-overlay';
