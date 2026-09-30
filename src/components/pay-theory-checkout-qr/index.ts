@@ -72,8 +72,7 @@ class PayTheoryCheckoutQR extends HTMLElement {
   set size(value: number) {
     this._size = value;
     const iframe = document.getElementById(`${common.checkoutQRField}-iframe`) as
-      | HTMLIFrameElement
-      | undefined;
+      HTMLIFrameElement | undefined;
     if (iframe) {
       iframe.height = `${this._size}px`;
       iframe.width = `${this._size}px`;
