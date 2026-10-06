@@ -12,7 +12,7 @@ import {
 } from './data';
 import PayTheoryHostedField from '../components/pay-theory-hosted-field';
 import PayTheoryHostedFieldTransactional from '../components/pay-theory-hosted-field-transactional';
-import { ErrorType } from './pay_theory_types';
+import { ErrorType } from './sdk-runtime-values';
 
 export const findTransactingElement = (): PayTheoryHostedFieldTransactional | false => {
   let result: PayTheoryHostedFieldTransactional | false = false;
@@ -47,8 +47,7 @@ export interface processedElement<
 
 export const addFrame = (frameType: webComponentIds, element: string) => {
   const tagFrame = document.createElement(frameType) as
-    | PayTheoryHostedField
-    | PayTheoryHostedFieldTransactional;
+    PayTheoryHostedField | PayTheoryHostedFieldTransactional;
   tagFrame.setAttribute('id', `${element}-tag-frame`);
   tagFrame.setAttribute('name', frameType);
   return tagFrame;

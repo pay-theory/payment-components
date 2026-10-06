@@ -1,15 +1,16 @@
 import { hostedCheckoutEndpoint, hostedFieldsEndpoint } from './network';
 import { ElementTypes } from './data';
-import {
+import { ErrorType, ResponseMessageTypes } from './sdk-runtime-values';
+import type {
   CashBarcodeResponse,
   ConfirmationResponse,
   ErrorResponse,
-  ErrorType,
+  ErrorType as PublicErrorType,
+  FailedTokenizationResponse,
   FailedTransactionResponse,
-  ResponseMessageTypes,
   SuccessfulTransactionResponse,
   TokenizedPaymentMethodResponse,
-} from './pay_theory_types';
+} from '../paytheory-sdk';
 
 interface PayTheoryEvent extends MessageEvent {
   payTheory: boolean;
@@ -235,7 +236,7 @@ export const handleError = (error: string): ErrorResponse => {
   };
 };
 
-export const handleTypedError = (type: ErrorType, error: string): ErrorResponse => {
+export const handleTypedError = (type: PublicErrorType, error: string): ErrorResponse => {
   const errorString = `${type}: ${error}`;
   return handleError(errorString);
 };
@@ -245,6 +246,7 @@ export const sendObserverMessage = (
   message:
     | SuccessfulTransactionResponse
     | FailedTransactionResponse
+    | FailedTokenizationResponse
     | ErrorResponse
     | CashBarcodeResponse
     | TokenizedPaymentMethodResponse

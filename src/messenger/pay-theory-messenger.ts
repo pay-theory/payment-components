@@ -1,21 +1,29 @@
 import MessengerChannel from './messenger-channel';
 import StateManager, { MessengerState } from './state-manager';
 import TokenManager from './token-manager';
-import {
-  ApplePaySessionResponse,
+import type {
   MessengerAppleMerchantValidationMessage,
   MessengerResendInvoiceEmailSuccessMessage,
-  MessengerResponse,
   MessengerSocketErrorMessage,
   MessengerTransferCompleteMessage,
-  TransactionResponse,
-  WalletTransactionPayload,
   WalletTransactionPayloadServer,
 } from './types';
 
 import { hostedFieldsEndpoint } from '../common/network';
-import type { CheckoutContextQuery } from '../common/pay_theory_types';
-import { ErrorResponse, ResponseMessageTypes } from '../common/pay_theory_types';
+import { ResponseMessageTypes } from '../common/sdk-runtime-values';
+import type {
+  ApplePaySessionResponse,
+  CheckoutContextQuery,
+  ErrorResponse,
+  MessengerEvent,
+  MessengerEventMap,
+  MessengerResponse,
+  PayTheoryAuthOptions,
+  PayTheoryMessenger as PayTheoryMessengerContract,
+  TransactionResponse,
+  Unsubscribe,
+  WalletTransactionPayload,
+} from '../paytheory-sdk';
 import { generateUUID } from '../field-set/payment-fields-v2';
 import {
   PT_MESSENGER_MERCHANT_VALIDATION,
@@ -31,13 +39,12 @@ import {
   PT_WALLET_TYPE_APPLE,
   PT_WALLET_TYPE_GOOGLE,
   PT_WALLET_TYPE_PAZE,
-  MessengerEvent,
   MessengerEvents,
 } from './constants';
 
 import { checkApiKey } from '../field-set/validation';
 
-class PayTheoryMessenger {
+class PayTheoryMessenger implements PayTheoryMessengerContract {
   private static instances: Map<string, PayTheoryMessenger> = new Map();
   private static initializingInstances: Map<string, Promise<MessengerResponse>> = new Map();
   private instanceKey: string;
@@ -48,7 +55,7 @@ class PayTheoryMessenger {
   private tokenManager: TokenManager;
   private channel: MessengerChannel | null = null;
   private state: StateManager;
-  private eventListeners: Map<string, Function[]> = new Map();
+  private eventListeners: Map<MessengerEvent, Function[]> = new Map();
   private globalEventListeners: Array<{ type: string; handler: EventListener }> = [];
   private initializationPromise: Promise<MessengerResponse> | null = null;
   private refreshPromise: Promise<MessengerResponse> | null = null;
@@ -59,11 +66,7 @@ class PayTheoryMessenger {
   static readonly googlePay = PT_WALLET_TYPE_GOOGLE;
   static readonly paze = PT_WALLET_TYPE_PAZE;
 
-  constructor(
-    options:
-      | { apiKey: string; checkoutContext?: never }
-      | { apiKey?: never; checkoutContext: CheckoutContextQuery },
-  ) {
+  constructor(options: PayTheoryAuthOptions) {
     // Check if the options is an object and it contains the apiKey property
     if (typeof options !== 'object') {
       throw new Error('Invalid options');
@@ -96,7 +99,8 @@ class PayTheoryMessenger {
   }
 
   private static createCheckoutContextKey(checkoutContext: CheckoutContextQuery): string {
-    if ('invoiceId' in checkoutContext) return `checkoutContext:invoice:${checkoutContext.invoiceId}`;
+    if ('invoiceId' in checkoutContext)
+      return `checkoutContext:invoice:${checkoutContext.invoiceId}`;
     if ('linkId' in checkoutContext) return `checkoutContext:link:${checkoutContext.linkId}`;
     if ('recurringHash' in checkoutContext)
       return `checkoutContext:recurring:${checkoutContext.recurringHash}`;
@@ -838,7 +842,10 @@ class PayTheoryMessenger {
   /**
    * Event handling methods
    */
-  on(event: MessengerEvent, callback: Function): () => void {
+  on<TEvent extends MessengerEvent>(
+    event: TEvent,
+    callback: (payload: MessengerEventMap[TEvent]) => void,
+  ): Unsubscribe {
     // Validate event at runtime (optional - TypeScript will catch at compile time)
     const validEvents = Object.values(MessengerEvents);
     if (!validEvents.includes(event)) {
@@ -878,7 +885,10 @@ class PayTheoryMessenger {
     return this.state.getStateHistory();
   }
 
-  private emitEvent(event: MessengerEvent, data: any): void {
+  private emitEvent<TEvent extends MessengerEvent>(
+    event: TEvent,
+    data: MessengerEventMap[TEvent],
+  ): void {
     if (!this.eventListeners.has(event)) {
       return;
     }
