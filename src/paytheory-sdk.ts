@@ -558,8 +558,31 @@ export interface ServiceFeeState {
   bank_fee?: number;
 }
 
-/** State reported by `stateObserver`; only fields mounted on the page are present. */
-export type StateObject = Partial<Record<HostedFieldType, FieldState>> & {
+/** Hosted field names reported in `stateObserver` state. */
+export type StateFieldType =
+  | 'card-number'
+  | 'card-exp'
+  | 'card-cvv'
+  | 'card-name'
+  | 'billing-line1'
+  | 'billing-line2'
+  | 'billing-city'
+  | 'billing-state'
+  | 'billing-zip'
+  | 'account-number'
+  | 'account-type'
+  | 'account-name'
+  | 'routing-number'
+  | 'institution-number'
+  | 'transit-number'
+  | 'cash-name'
+  | 'cash-contact';
+
+/**
+ * State reported by `stateObserver`. Every field key is present, whether or not that field is
+ * mounted; unmounted fields report their initial state.
+ */
+export type StateObject = Record<StateFieldType, FieldState> & {
   service_fee: ServiceFeeState;
 };
 
