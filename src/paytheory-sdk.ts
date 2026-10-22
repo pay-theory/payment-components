@@ -364,6 +364,9 @@ export interface TransactProps {
   metadata?: Metadata;
   feeMode?: PaymentFeeMode;
   fee?: number;
+  /**
+   * @deprecated The confirmation flow is deprecated. Show the service fee from `stateObserver` before the payor submits, and pass it as `fee`.
+   */
   confirmation?: boolean;
   accountCode?: string;
   reference?: string;
@@ -461,7 +464,7 @@ export interface PayTheoryPaymentFieldsInput {
   metadata?: Metadata;
   placeholders?: PlaceholderObject;
   elementIds?: PaymentFieldElementIds;
-  /** Session used to connect hosted controls to the same checkout flow. */
+  /** @internal Session used by the Pay Theory checkout portal to connect hosted controls to one checkout flow. */
   session?: string;
   feeMode?: PaymentFeeMode;
   amount?: number;
@@ -558,8 +561,31 @@ export interface ServiceFeeState {
   bank_fee?: number;
 }
 
-/** State reported by `stateObserver`; only fields mounted on the page are present. */
-export type StateObject = Partial<Record<HostedFieldType, FieldState>> & {
+/** Hosted field names reported in `stateObserver` state. */
+export type StateFieldType =
+  | 'card-number'
+  | 'card-exp'
+  | 'card-cvv'
+  | 'card-name'
+  | 'billing-line1'
+  | 'billing-line2'
+  | 'billing-city'
+  | 'billing-state'
+  | 'billing-zip'
+  | 'account-number'
+  | 'account-type'
+  | 'account-name'
+  | 'routing-number'
+  | 'institution-number'
+  | 'transit-number'
+  | 'cash-name'
+  | 'cash-contact';
+
+/**
+ * State reported by `stateObserver`. Every field key is present, whether or not that field is
+ * mounted; unmounted fields report their initial state.
+ */
+export type StateObject = Record<StateFieldType, FieldState> & {
   service_fee: ServiceFeeState;
 };
 
@@ -567,6 +593,7 @@ export type StateObject = Partial<Record<HostedFieldType, FieldState>> & {
 export interface LegacyMountOptions {
   placeholders?: PlaceholderObject;
   elements?: PaymentFieldElementIds;
+  /** @internal Session used by the Pay Theory checkout portal. */
   session?: string;
 }
 
@@ -582,9 +609,9 @@ export interface PaymentFieldsController {
   tokenizePaymentMethod(props: TokenizeProps): Promise<TokenizeResult>;
   /** Activates the configured card-present device. */
   activateCardPresentDevice(): true | ErrorResponse;
-  /** Confirms a transaction that previously required confirmation. */
+  /** @deprecated The confirmation flow is deprecated. Confirms a transaction that previously required confirmation. */
   confirm(): Promise<ConfirmResult>;
-  /** Cancels the active hosted-field action. */
+  /** @deprecated The confirmation flow is deprecated. Cancels a transaction waiting for confirmation. */
   cancel(): Promise<true | ErrorResponse | void>;
   /** Observes hosted-field readiness. */
   readyObserver(callback: (ready: true) => void): Unsubscribe;
@@ -594,11 +621,11 @@ export interface PaymentFieldsController {
   validObserver(callback: (value: string) => void): Unsubscribe;
   /** Observes cash barcode results. */
   cashObserver(callback: (value: CashBarcodeObject) => void): Unsubscribe;
-  /** Observes the final body emitted after confirming a transaction. */
+  /** @deprecated The confirmation flow is deprecated. Observes the final body emitted after confirming a transaction. */
   captureObserver(
     callback: (value: SuccessfulTransactionObject | FailedTransactionObject | Transaction) => void,
   ): Unsubscribe;
-  /** Observes the card details emitted when a transaction requires confirmation. */
+  /** @deprecated The confirmation flow is deprecated. Observes the card details emitted when a transaction requires confirmation. */
   tokenizeObserver(callback: (value: ConfirmationObject) => void): Unsubscribe;
   /** Observes completed transaction and tokenization bodies. */
   transactedObserver(
@@ -758,10 +785,13 @@ export interface PayTheorySDK {
   /** Starts a transaction using the mounted hosted fields. */
   transact(props: TransactProps): Promise<TransactResult>;
 
-  /** Confirms a transaction that previously returned a confirmation response. */
+  /**
+   * @deprecated The confirmation flow is deprecated. Show the service fee from `stateObserver` before the payor submits, and pass it as `fee`.
+   * Confirms a transaction that previously returned a confirmation response.
+   */
   confirm(): Promise<ConfirmResult>;
 
-  /** Cancels the active hosted-field action. */
+  /** @deprecated The confirmation flow is deprecated. Cancels a transaction waiting for confirmation. */
   cancel(): Promise<true | ErrorResponse | void>;
 
   /** Tokenizes the payment method collected by the mounted hosted fields. */
@@ -783,9 +813,9 @@ export interface PayTheorySDK {
         | Transaction,
     ) => void,
   ): Unsubscribe;
-  /** Observes the card details emitted when a transaction requires confirmation. */
+  /** @deprecated The confirmation flow is deprecated. Observes the card details emitted when a transaction requires confirmation. */
   tokenizeObserver(callback: (value: ConfirmationObject) => void): Unsubscribe;
-  /** Observes the final body emitted after confirming a transaction. */
+  /** @deprecated The confirmation flow is deprecated. Observes the final body emitted after confirming a transaction. */
   captureObserver(
     callback: (value: SuccessfulTransactionObject | FailedTransactionObject | Transaction) => void,
   ): Unsubscribe;

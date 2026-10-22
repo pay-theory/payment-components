@@ -46,7 +46,9 @@ const consumeSdk = async () => {
   }
 
   sdk.stateObserver((state: StateObject) => {
-    state['card-number']?.iframeLoaded;
+    // Every field key is present, so no optional chaining is needed under strict mode
+    const loaded: boolean = state['card-number'].iframeLoaded;
+    void loaded;
   });
 
   const messenger = new sdk.PayTheoryMessenger({ apiKey: 'partner-api-key' });

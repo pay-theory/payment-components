@@ -524,53 +524,68 @@ const isValidL3DataSummary = (l3DataSummary: unknown): ErrorResponse | null => {
   }
 
   if (l3DataSummary.tax_amt && !validate(l3DataSummary.tax_amt, 'number')) {
-    return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.tax_amt must be a number');
+    return handleTypedError(ErrorType.INVALID_PARAM, 'level3DataSummary.tax_amt must be a number');
   }
   if (l3DataSummary.frght_amt && !validate(l3DataSummary.frght_amt, 'number')) {
-    return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.freight_amt must be a number');
+    return handleTypedError(
+      ErrorType.INVALID_PARAM,
+      'level3DataSummary.frght_amt must be a number',
+    );
   }
   if (l3DataSummary.duty_amt && !validate(l3DataSummary.duty_amt, 'number')) {
-    return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.duty_amt must be a number');
+    return handleTypedError(ErrorType.INVALID_PARAM, 'level3DataSummary.duty_amt must be a number');
   }
   if (l3DataSummary.discnt_amt && !validate(l3DataSummary.discnt_amt, 'number')) {
-    return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.discount_amt must be a number');
+    return handleTypedError(
+      ErrorType.INVALID_PARAM,
+      'level3DataSummary.discnt_amt must be a number',
+    );
   }
   if (l3DataSummary.purch_idfr && !validate(l3DataSummary.purch_idfr, 'string')) {
     return handleTypedError(
       ErrorType.INVALID_PARAM,
-      'l3DataSummary.ship_from_zip must be a string',
+      'level3DataSummary.purch_idfr must be a string',
     );
   }
   if (l3DataSummary.order_num && !validate(l3DataSummary.order_num, 'string')) {
-    return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.order_num must be a string');
+    return handleTypedError(
+      ErrorType.INVALID_PARAM,
+      'level3DataSummary.order_num must be a string',
+    );
   }
   if (l3DataSummary.dest_postal_code && !validate(l3DataSummary.dest_postal_code, 'string')) {
     return handleTypedError(
       ErrorType.INVALID_PARAM,
-      'l3DataSummary.dest_postal_code must be a string',
+      'level3DataSummary.dest_postal_code must be a string',
     );
   }
   if (l3DataSummary.prod_desc) {
     if (!validate(l3DataSummary.prod_desc, 'object')) {
-      return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.prod_desc must be an array');
+      return handleTypedError(
+        ErrorType.INVALID_PARAM,
+        'level3DataSummary.prod_desc must be an array',
+      );
     }
     for (const value of l3DataSummary.prod_desc) {
       if (!validate(value, 'string')) {
         return handleTypedError(
           ErrorType.INVALID_PARAM,
-          'l3DataSummary.prod_desc must be an array of strings',
+          'level3DataSummary.prod_desc must be an array of strings',
         );
       }
     }
   }
   if (l3DataSummary.tax_ind) {
     if (!validate(l3DataSummary.tax_ind, 'string')) {
-      return handleTypedError(ErrorType.INVALID_PARAM, 'l3DataSummary.tax_ind must be a string');
+      return handleTypedError(
+        ErrorType.INVALID_PARAM,
+        'level3DataSummary.tax_ind must be a string',
+      );
     }
     if (!Object.values(TaxIndicatorType).includes(l3DataSummary.tax_ind)) {
       return handleTypedError(
         ErrorType.INVALID_PARAM,
-        'l3DataSummary.tax_ind must be one of the following: ' +
+        'level3DataSummary.tax_ind must be one of the following: ' +
           Object.values(TaxIndicatorType).join(', '),
       );
     }
