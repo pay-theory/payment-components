@@ -14,6 +14,6 @@ module.exports = {
     '@testing-library/react': fromPeer('@testing-library/react'),
     vitest: path.join(fields, 'node_modules/vitest/dist/index.js'),
   } },
-  test: { environment: 'jsdom', include: ['test/cross-repo/*.contract.test.ts'],
+  test: { environment: 'jsdom', include: ['test/cross-repo/*.contract-spec.js'],
     pool: 'forks', fileParallelism: false, globals: false },
 };

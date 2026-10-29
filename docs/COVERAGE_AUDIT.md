@@ -64,3 +64,19 @@ I didn't run any commands or tests. This verdict comes from reading the four doc
 - **Cross-repo scope:** the hosted hook tests use an already-decrypted corpus and a mocked SecurityProvider. That supports no claims about crypto compatibility between the Python and JS sides, Apple interoperability, the full hosted QR UI, or live providers. The docs already say this.
 - **Existing bugs stay documented, not fixed.** These include the ACH/EFT layout errors, initialization that waits forever in the interactive state, the polyfill Request/fetch faults, the QR listener leak and the common helper having no timeout. Their tests describe current behaviour and don't present it as correct, which is right for a tests-only PR.
 - **Before submitting,** compare the final commit against `reviewed-file-hashes.json`. The audit notes that later doc and workflow edits need that check.
+## Post-publication CI lint correction
+
+The first GitHub run exposed a lint-discovery mismatch: the exact repository CI
+command includes `.ts`, but the new supplemental hook tests contained TypeScript
+syntax while the configured parser is JavaScript. The earlier targeted lint
+command had skipped those files. They were converted to `.contract-spec.js`, a
+name that also avoids the existing legacy `*.test.js` ignore rule. Only erased
+type syntax and the Vitest include/comment paths changed; all assertions remain.
+
+A separate agent verified byte-identical executable output after standard type
+erasure, confirmed both files are actually included by ESLint, reran the exact
+`npm run lint:eslint` command successfully and reproduced all 24 producer cases,
+24 parser checks and 36 hosted tests. Claude's targeted read-only review returned
+Publish with no blockers before the correction was pushed. No owned runtime,
+public API, WTR test, coverage map or coverage gate changed. GitHub core CI is
+rerun; private CI still requires the separately deferred secret configuration.

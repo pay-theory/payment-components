@@ -110,7 +110,7 @@ for (const message of messages) {
     assert.equal(output.body.barcodeUrl, input.body.barcodeUrl);
   } else if (['host_token', 'hosted_checkout', 'apple_merchant_validation', 'resend_invoice_email_success', 'cancel'].includes(message.type)) {
     // These actual control replies additionally run through the real hosted hooks
-    // in hosted-consumers.contract.test.ts; no invented parser substitutes for it.
+    // in hosted-consumers.contract-spec.js; no invented parser substitutes for it.
     relay = input;
     output = { type: 'CONTROL_REPLY_FOR_HOSTED_HOOK' };
   } else {
