@@ -20,6 +20,12 @@ The absence of findings is scoped to this assessed source. The opaque external c
 - [Coverage, exclusions, rejected leads, and unresolved questions](coverage.md)
 - [Complete source evidence excerpts](source-evidence.md)
 
+## Separate automated dependency alerts
+
+GitHub returned **12 open Dependabot alerts (2 critical, 7 high, 3 medium)** when queried on 2026-10-28. These are automated dependency alerts for the repository default branch, `premain`, not additional source-validated findings from this assessment of `main`. Alert state can change; no dependency exploitability triage or remediation was performed.
+
+[Advisory details and branch caveats](dependency-alerts.md).
+
 ## Triage and implementation
 
 No remediation is proposed as a validated vulnerability. The coverage document preserves the origin/source-binding hardening observations, rejected client-only session lead, credential classification, dependency limits, and external enforcement questions so they can be assessed without turning them into unsupported findings.
