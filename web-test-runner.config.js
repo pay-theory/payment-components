@@ -2,6 +2,12 @@
 const { transform: esbuildTransform } = require('esbuild');
 const fs = require('fs');
 const path = require('path');
+const { playwrightLauncher } = require('@web/test-runner-playwright');
+const staticCoverage = require('./test/static-coverage.cjs')(process.cwd());
+const hostedPeerHtml = fs.readFileSync(path.join(__dirname, 'test/support/hosted-peer.html'), 'utf8');
+const networkLedgerPath = path.join(process.cwd(), 'coverage/network-guard.jsonl');
+fs.mkdirSync(path.dirname(networkLedgerPath), { recursive: true });
+fs.writeFileSync(networkLedgerPath, '');
 
 const tsconfigRaw = fs.readFileSync(path.join(process.cwd(), 'tsconfig.json'), 'utf8');
 
@@ -23,6 +29,12 @@ const resolveExtensionlessImportsPlugin = {
       }
     }
   },
+};
+
+const cssModulesPlugin = {
+  name: 'test-css-modules',
+  resolveMimeType(context) { if (context.path.endsWith('.css')) return 'js'; },
+  transform(context) { if (context.path.endsWith('.css')) return 'export default {};'; },
 };
 
 const typeScriptModulesPlugin = {
@@ -53,30 +65,49 @@ const typeScriptModulesPlugin = {
 
 module.exports = {
   rootDir: process.cwd(),
+  browsers: [
+    playwrightLauncher({
+      product: 'chromium',
+      launchOptions: process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {},
+      createBrowserContext: async ({ browser }) => {
+        const context = await browser.newContext({ serviceWorkers: 'block' });
+        const outbound = [];
+        context.on('close', () => {
+          fs.appendFileSync(networkLedgerPath, JSON.stringify(outbound) + '\n');
+        });
+        // The runner and synthetic frames are local. Never contact provider endpoints.
+        await context.route('**/*', route => {
+          const url = new URL(route.request().url());
+          // Fulfill only fixture-owned hosted-field documents; never allow a remote request through.
+          if (url.origin === 'https://testundefined.tags.static.api.com' &&
+              /^\/(?:card-number|card-exp|card-cvv|card-name|billing-line[12]|billing-city|billing-state|billing-zip|account-number|account-name|account-type|routing-number|institution-number|transit-number|cash-name|cash-contact|checkout_qr)$/.test(url.pathname)) {
+            outbound.push({ url: url.origin + url.pathname, disposition: 'local-fixture-fulfill' });
+            return route.fulfill({ status: 200, contentType: 'text/html', body: hostedPeerHtml });
+          }
+          if (['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) return route.continue();
+          outbound.push({ url: url.origin + url.pathname, disposition: 'blocked' });
+          return route.abort('blockedbyclient');
+        });
+        return context;
+      },
+    }),
+  ],
   mimeTypes: {
     '**/*.ts': 'js',
   },
-  files: [
-    'test/basic.web-test.js',
-    'test/fee-validation.web-test.js',
-    'test/improved-fee-validation.web-test.js',
-    'test/credit-card.web-test.js',
-    'test/createPaymentFields.web-test.js',
-    'test/bank-routing-number.web-test.js',
-    'test/bank-institution-number.web-test.js',
-    'test/bank-account-name.web-test.js',
-    'test/compliance-beacon.web-test.js',
-    'test/pay-theory-messenger.web-test.js',
-    'test/hosted-checkout.web-test.js',
-  ],
+  files: ['test/**/*.web-test.js'],
   nodeResolve: true,
   coverage: true,
   coverageConfig: {
     reportDir: 'coverage',
+    // Playwright 0.11 only collects coverage when native instrumentation is enabled.
+    // Its collector prefers our static Istanbul __coverage__ map over the V8 result.
+    nativeInstrumentation: true,
+    reporters: ['lcov', 'json', 'json-summary', 'text-summary'],
     include: ['src/**/*.js', 'src/**/*.ts'],
     exclude: [],
   },
-  plugins: [resolveExtensionlessImportsPlugin, typeScriptModulesPlugin],
+  plugins: [resolveExtensionlessImportsPlugin, staticCoverage.plugin, typeScriptModulesPlugin, cssModulesPlugin],
   testFramework: {
     config: {
       ui: 'bdd',
@@ -87,6 +118,7 @@ module.exports = {
     <html>
       <head>
         <script type="module">
+          window.__coverage__ = ${staticCoverage.initialCoverage};
           window.process = {
             env: { NODE_ENV: 'test', ENV: 'test', STAGE: 'api' },
           };

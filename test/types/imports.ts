@@ -1,6 +1,7 @@
 import type {
   CallToAction,
   PayTheoryPaymentFieldsInput,
+  PayTheoryQRInput,
   PayTheorySDK,
   StateObject,
   TokenizeResult,
@@ -76,7 +77,36 @@ const invalidCallToAction: CallToAction = 'CHECKOUT';
 // @ts-expect-error Partner integrations authenticate hosted fields with an API key.
 const checkoutFields: PayTheoryPaymentFieldsInput = { checkoutContext: { invoiceId: 'id' } };
 
+const invalidWallet: WalletTransactionPayload = {
+  amount: 100,
+  digitalWalletPayload: {},
+  // @ts-expect-error Wallet identifiers are exact public enum values.
+  walletType: 'apple',
+};
+
+// @ts-expect-error Wallet payment payloads require integer-cent amount input.
+const incompleteWallet: WalletTransactionPayload = {
+  digitalWalletPayload: {},
+  walletType: 'APPLE_PAY',
+};
+
+void invalidWallet;
+void incompleteWallet;
 void invalidTransaction;
 void invalidCallToAction;
 void checkoutFields;
 void consumeSdk;
+
+const invalidCountry: PayTheoryPaymentFieldsInput = {
+  apiKey: 'partner-api-key',
+  // @ts-expect-error Countries use supported ISO-like exact literals.
+  country: 'US',
+};
+const invalidQr: PayTheoryQRInput = {
+  apiKey: 'partner-api-key',
+  checkoutDetails: { amount: 100, paymentName: 'Synthetic' },
+  // @ts-expect-error A QR ready callback receives true, never a session object.
+  onReady: (_ready: { sessionId: string }) => {},
+};
+void invalidCountry;
+void invalidQr;

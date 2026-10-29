@@ -1,45 +1,178 @@
 name: CI
 on:
   push:
+    branches: [main]
   pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: sdk-coverage-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   ci:
-    if: ${{ contains(github.event.head_commit.message, '[run ci]') || github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
-
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Saving cache
-        uses: actions/cache@v4
+      - name: Checkout reviewed SDK source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Set up Node
-        uses: actions/setup-node@v1
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Set up existing supported CI runtime
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 18
-          registry-url: 'https://npm.pkg.github.com'
-
-      - name: Install dependencies
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --include=optional
+      - name: Install locked Chromium and Linux browser dependencies
+        run: npx --no-install playwright install --with-deps chromium
+      - name: Record runtime versions and source revision
         run: |
-          npm install
-
-      - name: Check linting
+          node --version
+          npm --version
+          npx --no-install playwright --version
+          git rev-parse HEAD
+      - name: Check lint
         run: npm run lint:eslint
-
-      - name: Check TS
+      - name: Check TypeScript
         run: npm run check-ts
-
       - name: Check downloadable SDK types
         run: npm run test:types
-
-      # - name: Check tests
-      #   run: |
-      #     npm run test
+      - name: Build local bundle and declarations
+        run: npm run build:local
+      - name: Execute the actual compiled browser bundle
+        run: npm run test:bundle:browser
+      - name: Run actual browser suite and whole-source coverage
+        run: npm run test:coverage 2>&1 | tee coverage-test.log
+      - name: Enforce global and payment-critical path coverage
+        if: ${{ !cancelled() }}
+        run: node test/check-coverage-gates.cjs
+      - name: Retain raw measurement evidence on success or failure
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sdk-source-coverage
+          path: |
+            coverage/
+            coverage-test.log
+          if-no-files-found: error
+          retention-days: 14
+  consumer-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+        working-directory: sdk
+    steps:
+      - name: Require trusted source and explicit private-repository read access
+        env:
+          READ_REPOS_TOKEN: ${{ secrets.COVERAGE_REPOS_TOKEN }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          THIS_REPO: ${{ github.repository }}
+        working-directory: .
+        run: |
+          if [[ -n "$PR_HEAD_REPO" && "$PR_HEAD_REPO" != "$THIS_REPO" ]]; then
+            echo '::error::Private consumer coverage is blocked for fork source. A maintainer must reproduce it in an approved trusted branch without exposing credentials to fork code.'
+            exit 1
+          fi
+          if [[ -z "$READ_REPOS_TOKEN" ]]; then
+            echo '::error::Configure read-only COVERAGE_REPOS_TOKEN access to hosted-library, socket and all three private layer repos. This contract check has not run.'
+            exit 1
+          fi
+      - name: Checkout SDK without persisting credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: sdk
+          persist-credentials: false
+      - name: Checkout exact audited hosted consumer
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: pay-theory/secure-tags-lib
+          ref: a32d41f7ed59886aa5253495a2d57ce8136bfb8c
+          token: ${{ secrets.COVERAGE_REPOS_TOKEN }}
+          path: secure-tags-lib
+          persist-credentials: false
+      - name: Checkout exact socket producer
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: pay-theory/tags-secure-socket
+          ref: 2c0c56cce7e3504eabdf6e42789cd78aa5e8fd50
+          token: ${{ secrets.COVERAGE_REPOS_TOKEN }}
+          path: socket
+          persist-credentials: false
+      - name: Checkout audited Amaze layer
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: pay-theory/amaze
+          ref: 56dfadc1d7e30a802e6b68dc5e847472c4325591
+          token: ${{ secrets.COVERAGE_REPOS_TOKEN }}
+          path: amaze
+          persist-credentials: false
+      - name: Checkout audited Processors layer
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: pay-theory/processors
+          ref: a311e74afb425e75ff26b82e6746aa7f9c7ad7e2
+          token: ${{ secrets.COVERAGE_REPOS_TOKEN }}
+          path: processors
+          persist-credentials: false
+      - name: Checkout audited Rate Limit layer
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: pay-theory/rate-limit
+          ref: b532150e26a546d474479f9aff7cea9a7c019189
+          token: ${{ secrets.COVERAGE_REPOS_TOKEN }}
+          path: rate-limit
+          persist-credentials: false
+      - name: Set up socket producer Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: socket/requirements-coverage-lock.txt
+      - name: Set up contract tooling runtime
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            sdk/package-lock.json
+            secure-tags-lib/package-lock.json
+      - name: Install SDK and actual consumer dependencies
+        run: |
+          npm ci --ignore-scripts --include=optional
+          npm --prefix ../secure-tags-lib ci --ignore-scripts --include=optional
+      - name: Verify actual sibling command and enum contracts
+        env:
+          SECURE_TAGS_LIB_ROOT: ${{ github.workspace }}/secure-tags-lib
+        run: npm run test:contracts:sibling
+      - name: Install locked socket producer dependencies
+        run: |
+          python -m pip install -r ../socket/requirements-coverage-lock.txt
+          python -m pip check
+      - name: Execute actual socket, hosted-hook and SDK consumer corpus
+        env:
+          SOCKET_ROOT: ${{ github.workspace }}/socket
+          SECURE_TAGS_LIB_ROOT: ${{ github.workspace }}/secure-tags-lib
+          AMAZE_SOURCE_ROOT: ${{ github.workspace }}/amaze/src
+          PROCESSORS_SOURCE_ROOT: ${{ github.workspace }}/processors/src
+          RATE_LIMIT_SOURCE_ROOT: ${{ github.workspace }}/rate-limit/src
+          CONTRACT_EVIDENCE_DIR: ${{ github.workspace }}/sdk/coverage/cross-repo
+          SQL_CREDS_ARN: test
+          PYTHON: python
+        run: |
+          python ../socket/tools/verify_layer_sources.py --output coverage/cross-repo/module-origins.json
+          npm run test:contracts:cross-repo
+      - name: Retain actual consumer contract evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sdk-real-consumer-contracts
+          path: sdk/coverage/cross-repo/
+          if-no-files-found: error
+          retention-days: 14
