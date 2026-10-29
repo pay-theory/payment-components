@@ -81,7 +81,9 @@
     "check-ts": "tsc --skipLibCheck --noEmit -p ./tsconfig.json",
     "test:types": "npm run build-types && tsc -p ./test/types/tsconfig.json && tsc -p ./test/types/internal/tsconfig.json && node ./test/types/check-source-contract.cjs && node ./test/types/check-standalone.cjs",
     "test:bundle": "node ./test/types/check-bundle.cjs",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:contracts": "web-test-runner test/*-contract.web-test.js --node-resolve",
+    "test:contracts:sibling": "node test/check-sibling-contracts.cjs"
   },
   "devDependencies": {
     "@babel/plugin-transform-classes": "^7.27.1",
@@ -117,6 +119,7 @@
     "eslint-plugin-security": "^3.0.1",
     "globals": "^16.0.0",
     "husky": "^9.0.11",
+    "istanbul-lib-instrument": "^6.0.3",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
     "regenerator-runtime": "^0.14.0",

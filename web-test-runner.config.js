@@ -2,6 +2,8 @@
 const { transform: esbuildTransform } = require('esbuild');
 const fs = require('fs');
 const path = require('path');
+const { playwrightLauncher } = require('@web/test-runner-playwright');
+const staticCoverage = require('./test/static-coverage.cjs')(process.cwd());
 
 const tsconfigRaw = fs.readFileSync(path.join(process.cwd(), 'tsconfig.json'), 'utf8');
 
@@ -53,30 +55,39 @@ const typeScriptModulesPlugin = {
 
 module.exports = {
   rootDir: process.cwd(),
+  browsers: [
+    playwrightLauncher({
+      product: 'chromium',
+      launchOptions: process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {},
+      createBrowserContext: async ({ browser }) => {
+        const context = await browser.newContext({ serviceWorkers: 'block' });
+        // The runner and synthetic frames are local. Never contact provider endpoints.
+        await context.route('**/*', route => {
+          const url = new URL(route.request().url());
+          return ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
+            ? route.continue()
+            : route.abort('blockedbyclient');
+        });
+        return context;
+      },
+    }),
+  ],
   mimeTypes: {
     '**/*.ts': 'js',
   },
-  files: [
-    'test/basic.web-test.js',
-    'test/fee-validation.web-test.js',
-    'test/improved-fee-validation.web-test.js',
-    'test/credit-card.web-test.js',
-    'test/createPaymentFields.web-test.js',
-    'test/bank-routing-number.web-test.js',
-    'test/bank-institution-number.web-test.js',
-    'test/bank-account-name.web-test.js',
-    'test/compliance-beacon.web-test.js',
-    'test/pay-theory-messenger.web-test.js',
-    'test/hosted-checkout.web-test.js',
-  ],
+  files: ['test/**/*.web-test.js'],
   nodeResolve: true,
   coverage: true,
   coverageConfig: {
     reportDir: 'coverage',
+    // Playwright 0.11 only collects coverage when native instrumentation is enabled.
+    // Its collector prefers our static Istanbul __coverage__ map over the V8 result.
+    nativeInstrumentation: true,
+    reporters: ['lcov', 'json', 'json-summary', 'text-summary'],
     include: ['src/**/*.js', 'src/**/*.ts'],
     exclude: [],
   },
-  plugins: [resolveExtensionlessImportsPlugin, typeScriptModulesPlugin],
+  plugins: [resolveExtensionlessImportsPlugin, staticCoverage.plugin, typeScriptModulesPlugin],
   testFramework: {
     config: {
       ui: 'bdd',
@@ -87,6 +98,7 @@ module.exports = {
     <html>
       <head>
         <script type="module">
+          window.__coverage__ = ${staticCoverage.initialCoverage};
           window.process = {
             env: { NODE_ENV: 'test', ENV: 'test', STAGE: 'api' },
           };
