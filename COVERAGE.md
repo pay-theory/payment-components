@@ -1,3 +1,11 @@
+# Current coverage implementation
+
+**Latest measured results:** 496 browser tests; 89.47% lines and 78.42% branches. See the [implementation report](docs/TEST_COVERAGE_IMPLEMENTATION.md) for current file-level results, plan acceptance and audit evidence, and [cross-repository contracts](docs/CROSS_REPOSITORY_CONTRACTS.md) for consuming-application checks.
+
+The coverage figures and remaining-gap notes below describe the earlier audited #459 baseline and are retained as historical context. Reproduction commands execute the current checkout; use the linked implementation report to interpret its results. Private CI awaits the user-configured COVERAGE_REPOS_TOKEN.
+
+---
+
 # Coverage and application contracts — 2026-10-29
 
 This change measures the complete `src/**/*.ts` and `src/**/*.js` inventory and
