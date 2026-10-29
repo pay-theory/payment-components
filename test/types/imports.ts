@@ -1,6 +1,7 @@
 import type {
   CallToAction,
   PayTheoryPaymentFieldsInput,
+  PayTheoryQRInput,
   PayTheorySDK,
   StateObject,
   TokenizeResult,
@@ -95,3 +96,17 @@ void invalidTransaction;
 void invalidCallToAction;
 void checkoutFields;
 void consumeSdk;
+
+const invalidCountry: PayTheoryPaymentFieldsInput = {
+  apiKey: 'partner-api-key',
+  // @ts-expect-error Countries use supported ISO-like exact literals.
+  country: 'US',
+};
+const invalidQr: PayTheoryQRInput = {
+  apiKey: 'partner-api-key',
+  checkoutDetails: { amount: 100, paymentName: 'Synthetic' },
+  // @ts-expect-error A QR ready callback receives true, never a session object.
+  onReady: (_ready: { sessionId: string }) => {},
+};
+void invalidCountry;
+void invalidQr;

@@ -4,6 +4,10 @@ const fs = require('fs');
 const path = require('path');
 const { playwrightLauncher } = require('@web/test-runner-playwright');
 const staticCoverage = require('./test/static-coverage.cjs')(process.cwd());
+const hostedPeerHtml = fs.readFileSync(path.join(__dirname, 'test/support/hosted-peer.html'), 'utf8');
+const networkLedgerPath = path.join(process.cwd(), 'coverage/network-guard.jsonl');
+fs.mkdirSync(path.dirname(networkLedgerPath), { recursive: true });
+fs.writeFileSync(networkLedgerPath, '');
 
 const tsconfigRaw = fs.readFileSync(path.join(process.cwd(), 'tsconfig.json'), 'utf8');
 
@@ -25,6 +29,12 @@ const resolveExtensionlessImportsPlugin = {
       }
     }
   },
+};
+
+const cssModulesPlugin = {
+  name: 'test-css-modules',
+  resolveMimeType(context) { if (context.path.endsWith('.css')) return 'js'; },
+  transform(context) { if (context.path.endsWith('.css')) return 'export default {};'; },
 };
 
 const typeScriptModulesPlugin = {
@@ -61,12 +71,22 @@ module.exports = {
       launchOptions: process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {},
       createBrowserContext: async ({ browser }) => {
         const context = await browser.newContext({ serviceWorkers: 'block' });
+        const outbound = [];
+        context.on('close', () => {
+          fs.appendFileSync(networkLedgerPath, JSON.stringify(outbound) + '\n');
+        });
         // The runner and synthetic frames are local. Never contact provider endpoints.
         await context.route('**/*', route => {
           const url = new URL(route.request().url());
-          return ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
-            ? route.continue()
-            : route.abort('blockedbyclient');
+          // Fulfill only fixture-owned hosted-field documents; never allow a remote request through.
+          if (url.origin === 'https://testundefined.tags.static.api.com' &&
+              /^\/(?:card-number|card-exp|card-cvv|card-name|billing-line[12]|billing-city|billing-state|billing-zip|account-number|account-name|account-type|routing-number|institution-number|transit-number|cash-name|cash-contact|checkout_qr)$/.test(url.pathname)) {
+            outbound.push({ url: url.origin + url.pathname, disposition: 'local-fixture-fulfill' });
+            return route.fulfill({ status: 200, contentType: 'text/html', body: hostedPeerHtml });
+          }
+          if (['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) return route.continue();
+          outbound.push({ url: url.origin + url.pathname, disposition: 'blocked' });
+          return route.abort('blockedbyclient');
         });
         return context;
       },
@@ -87,7 +107,7 @@ module.exports = {
     include: ['src/**/*.js', 'src/**/*.ts'],
     exclude: [],
   },
-  plugins: [resolveExtensionlessImportsPlugin, staticCoverage.plugin, typeScriptModulesPlugin],
+  plugins: [resolveExtensionlessImportsPlugin, staticCoverage.plugin, typeScriptModulesPlugin, cssModulesPlugin],
   testFramework: {
     config: {
       ui: 'bdd',

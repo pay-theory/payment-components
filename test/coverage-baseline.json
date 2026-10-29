@@ -1,0 +1,1546 @@
+{
+  "revision": "c20b7e3c080a286c4557aca753ece9dd1bba94f1",
+  "measurement": "Original source Istanbul, all src/**/*.ts and src/**/*.js; immutable original206-test suite before plan implementation. No source exclusions.",
+  "files": {
+    "src/index.ts": {
+      "sourceSha256": "a2e49573eacad79c5acaa4e958bf50d411f1760b7b83edae99858c74f5a83544",
+      "metrics": {
+        "lines": {
+          "total": 7,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 7,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/paytheory-sdk.ts": {
+      "sourceSha256": "d4cdcda73e0ade204bbb6b7642831deb753c2c46841c888d318f25581f1a2d90",
+      "metrics": {
+        "lines": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      }
+    },
+    "src/polyfill.js": {
+      "sourceSha256": "11497942d7687830715f2af15e3460b15ba651093b987a2fa02016bd9b7b9b8b",
+      "metrics": {
+        "lines": {
+          "total": 364,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 100,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 377,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 224,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      }
+    },
+    "src/common/data.ts": {
+      "sourceSha256": "f4eacfef20cb96f8df0cba6d94eaceab52acaeaf6f150995f3a5c00a8d65dd3b",
+      "metrics": {
+        "lines": {
+          "total": 75,
+          "covered": 70,
+          "skipped": 0,
+          "pct": 93.33
+        },
+        "functions": {
+          "total": 4,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 50
+        },
+        "statements": {
+          "total": 78,
+          "covered": 71,
+          "skipped": 0,
+          "pct": 91.02
+        },
+        "branches": {
+          "total": 14,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 21.42
+        }
+      }
+    },
+    "src/common/dom.ts": {
+      "sourceSha256": "bfc1f620f80b7ea4b4a55bd7b3af0370437f31bb1dbdae3bdc5a802bc98fa49c",
+      "metrics": {
+        "lines": {
+          "total": 49,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 42.85
+        },
+        "functions": {
+          "total": 8,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 37.5
+        },
+        "statements": {
+          "total": 50,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 42
+        },
+        "branches": {
+          "total": 24,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 33.33
+        }
+      }
+    },
+    "src/common/format.ts": {
+      "sourceSha256": "8b1a5265cf8e6f74345678de8caf35857116261f6da012b741b13f5a3ca191d3",
+      "metrics": {
+        "lines": {
+          "total": 53,
+          "covered": 53,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 53,
+          "covered": 53,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 34,
+          "covered": 34,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/common/index.ts": {
+      "sourceSha256": "d6504cab6f9307ee59c43c6c53e0d5e6748b19ecd53e412a1d3d784ba6b52371",
+      "metrics": {
+        "lines": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/common/message.ts": {
+      "sourceSha256": "9d1ecb1ed010dae65a9298774e421b008bfdb1085fb56f6d7560c37e9da4d1f8",
+      "metrics": {
+        "lines": {
+          "total": 125,
+          "covered": 103,
+          "skipped": 0,
+          "pct": 82.4
+        },
+        "functions": {
+          "total": 43,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 65.11
+        },
+        "statements": {
+          "total": 127,
+          "covered": 103,
+          "skipped": 0,
+          "pct": 81.1
+        },
+        "branches": {
+          "total": 72,
+          "covered": 44,
+          "skipped": 0,
+          "pct": 61.11
+        }
+      }
+    },
+    "src/common/network.local.ts": {
+      "sourceSha256": "9a9081ee23050db550eaa8b6f565beb6fceed5fd450e3055bac38602e32689c0",
+      "metrics": {
+        "lines": {
+          "total": 24,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 91.66
+        },
+        "functions": {
+          "total": 5,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 80
+        },
+        "statements": {
+          "total": 24,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 91.66
+        },
+        "branches": {
+          "total": 14,
+          "covered": 13,
+          "skipped": 0,
+          "pct": 92.85
+        }
+      }
+    },
+    "src/common/network.ts": {
+      "sourceSha256": "8fedcaf03f86ea6969fbf14b434f421eac7ac1729cef96de66d6ad81681cc6b1",
+      "metrics": {
+        "lines": {
+          "total": 59,
+          "covered": 44,
+          "skipped": 0,
+          "pct": 74.57
+        },
+        "functions": {
+          "total": 17,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 52.94
+        },
+        "statements": {
+          "total": 62,
+          "covered": 47,
+          "skipped": 0,
+          "pct": 75.8
+        },
+        "branches": {
+          "total": 18,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 94.44
+        }
+      }
+    },
+    "src/common/observe.ts": {
+      "sourceSha256": "461d8af874883d3e673243c7d5bbef0b4c8b2cff6c9a9b38401cbc91d495b70a",
+      "metrics": {
+        "lines": {
+          "total": 26,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 69.23
+        },
+        "functions": {
+          "total": 17,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 52.94
+        },
+        "statements": {
+          "total": 26,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 69.23
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/common/retry-utils.ts": {
+      "sourceSha256": "463d2ab52db3a4491627c21a1783cbc59fa3e7c6a19149a51d192f27d68dc029",
+      "metrics": {
+        "lines": {
+          "total": 21,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 26,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 16,
+          "covered": 14,
+          "skipped": 0,
+          "pct": 87.5
+        }
+      }
+    },
+    "src/common/sdk-runtime-values.ts": {
+      "sourceSha256": "ade6f80931694eba0c2da7f3ea3dcde5c9eb6ec6bf6be76d17a4a4cb35382d1f",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 4,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/compliance/beacon.ts": {
+      "sourceSha256": "92eff3ae7e21460adcc2aa2b7460fd0557529e721d1b11ae3185fce3b0864237",
+      "metrics": {
+        "lines": {
+          "total": 130,
+          "covered": 105,
+          "skipped": 0,
+          "pct": 80.76
+        },
+        "functions": {
+          "total": 29,
+          "covered": 21,
+          "skipped": 0,
+          "pct": 72.41
+        },
+        "statements": {
+          "total": 131,
+          "covered": 106,
+          "skipped": 0,
+          "pct": 80.91
+        },
+        "branches": {
+          "total": 73,
+          "covered": 52,
+          "skipped": 0,
+          "pct": 71.23
+        }
+      }
+    },
+    "src/components/bank-account-name/index.ts": {
+      "sourceSha256": "a366a4ed0f7c66e72f1f45f5b13219de9b0b8fb604096656803e5bc4431c526d",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/bank-account-number/index.ts": {
+      "sourceSha256": "a29e01432291f77a035441ee3a4df15b195e824132319b0a5b8e3980d814ce80",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/bank-account-type/index.ts": {
+      "sourceSha256": "e093ab55b2e70d88860e2dffc6254cc12964d1ca93cb5d597555a601026f31e8",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/bank-institution-number/index.ts": {
+      "sourceSha256": "bd3f930b6b295dd2b7b87eedc11d65cfcc24df2903e9817ab8a0f629e4e381a1",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/bank-routing-number/index.ts": {
+      "sourceSha256": "518dd22b1fff0ce8c49e8c3ae9b9dd1a065995dd09c314206a94869d59ee5566",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/bank-transit-number/index.ts": {
+      "sourceSha256": "7a0efabf73dd93adfd1a7cc79e9d5293b8a94335a1e2c57ef22c47421e4a131b",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/card-present/index.js": {
+      "sourceSha256": "ae8a7bf550a137f23f335f3597679c378c474c152a57ca9d57137ff896c4e819",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/cash-contact/index.ts": {
+      "sourceSha256": "463147b99237fba26a9a12de0c979d96d3cb823b7d58f4473a0aaa31042e06b7",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/cash-name/index.ts": {
+      "sourceSha256": "4a19a463386a7f6582a247759d6c210db152ff9ff731c48a953c5f51e5affbfe",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/credit-card/index.ts": {
+      "sourceSha256": "a82da936281f8f505a823ed6ba912bcfd4df563c9dbb01c1587c38f4bf02ac4e",
+      "metrics": {
+        "lines": {
+          "total": 5,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 5,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      }
+    },
+    "src/components/credit-card-account-name/index.ts": {
+      "sourceSha256": "c597c8d3582322251562e9789d33904d59f89a426aba3f14abda9710948a6bbb",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/credit-card-address-1/index.ts": {
+      "sourceSha256": "3d97c9632aa9fb14f98335779c0bfcc821d17a6b486ab2f8fdc4cdbe47e9029f",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/credit-card-address-2/index.ts": {
+      "sourceSha256": "b29cc09e34ebe1174e96816afbff9bd47a5b31d9d85592cbffe7506046e7aab2",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/credit-card-city/index.ts": {
+      "sourceSha256": "4ddd2f2c5dc4e533d2acee3b611acfd3c9541295133929461d75729ba821c368",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/credit-card-cvv/index.ts": {
+      "sourceSha256": "4870221c15eee9a217ef86347646ef4e0a7548eb6e03c8c33e2a8bcec3e6de4c",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/credit-card-exp/index.ts": {
+      "sourceSha256": "f2822a3d2c079993de7abff7f338dbcec90831d1cf8bc7909677d528d1ca14f7",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/credit-card-number/index.ts": {
+      "sourceSha256": "9433bc36a73a2b9027b120538dad0b9a4ab4fcc02277ea06c5595cdc51d6f7de",
+      "metrics": {
+        "lines": {
+          "total": 5,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 5,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 2,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      }
+    },
+    "src/components/credit-card-region/index.ts": {
+      "sourceSha256": "2aa5081fe2774d12dd7203d6d47f608d62768c9a532062db646f2d401282297f",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/credit-card-zip/index.ts": {
+      "sourceSha256": "0a9b848f7da5f3209dac5c1f6c8f6f67f987846ab71a4b1d1ac880ae5f2e0d86",
+      "metrics": {
+        "lines": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 1,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/components/pay-theory-checkout-button/index.ts": {
+      "sourceSha256": "34a120bbc5270be1502aaeb956773b90cc87dedd5ae4c01a6c095e234b41c611",
+      "metrics": {
+        "lines": {
+          "total": 33,
+          "covered": 26,
+          "skipped": 0,
+          "pct": 78.78
+        },
+        "functions": {
+          "total": 17,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 58.82
+        },
+        "statements": {
+          "total": 39,
+          "covered": 31,
+          "skipped": 0,
+          "pct": 79.48
+        },
+        "branches": {
+          "total": 12,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 50
+        }
+      }
+    },
+    "src/components/pay-theory-checkout-qr/index.ts": {
+      "sourceSha256": "665159bfa6c17db745155eaf452fcf1335d5b98314b389df61ee6550442b2eb4",
+      "metrics": {
+        "lines": {
+          "total": 26,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 29,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 10,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      }
+    },
+    "src/components/pay-theory-hosted-field/index.ts": {
+      "sourceSha256": "65011aca28b5728b63d998646c417950f6b1d420ea9c95223c56e3cd3361dee4",
+      "metrics": {
+        "lines": {
+          "total": 39,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 12,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 39,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      }
+    },
+    "src/components/pay-theory-hosted-field-transactional/index.ts": {
+      "sourceSha256": "e8e5fb59ad84e934c02ffbaaf1188cb51fe412969bcc1d6cc606c7cb021c6de8",
+      "metrics": {
+        "lines": {
+          "total": 204,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 53,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 208,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 103,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      }
+    },
+    "src/components/pay-theory-overlay/index.ts": {
+      "sourceSha256": "7ccf6e47828b56f84347da76b39864f2507acc482aef2534221a737b4141dc05",
+      "metrics": {
+        "lines": {
+          "total": 24,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 75
+        },
+        "functions": {
+          "total": 9,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 77.77
+        },
+        "statements": {
+          "total": 28,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 71.42
+        },
+        "branches": {
+          "total": 12,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 33.33
+        }
+      }
+    },
+    "src/field-set/actions.ts": {
+      "sourceSha256": "870b17b0c5adbd867b66ecced26912daebf3222fbeff3852f5235d62a7019152",
+      "metrics": {
+        "lines": {
+          "total": 145,
+          "covered": 136,
+          "skipped": 0,
+          "pct": 93.79
+        },
+        "functions": {
+          "total": 10,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 80
+        },
+        "statements": {
+          "total": 154,
+          "covered": 137,
+          "skipped": 0,
+          "pct": 88.96
+        },
+        "branches": {
+          "total": 90,
+          "covered": 69,
+          "skipped": 0,
+          "pct": 76.66
+        }
+      }
+    },
+    "src/field-set/handler.ts": {
+      "sourceSha256": "90e0756d373c11c6e29ff853ff43de69384ccdbf9a99811957b9277cb2b78a07",
+      "metrics": {
+        "lines": {
+          "total": 45,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 37.77
+        },
+        "functions": {
+          "total": 10,
+          "covered": 4,
+          "skipped": 0,
+          "pct": 40
+        },
+        "statements": {
+          "total": 50,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 36
+        },
+        "branches": {
+          "total": 34,
+          "covered": 8,
+          "skipped": 0,
+          "pct": 23.52
+        }
+      }
+    },
+    "src/field-set/payment-button.ts": {
+      "sourceSha256": "32b0d0bf618e88dce08ae47709284f3f4ca53c4e030a9616e5893979ee46576a",
+      "metrics": {
+        "lines": {
+          "total": 105,
+          "covered": 85,
+          "skipped": 0,
+          "pct": 80.95
+        },
+        "functions": {
+          "total": 14,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 64.28
+        },
+        "statements": {
+          "total": 110,
+          "covered": 86,
+          "skipped": 0,
+          "pct": 78.18
+        },
+        "branches": {
+          "total": 48,
+          "covered": 20,
+          "skipped": 0,
+          "pct": 41.66
+        }
+      }
+    },
+    "src/field-set/payment-fields-v2.ts": {
+      "sourceSha256": "b328ed6d73a184c420247846b478a9f81ad1949dd2c54515f831508fa10c9b85",
+      "metrics": {
+        "lines": {
+          "total": 90,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 5.55
+        },
+        "functions": {
+          "total": 15,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 6.66
+        },
+        "statements": {
+          "total": 100,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 6
+        },
+        "branches": {
+          "total": 57,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 1.75
+        }
+      }
+    },
+    "src/field-set/payment-fields.ts": {
+      "sourceSha256": "e42cd1f36b1c0f083b5c2975b195b79dd44b9398c9d71b1fad88c525e8322454",
+      "metrics": {
+        "lines": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 8,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 6,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      }
+    },
+    "src/field-set/payment-qr.ts": {
+      "sourceSha256": "490d2f058af6a22d9531b657095572a9e52ae16979fd55d62aa3c53f92d20d61",
+      "metrics": {
+        "lines": {
+          "total": 39,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 4,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 45,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 29,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      }
+    },
+    "src/field-set/validation.ts": {
+      "sourceSha256": "22136d26f6ec3777f831025167eb62ebe944f06bd7d28147349427c990f3f820",
+      "metrics": {
+        "lines": {
+          "total": 291,
+          "covered": 114,
+          "skipped": 0,
+          "pct": 39.17
+        },
+        "functions": {
+          "total": 39,
+          "covered": 18,
+          "skipped": 0,
+          "pct": 46.15
+        },
+        "statements": {
+          "total": 311,
+          "covered": 116,
+          "skipped": 0,
+          "pct": 37.29
+        },
+        "branches": {
+          "total": 268,
+          "covered": 55,
+          "skipped": 0,
+          "pct": 20.52
+        }
+      }
+    },
+    "src/messenger/constants.ts": {
+      "sourceSha256": "f30dc36bb9709c1671c3fd0906253b7bdab8c8c3bcc2ba01155ec6d93c6bd670",
+      "metrics": {
+        "lines": {
+          "total": 19,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 19,
+          "covered": 19,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "src/messenger/index.ts": {
+      "sourceSha256": "b32e91536eb4cf819623002e77b149d92992afa0e9cec2ff0f33c23e47d5b547",
+      "metrics": {
+        "lines": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      }
+    },
+    "src/messenger/messenger-channel.ts": {
+      "sourceSha256": "a70a35f6e7e2bd14130859eee608cf006d452b371a790864c127d2c96b270ae5",
+      "metrics": {
+        "lines": {
+          "total": 51,
+          "covered": 47,
+          "skipped": 0,
+          "pct": 92.15
+        },
+        "functions": {
+          "total": 12,
+          "covered": 11,
+          "skipped": 0,
+          "pct": 91.66
+        },
+        "statements": {
+          "total": 51,
+          "covered": 47,
+          "skipped": 0,
+          "pct": 92.15
+        },
+        "branches": {
+          "total": 20,
+          "covered": 17,
+          "skipped": 0,
+          "pct": 85
+        }
+      }
+    },
+    "src/messenger/pay-theory-messenger.ts": {
+      "sourceSha256": "ee3d2d19b6bbbffea46dc092074fae3c7c88fd391c1686c24f0997675d2338a4",
+      "metrics": {
+        "lines": {
+          "total": 313,
+          "covered": 235,
+          "skipped": 0,
+          "pct": 75.07
+        },
+        "functions": {
+          "total": 49,
+          "covered": 37,
+          "skipped": 0,
+          "pct": 75.51
+        },
+        "statements": {
+          "total": 319,
+          "covered": 236,
+          "skipped": 0,
+          "pct": 73.98
+        },
+        "branches": {
+          "total": 182,
+          "covered": 104,
+          "skipped": 0,
+          "pct": 57.14
+        }
+      }
+    },
+    "src/messenger/state-manager.ts": {
+      "sourceSha256": "38a812ed9a52e84d39075f13a56deb3449ddcfc9ed3a80cefe04c2b0f6ecd68d",
+      "metrics": {
+        "lines": {
+          "total": 29,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 96.55
+        },
+        "functions": {
+          "total": 5,
+          "covered": 5,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 29,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 96.55
+        },
+        "branches": {
+          "total": 8,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 87.5
+        }
+      }
+    },
+    "src/messenger/token-manager.ts": {
+      "sourceSha256": "ad07cfb2966a6e332d5859ca7fe165388b685725db12c2570806908cb1eef807",
+      "metrics": {
+        "lines": {
+          "total": 40,
+          "covered": 40,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 7,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 43,
+          "covered": 42,
+          "skipped": 0,
+          "pct": 97.67
+        },
+        "branches": {
+          "total": 24,
+          "covered": 22,
+          "skipped": 0,
+          "pct": 91.66
+        }
+      }
+    },
+    "src/messenger/types.ts": {
+      "sourceSha256": "d03ec9d39033c3d59b3a7bbcffb5c839f8139ac83bfd9c0af3c4714c75ec81db",
+      "metrics": {
+        "lines": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "functions": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "statements": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        },
+        "branches": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 0
+        }
+      }
+    }
+  },
+  "total": {
+    "lines": {
+      "total": 2517,
+      "covered": 1232,
+      "skipped": 0,
+      "pct": 48.94
+    },
+    "statements": {
+      "total": 2626,
+      "covered": 1258,
+      "skipped": 0,
+      "pct": 47.9
+    },
+    "functions": {
+      "total": 529,
+      "covered": 210,
+      "skipped": 0,
+      "pct": 39.69
+    },
+    "branches": {
+      "total": 1400,
+      "covered": 498,
+      "skipped": 0,
+      "pct": 35.57
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  }
+}
