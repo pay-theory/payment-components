@@ -1,6 +1,6 @@
 # Current coverage implementation
 
-**Latest measured results:** 496 browser tests; 89.47% lines and 78.42% branches. See the [implementation report](docs/TEST_COVERAGE_IMPLEMENTATION.md) for current file-level results, plan acceptance and audit evidence, and [cross-repository contracts](docs/CROSS_REPOSITORY_CONTRACTS.md) for consuming-application checks.
+**Latest measured results:** 503 browser tests after merging premain (60b8d736); 2249/2514 lines (89.45%) and 1100/1398 branches (78.68%). The audited pre-merge run was 496 tests, 89.47% lines and 78.42% branches. See the [implementation report](docs/TEST_COVERAGE_IMPLEMENTATION.md) for current file-level results, plan acceptance and audit evidence, and [cross-repository contracts](docs/CROSS_REPOSITORY_CONTRACTS.md) for consuming-application checks.
 
 The coverage figures and remaining-gap notes below describe the earlier audited #459 baseline and are retained as historical context. Reproduction commands execute the current checkout; use the linked implementation report to interpret its results. Private CI awaits the user-configured COVERAGE_REPOS_TOKEN.
 
@@ -30,10 +30,9 @@ for every source file, including unloaded modules. It does not execute imports
 to inflate coverage. The original 129-test filename set was also run against the
 final source/configuration: every static map and denominator matches the final
 comparison. The original-source baseline was 755/2515 lines, 769/2624
-statements, 114/529 functions and 232/1396 branch outcomes. The retry-failure
-guard adds two executable lines/statements and two branch sites (four branch
-outcomes). The comparison above uses the final denominator in both columns;
-covered baseline counts are unchanged. A legacy polyfill remains
+statements, 114/529 functions and 232/1396 branch outcomes. Figures above were
+measured with an SDK retry-failure guard that was later dropped in favor of
+premain's PRD-779 behavior; rerun `npm run test:coverage` for current counts. A legacy polyfill remains
 entirely uncovered and included in the totals.
 
 Use the committed lockfile and an installed Playwright Chromium or local Chrome:
@@ -80,22 +79,20 @@ fails if they are absent, rather than silently using a copied validator.
 
 ## Runtime compatibility decisions
 
-`getApplePaySession()` previously returned the raw messenger envelope after a
-TOKEN_EXPIRED refresh retry. A successful retry now uses the same public shape
-as a successful initial request: `{type:'SUCCESS', session:body}`. An explicitly
-failed retry (`body.success === false`) instead returns the established ERROR
-shape with `body.error` or `Apple merchant validation failed`. This guard is
-limited to the retry branch: initial negative envelopes retain their prior
-handling; legacy retry bodies without a success property remain accepted by
-the normalization.
+`getApplePaySession()` behavior is owned by premain (PRD-779): after a
+TOKEN_EXPIRED refresh retry it returns the same public shape as an initial
+request, `{type:'SUCCESS', session:body}`, whether or not the retried body
+reports success. This branch adds no runtime change; its tests pin that shape,
+including a failed retry body (`{success:false, error}`) being passed through
+under SUCCESS exactly as a first-attempt negative body is.
 
 `wallet-test/wallet.js:170–185` requires SUCCESS plus session before calling
 `completeMerchantValidation`. Tests execute that actual local callback, extracted
-verbatim from its source, to verify that repeated expiry aborts and a successful
-legacy retry still completes validation. Red-before/green-after checks cover the
-public retry-error result, actual consumer branch and fallback error. There is
-still only one refresh and two validation sends. The current hosted peer does
-not emit every supported failure envelope, so this is not proof of end-to-end
+verbatim from its source, to document that repeated expiry hands the failed
+retry body to `completeMerchantValidation` (as a first-attempt failure does) and
+that a successful legacy retry still completes validation. There is still only
+one refresh and two validation sends. The current hosted peer does not emit
+every supported failure envelope, so this is not proof of end-to-end
 expired-token recovery.
 
 Positive Apple/Google wallet fixtures use serialized synthetic JSON strings;
@@ -105,17 +102,15 @@ No runtime serialization or public type narrowing was added. These fixtures do
 not validate provider payload schemas, real wallet acceptance or Paze decryption.
 
 No-field `cancel()` still resolves `undefined`, as the public SDK declaration
-already permits `void`. Its internal annotation now reflects that behavior.
-An initially proposed error response was rejected because it would unnecessarily
-change the observable no-op. Public declarations are unchanged.
+already permits `void`. Neither its runtime behavior nor its internal annotation
+is changed here. Public declarations are unchanged.
 
 ## Validation, audit and remaining limits
 
 The 206-test offline suite, public/internal type tests, source TypeScript check,
 lint, local bundle/declaration build, bundle surface and sibling check pass.
 An independent read-only agent reviewed the preceding patch. Final semantic
-review then required the retry-failure and payload-fixture corrections described
-above. The implementer reran all checks and the immutable-base filename suite
+review then required the payload-fixture corrections described above. The implementer reran all checks and the immutable-base filename suite
 with identical final-source maps. Independent agent audit and the final Claude delta audit passed before publication.
 
 Substantial misses remain: root/custom-element lifecycles, QR/hosted flows and
@@ -128,4 +123,4 @@ stack were not tested.
 The current hosted messenger only sends Apple validation replies for its success
 response; other responses can time out. Its connection/reconnect callbacks also
 have a preexisting rejected-promise handling gap. These are disclosed sibling
-limitations, not changes introduced by the SDK retry normalization.
+limitations, not changes introduced by this branch.

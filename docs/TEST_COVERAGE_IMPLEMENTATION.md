@@ -4,6 +4,8 @@ Assessment date: 2026-10-29. Implements the test/measurement work in [planning P
 
 ## Outcome
 
+> **Post-merge note (premain 60b8d736):** figures below are the audited pre-merge run. After merging premain the suite is 503 tests (premain adds `test/sdk-bug-fixes.web-test.js`); totals are 2249/2514 lines and 1100/1398 branches. `test/coverage-baseline.json` entries for the seven premain-changed source files were re-measured with the #459 test-file set; VA11 tests now assert premain's PRD-782 `level3DataSummary.<key>` labels, and Apple retry tests assert premain's PRD-779 behavior.
+
 The complete browser suite passes **496 tests across 27 files**, compared with 206 tests across 18 files at the audited dependency: **290 new executable cases in nine files**. All 52 `.ts`/`.js` files under `src/` remain in the denominator, including the polyfill and zero-counter type modules. **Every source file is byte-identical to #459**; this implementation changes no production function, response, public declaration, enum or callback implementation. Source-hash comparison and coverage maps are retained in review/CI evidence. No files were removed, excluded or ignored to raise coverage.
 
 | Metric | Baseline #459 | Final implementation | Additional covered |
@@ -59,7 +61,7 @@ Each WTR invocation resets `coverage/network-guard.jsonl`; browser-context close
 
 The strongest no-drift evidence is that all 52 source files, including `src/paytheory-sdk.ts`, are byte-for-byte unchanged from the audited dependency. Runtime tuples, enums, response/event serializers, promise/error behavior, defaults and signed/capability forwarding cannot have been changed by a test-only implementation diff. Public declaration builds, standalone imports, exact input/output contract checks and the unchanged actual sibling validator/constants check pass. Native mounted-field public workflows additionally execute the actual response parser and observers with independently specified expected objects and exact call counts.
 
-This is a conclusion about this follow-up relative to #459, not an endorsement that every preexisting behavior is desirable or every consuming application has been run. #459's Apple retry correction is inherited and separately reviewed there. Cross-repository producer/hosted-transform/SDK corpus uses pinned sibling revisions and is validated separately; synthetic tokens prove forwarding/type, not provider decryption, authorization by a bank or successful settlement. Any new response/function correction discovered during testing must be a separately described runtime change with red/green regressions and consumer review.
+This is a conclusion about this follow-up relative to #459, not an endorsement that every preexisting behavior is desirable or every consuming application has been run. #459's Apple retry correction was dropped when merging premain; retry behavior is premain's PRD-779 implementation, and the inherited tests assert it. Cross-repository producer/hosted-transform/SDK corpus uses pinned sibling revisions and is validated separately; synthetic tokens prove forwarding/type, not provider decryption, authorization by a bank or successful settlement. Any new response/function correction discovered during testing must be a separately described runtime change with red/green regressions and consumer review.
 
 ## Preexisting behavior exposed, unchanged
 

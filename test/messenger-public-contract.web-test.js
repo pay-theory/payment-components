@@ -217,7 +217,7 @@ describe('public messenger through real SDK initialization and MessageChannel', 
     ]);
     expect(fetchStub.callCount).to.equal(2);
   });
-  it('bounds Apple validation retries when the renewed token is also expired', async () => {
+  it('bounds Apple validation retries and returns the failed retry body when the renewed token is also expired', async () => {
     await sdk.initialize();
     const previous = responder;
     responder = message =>
@@ -227,16 +227,17 @@ describe('public messenger through real SDK initialization and MessageChannel', 
             body: { success: false, error: 'TOKEN_EXPIRED' },
           }
         : previous(message);
+    // Retry failures keep the first-attempt shape: SUCCESS wrapping the negative validation body.
     expect(await sdk.getApplePaySession()).to.deep.equal({
-      type: 'ERROR',
-      error: 'TOKEN_EXPIRED',
+      type: 'SUCCESS',
+      session: { success: false, error: 'TOKEN_EXPIRED' },
     });
     expect(
       commands.filter(message => message.type === types.PT_MESSENGER_MERCHANT_VALIDATION),
     ).to.have.length(2);
     expect(fetchStub.callCount).to.equal(2);
   });
-  it('makes the actual wallet consumer abort after repeated expiry instead of validating a failure object', async () => {
+  it('hands the actual wallet consumer the failed retry body after repeated expiry, like a first-attempt failure', async () => {
     await sdk.initialize();
     const previous = responder;
     responder = message =>
@@ -248,8 +249,13 @@ describe('public messenger through real SDK initialization and MessageChannel', 
         : previous(message);
     const session = { completeMerchantValidation: sinon.spy(), abort: sinon.spy() };
     await walletCallback(sdk, session, () => {})({});
-    expect(session.abort.calledOnce).to.equal(true);
-    expect(session.completeMerchantValidation.called).to.equal(false);
+    expect(
+      session.completeMerchantValidation.calledOnceWithExactly({
+        success: false,
+        error: 'TOKEN_EXPIRED',
+      }),
+    ).to.equal(true);
+    expect(session.abort.called).to.equal(false);
     expect(
       commands.filter(message => message.type === types.PT_MESSENGER_MERCHANT_VALIDATION),
     ).to.have.length(2);
@@ -268,7 +274,7 @@ describe('public messenger through real SDK initialization and MessageChannel', 
     expect(commands).to.have.length(1);
     expect(fetchStub.callCount).to.equal(1);
   });
-  it('returns the established error fallback when a retried explicit failure omits its error', async () => {
+  it('returns a retried explicit failure without an error as the raw validation body', async () => {
     await sdk.initialize();
     const previous = responder;
     let attempts = 0;
@@ -281,8 +287,8 @@ describe('public messenger through real SDK initialization and MessageChannel', 
           }
         : previous(message);
     expect(await sdk.getApplePaySession()).to.deep.equal({
-      type: 'ERROR',
-      error: 'Apple merchant validation failed',
+      type: 'SUCCESS',
+      session: { success: false },
     });
     expect(attempts).to.equal(2);
     expect(fetchStub.callCount).to.equal(2);

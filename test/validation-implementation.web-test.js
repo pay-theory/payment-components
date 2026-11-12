@@ -334,20 +334,21 @@ describe('actual validation decision tables (VA01–VA14)', () => {
   ])
     it(`VA10 characterizes accepted ${JSON.stringify(billing)}`, () =>
       expect(valid.isValidBillingInfo(billing)).to.equal(null));
+  // Labels name the real level3DataSummary keys (premain PRD-782).
   const l3Fields = [
-    ['tax_amt', 'tax_amt', 'number'],
-    ['frght_amt', 'freight_amt', 'number'],
-    ['duty_amt', 'duty_amt', 'number'],
-    ['discnt_amt', 'discount_amt', 'number'],
-    ['purch_idfr', 'ship_from_zip', 'string'],
-    ['order_num', 'order_num', 'string'],
-    ['dest_postal_code', 'dest_postal_code', 'string'],
+    ['tax_amt', 'number'],
+    ['frght_amt', 'number'],
+    ['duty_amt', 'number'],
+    ['discnt_amt', 'number'],
+    ['purch_idfr', 'string'],
+    ['order_num', 'string'],
+    ['dest_postal_code', 'string'],
   ];
-  for (const [key, label, type] of l3Fields) {
-    it(`VA11 rejects invalid truthy ${key} with exact legacy label`, () =>
+  for (const [key, type] of l3Fields) {
+    it(`VA11 rejects invalid truthy ${key} with its level3DataSummary label`, () =>
       expect(
         transaction({ level3DataSummary: { [key]: type === 'number' ? 'bad' : 42 } }),
-      ).to.deep.equal(error(`l3DataSummary.${label} must be a ${type}`)));
+      ).to.deep.equal(error(`level3DataSummary.${key} must be a ${type}`)));
     it(`VA11 accepts valid and falsey ${key}`, () => {
       for (const value of [type === 'number' ? 12 : 'x', 0, false, '', null, undefined])
         expect(transaction({ level3DataSummary: { [key]: value } })).to.equal(null);
@@ -355,12 +356,12 @@ describe('actual validation decision tables (VA01–VA14)', () => {
   }
   for (const [summary, message] of [
     [42, 'l3DataSummary must be an object'],
-    [{ prod_desc: 'x' }, 'l3DataSummary.prod_desc must be an array'],
-    [{ prod_desc: [1] }, 'l3DataSummary.prod_desc must be an array of strings'],
-    [{ tax_ind: 1 }, 'l3DataSummary.tax_ind must be a string'],
+    [{ prod_desc: 'x' }, 'level3DataSummary.prod_desc must be an array'],
+    [{ prod_desc: [1] }, 'level3DataSummary.prod_desc must be an array of strings'],
+    [{ tax_ind: 1 }, 'level3DataSummary.tax_ind must be a string'],
     [
       { tax_ind: 'BAD' },
-      'l3DataSummary.tax_ind must be one of the following: TAX_AMOUNT_PROVIDED, NOT_TAXABLE, NO_TAX_INFO_PROVIDED',
+      'level3DataSummary.tax_ind must be one of the following: TAX_AMOUNT_PROVIDED, NOT_TAXABLE, NO_TAX_INFO_PROVIDED',
     ],
   ])
     it(`VA11 rejects ${JSON.stringify(summary)}`, () =>

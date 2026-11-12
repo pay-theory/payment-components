@@ -187,7 +187,7 @@ export const confirm = async (): Promise<
   }
 };
 
-export const cancel = async (): Promise<true | ErrorResponse | void> => {
+export const cancel = async (): Promise<true | ErrorResponse> => {
   const transactingElement = findTransactingElement();
   if (transactingElement) {
     try {
