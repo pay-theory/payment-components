@@ -231,7 +231,9 @@ export default async (inputParams: PayTheoryButtonInput) => {
   const json = JSON.stringify({
     token: ptToken['pt-token'],
     origin: ptToken.origin,
+    // The hosted button reads styles.button; style stays for older hosted builds
     style,
+    styles: style ? { button: style } : undefined,
     checkoutDetails: modifiedCheckoutDetails,
   });
   const encodedJson = window.btoa(json);

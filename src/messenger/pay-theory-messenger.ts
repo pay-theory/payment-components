@@ -564,9 +564,10 @@ class PayTheoryMessenger implements PayTheoryMessengerContract {
         };
       }
       // Send message to get Apple Pay session
-      let response = await this.channel.sendMessage<void, MessengerAppleMerchantValidationMessage>(
-        PT_MESSENGER_MERCHANT_VALIDATION,
-      );
+      const response = await this.channel.sendMessage<
+        void,
+        MessengerAppleMerchantValidationMessage
+      >(PT_MESSENGER_MERCHANT_VALIDATION);
 
       if (!response.body.success && response.body.error === 'TOKEN_EXPIRED') {
         // Token expired, try refreshing and retry
@@ -578,16 +579,15 @@ class PayTheoryMessenger implements PayTheoryMessengerContract {
           };
         }
 
-        // Retry once, then apply the same public response shape as the first attempt.
-        response = await this.channel.sendMessage<void, MessengerAppleMerchantValidationMessage>(
-          PT_MESSENGER_MERCHANT_VALIDATION,
-        );
-        if (response.body.success === false) {
-          return {
-            type: ResponseMessageTypes.ERROR,
-            error: response.body.error || 'Apple merchant validation failed',
-          };
-        }
+        // Retry after refresh and return the same shape as the first attempt
+        const retryResponse = await this.channel.sendMessage<
+          void,
+          MessengerAppleMerchantValidationMessage
+        >(PT_MESSENGER_MERCHANT_VALIDATION);
+        return {
+          type: ResponseMessageTypes.SUCCESS,
+          session: retryResponse.body,
+        };
       }
 
       return {
