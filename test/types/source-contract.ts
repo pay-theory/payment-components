@@ -25,3 +25,33 @@ type TokenizeInputUsesCanonicalContract = Assert<Exact<HostedFieldTokenizeInput,
 void publicSdkContract;
 void publicMessengerContract;
 void (true as TokenizeInputUsesCanonicalContract);
+
+// Every implemented public payment action must keep the canonical input tuple.
+// Return types may be narrower than the compatibility declarations (cancel includes legacy void).
+type PublicAction = 'transact' | 'confirm' | 'cancel' | 'tokenizePaymentMethod' | 'updateAmount';
+type ActionInputMatches = {
+  [Key in PublicAction]: Exact<Parameters<(typeof runtimeSdk)[Key]>, Parameters<PayTheorySDK[Key]>>;
+};
+type AllActionInputsMatch = Assert<Exact<ActionInputMatches[PublicAction], true>>;
+type AppleSessionOutputMatches = Assert<
+  Exact<
+    ReturnType<RuntimePayTheoryMessenger['getApplePaySession']>,
+    ReturnType<PayTheoryMessenger['getApplePaySession']>
+  >
+>;
+type WalletInputMatches = Assert<
+  Exact<
+    Parameters<RuntimePayTheoryMessenger['processWalletTransaction']>,
+    Parameters<PayTheoryMessenger['processWalletTransaction']>
+  >
+>;
+type WalletOutputMatches = Assert<
+  Exact<
+    ReturnType<RuntimePayTheoryMessenger['processWalletTransaction']>,
+    ReturnType<PayTheoryMessenger['processWalletTransaction']>
+  >
+>;
+void (true as AllActionInputsMatch);
+void (true as AppleSessionOutputMatches);
+void (true as WalletInputMatches);
+void (true as WalletOutputMatches);

@@ -463,9 +463,11 @@ export interface PayTheoryPaymentFieldsInput {
   styles?: StyleObject;
   metadata?: Metadata;
   placeholders?: PlaceholderObject;
+  /** @deprecated Use the default `pay-theory-*` container IDs. */
   elementIds?: PaymentFieldElementIds;
   /** @internal Session used by the Pay Theory checkout portal to connect hosted controls to one checkout flow. */
   session?: string;
+  /** @deprecated Pass `feeMode` to `transact` instead. */
   feeMode?: PaymentFeeMode;
   amount?: number;
   country?: SupportedCountry;
