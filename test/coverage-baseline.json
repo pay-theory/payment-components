@@ -1,6 +1,6 @@
 {
   "revision": "c20b7e3c080a286c4557aca753ece9dd1bba94f1",
-  "measurement": "Original source Istanbul, all src/**/*.ts and src/**/*.js; immutable original206-test suite before plan implementation. No source exclusions.",
+  "measurement": "Original source Istanbul, all src/**/*.ts and src/**/*.js; immutable original206-test suite before plan implementation. No source exclusions. Rebased after merging origin/premain (60b8d736): the seven src files premain changed were re-measured with the same #459 test-file set (now including premain test/sdk-bug-fixes.web-test.js; 213 tests) under this configuration; all other file entries are unchanged.",
   "files": {
     "src/index.ts": {
       "sourceSha256": "a2e49573eacad79c5acaa4e958bf50d411f1760b7b83edae99858c74f5a83544",
@@ -32,31 +32,31 @@
       }
     },
     "src/paytheory-sdk.ts": {
-      "sourceSha256": "d4cdcda73e0ade204bbb6b7642831deb753c2c46841c888d318f25581f1a2d90",
+      "sourceSha256": "250c5d71f2a5de0fc2a0d7e466dc1249f354a5b5ea33f71f69baa759164897a5",
       "metrics": {
         "lines": {
           "total": 0,
           "covered": 0,
           "skipped": 0,
-          "pct": 0
+          "pct": 100
         },
         "functions": {
           "total": 0,
           "covered": 0,
           "skipped": 0,
-          "pct": 0
+          "pct": 100
         },
         "statements": {
           "total": 0,
           "covered": 0,
           "skipped": 0,
-          "pct": 0
+          "pct": 100
         },
         "branches": {
           "total": 0,
           "covered": 0,
           "skipped": 0,
-          "pct": 0
+          "pct": 100
         }
       }
     },
@@ -148,7 +148,7 @@
       }
     },
     "src/common/format.ts": {
-      "sourceSha256": "8b1a5265cf8e6f74345678de8caf35857116261f6da012b741b13f5a3ca191d3",
+      "sourceSha256": "b4f00dae603a643f441f78b5e8b8c48edb55620f698f8f786b0c830580569117",
       "metrics": {
         "lines": {
           "total": 53,
@@ -1047,7 +1047,7 @@
       }
     },
     "src/components/pay-theory-hosted-field-transactional/index.ts": {
-      "sourceSha256": "e8e5fb59ad84e934c02ffbaaf1188cb51fe412969bcc1d6cc606c7cb021c6de8",
+      "sourceSha256": "a44e5edf15148795e699166035ddf3d6b7e4aa3ee6f6ef9ec85a11eab6203450",
       "metrics": {
         "lines": {
           "total": 204,
@@ -1105,13 +1105,13 @@
       }
     },
     "src/field-set/actions.ts": {
-      "sourceSha256": "870b17b0c5adbd867b66ecced26912daebf3222fbeff3852f5235d62a7019152",
+      "sourceSha256": "cad12ff17f279e1b478757cd7ce4059545221cffda4a2e1210e1ca605bab2469",
       "metrics": {
         "lines": {
-          "total": 145,
-          "covered": 136,
+          "total": 143,
+          "covered": 134,
           "skipped": 0,
-          "pct": 93.79
+          "pct": 93.7
         },
         "functions": {
           "total": 10,
@@ -1120,16 +1120,16 @@
           "pct": 80
         },
         "statements": {
-          "total": 154,
-          "covered": 137,
+          "total": 152,
+          "covered": 136,
           "skipped": 0,
-          "pct": 88.96
+          "pct": 89.47
         },
         "branches": {
           "total": 90,
-          "covered": 69,
+          "covered": 71,
           "skipped": 0,
-          "pct": 76.66
+          "pct": 78.88
         }
       }
     },
@@ -1163,7 +1163,7 @@
       }
     },
     "src/field-set/payment-button.ts": {
-      "sourceSha256": "32b0d0bf618e88dce08ae47709284f3f4ca53c4e030a9616e5893979ee46576a",
+      "sourceSha256": "af351d5d95d83daacfe0e059c746043a872a5d8d98666a2a35776bd5b3f58aa9",
       "metrics": {
         "lines": {
           "total": 105,
@@ -1184,10 +1184,10 @@
           "pct": 78.18
         },
         "branches": {
-          "total": 48,
-          "covered": 20,
+          "total": 50,
+          "covered": 24,
           "skipped": 0,
-          "pct": 41.66
+          "pct": 48
         }
       }
     },
@@ -1279,31 +1279,31 @@
       }
     },
     "src/field-set/validation.ts": {
-      "sourceSha256": "22136d26f6ec3777f831025167eb62ebe944f06bd7d28147349427c990f3f820",
+      "sourceSha256": "078440ddef64fa22fa3511c1f70cc09b9f17c7040f0b7ad07cb0645dfb3b59e8",
       "metrics": {
         "lines": {
           "total": 291,
-          "covered": 114,
+          "covered": 128,
           "skipped": 0,
-          "pct": 39.17
+          "pct": 43.98
         },
         "functions": {
           "total": 39,
-          "covered": 18,
+          "covered": 20,
           "skipped": 0,
-          "pct": 46.15
+          "pct": 51.28
         },
         "statements": {
           "total": 311,
-          "covered": 116,
+          "covered": 131,
           "skipped": 0,
-          "pct": 37.29
+          "pct": 42.12
         },
         "branches": {
           "total": 268,
-          "covered": 55,
+          "covered": 75,
           "skipped": 0,
-          "pct": 20.52
+          "pct": 27.98
         }
       }
     },
@@ -1395,13 +1395,13 @@
       }
     },
     "src/messenger/pay-theory-messenger.ts": {
-      "sourceSha256": "ee3d2d19b6bbbffea46dc092074fae3c7c88fd391c1686c24f0997675d2338a4",
+      "sourceSha256": "05101475800144d158ae9495ae332e9b540e375936dbac115518a0ad95c3f011",
       "metrics": {
         "lines": {
-          "total": 313,
-          "covered": 235,
+          "total": 312,
+          "covered": 234,
           "skipped": 0,
-          "pct": 75.07
+          "pct": 75
         },
         "functions": {
           "total": 49,
@@ -1410,16 +1410,16 @@
           "pct": 75.51
         },
         "statements": {
-          "total": 319,
-          "covered": 236,
+          "total": 318,
+          "covered": 235,
           "skipped": 0,
-          "pct": 73.98
+          "pct": 73.89
         },
         "branches": {
-          "total": 182,
-          "covered": 104,
+          "total": 178,
+          "covered": 100,
           "skipped": 0,
-          "pct": 57.14
+          "pct": 56.17
         }
       }
     },
@@ -1513,28 +1513,28 @@
   },
   "total": {
     "lines": {
-      "total": 2517,
-      "covered": 1232,
+      "total": 2514,
+      "covered": 1243,
       "skipped": 0,
-      "pct": 48.94
+      "pct": 49.44
     },
     "statements": {
-      "total": 2626,
-      "covered": 1258,
+      "total": 2623,
+      "covered": 1271,
       "skipped": 0,
-      "pct": 47.9
+      "pct": 48.45
     },
     "functions": {
       "total": 529,
-      "covered": 210,
+      "covered": 212,
       "skipped": 0,
-      "pct": 39.69
+      "pct": 40.07
     },
     "branches": {
-      "total": 1400,
-      "covered": 498,
+      "total": 1398,
+      "covered": 520,
       "skipped": 0,
-      "pct": 35.57
+      "pct": 37.19
     },
     "branchesTrue": {
       "total": 0,
