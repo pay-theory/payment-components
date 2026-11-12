@@ -1,0 +1,31 @@
+# CODEOWNERS for pay-theory/payment-components
+# GitHub uses the LAST matching line for each file. Every team listed on that line
+# is asked to review, and an approval from any one of them satisfies the file.
+# PCI DSS 6.2.3 / 6.5.1: non-author review on every change, plus the specialist
+# team for infrastructure, dependency and card-data code.
+# Each team needs write access to this repo, or GitHub ignores its lines.
+
+# Default: any engineer other than the author
+*                                 @pay-theory/developers
+
+# Infrastructure, deploy scripts and CI
+/shell/                           @pay-theory/infra-reviewers
+/.github/                         @pay-theory/infra-reviewers
+
+# Dependencies (any directory)
+requirements*.txt                 @pay-theory/dep-reviewers
+Pipfile                           @pay-theory/dep-reviewers
+Pipfile.lock                      @pay-theory/dep-reviewers
+pyproject.toml                    @pay-theory/dep-reviewers
+poetry.lock                       @pay-theory/dep-reviewers
+package.json                      @pay-theory/dep-reviewers
+package-lock.json                 @pay-theory/dep-reviewers
+yarn.lock                         @pay-theory/dep-reviewers
+go.mod                            @pay-theory/dep-reviewers
+go.sum                            @pay-theory/dep-reviewers
+
+# Code that handles card data, keys, tokens or authentication
+/src/                             @pay-theory/security-reviewers
+
+# Changes to these review rules need a release approver
+/.github/CODEOWNERS               @pay-theory/release-approvers
