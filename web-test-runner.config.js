@@ -84,6 +84,14 @@ module.exports = {
             outbound.push({ url: url.origin + url.pathname, disposition: 'local-fixture-fulfill' });
             return route.fulfill({ status: 200, contentType: 'text/html', body: hostedPeerHtml });
           }
+          // PayTheoryMessenger mounts a hidden /messenger iframe. Whether its navigation
+          // starts before a test tears the iframe down depends on timing, so serve an
+          // inert local document instead of letting it reach the network guard as a
+          // blocked remote request. The document posts nothing back to the SDK.
+          if (url.origin === 'https://testundefined.tags.static.api.com' && url.pathname === '/messenger') {
+            outbound.push({ url: url.origin + url.pathname, disposition: 'local-fixture-fulfill' });
+            return route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><meta charset="utf-8"><title>messenger fixture</title>' });
+          }
           if (['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) return route.continue();
           outbound.push({ url: url.origin + url.pathname, disposition: 'blocked' });
           return route.abort('blockedbyclient');
