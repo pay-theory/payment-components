@@ -82,7 +82,7 @@ export interface BillingInfo {
   address?: AddressObject;
 }
 
-/** Card details returned when a payment requires confirmation. */
+/** @deprecated Part of the deprecated confirmation flow. Card details returned when a payment requires confirmation. */
 export interface ConfirmationObject {
   first_six: string;
   last_four: string;
@@ -92,7 +92,7 @@ export interface ConfirmationObject {
   service_fee: number;
 }
 
-/** Response returned when a payment is waiting for explicit confirmation. */
+/** @deprecated Part of the deprecated confirmation flow. Response returned when a payment is waiting for explicit confirmation. */
 export interface ConfirmationResponse {
   type: 'CONFIRMATION';
   body: ConfirmationObject;
@@ -312,7 +312,7 @@ export type TransactResult =
   | FailedTransactionResponse
   | CashBarcodeResponse;
 
-/** Every response that can be returned by `confirm`. */
+/** @deprecated Part of the deprecated confirmation flow. Every response that can be returned by `confirm`. */
 export type ConfirmResult =
   ErrorResponse | SuccessfulTransactionResponse | FailedTransactionResponse;
 
@@ -370,6 +370,7 @@ export interface TransactProps {
   confirmation?: boolean;
   accountCode?: string;
   reference?: string;
+  /** @deprecated Has no effect. Pay Theory always applies the default payment parameters. */
   paymentParameters?: string;
   invoiceId?: string;
   sendReceipt?: boolean;
@@ -461,6 +462,7 @@ export interface StyleObject {
 export interface PayTheoryPaymentFieldsInput {
   apiKey: string;
   styles?: StyleObject;
+  /** @deprecated Has no effect. Pass `metadata` to `transact` or `tokenizePaymentMethod`. */
   metadata?: Metadata;
   placeholders?: PlaceholderObject;
   /** @deprecated Use the default `pay-theory-*` container IDs. */
@@ -508,6 +510,7 @@ export interface CheckoutDetails {
   metadata?: Metadata;
   feeMode?: PaymentFeeMode;
   accountCode?: string;
+  /** @deprecated Has no effect. Pay Theory always applies the default payment parameters. */
   paymentParameters?: string;
   invoiceId?: string;
   recurringId?: string;
@@ -619,9 +622,9 @@ export interface PaymentFieldsController {
   readyObserver(callback: (ready: true) => void): Unsubscribe;
   /** Observes SDK errors. */
   errorObserver(callback: (error: string) => void): Unsubscribe;
-  /** Observes legacy validity notifications. */
+  /** Observes which payment types have valid hosted fields, as a space-separated string. */
   validObserver(callback: (value: string) => void): Unsubscribe;
-  /** Observes cash barcode results. */
+  /** @deprecated `transact` returns the barcode as a `CASH` response. */
   cashObserver(callback: (value: CashBarcodeObject) => void): Unsubscribe;
   /** @deprecated The confirmation flow is deprecated. Observes the final body emitted after confirming a transaction. */
   captureObserver(
@@ -629,7 +632,7 @@ export interface PaymentFieldsController {
   ): Unsubscribe;
   /** @deprecated The confirmation flow is deprecated. Observes the card details emitted when a transaction requires confirmation. */
   tokenizeObserver(callback: (value: ConfirmationObject) => void): Unsubscribe;
-  /** Observes completed transaction and tokenization bodies. */
+  /** @deprecated `transact` and `tokenizePaymentMethod` return the same body in their Promise. */
   transactedObserver(
     callback: (
       value:
@@ -765,7 +768,7 @@ export interface PayTheorySDK {
     metadata?: Metadata,
   ): Promise<PaymentFieldsController>;
 
-  /** Creates a legacy controller while preserving the current global SDK integration. */
+  /** @deprecated Use `payTheoryFields` and the top-level action methods instead. */
   create(
     apiKey: string,
     styles?: StyleObject,
@@ -804,7 +807,7 @@ export interface PayTheorySDK {
 
   /** Observes SDK errors and returns a function that removes the observer. */
   errorObserver(callback: (error: string) => void): Unsubscribe;
-  /** Observes completed transaction and tokenization bodies. */
+  /** @deprecated `transact` and `tokenizePaymentMethod` return the same body in their Promise. */
   transactedObserver(
     callback: (
       value:
@@ -823,11 +826,11 @@ export interface PayTheorySDK {
   ): Unsubscribe;
   /** Observes hosted-field interaction and validation state. */
   stateObserver(callback: (value: StateObject) => void): Unsubscribe;
-  /** Observes legacy validity notifications. */
+  /** Observes which payment types have valid hosted fields, as a space-separated string. */
   validObserver(callback: (value: string) => void): Unsubscribe;
   /** Observes hosted-field readiness. */
   readyObserver(callback: (ready: true) => void): Unsubscribe;
-  /** Observes cash barcode results. */
+  /** @deprecated `transact` returns the barcode as a `CASH` response. */
   cashObserver(callback: (value: CashBarcodeObject) => void): Unsubscribe;
 
   /** @deprecated Use `MERCHANT_FEE`; both constants resolve to `merchant_fee`. */
@@ -858,9 +861,7 @@ export interface PayTheorySDK {
   readonly BOOK: 'BOOK';
   /** Selects the "Donate" hosted-checkout call to action. */
   readonly DONATE: 'DONATE';
-  /**
-   * Exported legacy constant. Hosted checkout validation does not accept it as a call to action.
-   */
+  /** @deprecated Not accepted as a call to action. Use `PAY`, `BOOK` or `DONATE`. */
   readonly CHECKOUT: 'CHECKOUT';
   /** Selects the white hosted-button color. */
   readonly WHITE: 'white';
