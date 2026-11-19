@@ -37,14 +37,20 @@ import type {
   CheckoutContextQuery,
   ErrorResponse,
   FieldState,
+  HostedFieldType,
   Metadata,
   PaymentFeeMode,
-  StateObject,
+  ServiceFeeState,
   SupportedCountry,
   TokenizeProps,
   TransactProps,
 } from '../../paytheory-sdk';
 import PayTheoryHostedField from '../pay-theory-hosted-field';
+
+/** Internal state map, keyed by any hosted field name, before it is reported as a `StateObject`. */
+export type FieldStateGroup = Partial<Record<HostedFieldType, FieldState>> & {
+  service_fee?: ServiceFeeState;
+};
 
 /** Internal field-state message enriched with its source element and connection status. */
 export interface IncomingFieldState extends FieldState {
@@ -64,7 +70,7 @@ export interface TransactDataObject {
 
 interface ConstructorProps {
   transactingIFrameId: typeof CARD_IFRAME | typeof BANK_IFRAME | typeof CASH_IFRAME;
-  stateGroup: Partial<StateObject>;
+  stateGroup: FieldStateGroup;
   transactingType: TransactingType;
 }
 
@@ -109,7 +115,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
   protected _processedElements: Partial<ElementTypes[]> = [];
 
   // Used to track the state of the elements that are being used for the transaction of this transactional element
-  protected _stateGroup: Partial<StateObject>;
+  protected _stateGroup: FieldStateGroup;
 
   // Used to track the error message for the element
   protected _error: string | undefined;
@@ -387,7 +393,7 @@ class PayTheoryHostedFieldTransactional extends PayTheoryHostedField {
 
   sendStateMessage() {
     // Make a copy of the state group
-    const newState: Partial<StateObject> = {
+    const newState: FieldStateGroup = {
       ...this._stateGroup,
       service_fee: {
         amount: this._amount,

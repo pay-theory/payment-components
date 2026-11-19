@@ -579,10 +579,15 @@ class PayTheoryMessenger implements PayTheoryMessengerContract {
           };
         }
 
-        // Retry after refresh
-        return this.channel.sendMessage<void, ApplePaySessionResponse>(
-          PT_MESSENGER_MERCHANT_VALIDATION,
-        );
+        // Retry after refresh and return the same shape as the first attempt
+        const retryResponse = await this.channel.sendMessage<
+          void,
+          MessengerAppleMerchantValidationMessage
+        >(PT_MESSENGER_MERCHANT_VALIDATION);
+        return {
+          type: ResponseMessageTypes.SUCCESS,
+          session: retryResponse.body,
+        };
       }
 
       return {

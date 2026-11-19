@@ -92,7 +92,6 @@ export const transact = async (
   | FailedTransactionResponse
   | CashBarcodeResponse
 > => {
-  console.log('props', props);
   const transactingElement = findTransactingElement();
   if (transactingElement) {
     // Run field check and return error if one is found before proceeding
@@ -131,7 +130,6 @@ export const transact = async (
           confirmation,
         };
         const response = await transactingElement.transact(data, transactingElement);
-        console.log('Transact Response', response);
         let parsedResponse = parseResponse(response) as
           | ErrorResponse
           | ConfirmationResponse

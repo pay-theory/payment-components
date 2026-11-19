@@ -1,0 +1,49 @@
+<!doctype html><meta charset="utf-8"><script>
+// This document is served by Playwright at the exact production-configured hosted
+// origin. It is a transport peer only; no SDK implementation is duplicated here.
+const field = window.name.replace(/-iframe$/, '');
+let replies = {};
+let held = false;
+const queue = [];
+const responses = new Map();
+let receipt = 0;
+function send(body) { parent.postMessage(body, '*'); }
+function reply(event) {
+  const message = event.data;
+  const id = ++receipt;
+  send({ __hostedFixture: 'received', field, message, receipt: id });
+  if (event.ports[0]) {
+    const defaults = {
+      'pt-static:connection_token': { type: 'pt-static:connected', element: field },
+      'pt-static:reset_host': { type: 'pt-static:connected', element: field },
+      'pt-static:transact': { type: 'pt-static:fields-ready' },
+      'pt-static:payment-detail': { type: 'pt-static:complete', paymentType: 'transfer', expandedResponse: true, body: { status: 'SUCCEEDED', id: 'fixture-payment' } },
+      'pt-static:confirm': { type: 'pt-static:complete', paymentType: 'transfer', expandedResponse: true, body: { status: 'SUCCEEDED', id: 'fixture-capture' } },
+      'pt-static:tokenize-detail': { type: 'pt-static:complete', paymentType: 'tokenize', expandedResponse: true, body: { status: 'SUCCEEDED', id: 'fixture-token' } },
+    };
+    const response = Object.prototype.hasOwnProperty.call(replies, message.type) ? replies[message.type] : defaults[message.type];
+    if (response !== null && response !== undefined) {
+      responses.set(id, () => { event.ports[0].postMessage(response); event.ports[0].close(); });
+    }
+  }
+}
+addEventListener('message', event => {
+  if (event.source !== parent) return;
+  if (event.data && event.data.__hostedFixtureLedgerAck) {
+    const respond = responses.get(event.data.__hostedFixtureLedgerAck);
+    if (respond) { responses.delete(event.data.__hostedFixtureLedgerAck); respond(); }
+    return;
+  }
+  if (event.data && event.data.__hostedFixtureCommand) {
+    const command = event.data;
+    if (command.action === 'configure') { replies = command.replies || {}; held = Boolean(command.held); }
+    if (command.action === 'announce') send({ type: 'pt-static:pt_token_ready', element: field });
+    if (command.action === 'emit') send(command.message);
+    if (command.action === 'release') { held = false; queue.splice(0).forEach(reply); }
+    send({ __hostedFixture: 'ack', id: command.id });
+    return;
+  }
+  if (held) queue.push(event); else reply(event);
+});
+send({ __hostedFixture: 'loaded', field });
+</script>
